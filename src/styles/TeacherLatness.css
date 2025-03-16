@@ -1,0 +1,86 @@
+.teacherLatnessForm {
+    background-color: rgb(230, 235, 239);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: 100vh;
+  }
+  
+  .returnDiv {
+    width: 100%;
+    padding: 5px;
+    height: 6vh;
+  }
+  
+  .returnDiv-Ar {
+    display: flex;
+    justify-content: end;
+    width: 100%;
+    padding: 5px;
+    height: 6vh;
+  }
+  
+  .Div100 {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .noTeacher {
+    background-color: white;
+    width: 80%;
+    text-align: center;
+    padding: 10px;
+    height: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-weight: bolder;
+  }
+  
+  .teacherSessions {
+    background-color: white;
+    width: 80%;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    align-self: flex-start;
+    height: auto;
+  }
+  
+  .TLTitle {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+  }
+  
+  .TLTitleContent {
+      display: flex;
+      justify-content: center;
+      font-weight: bold;
+      width: 9%;
+      padding: 5px;
+  }
+  
+  .TLContent {
+      display: flex;
+      justify-content: center;
+      width: 9%;
+      padding: 5px;
+  }
+  
+  .TLSelect {
+      width: 80%;
+      font-size: 10px;
+  }
+  
+  .TLBtn {
+      margin-top: 10px;
+      display: flex;
+      justify-self: center;
+  }
+
+  .defaultOptionTL {
+    font-size: smaller;
+  }

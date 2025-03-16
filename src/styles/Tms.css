@@ -1,0 +1,177 @@
+.tmsTitle {
+  width: 100%;
+  display: flex;
+  align-items: end;
+  background-image: url('../assets/TMS.jpg');
+  color: white;
+  width: 100%;
+  height: 70vh;
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.tmsTitle-ar {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: end;
+  background-image: url('../assets/TMS.jpg');
+  color: white;
+  width: 100%;
+  height: 70vh;
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.tmsTitle2 {
+  margin: 0 0 6% 3%;
+}
+.tmsTitle2-ar {
+  margin: 0 3% 6% 0;
+  text-align: end;
+}
+
+.tasks {
+  display: flex;
+  text-align: center;
+  margin: 10px;
+  padding: 5px;
+  justify-content: space-between;
+  box-shadow: 3px 3px 5px gray;
+  align-items: center;
+}
+
+.tasks * {
+  margin: 5px;
+}
+
+.taskTitle {
+  /* margin-left: 3%; */
+  margin: 0 0 0 3%;
+}
+.taskTitle-ar {
+  margin: 0 3% 0 0;
+  text-align: end;
+}
+
+.title {
+  font-weight: bold;
+  width: 10%;
+}
+
+.task {
+  width: 10%;
+}
+
+.taskColumn:hover {
+  background-color: lightgray;
+  cursor: pointer;
+}
+
+.noData {
+  text-align: center;
+}
+
+.TMS-date-label {
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.date-TMS {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.selectTms {
+  display: flex;
+  width: 20%;
+}
+
+.selectTms-ar {
+  display: flex;
+  width: 20%;
+}
+
+.filtersTms {
+  width: 100%;
+  /* margin-bottom: 1%; */
+  margin-top: 0.5%;
+  display: flex;
+  justify-content: center;
+}
+
+.filtersTms-ar {
+  width: 100%;
+  /* margin-bottom: 1%; */
+  margin-top: 0.5%;
+  display: flex;
+}
+
+.TmsFilters {
+  width: 100%;
+}
+
+.sectionTms {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.selectTms label {
+  margin-bottom: 5px;
+  margin-right: 5px;
+  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
+  text-align: right; /* Align text */
+  font-size: 0.9rem; /* Adjust size if needed */
+  font-weight: bolder;
+}
+
+.selectTms-ar label {
+  margin-bottom: 5px;
+  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
+  text-align: left; /* Align text */
+  font-size: 0.9rem; /* Adjust size if needed */
+  font-weight: bolder;
+}
+
+.selectTms select {
+  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
+  font-size: 0.9rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.selectTms-ar select {
+  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
+  font-size: 0.9rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.taskDescription {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.green:hover {
+  background-color: darkgreen !important;
+}
+
+.TmsBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  width: 10%;
+  height: 5vh;
+}

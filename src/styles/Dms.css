@@ -1,0 +1,103 @@
+.dmsTitle {
+  width: 100%;
+  display: flex;
+  background-image: url('../assets/DMS.jpg');
+  color: white;
+  width: 100%;
+  height: 70vh;
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.dmsTitle-ar {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  background-image: url('../assets/DMS.jpg');
+  color: white;
+  width: 100%;
+  height: 70vh;
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.select label {
+  font-weight: bolder;
+}
+
+.dmsTitle2 {
+  /* margin-left: 3%; */
+  margin: 2% 0 0 3%;
+}
+.dmsTitle2-ar {
+  margin: 2% 3% 0 0;
+  text-align: end;
+}
+
+.files {
+  box-shadow: 5px 5px 10px gray;
+  border-radius: 5px;
+  width: 80%;
+  display: flex;
+  justify-self: center;
+  flex-direction: column;
+}
+
+.file {
+  margin: 10px;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 3px 3px 5px gray;
+  align-items: center;
+  font-weight: bold;
+}
+
+.file:hover {
+  background-color: lightgray;
+}
+
+.openFile {
+  cursor: pointer;
+}
+
+.upload {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  align-items: center;
+}
+
+.dmsButton {
+  margin: 5px;
+}
+
+.filters {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.date-DMS {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.date-section-DMS {
+  display: flex;
+  flex-direction: column;
+}
+
+.DMS-date-label {
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bolder;
+}
+
+.DMSBtn {
+  height: 5vh;
+  margin: 41px 0 0 0;
+}

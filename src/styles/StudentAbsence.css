@@ -1,0 +1,40 @@
+.students {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 10px;
+}
+
+.studentName {
+  min-width: 200px;
+  text-align: center;
+}
+
+.studentTitle {
+    font-weight: bold;
+    text-align: center;
+    width: 30%;
+}
+
+.reason {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  width: 30%;
+}
+
+.studentReasonInput {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.studentReasonInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}

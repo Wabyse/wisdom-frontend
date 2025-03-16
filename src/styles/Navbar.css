@@ -1,0 +1,51 @@
+.navbar2 {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: gray;
+    /* margin-bottom: 2%; */
+}
+
+.logo {
+    width: 10%;
+}
+
+.logoutBtn {
+    height: 100%;
+    padding: 10px 20px;
+    margin-right: 2%;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: darkgray;
+}
+
+.logoutBtn:hover {
+    background-color: lightgray;
+    color: black;
+}
+
+.navController {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navController * {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.userCode {
+    background-color: white;
+    padding: 10px;
+    border-radius: 50%; /* Makes the div circular */
+    font-weight: bolder;
+    width: 30px;  /* Set width and height to ensure a perfect circle */
+    height: 30px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ccc; /* Optional: Add a border */
+}

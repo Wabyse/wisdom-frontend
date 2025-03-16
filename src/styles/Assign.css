@@ -1,0 +1,82 @@
+.assignForm {
+  width: 60%;
+  max-width: 600px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.assignForm label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #333;
+}
+
+.AssignText,
+.assignForm input,
+.assignForm select {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0 12px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.assignForm input:focus,
+.assignForm select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.select {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Group Date and Time Inputs in One Row */
+.date-time-group,
+.select-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.date-time-group div,
+.select-group div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.select-group select,
+.date-time-group input {
+  width: 100%; /* Ensure each input/select stretches fully */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .assignForm {
+    width: 90%;
+  }
+
+  .date-time-group {
+    flex-direction: column;
+  }
+
+  .date-time-group div {
+    width: 100%;
+  }
+}

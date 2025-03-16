@@ -1,0 +1,31 @@
+.myTaskTitle {
+  margin-left: 3%;
+}
+
+.myTasks {
+  display: flex;
+  text-align: center;
+  margin: 10px;
+  padding: 5px;
+  justify-content: space-between;
+  box-shadow: 3px 3px 5px gray;
+  align-items: center;
+}
+
+.myTasks * {
+  margin: 5px;
+}
+
+.myTitle {
+  font-weight: bold;
+  width: 9%;
+}
+
+.myTask {
+  width: 9%;
+}
+
+.myTaskColumn:hover {
+  background-color: lightgray;
+  cursor: pointer;
+}
