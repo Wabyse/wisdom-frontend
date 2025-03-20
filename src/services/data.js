@@ -30,6 +30,21 @@ export const fetchDepartments = async () => {
   }
 };
 
+export const fetchDmsCategories = async () => {
+  try {
+    const response = await api.get(`/api/v1/files/categories`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.categories || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
 export const fetchUsers = async () => {
   try {
     const response = await api.get(`/api/v1/forms/AllUsers`, {
@@ -100,6 +115,36 @@ export const fetchShools = async () => {
     console.error(
       "Error fetching forms:",
       error.response?.students || error.message
+    );
+    throw error;
+  }
+};
+
+export const fetchIncidentCategories = async () => {
+  try {
+    const response = await api.get(`/api/v1/users/schools/incidents/categories`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.categories || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const fetchBehaviorCategories = async () => {
+  try {
+    const response = await api.get(`/api/v1/users/students/behavior/categories`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.categories || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
     );
     throw error;
   }

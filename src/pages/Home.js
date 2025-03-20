@@ -12,8 +12,16 @@ import Navbar from "../components/Navbar";
 
 const Home = () => {
   const navigate = useNavigate();
-  const handleClick = (id, name) => {
+  const handlePmsClick = () => {
     navigate(`/pms`);
+  };
+
+  const handleDmsClick = () => {
+    navigate(`/dms`);
+  };
+
+  const handleTmsClick = () => {
+    navigate(`/tms`);
   };
 
   const notAvailable = () =>
@@ -25,7 +33,7 @@ const Home = () => {
       <Navbar/>
 
       <div className="cards">
-        <button className="card" onClick={notAvailable}>
+        <button className="card" onClick={handleDmsClick}>
           <img src={DMS} alt="Placeholder" width="100%" />
           <h2>DMS</h2>
         </button>
@@ -33,7 +41,7 @@ const Home = () => {
           <img src={LMS} alt="Placeholder" width="100%" />
           <h2>LMS</h2>
         </button>
-        <button className="card" onClick={notAvailable}>
+        <button className="card" onClick={handleTmsClick}>
           <img src={TMS} alt="Placeholder" width="100%" />
           <h2>TMS</h2>
         </button>
@@ -45,7 +53,7 @@ const Home = () => {
           <img src={SIS} alt="Placeholder" width="100%" />
           <h2>SIS</h2>
         </button>
-        <button className="card" onClick={handleClick}>
+        <button className="card" onClick={handlePmsClick}>
           <img src={PMS} alt="Placeholder" width="100%" />
           <h2>PMS</h2>
         </button>

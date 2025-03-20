@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import Navbar from "../components/Navbar";
 import "../styles/Dms.css";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { downloadFileDms, fetchingFiles, fetchingOrgs } from "../services/dms";
+import { fetchDepartments, fetchDmsCategories } from "../services/data";
+import { scrollDown } from "../utils/scrollDown";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -17,7 +21,7 @@ const Dms = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [language, setLanguage] = useState(true);
+  const { language } = useLanguage();
   const [filtered, setFiltered] = useState([]);
   const [schools, setSchools] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -66,65 +70,29 @@ const Dms = () => {
       .replace(",", ""); // Remove comma
   };
 
-  const changeLanguage = () => {
-    setLanguage(!language);
-  };
-
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
     if (!(Number(e.target.value) === 0)) {
-      setSubCategories(categories[e.target.value - 1].subCategory)
+      setSubCategories(categories[e.target.value - 1].subCategory);
     } else {
       setTest(test + 1);
     }
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleSubCategoryChange = (e) => {
     setSelectedSubCategory(e.target.value);
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleDateFromChange = (event) => {
     setDateFrom(event.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleDateToChange = (event) => {
     setDateTo(event.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const openPDF = (fileName) => {
@@ -134,49 +102,19 @@ const Dms = () => {
 
   const handleDepartmentChange = (e) => {
     setSelectedDepartment(e.target.value);
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleSchoolChange = (e) => {
     setSelectedSchool(e.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
-  const handleDownload2 = async (path) => {
+  const handleDownload2 = (path) => {
     try {
       // Ensure correct filename extraction for Windows
       const fileName = path.filteredPath.split("\\").pop();
-
-      const response = await axios.get(
-        `${BASE_URL}/api/v1/files/download/${fileName}`,
-        {
-          responseType: "blob",
-        }
-      );
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      downloadFileDms(fileName);
     } catch (error) {
       console.error("Download error", error);
       alert("File download failed");
@@ -184,14 +122,9 @@ const Dms = () => {
   };
 
   useEffect(() => {
-    const fetchingFiles = async () => {
+    const loadingFiles = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/files/view`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetchingFiles();
         let newFiltered = [];
         const paths = response.data.files;
         let departmentId = selectedDepartment
@@ -268,7 +201,7 @@ const Dms = () => {
         console.error("no files", error);
       }
     };
-    fetchingFiles();
+    loadingFiles();
   }, [
     userInfo,
     selectedDepartment,
@@ -282,56 +215,38 @@ const Dms = () => {
   useEffect(() => {
     const fetchingOrg = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/forms/AllOrgs`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        setSchools(response.data.data);
+        const response = await fetchingOrgs();
+        setSchools(response);
       } catch (error) {
         console.error("no files", error);
       }
     };
-    fetchingOrg();
-  }, []);
 
-  useEffect(() => {
-    const fetchDepartments = async () => {
+    const loadDepartments = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/forms/AllDepartments`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        setDepartments(response.data?.data || []);
+        const response = await fetchDepartments();
+        setDepartments(response);
       } catch (err) {
         console.error("API Error:", err);
         setError(
           err.message || "An error occurred while fetching curriculums data."
         );
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchDepartments();
+    loadDepartments();
+    fetchingOrg();
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/files/categories`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetchDmsCategories();
 
         let subCategory = [];
-        setCategories(response.data?.categories || []);
-        (response.data?.categories || []).forEach((subs) => {
+        setCategories(response);
+        response.forEach((subs) => {
           if (Array.isArray(subs.subCategory)) {
             subs.subCategory.forEach((sub) => subCategory.push(sub));
           }
@@ -357,9 +272,7 @@ const Dms = () => {
         <button onClick={uploadDocument}>
           {language ? "Upload Document" : "رفع ملف"}
         </button>
-        <button className="language" onClick={changeLanguage}>
-          {language ? "AR" : "EN"}
-        </button>
+        <ChangeLanguage />
       </Navbar>
       <div className={language ? "dmsTitle" : "dmsTitle-ar"}>
         {language ? (
@@ -499,7 +412,7 @@ const Dms = () => {
             </div>
           ))
         ) : (
-          <p className="noData">there is no documents available</p>
+          <p className="noData">{language ? "there is no documents available" : "لا يوجد ملفات متاحة"}</p>
         )}
       </div>
     </div>

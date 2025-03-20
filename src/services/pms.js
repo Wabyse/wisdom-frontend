@@ -108,3 +108,27 @@ export const sendStudentAttendance = async (formData) => {
     throw error;
   }
 };
+
+export const submitIncident = async (formData) => {
+  try {
+    await api.post("/api/v1/users/schools/incidents", formData);
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const submitBehavior = async (data) => {
+  try {
+    await api.post("/api/v1/users/students/behavior", data);
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

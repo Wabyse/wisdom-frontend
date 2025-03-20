@@ -16,6 +16,8 @@ import TeacherLatness from "./pages/TeacherLatness";
 import StudentAbsence from "./pages/StudentAbsence";
 import Interview from "./pages/Interview";
 import Test from "./pages/Test";
+import SchoolIncident from "./pages/SchoolIncident";
+import StudentBehavior from "./pages/StudentBehavior";
 
 function App() {
   return (
@@ -68,6 +70,22 @@ function App() {
           element={
             <ProtectedRoute>
               <StudentAbsence />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pms/student-behavior"
+          element={
+            <ProtectedRoute>
+              <StudentBehavior />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pms/school-incident"
+          element={
+            <ProtectedRoute>
+              <SchoolIncident />
             </ProtectedRoute>
           }
         />

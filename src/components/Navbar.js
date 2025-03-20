@@ -17,7 +17,7 @@ const Navbar = ({ children }) => {
         alt="Wabys Logo"
       />
       <div className="navController">
-        <div>{children}</div>
+        <div className="navbarChildren">{children}</div>
         <div className="userCode">{userCode || "Guest"}</div>
         <button className="logoutBtn" onClick={loggingOut}>
           Logout

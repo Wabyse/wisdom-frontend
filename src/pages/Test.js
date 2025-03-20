@@ -4,6 +4,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { fetchAllTeachers, sendTeacherEvaluation } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 const testResults = [
   "Title 1",
@@ -15,7 +17,7 @@ const testResults = [
 ];
 
 function Test() {
-  const [language, setLanguage] = useState(true);
+  const { language } = useLanguage();
   const [teachers, serTeachers] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [testResultData, setTestResultData] = useState([]);
@@ -28,10 +30,6 @@ function Test() {
     navigate("/pms");
   };
 
-  const changeLanguage = () => {
-    setLanguage(!language);
-  };
-
   const selectUserHandler = (e) => {
     setSelectedTeacher(e.target.value);
   };
@@ -42,10 +40,10 @@ function Test() {
     setTestResultData(newData);
   };
 
-  const testResultHandler = async(e) => {
+  const testResultHandler = async (e) => {
     e.preventDefault();
     if (!selectedTeacher || testResultData.length < 6) {
-      return toast.error('please fill all required data');
+      return toast.error("please fill all required data");
     }
     const updatedTestData = {
       type: "test",
@@ -59,7 +57,7 @@ function Test() {
       sixth_result: Number(testResultData[5]),
     };
     try {
-      await sendTeacherEvaluation(updatedTestData)
+      await sendTeacherEvaluation(updatedTestData);
       toast.success("data added");
     } catch (err) {
       toast.error("Please fill the data");
@@ -100,9 +98,7 @@ function Test() {
           alt="company logo"
         ></img>
       </div>
-      <div className="Div100">
-        <button onClick={changeLanguage}>{language ? "AR" : "EN"}</button>
-      </div>
+      <ChangeLanguage />
       <div className="select Div100">
         <div className="select">
           <label>{language ? "Teacher:" : ":معلم"}</label>
@@ -120,10 +116,7 @@ function Test() {
         </div>
       </div>
       {selectedTeacher ? (
-        <form
-          className="teacherSessions EmpScore"
-          onSubmit={testResultHandler}
-        >
+        <form className="teacherSessions EmpScore" onSubmit={testResultHandler}>
           {testResults.map((interviewResult, index) => (
             <div className="employeeSection">
               <div className="interviewResultTitle">{interviewResult}</div>

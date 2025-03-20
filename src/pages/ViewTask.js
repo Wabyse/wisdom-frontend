@@ -2,13 +2,10 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/ViewTask.css";
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { downloadTaskFile, fetchTasks } from "../services/tms";
 
 const ViewTask = () => {
   const { id } = useParams();
-
   const [task, setTask] = useState(null);
 
   const formatDate = (dateString) => {
@@ -31,21 +28,7 @@ const ViewTask = () => {
   const downloadFile = async (path) => {
     try {
       const fileName = path.split("\\").pop();
-
-      const response = await axios.get(
-        `${BASE_URL}/api/v1/files/download/${fileName}`,
-        {
-          responseType: "blob",
-        }
-      );
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await downloadTaskFile(fileName)
     } catch (error) {
       console.error("Download error", error);
       alert("File download failed");
@@ -53,16 +36,10 @@ const ViewTask = () => {
   };
 
   useEffect(() => {
-    const fetchingTasks = async () => {
+    const loadingTasks = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/tasks/view`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        const filteredTask = response.data.Tasks.find(
+        const response = await fetchTasks();
+        const filteredTask = response.find(
           (task) => task.id === Number(id)
         );
 
@@ -71,7 +48,7 @@ const ViewTask = () => {
         console.error("no files", error);
       }
     };
-    fetchingTasks();
+    loadingTasks();
   }, [id]);
   return (
     <>

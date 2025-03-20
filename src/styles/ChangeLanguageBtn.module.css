@@ -1,0 +1,12 @@
+.language {
+  padding: 10px 20px;
+  margin-right: 2%;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: darkgray;
+}
+
+.language:hover {
+  background-color: lightgray;
+  color: black;
+}

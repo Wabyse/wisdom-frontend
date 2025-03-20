@@ -1,64 +1,75 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { useAuth } from "../context/AuthContext";
-import "../styles/UploadDocument.css";
+// import SchoolIncidentCSS from "../styles/SchoolIncident.module.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { fetchingOrgs, uploadDmsDocument } from "../services/dms";
-import { fetchDepartments, fetchDmsCategories } from "../services/data";
+import { fetchIncidentCategories, fetchShools } from "../services/data";
+import { submitIncident } from "../services/pms";
 
-const UploadDocument = () => {
+const SchoolIncident = () => {
   const [schools, setSchools] = useState([]);
-  const [departments, setDepartments] = useState([]);
+  const [comment, setComment] = useState("");
+  const [location, setLocation] = useState("");
+  const [date, setDate] = useState("");
   const [file, setFile] = useState(null);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
-  const [organizationId, setOrganizationId] = useState("");
-  const [departmentId, setDepartmentId] = useState("");
+  const [schoolId, setSchoolId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { userInfo } = useAuth();
 
   const navigate = useNavigate();
 
   const handleSubCategoryClick = () => {
     if (!selectedCategory) {
-      alert("Please select a category first!");
+      toast.error("Please select a category first!");
     }
   };
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
-    setSelectedCategories(categories[e.target.value].subCategory);
+    setSelectedCategories(categories[e.target.value].incidentSubCategories);
+  };
+
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
+  const handleLocationChange = (event) => {
+    setLocation(event.target.value);
   };
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
+  const handleDateChange = (event) => {
+    setDate(event.target.value);
+  };
+
   const upload = async (e) => {
     e.preventDefault();
-    if (!file || !departmentId || !subCategory || !organizationId) {
-      return alert("Please fill all fields and select a file");
+    if (!subCategory || !schoolId) {
+      return toast.error("Please fill all fields and select a file");
     }
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("department_id", departmentId);
     formData.append("sub_category", subCategory);
-    formData.append("organization_id", organizationId);
-    formData.append("user_id", userInfo.id);
+    formData.append("school_id", schoolId);
+    formData.append("comment", comment);
+    formData.append("location", location);
+    formData.append("incident_date", date);
 
     try {
-      await uploadDmsDocument(formData);
+      await submitIncident(formData);
       setFile(null);
-      setDepartmentId("");
       setSubCategory("");
-      setOrganizationId("");
-      toast.success("Login successful!");
-      navigate(`/dms`);
+      setSchoolId("");
+      toast.success("submitted");
+      navigate(`/pms`);
     } catch (error) {
       console.error("Upload error", error);
       alert("File upload failed");
@@ -68,28 +79,16 @@ const UploadDocument = () => {
   useEffect(() => {
     const loadingOrg = async () => {
       try {
-        const response = await fetchingOrgs()
+        const response = await fetchShools();
         setSchools(response);
       } catch (error) {
         console.error("no files", error);
       }
     };
 
-    const loadDepartments = async () => {
-      try {
-        const response = await fetchDepartments()
-        setDepartments(response);
-      } catch (err) {
-        console.error("API Error:", err);
-        setError(
-          err.message || "An error occurred while fetching curriculums data."
-        );
-      }
-    };
-
     const loadCategories = async () => {
       try {
-        const response = await fetchDmsCategories();
+        const response = await fetchIncidentCategories();
         setCategories(response);
       } catch (err) {
         console.error("API Error:", err);
@@ -98,7 +97,6 @@ const UploadDocument = () => {
     };
 
     loadingOrg();
-    loadDepartments();
     loadCategories();
     setLoading(false);
   }, []);
@@ -111,12 +109,12 @@ const UploadDocument = () => {
       <Toaster />
       <Navbar></Navbar>
       <form onSubmit={upload} className="assignForm form2">
-        <h1>Upload Document</h1>
+        <h1>School Incident</h1>
         <div className="select">
-          <label>Organization:</label>
-          <select onChange={(e) => setOrganizationId(e.target.value)}>
+          <label>School:</label>
+          <select onChange={(e) => setSchoolId(e.target.value)}>
             <option value="" disabled selected>
-              Please Select an organization
+              Please Select a school
             </option>
             {schools.map((school) => (
               <option key={school.id} value={school.id}>
@@ -125,19 +123,10 @@ const UploadDocument = () => {
             ))}
           </select>
         </div>
-        <div className="select">
-          <label>Department:</label>
-          <select onChange={(e) => setDepartmentId(e.target.value)}>
-            <option value="" disabled selected>
-              Please Select a Department
-            </option>
-            {departments.map((department) => (
-              <option key={department.id} value={department.id}>
-                {department.Name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <label htmlFor="comment">Comment:</label>
+        <input type="text" name="comment" id="comment" onChange={handleCommentChange} />
+        <label htmlFor="location">Location:</label>
+        <input type="text" name="location" id="location" onChange={handleLocationChange} />
         <label>Attach File:</label>
         <input type="file" name="file" onChange={handleFileChange} />
         <div className="select-group">
@@ -171,10 +160,14 @@ const UploadDocument = () => {
             </select>
           </div>
         </div>
+        <div className="select">
+          <label>Date:</label>
+          <input type="date" onChange={handleDateChange} />
+        </div>
         <button>Submit</button>
       </form>
     </>
   );
 };
 
-export default UploadDocument;
+export default SchoolIncident;

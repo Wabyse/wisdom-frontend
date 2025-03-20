@@ -5,6 +5,7 @@ import "../styles/Assign.css";
 import { useNavigate } from "react-router-dom";
 import { assignTask, fetchTaskCategories } from "../services/tms";
 import { fetchUsers } from "../services/data";
+import toast, { Toaster } from "react-hot-toast";
 
 const importance = ["normal", "important", "urgent"];
 
@@ -13,7 +14,7 @@ const Assign = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(false);
+  const [hasSelectedCategory, setHasSelectedCategory] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userInfo } = useAuth();
@@ -21,13 +22,13 @@ const Assign = () => {
   const navigate = useNavigate();
 
   const handleSubCategoryClick = () => {
-    if (!selectedCategory) {
-      alert("Please select a category first!");
+    if (!hasSelectedCategory) {
+      toast.error("Please select a category first!");
     }
   };
 
   const handleCategoryChange = (e) => {
-    setSelectedCategory(true);
+    setHasSelectedCategory(true);
     setSelectedCategories(categories[e.target.value].subCategory);
   };
 
@@ -45,13 +46,17 @@ const Assign = () => {
     formData.append(
       "start_date",
       new Date(
-        `${e.target.startDate.value}T${e.target.startTime.value ? e.target.startTime.value : "00:00"}`
+        `${e.target.startDate.value}T${
+          e.target.startTime.value ? e.target.startTime.value : "00:00"
+        }`
       ).toISOString()
     );
     formData.append(
       "end_date",
       new Date(
-        `${e.target.endDate.value}T${e.target.endTime.value ? e.target.endTime.value : "00:00"}`
+        `${e.target.endDate.value}T${
+          e.target.endTime.value ? e.target.endTime.value : "00:00"
+        }`
       ).toISOString()
     );
     formData.append("file", file); // Attach file correctly
@@ -72,34 +77,26 @@ const Assign = () => {
     const loadUsers = async () => {
       try {
         const response = await fetchUsers();
-
         setFilteredUsers(response);
       } catch (err) {
-        console.error("API Error:", err);
-        setError(err.message || "An error occurred while fetching users data.");
-      } finally {
-        setLoading(false);
+        console.error("Users API Error:", err);
+        setError(err.message || "Failed to load users.");
+      }
+    };
+
+    const loadCategories = async () => {
+      try {
+        const response = await fetchTaskCategories();
+        setCategories(response);
+      } catch (err) {
+        console.error("Categories API Error:", err);
+        setError(err.message || "Failed to load categories.");
       }
     };
 
     loadUsers();
-  }, []);
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const response = await fetchTaskCategories();
-
-        setCategories(response);
-      } catch (err) {
-        console.error("API Error:", err);
-        setError(err.message || "An error occurred while fetching users data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadCategories();
+    setLoading(false);
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -107,6 +104,7 @@ const Assign = () => {
 
   return (
     <>
+      <Toaster />
       <Navbar></Navbar>
       <form onSubmit={submitTask} className="assignForm form2">
         <h1>Assign Task</h1>
@@ -130,7 +128,9 @@ const Assign = () => {
               Please Select an importance
             </option>
             {importance.map((state) => (
-              <option key={state} value={state}>{state}</option>
+              <option key={state} value={state}>
+                {state}
+              </option>
             ))}
           </select>
         </div>
@@ -177,7 +177,9 @@ const Assign = () => {
                 Please Select a Category
               </option>
               {categories.map((category, index) => (
-                <option key={index} value={index}>{category.name}</option>
+                <option key={index} value={index}>
+                  {category.name}
+                </option>
               ))}
             </select>
           </div>

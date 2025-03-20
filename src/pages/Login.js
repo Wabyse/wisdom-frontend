@@ -9,7 +9,6 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/dms";
-  console.log(from);
   const { setUserCode } = useAuth();
   const { setUserInfo } = useAuth();
   const [code, setCode] = useState("");

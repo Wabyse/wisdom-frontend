@@ -2,13 +2,10 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/ViewDocument.css";
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { fetchingFiles } from "../services/dms";
 
 const ViewDocument = () => {
   const { id } = useParams();
-
   const [document, setDocument] = useState(null);
 
   const formatDate = (dateString) => {
@@ -29,14 +26,9 @@ const ViewDocument = () => {
   };
 
   useEffect(() => {
-    const fetchingFiles = async () => {
+    const loadingFiles = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/files/view`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetchingFiles();
 
         const filteredDocument = response.data.files.find(
           (document) => document.id === Number(id)
@@ -47,7 +39,7 @@ const ViewDocument = () => {
         console.error("no files", error);
       }
     };
-    fetchingFiles();
+    loadingFiles();
   }, [id]);
   return (
     <>

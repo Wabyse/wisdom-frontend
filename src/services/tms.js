@@ -48,3 +48,32 @@ export const downloadTaskFile = async (fileName) => {
     throw error;
   }
 };
+
+export const updateMyTask = async (id, formData) => {
+  try {
+    await api.patch(`/api/v1/tasks/updateStatus/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+  } catch (error) {
+    console.error(
+      "Error downloading file:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const fetchTasks = async () => {
+  try {
+    const response = await api.get(`/api/v1/tasks/view`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Tasks || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

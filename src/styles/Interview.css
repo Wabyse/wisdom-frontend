@@ -41,3 +41,7 @@
     align-items: center;
     margin: auto;
 }
+
+.LangBtn {
+    height: 5vh !important;
+}

@@ -9,11 +9,14 @@ import {
   fetchStudents,
 } from "../services/data";
 import { sendStudentAttendance } from "../services/pms";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 function StudentAbsence() {
-  const [language, setLanguage] = useState(true);
+  const { language } = useLanguage();
   const [students, setStudnets] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [unfilteredClasses, setUnfilteredClasses] = useState([]);
   const [stages, setStages] = useState([]);
   const [schools, setSchools] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState("");
@@ -27,10 +30,6 @@ function StudentAbsence() {
 
   const returnPms = () => {
     navigate("/pms");
-  };
-
-  const changeLanguage = () => {
-    setLanguage(!language);
   };
 
   const handleStudent = (e) => {
@@ -49,9 +48,9 @@ function StudentAbsence() {
     setSelectedSchool(e.target.value);
   };
 
-  // const handleStage = (e) => {
-  //   setSelectedStage(e.target.value);
-  // };
+  const handleStage = (e) => {
+    setSelectedStage(e.target.value);
+  };
 
   const submitStudentAttendance = async (e) => {
     e.preventDefault();
@@ -80,39 +79,29 @@ function StudentAbsence() {
     const loadStudents = async () => {
       try {
         const response = await fetchStudents();
-        console.log(response);
         setStudnets(response);
       } catch (err) {
         console.error("API Error:", err);
         setError(
           err.message || "An error occurred while fetching students data."
         );
-      } finally {
-        setLoading(false);
       }
     };
-    loadStudents();
-  }, []);
 
-  useEffect(() => {
     const loadClasses = async () => {
       try {
         const response = await fetchClasses();
         setClasses(response);
+        setUnfilteredClasses(response);
       } catch (err) {
         console.error("API Error:", err);
         setError(
           err.message || "An error occurred while fetching students data."
         );
-      } finally {
-        setLoading(false);
       }
     };
-    loadClasses();
-  }, []);
 
-  useEffect(() => {
-    const loadClasses = async () => {
+    const loadStages = async () => {
       try {
         const response = await fetchStages();
         setStages(response);
@@ -121,15 +110,10 @@ function StudentAbsence() {
         setError(
           err.message || "An error occurred while fetching students data."
         );
-      } finally {
-        setLoading(false);
       }
     };
-    loadClasses();
-  }, []);
 
-  useEffect(() => {
-    const loadClasses = async () => {
+    const loadSchools = async () => {
       try {
         const response = await fetchShools();
         setSchools(response);
@@ -138,12 +122,37 @@ function StudentAbsence() {
         setError(
           err.message || "An error occurred while fetching students data."
         );
-      } finally {
-        setLoading(false);
       }
     };
+
+    loadStudents();
     loadClasses();
+    loadStages();
+    loadSchools();
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    const filteringClasses = () => {
+      try {
+        if (selectedStage !== "All") {
+          const filter = unfilteredClasses.filter(
+            (filterClass) => filterClass.stage_id === Number(selectedStage)
+          );
+          setClasses(filter);
+        } else {
+          setClasses(unfilteredClasses);
+        }
+      } catch (err) {
+        console.error("API Error:", err);
+        setError(
+          err.message || "An error occurred while fetching students data."
+        );
+      }
+    };
+
+    filteringClasses();
+  }, [selectedStage, unfilteredClasses]);
 
   useEffect(() => {
     const filterStudents = (
@@ -156,7 +165,7 @@ function StudentAbsence() {
       let filteredStudents = students;
 
       let schoolFilter = selectSchool ? selectSchool : null;
-      // let stageFilter = selectStage ? selectStage : null;
+      let stageFilter = selectStage ? selectStage : null;
       let classFilter = selectClass ? selectClass : null;
       let studentFilter = selectedId ? selectedId : null;
 
@@ -166,18 +175,25 @@ function StudentAbsence() {
         (selectClass !== "All" && selectClass !== "") ||
         (selectedId !== "All" && selectedId !== "");
 
+      const isStageClassMatch = classes.filter(
+        (classFilter) => classFilter.stage_id === Number(stageFilter)
+      );
+
       if (hasFilter) {
         filteredStudents.forEach((filter) => {
           const isSchoolMatch =
             selectSchool === "All"
               ? true
               : !schoolFilter || Number(schoolFilter) === filter.school_id;
-          // const isStageClassMatch = classes.filter(
-          //   (classFilter) => classFilter.stage_id === Number(stageFilter)
-          // );
-          // const isStageMatch = isStageClassMatch.filter(
-          //   (classFilter) => classFilter.id === filter.class_id
-          // );
+
+          const isStageMatch =
+            selectStage === "All"
+              ? true
+              : isStageClassMatch.filter(
+                  (classFilter) => classFilter.id === filter.class_id
+                ).length > 0
+              ? true
+              : false;
           const isClassMatch =
             selectClass === "All"
               ? true
@@ -186,7 +202,7 @@ function StudentAbsence() {
             selectedId === "All"
               ? true
               : !studentFilter || Number(studentFilter) === filter.id;
-          if (isSchoolMatch && isClassMatch && isStudentMatch) {
+          if (isSchoolMatch && isClassMatch && isStudentMatch && isStageMatch) {
             filtered.push(filter);
           }
         });
@@ -232,9 +248,7 @@ function StudentAbsence() {
           alt="company logo"
         ></img>
       </div>
-      <div className="Div100">
-        <button onClick={changeLanguage}>{language ? "AR" : "EN"}</button>
-      </div>
+      <ChangeLanguage />
       <div className="select Div100">
         <label>{language ? "School:" : ":مدرسة"}</label>
         <select
@@ -253,7 +267,7 @@ function StudentAbsence() {
             </option>
           ))}
         </select>
-        {/* <label>{language ? "Grade:" : ":مرحلة"}</label>
+        <label>{language ? "Grade:" : ":مرحلة"}</label>
         <select
           id="grade"
           name="grade"
@@ -269,7 +283,7 @@ function StudentAbsence() {
               {s.name}
             </option>
           ))}
-        </select> */}
+        </select>
         <label>{language ? "Class:" : ":فصل"}</label>
         <select
           id="class"

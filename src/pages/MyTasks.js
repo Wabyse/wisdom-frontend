@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import "../styles/MyTasks.css";
-import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { LuDownload } from "react-icons/lu";
-import { downloadTaskFile } from "../services/tms";
-
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { downloadTaskFile, fetchTasks, updateMyTask } from "../services/tms";
 
 const statusOptions = [
   "0",
@@ -71,12 +68,7 @@ const MyTasks = () => {
     formData.append("status", status[id]); // ✅ Attach status
 
     try {
-      await axios.patch(
-        `${BASE_URL}/api/v1/tasks/updateStatus/${id}`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
+      await updateMyTask(id, formData)
       toast.success("Updated successfully!");
       setEditStates((prev) => ({ ...prev, [index]: false }));
     } catch (err) {
@@ -100,13 +92,11 @@ const MyTasks = () => {
   };
 
   useEffect(() => {
-    const fetchTasks = async () => {
+    const loadTasks = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/v1/tasks/view`, {
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await fetchTasks();
 
-        setTasks(response.data?.Tasks || []);
+        setTasks(response);
       } catch (err) {
         console.error("API Error:", err);
         setError(err.message || "An error occurred while fetching tasks.");
@@ -115,7 +105,7 @@ const MyTasks = () => {
       }
     };
 
-    fetchTasks();
+    loadTasks();
   }, []);
 
   const filteredTasks = tasks.filter(

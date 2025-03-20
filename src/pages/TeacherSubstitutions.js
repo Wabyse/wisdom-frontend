@@ -8,9 +8,11 @@ import {
   fetchTeacherInfo,
   sendSubstitutions,
 } from "../services/pms";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 function TeacherSubstitutions() {
-  const [language, setLanguage] = useState(true);
+  const { language } = useLanguage();
   const [selectedUser, setSelectedUser] = useState(null);
   const [teachers, setTeachers] = useState([]);
   const [teacher, setTeacher] = useState(null);
@@ -22,10 +24,6 @@ function TeacherSubstitutions() {
 
   const returnPms = () => {
     navigate("/pms");
-  };
-
-  const changeLanguage = () => {
-    setLanguage(!language);
   };
 
   const handleTeacher = (e) => {
@@ -121,9 +119,7 @@ function TeacherSubstitutions() {
           alt="company logo"
         ></img>
       </div>
-      <div className="Div100">
-        <button onClick={changeLanguage}>{language ? "AR" : "EN"}</button>
-      </div>
+      <ChangeLanguage />
       <div className="select Div100">
         <label>{language ? "Teacher:" : ":المعلم"}</label>
         <select id="teacher" name="teacher" onClick={handleTeacher}>

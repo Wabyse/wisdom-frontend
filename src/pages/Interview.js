@@ -4,6 +4,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { fetchAllTeachers, sendTeacherEvaluation } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 const interviewResults = [
   "Title 1",
@@ -15,7 +17,7 @@ const interviewResults = [
 ];
 
 function Interview() {
-  const [language, setLanguage] = useState(true);
+  const { language } = useLanguage();
   const [teachers, serTeachers] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [interviewResultData, setInterviewResultData] = useState([]);
@@ -28,10 +30,6 @@ function Interview() {
     navigate("/pms");
   };
 
-  const changeLanguage = () => {
-    setLanguage(!language);
-  };
-
   const selectUserHandler = (e) => {
     setSelectedTeacher(e.target.value);
   };
@@ -42,10 +40,10 @@ function Interview() {
     setInterviewResultData(newData);
   };
 
-  const interviewResultHandler = async(e) => {
+  const interviewResultHandler = async (e) => {
     e.preventDefault();
     if (!selectedTeacher || interviewResultData.length < 6) {
-      return toast.error('please fill all required data');
+      return toast.error("please fill all required data");
     }
     const updatedInterviewData = {
       type: "interview",
@@ -59,7 +57,7 @@ function Interview() {
       sixth_result: Number(interviewResultData[5]),
     };
     try {
-      await sendTeacherEvaluation(updatedInterviewData)
+      await sendTeacherEvaluation(updatedInterviewData);
       toast.success("data added");
     } catch (err) {
       toast.error("Please fill the data");
@@ -101,9 +99,10 @@ function Interview() {
           alt="company logo"
         ></img>
       </div>
-      <div className="Div100">
-        <button onClick={changeLanguage}>{language ? "AR" : "EN"}</button>
-      </div>
+      {/* <div className="Div100">
+        <button>{language ? "AR" : "EN"}</button>
+      </div> */}
+      <ChangeLanguage className="LangBtn"/>
       <div className="select Div100">
         <div className="select">
           <label>{language ? "Teacher:" : ":معلم"}</label>

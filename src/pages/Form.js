@@ -4,20 +4,26 @@ import "../styles/Form.css";
 import CollapsibleSection from "../components/CollapsibleSection";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { IndividualForm, CurriculumForm, fetchForm, EnvironmentForm } from "../services/pms";
+import {
+  IndividualForm,
+  CurriculumForm,
+  fetchForm,
+  EnvironmentForm,
+} from "../services/pms";
 import {
   fetchCurriculums,
   fetchDepartments,
   fetchUsers,
 } from "../services/data";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 function Form() {
   const { id } = useParams();
   const location = useLocation();
   const formEnName = location.state?.formEnName || "Form"; //check this
   const formArName = location.state?.formArName || "استمارة";
-  const lang = location.state?.lang;
-
+  const { language } = useLanguage();
   const [form, setForm] = useState([]);
   const [curriculums, setCurriculums] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -26,7 +32,6 @@ function Form() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [language, setLanguage] = useState(lang || true);
   const { userInfo } = useAuth();
   const [quesLength, setQuesLength] = useState();
 
@@ -48,10 +53,6 @@ function Form() {
     }
   };
 
-  const changeLanguage = (e) => {
-    e.preventDefault();
-    setLanguage(!language);
-  };
   const submitIndividualForm = async (e) => {
     e.preventDefault();
 
@@ -147,10 +148,10 @@ function Form() {
 
   const submitenvironmentForm = async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData(e.currentTarget);
     const allAnswers = [];
-  
+
     formData.forEach((value, key) => {
       const parsedValue = {
         question_id: key,
@@ -158,7 +159,7 @@ function Form() {
       };
       allAnswers.push(parsedValue);
     });
-  
+
     // Filter and parse question answers
     const questionAnswers = allAnswers
       .filter((entry) => entry.question_id.startsWith("question:"))
@@ -169,11 +170,11 @@ function Form() {
           result: parsed.score,
         };
       });
-  
+
     if (questionAnswers.length < quesLength) {
       return toast.error("Please answer all questions");
     }
-  
+
     try {
       const submittedData = {
         userId: userInfo.id,
@@ -186,7 +187,6 @@ function Form() {
       toast.error("Submission failed.");
     }
   };
-  
 
   const handleDepartmentChange = (e) => {
     setSelectedDepartment(e.target.value);
@@ -236,15 +236,9 @@ function Form() {
         setError(
           err.message || "An error occurred while fetching curriculums data."
         );
-      } finally {
-        setLoading(false);
       }
     };
 
-    loadCurriculums();
-  }, []);
-
-  useEffect(() => {
     const loadDepartments = async () => {
       try {
         const response = await fetchDepartments();
@@ -254,15 +248,9 @@ function Form() {
         setError(
           err.message || "An error occurred while fetching curriculums data."
         );
-      } finally {
-        setLoading(false);
       }
     };
 
-    loadDepartments();
-  }, []);
-
-  useEffect(() => {
     const loadUsers = async () => {
       try {
         const response = await fetchUsers();
@@ -271,12 +259,13 @@ function Form() {
       } catch (err) {
         console.error("API Error:", err);
         setError(err.message || "An error occurred while fetching users data.");
-      } finally {
-        setLoading(false);
       }
     };
 
+    loadCurriculums();
+    loadDepartments();
     loadUsers();
+    setLoading(false);
   }, []);
 
   const filteredForm2 = form.reduce(
@@ -345,7 +334,7 @@ function Form() {
                   onChange={handleDepartmentChange}
                   value={selectedDepartment}
                 >
-                  <option value="" disabled>
+                  <option value="" disabled selected>
                     {language
                       ? "Please Select a Department"
                       : "الرجاء اختيار القسم"}
@@ -360,7 +349,7 @@ function Form() {
               <div className="select">
                 <label>{language ? "Teacher:" : ":المعلم"}</label>
                 <select id="user" name="user">
-                  <option value="" disabled>
+                  <option value="" disabled selected>
                     {language
                       ? "Please Select a Teacher"
                       : "الرجاء اختيار المعلم"}
@@ -376,9 +365,12 @@ function Form() {
             </div>
           ) : formType[0] === "360 Curriculum Assessment" ? (
             <div className="select">
+              <label>{language ? "Curriculum:" : ":المنهج"}</label>
               <select id="curriculum" name="curriculum">
-                <option value="" disabled>
-                  الرجاء اختيار المنهج
+                <option value="" disabled selected>
+                  {language
+                    ? "Please select a Curriculum"
+                    : "الرجاء اختيار المنهج"}
                 </option>
                 {curriculums.map((curriculum) => (
                   <option key={curriculum.id} value={curriculum.id}>
@@ -386,12 +378,9 @@ function Form() {
                   </option>
                 ))}
               </select>
-              <label>:المنهج</label>
             </div>
           ) : null}
-          <button type="button" onClick={changeLanguage}>
-            {language ? "AR" : "EN"}
-          </button>
+          <ChangeLanguage />
           {Object.entries(language ? filteredForm2[0] : filteredForm2[1]).map(
             ([fieldName, questions]) => (
               <CollapsibleSection

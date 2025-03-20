@@ -2,12 +2,13 @@
 import { useEffect, useState, useRef } from "react";
 import Navbar from "../components/Navbar";
 // import { useAuth } from "../context/AuthContext";
-// import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "../styles/Tms.css";
-
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { fetchTaskCategories, fetchTasks } from "../services/tms";
+import { fetchUsers } from "../services/data";
+import { scrollDown } from "../utils/scrollDown";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 const statusOptions = [
   // "0",
@@ -30,7 +31,7 @@ const Tms = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [language, setLanguage] = useState(true);
+  const { language } = useLanguage();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
@@ -93,76 +94,32 @@ const Tms = () => {
 
   const handleDateFromChange = (event) => {
     setDateFrom(event.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleDeadlineFromChange = (event) => {
     setDeadlineFrom(event.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleDeadlineToChange = (event) => {
     setDeadlineTo(event.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleDateToChange = (event) => {
     setDateTo(event.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleImportanceChange = (event) => {
     setSelectedImportance(event.target.value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleCategoryChange = (e) => {
@@ -172,62 +129,22 @@ const Tms = () => {
     } else {
       setTest(test + 1);
     }
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleSubCategoryChange = (e) => {
     setSelectedSubCategory(e.target.value);
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleAssignedByChange = (e) => {
     setSelectedAssignedUser(e.target.value);
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
+    scrollDown(targetDivRef);
   };
 
   const handleAssigneeChange = (e) => {
     setSelectedAssigneeUser(e.target.value);
-    // First, reset the scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Wait for 500ms (adjustable) before scrolling to the div
-    setTimeout(() => {
-      if (targetDivRef.current) {
-        const divPosition = targetDivRef.current.offsetTop;
-        window.scrollTo({ top: divPosition, behavior: "smooth" });
-      }
-    }, 500);
-  };
-
-  const changeLanguage = () => {
-    setLanguage(!language);
+    scrollDown(targetDivRef);
   };
 
   const formatDate = (dateString) => {
@@ -253,18 +170,13 @@ const Tms = () => {
   };
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const loadCategories = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/tasks/categories`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetchTaskCategories();
 
         let subCategory = [];
-        setCategories(response.data?.categories || []);
-        (response.data?.categories || []).forEach((subs) => {
+        setCategories(response);
+        response.forEach((subs) => {
           if (Array.isArray(subs.subCategory)) {
             subs.subCategory.forEach((sub) => subCategory.push(sub));
           }
@@ -278,22 +190,17 @@ const Tms = () => {
       }
     };
 
-    fetchCategories();
+    loadCategories();
   }, [test]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const loadUsers = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/forms/AllUsers`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetchUsers();
 
-        setUsers(response.data?.data || []);
-        setFilteredAssignedUsers(response.data?.data || []);
-        setFilteredAssigneeUsers(response.data?.data || []);
+        setUsers(response);
+        setFilteredAssignedUsers(response);
+        setFilteredAssigneeUsers(response);
       } catch (err) {
         console.error("API Error:", err);
         setError(err.message || "An error occurred while fetching users data.");
@@ -302,20 +209,15 @@ const Tms = () => {
       }
     };
 
-    fetchUsers();
+    loadUsers();
   }, []);
 
   useEffect(() => {
-    const fetchTasks = async () => {
+    const loadTasks = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/tasks/view`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetchTasks();
         let filtered = [];
-        const filteredTasks = response.data.Tasks;
+        const filteredTasks = response;
 
         let statusFilter = selectedStatus ? selectedStatus : null;
         let fromDate = dateFrom ? new Date(dateFrom) : null;
@@ -413,7 +315,7 @@ const Tms = () => {
       }
     };
 
-    fetchTasks();
+    loadTasks();
   }, [
     selectedStatus,
     dateFrom,
@@ -434,10 +336,10 @@ const Tms = () => {
     <>
       <Navbar>
         <button onClick={myTasks}>{language ? "My Tasks" : "مهامي"}</button>
-        <button onClick={assignTasks}>{language ? "Assign Task" : "تعين مهمة"}</button>
-        <button className="language" onClick={changeLanguage}>
-          {language ? "AR" : "EN"}
+        <button onClick={assignTasks}>
+          {language ? "Assign Task" : "تعين مهمة"}
         </button>
+        <ChangeLanguage />
       </Navbar>
       <div className={language ? "tmsTitle" : "tmsTitle-ar"}>
         {language ? (
@@ -462,8 +364,10 @@ const Tms = () => {
                     Please Select a Status
                   </option>
                   <option value="0">All</option>
-                  {statusOptions.map((option) => (
-                    <option value={option}>{option}</option>
+                  {statusOptions.map((option, index) => (
+                    <option value={option} key={index}>
+                      {option}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -479,8 +383,10 @@ const Tms = () => {
                     برجاء اختيار حالة
                   </option>
                   <option value="0">All</option>
-                  {statusOptions.map((option) => (
-                    <option value={option}>{option}</option>
+                  {statusOptions.map((option, index) => (
+                    <option value={option} key={index}>
+                      {option}
+                    </option>
                   ))}
                 </select>
                 <label htmlFor="status">:الحالة</label>
@@ -500,7 +406,9 @@ const Tms = () => {
                   </option>
                   <option value="0">All</option>
                   {categories.map((option) => (
-                    <option value={option.id}>{option.name}</option>
+                    <option value={option.id} key={option.id}>
+                      {option.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -517,7 +425,9 @@ const Tms = () => {
                   </option>
                   <option value="0">All</option>
                   {categories.map((option) => (
-                    <option value={option.id}>{option.name}</option>
+                    <option value={option.id} key={option.id}>
+                      {option.name}
+                    </option>
                   ))}
                 </select>
                 <label htmlFor="category">:التصنيف</label>
@@ -538,7 +448,9 @@ const Tms = () => {
                   </option>
                   <option value="0">All</option>
                   {subCategories.map((option) => (
-                    <option value={option.id}>{option.name}</option>
+                    <option value={option.id} key={option.id}>
+                      {option.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -556,7 +468,9 @@ const Tms = () => {
                   </option>
                   <option value="0">All</option>
                   {subCategories.map((option) => (
-                    <option value={option.id}>{option.name}</option>
+                    <option value={option.id} key={option.id}>
+                      {option.name}
+                    </option>
                   ))}
                 </select>
                 <label htmlFor="subCategory">:التصنيف الفرعي</label>
@@ -578,6 +492,7 @@ const Tms = () => {
                   {filteredAssignedUsers.map((user) => (
                     <option
                       value={user.employee?.employee_id}
+                      key={user.id}
                     >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
                   ))}
                 </select>
@@ -597,6 +512,7 @@ const Tms = () => {
                   {filteredAssignedUsers.map((user) => (
                     <option
                       value={user.employee?.employee_id}
+                      key={user.id}
                     >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
                   ))}
                 </select>
@@ -619,6 +535,7 @@ const Tms = () => {
                   {filteredAssigneeUsers.map((user) => (
                     <option
                       value={user.employee?.employee_id}
+                      key={user.id}
                     >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
                   ))}
                 </select>
@@ -638,6 +555,7 @@ const Tms = () => {
                   {filteredAssigneeUsers.map((user) => (
                     <option
                       value={user.employee?.employee_id}
+                      key={user.id}
                     >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
                   ))}
                 </select>
@@ -659,8 +577,10 @@ const Tms = () => {
                     Please Select a level
                   </option>
                   <option value="0">All</option>
-                  {importance.map((state) => (
-                    <option value={state}>{state}</option>
+                  {importance.map((state, index) => (
+                    <option value={state} key={index}>
+                      {state}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -676,8 +596,10 @@ const Tms = () => {
                     برجاء اخيار الاهمية
                   </option>
                   <option value="0">All</option>
-                  {importance.map((state) => (
-                    <option value={state}>{state}</option>
+                  {importance.map((state, index) => (
+                    <option value={state} key={index}>
+                      {state}
+                    </option>
                   ))}
                 </select>
                 <label htmlFor="importance">:الاهمية</label>

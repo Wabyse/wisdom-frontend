@@ -3,6 +3,8 @@ import "../styles/Pms.css";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { fetchForms } from "../services/pms";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 const roleMapping = {
   T: "Teacher",
@@ -27,7 +29,7 @@ const roleArMapping = {
   SPEC: "المتخصص",
   W: "بيئة العمل",
   DO: "الأشراف المدرسي",
-  PD: "PD",
+  PD: "التنمية المهنية",
 };
 
 const Pms = () => {
@@ -36,7 +38,7 @@ const Pms = () => {
   const [forms, setForms] = useState([]);
   const [pd, setPd] = useState([]);
   const [dailyOperations, setDailyOperations] = useState([]);
-  const [language, setLanguage] = useState(true);
+  const { language } = useLanguage();
 
   const navigate = useNavigate(); //for navigate to another page (component)
 
@@ -58,16 +60,20 @@ const Pms = () => {
     navigate(`/pms/student-absence`);
   };
 
+  const handleSchoolIncidentClick = () => {
+    navigate(`/pms/school-incident`);
+  };
+
   const handleInterviewClick = () => {
     navigate(`/pms/interview`);
   };
 
-  const handleTestClick = () => {
-    navigate(`/pms/test`);
+  const handleStudentBehaviorClick = () => {
+    navigate(`/pms/student-behavior`);
   };
 
-  const changeLanguage = () => {
-    setLanguage(!language);
+  const handleTestClick = () => {
+    navigate(`/pms/test`);
   };
 
   useEffect(() => {
@@ -135,9 +141,7 @@ const Pms = () => {
   return (
     <>
       <Navbar>
-        <button className="language" onClick={changeLanguage}>
-          {language ? "AR" : "EN"}
-        </button>
+        <ChangeLanguage />
       </Navbar>
       <ul className={language ? "forms" : "formsAr"}>
         {forms.map((type) => (
@@ -230,6 +234,23 @@ const Pms = () => {
                 غياب الطالب
               </li>
             )}
+            {language ? (
+              <li
+                key="School Incident"
+                className="dropdown-item"
+                onClick={() => handleSchoolIncidentClick()}
+              >
+                School Incident
+              </li>
+            ) : (
+              <li
+                key="School Incident"
+                className="dropdown-item"
+                onClick={() => handleSchoolIncidentClick()}
+              >
+                حوادث المدرسة
+              </li>
+            )}
             {dailyOperations.map((type) =>
               language
                 ? type.forms.map((form) => (
@@ -258,7 +279,9 @@ const Pms = () => {
           </ul>
         </li>
         <li key="PD" className="categories">
-          <button className="category">{language ? "PD" : "PD"}</button>
+          <button className="category">
+            {language ? "PD" : "التنمية المهنية"}
+          </button>
 
           <ul className={language ? "dropdown" : "dropdownAr"}>
             {language ? (
@@ -319,6 +342,31 @@ const Pms = () => {
                       {form.ar_name}
                     </li>
                   ))
+            )}
+          </ul>
+        </li>
+        <li key="Student behavior" className="categories">
+          <button className="category">
+            {language ? "Student behavior" : "سلوك الطالب"}
+          </button>
+
+          <ul className={language ? "dropdown" : "dropdownAr"}>
+            {language ? (
+              <li
+                key="StudentBehavior"
+                className="dropdown-item"
+                onClick={() => handleStudentBehaviorClick()}
+              >
+                Student behavior
+              </li>
+            ) : (
+              <li
+                key="StudentBehavior"
+                className="dropdown-item"
+                onClick={() => handleStudentBehaviorClick()}
+              >
+                سلوك الطالب
+              </li>
             )}
           </ul>
         </li>
