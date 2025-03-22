@@ -3,6 +3,7 @@ import "../styles/TeacherLatness.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import newLogo from "../assets/newLogo.jpg";
 import {
   fetchAllTeachers,
   fetchTeacherInfo,
@@ -110,10 +111,14 @@ function TeacherLatness() {
       </div>
       <div className="Div100">
         <img
+          className="newLogo"
           width="20%"
-          src="http://pms.wabyse.com/wp-content/uploads/2024/10/cropped-cropped-WABYS-NEW-LOGO1.png"
+          src={newLogo}
           alt="company logo"
         ></img>
+      </div>
+      <div className="Div100">
+        <h1>{language ? "Teacher Latness" : "تاخير المعلم"}</h1>
       </div>
       <ChangeLanguage />
       <div className="select Div100">

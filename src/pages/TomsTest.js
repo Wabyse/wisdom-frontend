@@ -4,21 +4,18 @@ import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { fetchAllTeachers, sendTeacherEvaluation } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
-import ChangeLanguage from "../components/ChangeLanguage";
-import { useLanguage } from "../context/LanguageContext";
-import newLogo from "../assets/newLogo.jpg";
+import newLogo2 from "../assets/newLogo2.jpg";
 
 const testResults = [
-  "Title 1",
-  "Title 2",
-  "Title 3",
-  "Title 4",
-  "Title 5",
-  "Title 6",
+  "عنوان 6",
+  "عنوان 5",
+  "عنوان 4",
+  "عنوان 3",
+  "عنوان 2",
+  "عنوان 1",
 ];
 
-function Test() {
-  const { language } = useLanguage();
+function TomsTest() {
   const [teachers, serTeachers] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [testResultData, setTestResultData] = useState([]);
@@ -28,7 +25,7 @@ function Test() {
   const navigate = useNavigate(); //for navigate to another page (component)
 
   const returnPms = () => {
-    navigate("/pms");
+    navigate("/watoms/pms");
   };
 
   const selectUserHandler = (e) => {
@@ -89,27 +86,26 @@ function Test() {
   return (
     <div className="teacherLatnessForm">
       <Toaster />
-      <div className={language ? "returnDiv" : "returnDiv-Ar"}>
-        <button onClick={returnPms}>{language ? "< Return" : "رجوع >"}</button>
+      <div className="returnDiv-Ar">
+        <button onClick={returnPms}>رجوع &tg;</button>
       </div>
       <div className="Div100">
       <img
         className="newLogo"
         width="20%"
-        src={newLogo}
+        src={newLogo2}
         alt="company logo"
       ></img>
       </div>
       <div className="Div100">
-        <h1>{language ? "Test" : "إختبار تربوي"}</h1>
+        <h1>إختبار تربوي</h1>
       </div>
-      <ChangeLanguage />
       <div className="select Div100">
         <div className="select">
-          <label>{language ? "Teacher:" : ":معلم"}</label>
+          <label>:مدرب</label>
           <select id="user" name="user" onChange={selectUserHandler}>
             <option value="" disabled selected>
-              {language ? "Please Select a Teacher" : "الرجاء اختيار معلم"}
+              الرجاء اختيار مدرب
             </option>
             {teachers.map((teacher) => (
               <option
@@ -138,15 +134,13 @@ function Test() {
               </div>
             </div>
           ))}
-          <button className="InBtn">{language ? "Submit" : "ارسال"}</button>
+          <button className="InBtn">ارسال</button>
         </form>
       ) : (
-        <div className="noTeacher">
-          {language ? "No Data Available" : "لا يوجد بيانات حاليا"}
-        </div>
+        <div className="noTeacher">لا يوجد بيانات حاليا</div>
       )}
     </div>
   );
 }
 
-export default Test;
+export default TomsTest;

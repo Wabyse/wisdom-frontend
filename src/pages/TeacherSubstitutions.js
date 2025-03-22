@@ -10,6 +10,7 @@ import {
 } from "../services/pms";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
+import newLogo from "../assets/newLogo.jpg";
 
 function TeacherSubstitutions() {
   const { language } = useLanguage();
@@ -114,10 +115,14 @@ function TeacherSubstitutions() {
       </div>
       <div className="Div100">
         <img
+          className="newLogo"
           width="20%"
-          src="http://pms.wabyse.com/wp-content/uploads/2024/10/cropped-cropped-WABYS-NEW-LOGO1.png"
+          src={newLogo}
           alt="company logo"
         ></img>
+      </div>
+      <div className="Div100">
+        <h1>{language ? "Teacher Substitution" : "الاحتياطي"}</h1>
       </div>
       <ChangeLanguage />
       <div className="select Div100">

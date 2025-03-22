@@ -6,12 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { downloadFileDms, fetchingFiles, fetchingOrgs } from "../services/dms";
 import { fetchDepartments, fetchDmsCategories } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
-import ChangeLanguage from "../components/ChangeLanguage";
-import { useLanguage } from "../context/LanguageContext";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
-const Dms = () => {
+const TomsDms = () => {
   const navigate = useNavigate();
 
   const [departments, setDepartments] = useState([]);
@@ -21,7 +19,6 @@ const Dms = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { language } = useLanguage();
   const [filtered, setFiltered] = useState([]);
   const [schools, setSchools] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -33,17 +30,11 @@ const Dms = () => {
   const targetDivRef = useRef(null);
 
   const handleClick = (id) => {
-    navigate(`/dms/view/${id}`);
+    navigate(`/watoms/dms/view/${id}`);
   };
 
-  // const handleSubCategoryClick = () => {
-  //   if (!selectedCategory) {
-  //     alert("Please select a category first!");
-  //   }
-  // };
-
   const uploadDocument = () => {
-    navigate(`/dms/upload`);
+    navigate(`/watoms/dms/upload`);
   };
 
   const resetFilters = (e) => {
@@ -268,22 +259,15 @@ const Dms = () => {
 
   return (
     <div>
-      <Navbar showNavigate={true}>
-        <button onClick={uploadDocument}>
-          {language ? "Upload Document" : "رفع ملف"}
-        </button>
-        <ChangeLanguage />
+      <Navbar showNavigate={false}>
+        <button onClick={uploadDocument}>رفع ملف</button>
       </Navbar>
-      <div className={language ? "dmsTitle" : "dmsTitle-ar"}>
-        {language ? (
-          <h1 className="dmsTitle2">Document Management System:</h1>
-        ) : (
-          <h1 className="dmsTitle2-ar">:نظام إدارة المستندات</h1>
-        )}
+      <div className="dmsTitle-ar">
+        <h1 className="dmsTitle2-ar">:نظام إدارة المستندات</h1>
       </div>
       <div className="filters">
         <div className="select">
-          <label htmlFor="school">{language ? "School:" : ":المدرسة"}</label>
+          <label htmlFor="school">:المركز</label>
           <select
             id="school"
             name="school"
@@ -291,7 +275,7 @@ const Dms = () => {
             value={selectedSchool}
           >
             <option value="" disabled>
-              {language ? "Please Select a School" : "الرجاء اختيار مدرسة"}
+              الرجاء اختيار مركز
             </option>
             <option value="0">All</option>
             {schools.map((school) => (
@@ -302,9 +286,7 @@ const Dms = () => {
           </select>
         </div>
         <div className="select">
-          <label htmlFor="department">
-            {language ? "Department:" : ":القسم"}
-          </label>
+          <label htmlFor="department">:المهنة</label>
           <select
             id="department"
             name="department"
@@ -312,7 +294,7 @@ const Dms = () => {
             value={selectedDepartment}
           >
             <option value="" disabled>
-              {language ? "Please Select a Department" : "الرجاء اختيار قسم"}
+              الرجاء اختيار مهنة
             </option>
             <option value="0">All</option>
             {departments.map((department) => (
@@ -323,9 +305,7 @@ const Dms = () => {
           </select>
         </div>
         <div className="select">
-          <label htmlFor="category">
-            {language ? "Category:" : ":التصنيف"}
-          </label>
+          <label htmlFor="category">:التصنيف</label>
           <select
             id="category"
             name="category"
@@ -333,7 +313,7 @@ const Dms = () => {
             value={selectedCategory}
           >
             <option value="" disabled>
-              Please Select a Category
+              برجاء اختيار تصنيف
             </option>
             <option value="0">All</option>
             {categories.map((option) => (
@@ -342,9 +322,7 @@ const Dms = () => {
           </select>
         </div>
         <div className="select">
-          <label htmlFor="subCategory">
-            {language ? "Sub Category:" : ":التصنيف الفرعي"}
-          </label>
+          <label htmlFor="subCategory">:التصنيف الفرعي</label>
           <select
             id="subCategory"
             name="subCategory"
@@ -353,7 +331,7 @@ const Dms = () => {
             // onClick={handleSubCategoryClick}
           >
             <option value="" disabled>
-              Please Select a Sub Category
+              برجاء اختيار تصنيف فرعي
             </option>
             <option value="0">All</option>
             {subCategories.map((option) => (
@@ -363,7 +341,7 @@ const Dms = () => {
         </div>
         <div className="date-section-DMS">
           <label htmlFor="dateFrom" className="DMS-date-label">
-            {language ? "From:" : ":من"}
+            :من
           </label>
           <input
             id="dateFrom"
@@ -375,7 +353,7 @@ const Dms = () => {
         </div>
         <div className="date-section-DMS">
           <label htmlFor="dateTo" className="DMS-date-label">
-            {language ? "To:" : ":الي"}
+            :الي
           </label>
           <input
             id="dateTo"
@@ -386,7 +364,7 @@ const Dms = () => {
           />
         </div>
         <button className="select DMSBtn" onClick={resetFilters}>
-          {language ? "Reset" : "مسح"}
+          مسح
         </button>
       </div>
       <div className="files" ref={targetDivRef}>
@@ -400,23 +378,23 @@ const Dms = () => {
               </div>
               <div>
                 <button className="dmsButton" onClick={() => openPDF(file)}>
-                  Open
+                  فتح
                 </button>
                 <button
                   className="dmsButton"
                   onClick={() => handleDownload2(file)}
                 >
-                  download
+                  تحميل
                 </button>
               </div>
             </div>
           ))
         ) : (
-          <p className="noData">{language ? "there is no documents available" : "لا يوجد ملفات متاحة"}</p>
+          <p className="noData">لا يوجد ملفات متاحة</p>
         )}
       </div>
     </div>
   );
 };
 
-export default Dms;
+export default TomsDms;

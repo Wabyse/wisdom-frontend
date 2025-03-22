@@ -1,34 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import "../styles/Test.css";
+import "../styles/Interview.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { fetchAllTeachers, sendTeacherEvaluation } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
-import ChangeLanguage from "../components/ChangeLanguage";
-import { useLanguage } from "../context/LanguageContext";
-import newLogo from "../assets/newLogo.jpg";
+import newLogo2 from "../assets/newLogo2.jpg";
 
-const testResults = [
-  "Title 1",
-  "Title 2",
-  "Title 3",
-  "Title 4",
-  "Title 5",
-  "Title 6",
+const interviewResults = [
+  "عنوان 6",
+  "عنوان 5",
+  "عنوان 4",
+  "عنوان 3",
+  "عنوان 2",
+  "عنوان 1",
 ];
 
-function Test() {
-  const { language } = useLanguage();
+function TomsInterview() {
   const [teachers, serTeachers] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
-  const [testResultData, setTestResultData] = useState([]);
+  const [interviewResultData, setInterviewResultData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userInfo } = useAuth();
   const navigate = useNavigate(); //for navigate to another page (component)
 
   const returnPms = () => {
-    navigate("/pms");
+    navigate("/watoms/pms");
   };
 
   const selectUserHandler = (e) => {
@@ -36,33 +33,34 @@ function Test() {
   };
 
   const changeInputResult = (index, value) => {
-    const newData = [...testResultData];
+    const newData = [...interviewResultData];
     newData[index] = value;
-    setTestResultData(newData);
+    setInterviewResultData(newData);
   };
 
-  const testResultHandler = async (e) => {
+  const interviewResultHandler = async (e) => {
     e.preventDefault();
-    if (!selectedTeacher || testResultData.length < 6) {
+    if (!selectedTeacher || interviewResultData.length < 6) {
       return toast.error("please fill all required data");
     }
-    const updatedTestData = {
-      type: "test",
+    const updatedInterviewData = {
+      type: "interview",
       teacher_id: Number(selectedTeacher),
       employee_id: userInfo.id,
-      first_result: Number(testResultData[0]),
-      second_result: Number(testResultData[1]),
-      third_result: Number(testResultData[2]),
-      fourth_result: Number(testResultData[3]),
-      fifth_result: Number(testResultData[4]),
-      sixth_result: Number(testResultData[5]),
+      first_result: Number(interviewResultData[0]),
+      second_result: Number(interviewResultData[1]),
+      third_result: Number(interviewResultData[2]),
+      fourth_result: Number(interviewResultData[3]),
+      fifth_result: Number(interviewResultData[4]),
+      sixth_result: Number(interviewResultData[5]),
     };
     try {
-      await sendTeacherEvaluation(updatedTestData);
+      await sendTeacherEvaluation(updatedInterviewData);
       toast.success("data added");
     } catch (err) {
       toast.error("Please fill the data");
     }
+    console.log(updatedInterviewData);
   };
 
   useEffect(() => {
@@ -89,27 +87,26 @@ function Test() {
   return (
     <div className="teacherLatnessForm">
       <Toaster />
-      <div className={language ? "returnDiv" : "returnDiv-Ar"}>
-        <button onClick={returnPms}>{language ? "< Return" : "رجوع >"}</button>
+      <div className="returnDiv-Ar">
+        <button onClick={returnPms}>رجوع &gt;</button>
       </div>
       <div className="Div100">
       <img
         className="newLogo"
         width="20%"
-        src={newLogo}
+        src={newLogo2}
         alt="company logo"
       ></img>
       </div>
       <div className="Div100">
-        <h1>{language ? "Test" : "إختبار تربوي"}</h1>
+        <h1>مقابلات شخصية</h1>
       </div>
-      <ChangeLanguage />
       <div className="select Div100">
         <div className="select">
-          <label>{language ? "Teacher:" : ":معلم"}</label>
+          <label>:المدرب</label>
           <select id="user" name="user" onChange={selectUserHandler}>
             <option value="" disabled selected>
-              {language ? "Please Select a Teacher" : "الرجاء اختيار معلم"}
+              الرجاء اختيار مدرب
             </option>
             {teachers.map((teacher) => (
               <option
@@ -121,8 +118,11 @@ function Test() {
         </div>
       </div>
       {selectedTeacher ? (
-        <form className="teacherSessions EmpScore" onSubmit={testResultHandler}>
-          {testResults.map((interviewResult, index) => (
+        <form
+          className="teacherSessions EmpScore"
+          onSubmit={interviewResultHandler}
+        >
+          {interviewResults.map((interviewResult, index) => (
             <div className="employeeSection">
               <div className="interviewResultTitle">{interviewResult}</div>
               <div id={index + 1} className="interviewResult">
@@ -131,22 +131,20 @@ function Test() {
                   max="100"
                   min="0"
                   className="interviewResultInput"
-                  value={testResultData[index] || ""}
+                  value={interviewResultData[index] || ""}
                   key={index + 1}
                   onChange={(e) => changeInputResult(index, e.target.value)}
                 />
               </div>
             </div>
           ))}
-          <button className="InBtn">{language ? "Submit" : "ارسال"}</button>
+          <button className="InBtn">ارسال</button>
         </form>
       ) : (
-        <div className="noTeacher">
-          {language ? "No Data Available" : "لا يوجد بيانات حاليا"}
-        </div>
+        <div className="noTeacher">لا يوجد بيانات حاليا</div>
       )}
     </div>
   );
 }
 
-export default Test;
+export default TomsInterview;

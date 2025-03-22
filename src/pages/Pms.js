@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import { fetchForms } from "../services/pms";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
+import newPms from "../assets/newPms.jpg";
 
 const roleMapping = {
   T: "Teacher",
@@ -80,10 +81,11 @@ const Pms = () => {
     const loadForms = async () => {
       try {
         const rawData = await fetchForms();
+        const filtertomsForms = rawData.filter(filter => filter.type !== 'ClassRoom Observation' &&  filter.type !== 'curriculum' && filter.type !== 'normal2')
 
         const groupedData = [];
 
-        rawData.forEach((item) => {
+        filtertomsForms.forEach((item) => {
           const codeKey2 = item.code.split(" | ")[1];
           const codeKey = roleMapping[codeKey2] || null;
           const codeAr = roleArMapping[codeKey2] || null;
@@ -140,7 +142,7 @@ const Pms = () => {
 
   return (
     <>
-      <Navbar>
+      <Navbar showNavigate={true}>
         <ChangeLanguage />
       </Navbar>
       <ul className={language ? "forms" : "formsAr"}>
@@ -298,7 +300,7 @@ const Pms = () => {
                 className="dropdown-item"
                 onClick={() => handleInterviewClick()}
               >
-                المقابلة
+                مقابلات شخصية
               </li>
             )}
             {language ? (
@@ -315,7 +317,7 @@ const Pms = () => {
                 className="dropdown-item"
                 onClick={() => handleTestClick()}
               >
-                الاختبار
+                إختبار تربوي
               </li>
             )}
             {pd.map((type) =>
@@ -371,6 +373,12 @@ const Pms = () => {
           </ul>
         </li>
       </ul>
+      <img
+        className="newPms"
+        width="20%"
+        src={newPms}
+        alt="company logo"
+      ></img>
     </>
   );
 };

@@ -3,8 +3,8 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import "../styles/Form.css";
 import CollapsibleSection from "../components/CollapsibleSection";
 import toast, { Toaster } from "react-hot-toast";
-import newLogo from "../assets/newLogo.jpg";
 import { useAuth } from "../context/AuthContext";
+import newLogo2 from "../assets/newLogo2.jpg";
 import {
   IndividualForm,
   CurriculumForm,
@@ -16,15 +16,11 @@ import {
   fetchDepartments,
   fetchUsers,
 } from "../services/data";
-import ChangeLanguage from "../components/ChangeLanguage";
-import { useLanguage } from "../context/LanguageContext";
 
-function Form() {
+function TomsForm() {
   const { id } = useParams();
   const location = useLocation();
-  const formEnName = location.state?.formEnName || "Form"; //check this
   const formArName = location.state?.formArName || "استمارة";
-  const { language } = useLanguage();
   const [form, setForm] = useState([]);
   const [curriculums, setCurriculums] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -47,7 +43,7 @@ function Form() {
   const submitFormHandler = (formType) => {
     if (formType === "360 Curriculum Assessment") {
       return submitCurriculumForm;
-    } else if (formType === "360 Individual Assessment") {
+    } else if (formType === "ClassRoom Observation") {
       return submitIndividualForm;
     } else if (formType === "normal") {
       return submitenvironmentForm;
@@ -96,7 +92,7 @@ function Form() {
         questionsResult: questionAnswers,
       };
       await IndividualForm(submittedData);
-      navigate(`/pms`);
+      navigate(`/watoms/pms`);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
@@ -141,7 +137,7 @@ function Form() {
         questionsResult: questionAnswers,
       };
       await CurriculumForm(submittedData);
-      navigate(`/pms`);
+      navigate(`/watoms/pms`);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
@@ -182,7 +178,7 @@ function Form() {
         questionsResult: questionAnswers,
       };
       await EnvironmentForm(submittedData);
-      navigate(`/pms`);
+      navigate(`/watoms/pms`);
     } catch (err) {
       console.error("Error submitting data:", err);
       toast.error("Submission failed.");
@@ -271,24 +267,13 @@ function Form() {
 
   const filteredForm2 = form.reduce(
     (acc, question) => {
-      const fieldEnName = question.sub_field.field?.field_en_name || "No Field";
       const fieldArName = question.sub_field.field?.field_ar_name || "No Field";
 
       // Ensure English field exists
-      if (!acc[0][fieldEnName]) {
-        acc[0][fieldEnName] = [];
+      if (!acc[0][fieldArName]) {
+        acc[0][fieldArName] = [];
       }
-      acc[0][fieldEnName].push({
-        title: question.question_en_name,
-        max_score: question.question_max_score,
-        question_id: question.question_id,
-      });
-
-      // Ensure Arabic field exists
-      if (!acc[1][fieldArName]) {
-        acc[1][fieldArName] = [];
-      }
-      acc[1][fieldArName].push({
+      acc[0][fieldArName].push({
         title: question.question_ar_name,
         max_score: question.question_max_score,
         question_id: question.question_id,
@@ -318,18 +303,16 @@ function Form() {
       <img
         className="newLogo"
         width="20%"
-        src={newLogo}
+        src={newLogo2}
         alt="company logo"
       ></img>
       <div className="form">
-        <h1 className="header">{language ? formEnName : formArName}</h1>
+        <h1 className="header">{formArName}</h1>
         <form className="form2" onSubmit={handleSubmit}>
-          {formType[0] === "360 Individual Assessment" ? (
+          {formType[0] === "ClassRoom Observation" ? (
             <div className="selects">
               <div className="select">
-                <label htmlFor="department">
-                  {language ? "Department:" : ":القسم"}
-                </label>
+                <label htmlFor="department">:المهنة</label>
                 <select
                   id="department"
                   name="department"
@@ -337,9 +320,7 @@ function Form() {
                   value={selectedDepartment}
                 >
                   <option value="" disabled selected>
-                    {language
-                      ? "Please Select a Department"
-                      : "الرجاء اختيار القسم"}
+                    الرجاء اختيار المهنة
                   </option>
                   {departments.map((department) => (
                     <option key={department.id} value={department.id}>
@@ -349,12 +330,10 @@ function Form() {
                 </select>
               </div>
               <div className="select">
-                <label>{language ? "Teacher:" : ":المعلم"}</label>
+                <label>:المدرب</label>
                 <select id="user" name="user">
                   <option value="" disabled selected>
-                    {language
-                      ? "Please Select a Teacher"
-                      : "الرجاء اختيار المعلم"}
+                    الرجاء اختيار المدرب
                   </option>
                   {filteredUsers.map((user) => (
                     <option
@@ -365,14 +344,12 @@ function Form() {
                 </select>
               </div>
             </div>
-          ) : formType[0] === "360 Curriculum Assessment" ? (
+          ) : formType[0] === "curriculum" ? (
             <div className="select">
-              <label>{language ? "Curriculum:" : ":المنهج"}</label>
+              <label>:المنهج</label>
               <select id="curriculum" name="curriculum">
                 <option value="" disabled selected>
-                  {language
-                    ? "Please select a Curriculum"
-                    : "الرجاء اختيار المنهج"}
+                  الرجاء اختيار المنهج
                 </option>
                 {curriculums.map((curriculum) => (
                   <option key={curriculum.id} value={curriculum.id}>
@@ -382,57 +359,45 @@ function Form() {
               </select>
             </div>
           ) : null}
-          <ChangeLanguage />
-          {Object.entries(language ? filteredForm2[0] : filteredForm2[1]).map(
-            ([fieldName, questions]) => (
-              <CollapsibleSection
-                key={fieldName}
-                title={fieldName}
-                language={language}
-              >
-                <div key={fieldName} className="field-group">
-                  {questions.map((question, index) => (
-                    <div
-                      key={question.question_id}
-                      className={language ? "questions-en" : "questions"}
-                    >
-                      <h3 className="question">
-                        {/* {`(${index})`} */}
-                        {question.title}
-                      </h3>
+          {Object.entries(filteredForm2[0]).map(([fieldName, questions]) => (
+            <CollapsibleSection key={fieldName} title={fieldName}>
+              <div key={fieldName} className="field-group">
+                {questions.map((question, index) => (
+                  <div key={question.question_id} className="questions">
+                    <h3 className="question">
+                      {/* {`(${index})`} */}
+                      {question.title}
+                    </h3>
 
-                      <div className="question">
-                        {Array.from({ length: question.max_score }, (_, i) => (
-                          <label
-                            key={i}
-                            style={{
-                              display: "inline-block",
-                              marginRight: "10px",
-                            }}
-                          >
-                            <input
-                              type="radio"
-                              name={`question:${question.question_id}`}
-                              value={JSON.stringify({
-                                score: language
-                                  ? i + 1
-                                  : question.max_score - i,
-                                questionId: question.question_id,
-                              })}
-                            />
-                            {language ? i + 1 : question.max_score - i}
-                          </label>
-                        ))}
-                      </div>
+                    <div className="question">
+                      {Array.from({ length: question.max_score }, (_, i) => (
+                        <label
+                          key={i}
+                          style={{
+                            display: "inline-block",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <input
+                            type="radio"
+                            name={`question:${question.question_id}`}
+                            value={JSON.stringify({
+                              score: question.max_score - i,
+                              questionId: question.question_id,
+                            })}
+                          />
+                          {question.max_score - i}
+                        </label>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </CollapsibleSection>
-            )
-          )}
+                  </div>
+                ))}
+              </div>
+            </CollapsibleSection>
+          ))}
 
           <button type="submit" className="submitButton">
-            {language ? "Submit" : "أرسال"}
+            أرسال
           </button>
         </form>
       </div>
@@ -440,4 +405,4 @@ function Form() {
   );
 }
 
-export default Form;
+export default TomsForm;

@@ -18,6 +18,19 @@ import Interview from "./pages/Interview";
 import Test from "./pages/Test";
 import SchoolIncident from "./pages/SchoolIncident";
 import StudentBehavior from "./pages/StudentBehavior";
+import TomsPms from "./pages/TomsPms";
+import TomsForm from "./pages/TomsForm";
+import TraineeAbsence from "./pages/TraineeAbsence";
+import InistituteIncident from "./pages/InistitueIncident";
+import TomsInterview from "./pages/TomsInterview";
+import TomsTest from "./pages/TomsTest";
+import TomsDms from "./pages/TomsDms";
+import TomsUploadDocument from "./pages/TomsUploadDocument";
+import TomsViewDocument from "./pages/TomsViewDocument";
+import TomsTms from "./pages/TomsTms";
+import TomsViewTask from "./pages/TomsViewTask";
+import TomsAssign from "./pages/TomsAssign";
+import TomsMyTasks from "./pages/TomsMyTask";
 
 function App() {
   return (
@@ -158,6 +171,110 @@ function App() {
           element={
             <ProtectedRoute>
               <ViewTask />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/pms"
+          element={
+            <ProtectedRoute>
+              <TomsPms />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/pms/form/:id"
+          element={
+            <ProtectedRoute>
+              <TomsForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/pms/trainee-absence"
+          element={
+            <ProtectedRoute>
+              <TraineeAbsence />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/pms/inistitute-incident"
+          element={
+            <ProtectedRoute>
+              <InistituteIncident />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/pms/interview"
+          element={
+            <ProtectedRoute>
+              <TomsInterview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/pms/test"
+          element={
+            <ProtectedRoute>
+              <TomsTest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/dms"
+          element={
+            <ProtectedRoute>
+              <TomsDms />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/dms/upload"
+          element={
+            <ProtectedRoute>
+              <TomsUploadDocument />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/dms/view/:id"
+          element={
+            <ProtectedRoute>
+              <TomsViewDocument />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/tms"
+          element={
+            <ProtectedRoute>
+              <TomsTms />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/tms/assign"
+          element={
+            <ProtectedRoute>
+              <TomsAssign />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/tms/my-tasks"
+          element={
+            <ProtectedRoute>
+              <TomsMyTasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watoms/tms/view/:id"
+          element={
+            <ProtectedRoute>
+              <TomsViewTask />
             </ProtectedRoute>
           }
         />

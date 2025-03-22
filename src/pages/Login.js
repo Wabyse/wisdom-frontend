@@ -4,6 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/auth";
+import GovLogo from "../assets/Gov.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const Login = () => {
         <form className="login" onSubmit={submitLogin}>
           <img
             className="loginImg"
-            src="http://pms.wabyse.com/wp-content/uploads/2024/10/cropped-cropped-WABYS-NEW-LOGO1.png"
+            src={GovLogo}
             alt="Wabys Logo"
           />
           <label className="loginLabel" HtmlFor="code">

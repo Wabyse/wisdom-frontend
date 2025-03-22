@@ -6,6 +6,7 @@ import { fetchAllTeachers, sendTeacherEvaluation } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
+import newLogo from "../assets/newLogo.jpg";
 
 const interviewResults = [
   "Title 1",
@@ -93,11 +94,15 @@ function Interview() {
         <button onClick={returnPms}>{language ? "< Return" : "رجوع >"}</button>
       </div>
       <div className="Div100">
-        <img
-          width="20%"
-          src="http://pms.wabyse.com/wp-content/uploads/2024/10/cropped-cropped-WABYS-NEW-LOGO1.png"
-          alt="company logo"
-        ></img>
+      <img
+        className="newLogo"
+        width="20%"
+        src={newLogo}
+        alt="company logo"
+      ></img>
+      </div>
+      <div className="Div100">
+        <h1>{language ? "Interview" : "مقابلات شخصية"}</h1>
       </div>
       {/* <div className="Div100">
         <button>{language ? "AR" : "EN"}</button>
