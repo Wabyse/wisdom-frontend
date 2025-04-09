@@ -5,6 +5,7 @@ import GovLogo from "../assets/NewLogoGovEbda.png";
 import watoms2 from "../assets/watoms2.jpg";
 import wisdom from "../assets/wisdom.png";
 import { useEffect, useState } from "react";
+// this is comment test
 
 const Navbar = ({ children, showNavigate = true, img, length="w-[350px]", upload=false }) => {
   const { setUserCode } = useAuth();
