@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import Navbar from "../components/Navbar";
 import "../styles/Dms.css";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { downloadFileDms, fetchingFiles, fetchingOrgs } from "../services/dms";
 import { fetchDepartments, fetchDmsCategories } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
-import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
+import Selector from "../components/Selector";
+import Navbar3 from "../components/Navbar3";
+import dms1 from "../assets/dms1.jpg";
+import dms2 from "../assets/dms2.jpg";
+import dms3 from "../assets/dms3.jpg";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -263,132 +266,199 @@ const Dms = () => {
     fetchCategories();
   }, [test]);
 
+  console.log(language);
+
+  const header = (label, path) => (
+    <div className="flex justify-evenly">
+      <button
+        className={`text-wisdomOrange p-1 rounded hover:Text-wisdomDarkOrange mx-2 ${
+          language ? "w-[160px]" : "w-[90px]"
+        }`}
+        onClick={uploadDocument}
+      >
+        {language ? "Upload Document" : "رفع ملف"}
+      </button>
+    </div>
+  );
+
+  const imgs = [
+    {
+      img: dms1,
+      title: "Effortless Access",
+      description:
+        "Find and utilize crucial information right at your fingertips.",
+    },
+    {
+      img: dms2,
+      title: "Information Hub",
+      description:
+        "Your secure, centralized source for all essential knowledge and data.",
+    },
+    {
+      img: dms3,
+      title: "Centralized Control",
+      description: "Manage all documents and data with ease and security.",
+    },
+  ];
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
-      <Navbar showNavigate={true}>
-        <button onClick={uploadDocument}>
-          {language ? "Upload Document" : "رفع ملف"}
-        </button>
-        <ChangeLanguage />
-      </Navbar>
-      <div className={language ? "dmsTitle" : "dmsTitle-ar"}>
-        {language ? (
-          <h1 className="dmsTitle2">Document Management System:</h1>
-        ) : (
-          <h1 className="dmsTitle2-ar">:نظام إدارة المستندات</h1>
-        )}
-      </div>
-      <div className="filters">
-        <div className="select">
-          <label htmlFor="school">{language ? "School:" : ":المدرسة"}</label>
-          <select
-            id="school"
-            name="school"
-            onChange={handleSchoolChange}
-            value={selectedSchool}
-          >
-            <option value="" disabled>
-              {language ? "Please Select a School" : "الرجاء اختيار مدرسة"}
-            </option>
-            <option value="0">All</option>
-            {schools.map((school) => (
-              <option key={school.id} value={school.id}>
-                {school.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="select">
-          <label htmlFor="department">
-            {language ? "Department:" : ":القسم"}
-          </label>
-          <select
-            id="department"
-            name="department"
-            onChange={handleDepartmentChange}
-            value={selectedDepartment}
-          >
-            <option value="" disabled>
-              {language ? "Please Select a Department" : "الرجاء اختيار قسم"}
-            </option>
-            <option value="0">All</option>
-            {departments.map((department) => (
-              <option key={department.id} value={department.id}>
-                {department.Name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="select">
-          <label htmlFor="category">
-            {language ? "Category:" : ":التصنيف"}
-          </label>
-          <select
-            id="category"
-            name="category"
-            onChange={handleCategoryChange}
-            value={selectedCategory}
-          >
-            <option value="" disabled>
-              Please Select a Category
-            </option>
-            <option value="0">All</option>
-            {categories.map((option) => (
-              <option value={option.id}>{option.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="select">
-          <label htmlFor="subCategory">
-            {language ? "Sub Category:" : ":التصنيف الفرعي"}
-          </label>
-          <select
-            id="subCategory"
-            name="subCategory"
-            onChange={handleSubCategoryChange}
-            value={selectedSubCategory}
-            // onClick={handleSubCategoryClick}
-          >
-            <option value="" disabled>
-              Please Select a Sub Category
-            </option>
-            <option value="0">All</option>
-            {subCategories.map((option) => (
-              <option value={option.id}>{option.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="date-section-DMS">
-          <label htmlFor="dateFrom" className="DMS-date-label">
+    <div className="w-full">
+      <Navbar3
+        showNavigate={true}
+        img={imgs}
+        length={language ? "w-[620px]" : "w-[550px]"}
+        header={header}
+        Page="DMS"
+      >
+        <Selector
+          label="school"
+          title={language ? "School:" : ":المدرسة"}
+          description={
+            language ? "Please Select a School" : "الرجاء اختيار مدرسة"
+          }
+          data={schools}
+          value={selectedSchool}
+          onChange={handleSchoolChange}
+        />
+        <Selector
+          label="department"
+          title={language ? "Department:" : ":القسم"}
+          description={
+            language ? "Please Select a Department" : "الرجاء اختيار قسم"
+          }
+          data={departments}
+          value={selectedDepartment}
+          onChange={handleDepartmentChange}
+          name="Name"
+        />
+        <Selector
+          label="category"
+          title={language ? "Category:" : ":التصنيف"}
+          description={
+            language ? "Please Select a Category" : "برجاء اختيار تصنيف"
+          }
+          data={categories}
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+        />
+        <Selector
+          label="subCategory"
+          title={language ? "Sub Category:" : ":التصنيف الفرعي"}
+          description={
+            language
+              ? "Please Select a Sub Category"
+              : "برجاء اختيار تصنيف فرعي"
+          }
+          data={subCategories}
+          value={selectedSubCategory}
+          onChange={handleSubCategoryChange}
+        />
+        <div className="flex flex-col items-end justify-center">
+          <label htmlFor="dateFrom" className="mb-[10px] text-center font-bold">
             {language ? "From:" : ":من"}
           </label>
           <input
             id="dateFrom"
             name="dateFrom"
             type="date"
-            className="date-DMS"
+            className="p-[10px] border border-[#ccc] box-border w-[150px]"
             onChange={handleDateFromChange}
           />
         </div>
-        <div className="date-section-DMS">
-          <label htmlFor="dateTo" className="DMS-date-label">
+        <div className="flex flex-col items-end justify-center">
+          <label htmlFor="dateTo" className="mb-[10px] text-center font-bold">
             {language ? "To:" : ":الي"}
           </label>
           <input
             id="dateTo"
             name="dateTo"
             type="date"
-            className="date-DMS"
+            className="p-[10px] border border-[#ccc] box-border w-[150px]"
             onChange={handleDateToChange}
           />
         </div>
-        <button className="select DMSBtn" onClick={resetFilters}>
+        <button
+          className="flex justify-center md:w-full w-[200px] md:mt-[41px] md:m-0 m-auto my-2 items-center bg-wisdomOrange hover:bg-wisdomDarkOrange text-white h-[5vh] px-4 py-2 rounded-md"
+          onClick={resetFilters}
+        >
           {language ? "Reset" : "مسح"}
         </button>
-      </div>
+      </Navbar3>
+      {/* <div className={language ? "dmsTitle" : "dmsTitle-ar"}>
+        {language ? (
+          <h1 className="dmsTitle2">Document Management System:</h1>
+        ) : (
+          <h1 className="dmsTitle2-ar">:نظام إدارة المستندات</h1>
+        )}
+      </div> */}
+      {/* <div className="flex md:flex-row md:justify-evenly flex-col">
+        <Selector
+          label="school"
+          title=":المركز"
+          description="الرجاء اختيار مركز"
+          data={schools}
+          value={selectedSchool}
+          onChange={handleSchoolChange}
+        />
+        <Selector
+          label="department"
+          title=":المهنة"
+          description="الرجاء اختيار مهنة"
+          data={departments}
+          value={selectedDepartment}
+          onChange={handleDepartmentChange}
+          name="Name"
+        />
+        <Selector
+          label="category"
+          title=":التصنيف"
+          description="برجاء اختيار تصنيف"
+          data={categories}
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+        />
+        <Selector
+          label="subCategory"
+          title=":التصنيف الفرعي"
+          description="برجاء اختيار تصنيف فرعي"
+          data={subCategories}
+          value={selectedSubCategory}
+          onChange={handleSubCategoryChange}
+        />
+        <div className="flex flex-col items-center justify-center">
+          <label htmlFor="dateFrom" className="mb-[10px] text-center font-bold">
+            :من
+          </label>
+          <input
+            id="dateFrom"
+            name="dateFrom"
+            type="date"
+            className="p-[10px] border border-[#ccc] box-border w-[150px]"
+            onChange={handleDateFromChange}
+          />
+        </div>
+        <div className="flex flex-col items-center justify-center">
+          <label htmlFor="dateTo" className="mb-[10px] text-center font-bold">
+            :الي
+          </label>
+          <input
+            id="dateTo"
+            name="dateTo"
+            type="date"
+            className="p-[10px] border border-[#ccc] box-border w-[150px]"
+            onChange={handleDateToChange}
+          />
+        </div>
+        <button
+          className="flex justify-center md:w-[75px] w-[200px] md:mt-[41px] md:m-0 m-auto my-2 items-center bg-wisdomOrange hover:bg-wisdomDarkOrange text-white h-[5vh] px-4 py-2 rounded-md"
+          onClick={resetFilters}
+        >
+          مسح
+        </button>
+      </div> */}
       <div className="files" ref={targetDivRef}>
         {filtered.length > 0 ? (
           filtered.map((file, index) => (
@@ -400,19 +470,19 @@ const Dms = () => {
               </div>
               <div>
                 <button className="dmsButton" onClick={() => openPDF(file)}>
-                  Open
+                  فتح
                 </button>
                 <button
                   className="dmsButton"
                   onClick={() => handleDownload2(file)}
                 >
-                  download
+                  تحميل
                 </button>
               </div>
             </div>
           ))
         ) : (
-          <p className="noData">{language ? "there is no documents available" : "لا يوجد ملفات متاحة"}</p>
+          <p className="noData">لا يوجد ملفات متاحة</p>
         )}
       </div>
     </div>

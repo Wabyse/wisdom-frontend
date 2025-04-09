@@ -52,9 +52,9 @@ const TomsViewTask = () => {
   }, [id]);
   return (
     <>
-      <Navbar showNavigate={false}></Navbar>
+      <Navbar showNavigate={false} upload={true}></Navbar>
       <div className="view">
-        <h1>تفاصيل المهمة</h1>
+        <h1 className="text-2xl font-bold">تفاصيل المهمة</h1>
         <div className="part">
           <div className="detail-container">
             <label>:المهمة</label>

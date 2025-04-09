@@ -52,9 +52,9 @@ const ViewTask = () => {
   }, [id]);
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar upload={true}></Navbar>
       <div className="view">
-        <h1>View Task</h1>
+        <h1 className="text-2xl font-bold">View Task</h1>
         <div className="part">
           <div className="detail-container">
             <label>Task: </label>

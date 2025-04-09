@@ -237,24 +237,34 @@ function StudentAbsence() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="teacherLatnessForm">
+    <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
       <Toaster />
-      <div className={language ? "returnDiv" : "returnDiv-Ar"}>
-        <button onClick={returnPms}>{language ? "< Return" : "رجوع >"}</button>
+      <div
+        className={`flex w-full p-[5px] h-[6vh] ${
+          language ? "justify-start" : "justify-end"
+        }`}
+      >
+        <button
+          className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 flex justify-center items-center"
+          onClick={returnPms}
+        >
+          {language ? "< Return" : "رجوع >"}
+        </button>
       </div>
-      <div className="Div100">
+      <div className="w-full flex justify-center">
         <img
-          className="newLogo"
-          width="20%"
+          className="w-[60%] h-[30vh]"
           src={newLogo}
           alt="company logo"
         ></img>
       </div>
-      <div className="Div100">
-        <h1>{language ? "Student Absence" : "غياب الطالب"}</h1>
+      <div className="w-full">
+        <h1 className="text-2xl font-bold text-center">
+          {language ? "Student Absence" : "غياب الطالب"}
+        </h1>
       </div>
       <ChangeLanguage />
-      <div className="select Div100">
+      <div className="flex flex-col justify-center items-center w-[99%] mb-2">
         <label>{language ? "School:" : ":مدرسة"}</label>
         <select
           id="school"
@@ -367,7 +377,11 @@ function StudentAbsence() {
               </div>
             </div>
           ))}
-          <button className="TLBtn">{language ? "Submit" : "ارسال"}</button>
+          <div className="flex justify-center items-center w-full">
+            <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 flex self-center items-center">
+              {language ? "Submit" : "ارسال"}
+            </button>
+          </div>
         </form>
       ) : (
         <div className="noTeacher">

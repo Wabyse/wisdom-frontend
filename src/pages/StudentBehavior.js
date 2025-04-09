@@ -191,11 +191,11 @@ const StudentBehavior = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
+    <div className="bg-gray-500 h-[100vh]">
       <Toaster />
-      <Navbar></Navbar>
+      <Navbar upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2">
-        <h1>Student Behavior</h1>
+        <h1 className="text-2xl font-bold">Student Behavior</h1>
         <div className="select-group">
           <div className="select">
             <label>School:</label>
@@ -298,9 +298,9 @@ const StudentBehavior = () => {
           <label>Date:</label>
           <input type="date" onChange={handleDateChange} />
         </div>
-        <button>Submit</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">Submit</button>
       </form>
-    </>
+    </div>
   );
 };
 

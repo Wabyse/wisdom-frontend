@@ -118,8 +118,8 @@ const MyTasks = () => {
   return (
     <>
       <Toaster />
-      <Navbar />
-      <h1 className="myTaskTitle">My Tasks:</h1>
+      <Navbar upload={true}/>
+      <h1 className="myTaskTitle text-2xl font-bold">My Tasks:</h1>
       <div className="files">
         <div className="myTasks">
           <div className="myTitle">Task:</div>

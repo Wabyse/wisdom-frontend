@@ -88,28 +88,31 @@ function Interview() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="teacherLatnessForm">
+    <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
       <Toaster />
-      <div className={language ? "returnDiv" : "returnDiv-Ar"}>
-        <button onClick={returnPms}>{language ? "< Return" : "رجوع >"}</button>
+      <div
+        className={`flex w-full p-[5px] h-[6vh] ${
+          language ? "justify-start" : "justify-end"
+        }`}
+      >
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded flex justify-center items-center" onClick={returnPms}>{language ? "< Return" : "رجوع >"}</button>
       </div>
-      <div className="Div100">
-      <img
-        className="newLogo"
-        width="20%"
-        src={newLogo}
-        alt="company logo"
-      ></img>
+      <div className="w-full flex justify-center">
+        <img
+          className="w-[60%] h-[30vh]"
+          src={newLogo}
+          alt="company logo"
+        ></img>
       </div>
-      <div className="Div100">
-        <h1>{language ? "Interview" : "مقابلات شخصية"}</h1>
+      <div className="w-full">
+        <h1 className="text-2xl font-bold text-center">{language ? "Interview" : "مقابلات شخصية"}</h1>
       </div>
       {/* <div className="Div100">
         <button>{language ? "AR" : "EN"}</button>
       </div> */}
-      <ChangeLanguage className="LangBtn"/>
+      <ChangeLanguage className="LangBtn" />
       <div className="select Div100">
-        <div className="select">
+        <div className="flex flex-col justify-center items-center w-[99%]">
           <label>{language ? "Teacher:" : ":معلم"}</label>
           <select id="user" name="user" onChange={selectUserHandler}>
             <option value="" disabled selected>
@@ -137,7 +140,7 @@ function Interview() {
                   type="number"
                   max="100"
                   min="0"
-                  className="interviewResultInput"
+                  className="interviewResultInput border-black border-2"
                   value={interviewResultData[index] || ""}
                   key={index + 1}
                   onChange={(e) => changeInputResult(index, e.target.value)}
@@ -145,7 +148,7 @@ function Interview() {
               </div>
             </div>
           ))}
-          <button className="InBtn">{language ? "Submit" : "ارسال"}</button>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded h-[5vh] flex justify-center items-center my-auto">{language ? "Submit" : "ارسال"}</button>
         </form>
       ) : (
         <div className="noTeacher">

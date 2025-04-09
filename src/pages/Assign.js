@@ -103,11 +103,12 @@ const Assign = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
+    <div className="bg-gray-500 m-0 h-[130vh]">
       <Toaster />
-      <Navbar></Navbar>
+      <Navbar upload={true}></Navbar>
       <form onSubmit={submitTask} className="assignForm form2">
-        <h1>Assign Task</h1>
+        <h1 className="text-2xl font-bold">Assign Task</h1>
+        <div className="select-group">
         <div className="select">
           <label key="user">Employee:</label>
           <select id="user" name="user">
@@ -134,10 +135,11 @@ const Assign = () => {
             ))}
           </select>
         </div>
-        <label>Task:</label>
+        </div>
+        <label className="w-full">Task:</label>
         <input className="AssignText" type="text" name="task" />
 
-        <label>Description:</label>
+        <label className="w-full">Description:</label>
         <input className="AssignText" type="text" name="description" />
 
         <div className="date-time-group">
@@ -202,9 +204,9 @@ const Assign = () => {
           </div>
         </div>
 
-        <button>Submit</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">Submit</button>
       </form>
-    </>
+    </div>
   );
 };
 

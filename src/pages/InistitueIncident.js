@@ -105,13 +105,13 @@ const InistituteIncident = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
+    <div className="bg-gray-500 h-[115vh]">
       <Toaster />
-      <Navbar showNavigate={false}></Navbar>
+      <Navbar showNavigate={false} upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2">
-        <h1>وقائع المركز</h1>
-        <div className="select">
-          <label>المركز:</label>
+        <h1 className="text-2xl font-bold">وقائع المركز</h1>
+        <div className="flex flex-col justify-center items-center">
+          <label className="text-center w-full">المركز:</label>
           <select onChange={(e) => setSchoolId(e.target.value)}>
             <option value="" disabled selected>
               برجاء اختيار مركز
@@ -131,7 +131,7 @@ const InistituteIncident = () => {
         <input type="file" name="file" onChange={handleFileChange} />
         <div className="select-group">
           <div className="select">
-            <label>:التصنيف</label>
+            <label className="text-end w-full">:التصنيف</label>
             <select onChange={handleCategoryChange}>
               <option value="" disabled selected>
                 برجاء اختيار تصنيف
@@ -144,7 +144,7 @@ const InistituteIncident = () => {
             </select>
           </div>
           <div className="select">
-            <label>:تصنيف فرعي</label>
+            <label className="text-end w-full">:تصنيف فرعي</label>
             <select
               onClick={handleSubCategoryClick}
               onChange={(e) => setSubCategory(e.target.value)}
@@ -161,12 +161,12 @@ const InistituteIncident = () => {
           </div>
         </div>
         <div className="select">
-          <label>:التاريخ</label>
+          <label className="w-full text-center">:التاريخ</label>
           <input type="date" onChange={handleDateChange} />
         </div>
-        <button>ارسال</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">ارسال</button>
       </form>
-    </>
+    </div>
   );
 };
 

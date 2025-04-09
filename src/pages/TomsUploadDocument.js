@@ -58,7 +58,7 @@ const TomsUploadDocument = () => {
       setSubCategory("");
       setOrganizationId("");
       toast.success("Login successful!");
-      navigate(`/dms`);
+      navigate(`/watoms/dms`);
     } catch (error) {
       console.error("Upload error", error);
       alert("File upload failed");
@@ -68,7 +68,7 @@ const TomsUploadDocument = () => {
   useEffect(() => {
     const loadingOrg = async () => {
       try {
-        const response = await fetchingOrgs()
+        const response = await fetchingOrgs();
         setSchools(response);
       } catch (error) {
         console.error("no files", error);
@@ -77,7 +77,7 @@ const TomsUploadDocument = () => {
 
     const loadDepartments = async () => {
       try {
-        const response = await fetchDepartments()
+        const response = await fetchDepartments();
         setDepartments(response);
       } catch (err) {
         console.error("API Error:", err);
@@ -107,44 +107,46 @@ const TomsUploadDocument = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
+    <div className="bg-gray-500 h-[100vh] text-end">
       <Toaster />
-      <Navbar showNavigate={false}></Navbar>
+      <Navbar showNavigate={false} upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2">
-        <h1>رفع ملف</h1>
-        <div className="select">
-          <label>:المركز</label>
-          <select onChange={(e) => setOrganizationId(e.target.value)}>
-            <option value="" disabled selected>
-              برجاء اختيار مركز
-            </option>
-            {schools.map((school) => (
-              <option key={school.id} value={school.id}>
-                {school.name}
+        <h1 className="text-2xl font-bold">رفع ملف</h1>
+        <div className="select-group">
+          <div className="select">
+            <label className="w-full">:المركز</label>
+            <select onChange={(e) => setOrganizationId(e.target.value)}>
+              <option className="text-end" value="" disabled selected>
+                برجاء اختيار مركز
               </option>
-            ))}
-          </select>
-        </div>
-        <div className="select">
-          <label>:المهنة</label>
-          <select onChange={(e) => setDepartmentId(e.target.value)}>
-            <option value="" disabled selected>
-              برجاء اختيار مهنة
-            </option>
-            {departments.map((department) => (
-              <option key={department.id} value={department.id}>
-                {department.Name}
+              {schools.map((school) => (
+                <option key={school.id} value={school.id}>
+                  {school.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="select">
+            <label className="w-full">:المهنة</label>
+            <select onChange={(e) => setDepartmentId(e.target.value)}>
+              <option className="text-end" value="" disabled selected>
+                برجاء اختيار مهنة
               </option>
-            ))}
-          </select>
+              {departments.map((department) => (
+                <option key={department.id} value={department.id}>
+                  {department.Name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <label>:رفع الملف</label>
+        <label className="w-full">:رفع الملف</label>
         <input type="file" name="file" onChange={handleFileChange} />
         <div className="select-group">
           <div className="select">
-            <label>:التصنيف</label>
+            <label className="w-full">:التصنيف</label>
             <select onChange={handleCategoryChange}>
-              <option value="" disabled selected>
+              <option className="text-end" value="" disabled selected>
                 برجاء اختيار تصنيف
               </option>
               {categories.map((category, index) => (
@@ -155,12 +157,12 @@ const TomsUploadDocument = () => {
             </select>
           </div>
           <div className="select">
-            <label>:تصنيف فرعي</label>
+            <label className="w-full">:تصنيف فرعي</label>
             <select
               onClick={handleSubCategoryClick}
               onChange={(e) => setSubCategory(e.target.value)}
             >
-              <option value="" disabled selected>
+              <option className="text-end" value="" disabled selected>
                 برجاء اختيار تصنيف فرعي
               </option>
               {selectedCategories.map((subCategory) => (
@@ -171,9 +173,11 @@ const TomsUploadDocument = () => {
             </select>
           </div>
         </div>
-        <button>ارسال</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded">
+          ارسال
+        </button>
       </form>
-    </>
+    </div>
   );
 };
 

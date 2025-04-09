@@ -68,7 +68,7 @@ const UploadDocument = () => {
   useEffect(() => {
     const loadingOrg = async () => {
       try {
-        const response = await fetchingOrgs()
+        const response = await fetchingOrgs();
         setSchools(response);
       } catch (error) {
         console.error("no files", error);
@@ -77,7 +77,7 @@ const UploadDocument = () => {
 
     const loadDepartments = async () => {
       try {
-        const response = await fetchDepartments()
+        const response = await fetchDepartments();
         setDepartments(response);
       } catch (err) {
         console.error("API Error:", err);
@@ -107,38 +107,40 @@ const UploadDocument = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
+    <div className="bg-gray-500 h-[100vh]">
       <Toaster />
-      <Navbar></Navbar>
+      <Navbar upload={true} length="2-[400px]"></Navbar>
       <form onSubmit={upload} className="assignForm form2">
-        <h1>Upload Document</h1>
-        <div className="select">
-          <label>Organization:</label>
-          <select onChange={(e) => setOrganizationId(e.target.value)}>
-            <option value="" disabled selected>
-              Please Select an organization
-            </option>
-            {schools.map((school) => (
-              <option key={school.id} value={school.id}>
-                {school.name}
+        <h1 className="text-2xl font-bold">Upload Document</h1>
+        <div className="select-group">
+          <div className="select">
+            <label>Organization:</label>
+            <select onChange={(e) => setOrganizationId(e.target.value)}>
+              <option value="" disabled selected>
+                Please Select an organization
               </option>
-            ))}
-          </select>
-        </div>
-        <div className="select">
-          <label>Department:</label>
-          <select onChange={(e) => setDepartmentId(e.target.value)}>
-            <option value="" disabled selected>
-              Please Select a Department
-            </option>
-            {departments.map((department) => (
-              <option key={department.id} value={department.id}>
-                {department.Name}
+              {schools.map((school) => (
+                <option key={school.id} value={school.id}>
+                  {school.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="select">
+            <label>Department:</label>
+            <select onChange={(e) => setDepartmentId(e.target.value)}>
+              <option value="" disabled selected>
+                Please Select a Department
               </option>
-            ))}
-          </select>
+              {departments.map((department) => (
+                <option key={department.id} value={department.id}>
+                  {department.Name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <label>Attach File:</label>
+        <label className="w-full">Attach File:</label>
         <input type="file" name="file" onChange={handleFileChange} />
         <div className="select-group">
           <div className="select">
@@ -171,9 +173,11 @@ const UploadDocument = () => {
             </select>
           </div>
         </div>
-        <button>Submit</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">
+          Submit
+        </button>
       </form>
-    </>
+    </div>
   );
 };
 

@@ -1,12 +1,16 @@
 // import { useEffect, useState } from "react";
 import { useEffect, useState, useRef } from "react";
-import Navbar from "../components/Navbar";
 // import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../styles/Tms.css";
 import { fetchTaskCategories, fetchTasks } from "../services/tms";
 import { fetchUsers } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
+import tms1 from "../assets/tms1.jpg";
+import tms2 from "../assets/tms2.jpg";
+import tms3 from "../assets/tms3.jpg";
+import Navbar3 from "../components/Navbar3";
+import Selector from "../components/Selector";
 
 const statusOptions = [
   // "0",
@@ -277,7 +281,8 @@ const TomsTms = () => {
             const isAssigneeUserMatch =
               !assigneeUserFilter || assigneeUserFilter === filter.assignee.id;
             const isImportanceMatch =
-              !importanceFilter || importanceFilter === filter.importance;
+              !importanceFilter || importanceFilter === filter.importance ||
+              importanceFilter === "0";
             if (
               isDateMatch &&
               isStatusMatch &&
@@ -326,206 +331,187 @@ const TomsTms = () => {
     deadlineTo,
   ]);
 
+  const header = (label, path) => (
+    <div className="flex justify-evenly">
+      <button
+        onClick={myTasks}
+        className="w-[60px] text-wisdomOrange rounded p-2 text:bg-wisdomDarkOrange text-center"
+      >
+        مهامي
+      </button>
+      <button
+        onClick={assignTasks}
+        className="w-[90px] text-wisdomOrange rounded hover:text-wisdomDarkOrange p-2 mx-2"
+      >
+        تعين مهمة
+      </button>
+    </div>
+  );
+  const imgs = [
+    {
+      img: tms1,
+      title: "Productivity Boost",
+      description: "Skyrocket your output, achieve peak performance, see results fast."
+    },
+    {
+      img: tms2,
+      title: "Deadline Driven",
+      description: "Conquer every deadline, ensuring timely success, stress-free now."
+    },
+    {
+      img: tms3,
+      title: "Streamlined Workflow",
+      description: "Eliminate wasted effort. Work smarter, not harder."
+    }
+  ]
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
     <>
-      <Navbar showNavigate={false}>
-        <button onClick={myTasks}>مهامي</button>
-        <button onClick={assignTasks}>تعين مهمة</button>
-      </Navbar>
-      <div className="tmsTitle-ar">
-        <h1 className="tmsTitle2-ar">:نظام إدارة المهام</h1>
-      </div>
-      <div className="filtersTms">
-        <div className="TmsFilters">
-          <div className="sectionTms">
-              <div className="selectTms-ar">
-                <select
-                  id="status"
-                  name="status"
-                  onChange={handleStatusChange}
-                  value={selectedStatus}
-                >
-                  <option value="" disabled>
-                    برجاء اختيار حالة
-                  </option>
-                  <option value="0">All</option>
-                  {statusOptions.map((option, index) => (
-                    <option value={option} key={index}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                <label htmlFor="status">:الحالة</label>
-              </div>
-              <div className="selectTms-ar">
-                <select
-                  id="category"
-                  name="category"
-                  onChange={handleCategoryChange}
-                  value={selectedCategory}
-                >
-                  <option value="" disabled>
-                    برجاء اختيار تصنيف
-                  </option>
-                  <option value="0">All</option>
-                  {categories.map((option) => (
-                    <option value={option.id} key={option.id}>
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-                <label htmlFor="category">:التصنيف</label>
-              </div>
-              <div className="selectTms-ar">
-                <select
-                  id="subCategory"
-                  name="subCategory"
-                  onChange={handleSubCategoryChange}
-                  value={selectedSubCategory}
-                  onClick={handleSubCategoryClick}
-                >
-                  <option value="" disabled>
-                    برجاء اختيار تصنيف فرعي
-                  </option>
-                  <option value="0">All</option>
-                  {subCategories.map((option) => (
-                    <option value={option.id} key={option.id}>
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-                <label htmlFor="subCategory">:التصنيف الفرعي</label>
-              </div>
-              <div className="selectTms-ar">
-                <select
-                  id="assignedBy"
-                  name="assignedBy"
-                  onChange={handleAssignedByChange}
-                  value={selectedAssignedUser}
-                >
-                  <option value="" disabled>
-                    برجاء اختيار المعين
-                  </option>
-                  <option value="0">All</option>
-                  {filteredAssignedUsers.map((user) => (
-                    <option
-                      value={user.employee?.employee_id}
-                      key={user.id}
-                    >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
-                  ))}
-                </select>
-                <label htmlFor="assignedBy">:المعين</label>
-              </div>
-              <div className="selectTms-ar">
-                <select
-                  id="assignee"
-                  name="assignee"
-                  onChange={handleAssigneeChange}
-                  value={selectedAssigneeUser}
-                >
-                  <option value="" disabled>
-                    برجاء اختيار المعين له
-                  </option>
-                  <option value="0">All</option>
-                  {filteredAssigneeUsers.map((user) => (
-                    <option
-                      value={user.employee?.employee_id}
-                      key={user.id}
-                    >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
-                  ))}
-                </select>
-                <label htmlFor="assignee">:المعين له</label>
-              </div>
+      <Navbar3
+        showNavigate={false}
+        img={imgs}
+        length="w-[550px]"
+        header={header}
+        Page="TMS"
+      >
+        <div className="grid grid-cols-2 gap-2">
+          <Selector
+            label="status"
+            title=":الحالة"
+            description="برجاء اختيار حالة"
+            data={statusOptions}
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            name=""
+          />
+          <Selector
+            label="category"
+            title=":التصنيف"
+            description="برجاء اختيار تصنيف"
+            data={categories}
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+          />
+          <Selector
+            label="subCategory"
+            title=":التصنيف الفرعي"
+            description="برجاء اختيار تصنيف فرعي"
+            data={subCategories}
+            value={selectedSubCategory}
+            onChange={handleSubCategoryChange}
+            onClick={handleSubCategoryClick}
+          />
+          <Selector
+            label="assignedBy"
+            title=":تكليف من"
+            description="برجاء اختيار المعين"
+            data={filteredAssignedUsers}
+            value={selectedAssignedUser}
+            onChange={handleAssignedByChange}
+            name="user"
+          />
+          <Selector
+            label="assignee"
+            title=":تكليف الي"
+            description="برجاء اختيار المعين له"
+            data={filteredAssigneeUsers}
+            value={selectedAssigneeUser}
+            onChange={handleAssigneeChange}
+            name="user"
+          />
+          <Selector
+            label="importance"
+            title=":الاهمية"
+            description="برجاء اخيار الاهمية"
+            data={importance}
+            value={selectedImportance}
+            onChange={handleImportanceChange}
+            name=""
+            keyType={true}
+          />
+          <div className="flex flex-col items-end justify-center">
+            <label
+              htmlFor="dateFrom"
+              className="mb-[10px] text-center font-bold"
+            >
+              :من
+            </label>
+            <input
+              id="dateFrom"
+              name="dateFrom"
+              type="date"
+              className="p-[10px] border border-[#ccc] box-border w-[150px]"
+              onChange={handleDateFromChange}
+            />
           </div>
-          <div className="sectionTms">
-              <div className="selectTms-ar">
-                <select
-                  id="importance"
-                  name="importance"
-                  onChange={handleImportanceChange}
-                  value={selectedImportance}
-                >
-                  <option value="" disabled>
-                    برجاء اخيار الاهمية
-                  </option>
-                  <option value="0">All</option>
-                  {importance.map((state, index) => (
-                    <option value={state} key={index}>
-                      {state}
-                    </option>
-                  ))}
-                </select>
-                <label htmlFor="importance">:الاهمية</label>
-              </div>
-              <div className="selectTms-ar">
-                <input
-                  id="dateFrom"
-                  name="dateFrom"
-                  type="date"
-                  className="date-TMS"
-                  onChange={handleDateFromChange}
-                />
-                <label htmlFor="dateFrom" className="TMS-date-label">
-                  :من
-                </label>
-              </div>
-              <div className="selectTms-ar">
-                <input
-                  id="dateTo"
-                  name="dateTo"
-                  type="date"
-                  className="date-TMS"
-                  onChange={handleDateToChange}
-                />
-                <label htmlFor="dateTo" className="TMS-date-label">
-                  :الي
-                </label>
-              </div>
-              <div className="selectTms-ar">
-                <input
-                  id="dateFrom"
-                  name="dateFrom"
-                  type="date"
-                  className="date-TMS"
-                  onChange={handleDeadlineFromChange}
-                />
-                <label htmlFor="dateFrom" className="TMS-date-label">
-                  :موعد التسليم من
-                </label>
-              </div>
-              <div className="selectTms-ar">
-                <input
-                  id="dateTo"
-                  name="dateTo"
-                  type="date"
-                  className="date-TMS"
-                  onChange={handleDeadlineToChange}
-                />
-                <label htmlFor="dateTo" className="TMS-date-label">
-                  :موعد التسليم الي
-                </label>
-              </div>
+          <div className="flex flex-col items-end justify-center">
+            <label htmlFor="dateTo" className="mb-[10px] text-center font-bold">
+              :الي
+            </label>
+            <input
+              id="dateTo"
+              name="dateTo"
+              type="date"
+              className="p-[10px] border border-[#ccc] box-border w-[150px]"
+              onChange={handleDateToChange}
+            />
+          </div>
+          <div className="flex flex-col items-end justify-center">
+            <label
+              htmlFor="dateFrom"
+              className="mb-[10px] text-center font-bold"
+            >
+              :موعد التسليم من
+            </label>
+            <input
+              id="dateFrom"
+              name="dateFrom"
+              type="date"
+              className="p-[10px] border border-[#ccc] box-border w-[150px]"
+              onChange={handleDeadlineFromChange}
+            />
+          </div>
+          <div className="flex flex-col items-end justify-center">
+            <label htmlFor="dateTo" className="mb-[10px] text-center font-bold">
+              :موعد التسليم الي
+            </label>
+            <input
+              id="dateTo"
+              name="dateTo"
+              type="date"
+              className="p-[10px] border border-[#ccc] box-border w-[150px]"
+              onChange={handleDeadlineToChange}
+            />
           </div>
         </div>
-        <button className="TmsBtn" onClick={resetFilters}>
+        <button
+          className="flex justify-center md:w-full w-[200px] md:mt-[41px] md:m-0 m-auto my-2 items-center bg-wisdomOrange hover:bg-wisdomDarkOrange text-white h-[5vh] px-4 py-2 rounded-md"
+          onClick={resetFilters}
+        >
           مسح
         </button>
-      </div>
-      <div className="files" ref={targetDivRef}>
-        <div className="tasks">
-          <div className="title">:المعين له</div>
-          <div className="title">:المعين</div>
-          <div className="title">:التصنيف</div>
-          <div className="title">:التصنيف الفرعي</div>
-          <div className="title">:الاهمية</div>
-          <div className="title">:الحالة</div>
-          <div className="title">:تاريخ الانتهاء</div>
-          <div className="title">:تاريخ البدء</div>
-          <div className="title">:تفاصيل</div>
-          <div className="title">:مهمة</div>
+      </Navbar3>
+      {/* <div className="tmsTitle-ar">
+        <h1 className="tmsTitle2-ar">:نظام إدارة المهام</h1>
+      </div> */}
+      <div
+        className="shadow-[5px_5px_10px_gray] rounded-[5px] w-[80%] flex justify-self-center flex-col"
+        ref={targetDivRef}
+      >
+        <div className="flex text-center m-[10px] p-[5px] justify-between shadow-[3px_3px_5px_gray] items-center">
+          <div className="font-bold w-[10%] m-[5px]">:تكليف الي</div>
+          <div className="font-bold w-[10%] m-[5px]">:تكليف من</div>
+          <div className="font-bold w-[10%] m-[5px]">:التصنيف</div>
+          <div className="font-bold w-[10%] m-[5px]">:التصنيف الفرعي</div>
+          <div className="font-bold w-[10%] m-[5px]">:الاهمية</div>
+          <div className="font-bold w-[10%] m-[5px]">:الحالة</div>
+          <div className="font-bold w-[10%] m-[5px]">:تاريخ الانتهاء</div>
+          <div className="font-bold w-[10%] m-[5px]">:تاريخ البدء</div>
+          <div className="font-bold w-[10%] m-[5px]">:تفاصيل</div>
+          <div className="font-bold w-[10%] m-[5px]">:مهمة</div>
         </div>
         {tasks.length > 0 ? (
           tasks.map((file, index) => (
@@ -533,22 +519,24 @@ const TomsTms = () => {
               className="tasks taskColumn"
               onClick={() => handleClick(file.id)}
             >
-              <div className="task">{file.assignee.first_name}</div>
-              <div className="task">{file.assigner.first_name}</div>
-              <div className="task">
+              <div className="w-[10%]">{file.assignee.first_name}</div>
+              <div className="w-[10%]">{file.assigner.first_name}</div>
+              <div className="w-[10%]">
                 {file.taskSubCategory.taskCategory.name}
               </div>
-              <div className="task">{file.taskSubCategory.name}</div>
-              <div className="task">{file.importance}</div>
-              <div className="task">{file.status}</div>
-              <div className="task">{formatDate(file.end_date)}</div>
-              <div className="task">{formatDate(file.start_date)}</div>
-              <div className="task taskDescription">{file.description}</div>
-              <div className="task">{file.task}</div>
+              <div className="w-[10%]">{file.taskSubCategory.name}</div>
+              <div className="w-[10%]">{file.importance}</div>
+              <div className="w-[10%]">{file.status}</div>
+              <div className="w-[10%]">{formatDate(file.end_date)}</div>
+              <div className="w-[10%]">{formatDate(file.start_date)}</div>
+              <div className="w-[10%] whitespace-nowrap overflow-hidden text-ellipsis">
+                {file.description}
+              </div>
+              <div className="w-[10%]">{file.task}</div>
             </div>
           ))
         ) : (
-          <p className="noData">لا يوجد ملفات حاليا</p>
+          <p className="text-center">لا يوجد ملفات حاليا</p>
         )}
       </div>
     </>

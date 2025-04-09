@@ -117,8 +117,8 @@ const TomsMyTasks = () => {
   return (
     <>
       <Toaster />
-      <Navbar showNavigate={false}/>
-      <h1 className="myTaskTitle mytaskAr">:مهماتي</h1>
+      <Navbar showNavigate={false} upload={true}/>
+      <h1 className="myTaskTitle mytaskAr text-2xl font-bold">:مهماتي</h1>
       <div className="files">
         <div className="myTasks">
           <div className="myTitle">:فعل</div>

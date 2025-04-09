@@ -48,14 +48,14 @@
 .select {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   justify-content: center;
 }
 
 select {
   padding: 10px;
   font-size: 16px;
-  text-align: center;
+  text-align: start;
   width: 250px;
   border-radius: 5px;
 }
@@ -111,7 +111,7 @@ input[type="radio"] {
   transform: scale(1.2);
 }
 
-button {
+/* button {
   padding: 10px 20px;
   font-size: 16px;
   background-color: #d34102;
@@ -123,4 +123,4 @@ button {
 
 button:hover {
   background-color: #c63b00;
-}
+} */

@@ -1,0 +1,112 @@
+.navbar2 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: gray;
+  /* margin-bottom: 2%; */
+}
+
+.navigate {
+  background-color: transparent;
+  color: black;
+  border-radius: 0 0 0 0;
+  box-shadow: none;
+}
+
+.navigate:hover {
+  background-color: transparent;
+  border-bottom: solid black 2px;
+  border-radius: 0 0 0 0;
+  box-shadow: none;
+}
+
+.navbarChildren {
+  display: flex;
+  justify-content: space-between;
+}
+
+.logoDiv {
+  width: 15%;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  width: 45%;
+  padding: 2px;
+}
+
+.logoGov {
+  width: 50%;
+  border-left: solid black 2px;
+  padding-left: 10px;
+}
+
+.logoutBtn {
+  height: 100%;
+  padding: 10px 20px;
+  margin-right: 2%;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: darkgray;
+}
+
+.logoutBtn:hover {
+  background-color: lightgray;
+  color: black;
+}
+
+.navController {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navController * {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.userCode {
+  background-color: white;
+  padding: 10px;
+  border-radius: 50%; /* Makes the div circular */
+  font-weight: bolder;
+  width: 30px; /* Set width and height to ensure a perfect circle */
+  height: 30px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ccc; /* Optional: Add a border */
+}
+
+.nav-button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 17px;
+  letter-spacing: 0.05rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  background: #001c56;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+  z-index: 0;
+}
+
+.nav-button:hover::before {
+  transform: translate3d(100%, 0, 0);
+}

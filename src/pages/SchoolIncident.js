@@ -105,12 +105,12 @@ const SchoolIncident = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
+    <div className="bg-gray-500 h-[115vh]">
       <Toaster />
-      <Navbar></Navbar>
+      <Navbar upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2">
-        <h1>School Incident</h1>
-        <div className="select">
+        <h1 className="text-2xl font-bold">School Incident</h1>
+        <div className="text-start">
           <label>School:</label>
           <select onChange={(e) => setSchoolId(e.target.value)}>
             <option value="" disabled selected>
@@ -123,11 +123,11 @@ const SchoolIncident = () => {
             ))}
           </select>
         </div>
-        <label htmlFor="comment">Comment:</label>
+        <label htmlFor="comment" className="text-start w-full">Comment:</label>
         <input type="text" name="comment" id="comment" onChange={handleCommentChange} />
-        <label htmlFor="location">Location:</label>
+        <label htmlFor="location" className="text-start w-full">Location:</label>
         <input type="text" name="location" id="location" onChange={handleLocationChange} />
-        <label>Attach File:</label>
+        <label className="text-start w-full">Attach File:</label>
         <input type="file" name="file" onChange={handleFileChange} />
         <div className="select-group">
           <div className="select">
@@ -164,9 +164,9 @@ const SchoolIncident = () => {
           <label>Date:</label>
           <input type="date" onChange={handleDateChange} />
         </div>
-        <button>Submit</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded">Submit</button>
       </form>
-    </>
+    </div>
   );
 };
 

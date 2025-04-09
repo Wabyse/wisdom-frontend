@@ -1,18 +1,33 @@
 import { useState, useEffect } from "react";
 import "../styles/Pms.css";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { fetchForms } from "../services/pms";
-import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
-import newPms from "../assets/newPms.jpg";
+import Navbar2 from "../components/Navbar2";
+import CollapsibleSection from "../components/CollapsibleSection";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faClipboard,
+  faBriefcase,
+  faBook,
+  faUserTie,
+  faIdCardClip,
+  faIdCard,
+  faIdBadge,
+  faAddressCard,
+  faBuilding,
+  faSchool,
+} from "@fortawesome/free-solid-svg-icons";
+import pms1 from "../assets/pms1.jpg";
+import pms2 from "../assets/pms2.jpg";
+import pms3 from "../assets/pms3.jpg";
 
 const roleMapping = {
   T: "Teacher",
   AC: "Academic Principle",
   C: "Curriculum",
   H: "HOD",
-  EDU: "Educational Environment",
+  EDU: "Edu Environment",
   EX: "Executive Principle",
   SPEC: "Specialist",
   W: "Work Enivornment",
@@ -20,10 +35,25 @@ const roleMapping = {
   PD: "PD",
 };
 
+const formLogo = [
+  <FontAwesomeIcon icon={faUserTie} />,
+  <FontAwesomeIcon icon={faBook} />,
+  <FontAwesomeIcon icon={faIdCard} />,
+  <FontAwesomeIcon icon={faBuilding} />,
+  <FontAwesomeIcon icon={faSchool} />,
+  <FontAwesomeIcon icon={faIdBadge} />,
+  <FontAwesomeIcon icon={faAddressCard} />,
+  <FontAwesomeIcon icon={faIdCardClip} />,
+  <FontAwesomeIcon icon={faClipboard} />,
+  <FontAwesomeIcon icon={faBriefcase} />,
+];
+
+const orderedForms2 = [0, 2, 4, 6, 5, 1, 3];
+
 const roleArMapping = {
   T: "مدرس",
   AC: "المدير الاكاديمي",
-  C: "المنهج",
+  C: "المناهج",
   H: "مدير القطاع",
   EDU: "البيئة التعليمية",
   EX: "المدير التنفيذي",
@@ -81,7 +111,12 @@ const Pms = () => {
     const loadForms = async () => {
       try {
         const rawData = await fetchForms();
-        const filtertomsForms = rawData.filter(filter => filter.type !== 'ClassRoom Observation' &&  filter.type !== 'curriculum' && filter.type !== 'normal2')
+        const filtertomsForms = rawData.filter(
+          (filter) =>
+            filter.type !== "ClassRoom Observation" &&
+            filter.type !== "curriculum" &&
+            filter.type !== "normal2"
+        );
 
         const groupedData = [];
 
@@ -123,7 +158,9 @@ const Pms = () => {
         const filter2 = groupedData.filter(
           (testData) => testData.code === "Daily Operations"
         );
-        setForms(filteredGeneralForms);
+        const orderedForms = [0, 2, 4, 6, 5, 1, 3];
+        const newForms = orderedForms.map((id) => filteredGeneralForms[id]);
+        setForms(newForms);
         setPd(filter1);
         setDailyOperations(filter2);
       } catch (err) {
@@ -137,15 +174,546 @@ const Pms = () => {
     loadForms();
   }, []);
 
+  const imgs = [
+    {
+      img: pms1,
+      title: "Progress Tracking",
+      description:
+        "Easily monitor team and individual growth towards key objectives.",
+    },
+    {
+      img: pms2,
+      title: "Insightful Metrics",
+      description:
+        "Understand performance deeply with data that drives smarter decisions.",
+    },
+    {
+      img: pms3,
+      title: "Resources Optimization",
+      description:
+        "Maximize efficiency, Ensue optimal allocation, Reduce costs",
+    },
+  ];
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
     <>
-      <Navbar showNavigate={true}>
-        <ChangeLanguage />
-      </Navbar>
-      <ul className={language ? "forms" : "formsAr"}>
+      <Navbar2 showNavigate={true} img={imgs} length="w-[430px]" Page="PMS">
+        <ul
+          className={`hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start ${
+            language ? "text-start" : "text-end"
+          } md:h-[85vh]`}
+        >
+          <li
+            key="PD"
+            className={`relative group md:border-0 md:p-0 p-2 border-b-2 ${
+              language ? "text-start" : "text-end"
+            } border-black m-2`}
+          >
+            <button
+              className="font-bold relative z-10
+              after:content-['']
+              after:absolute
+              after:left-0
+              after:-bottom-[3px]
+              after:h-[3px]
+              after:rounded
+              after:w-full
+              after:bg-watomsBlue
+              after:transform
+              after:scale-x-0
+              after:origin-left
+              after:transition-transform
+              after:duration-300
+              group-hover:after:scale-x-100"
+            >
+              {language ? (
+                <>{formLogo[9]} PD</>
+              ) : (
+                <>التنمية المهنية {formLogo[9]}</>
+              )}
+            </button>
+
+            <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
+              {language ? (
+                <li
+                  key="Interview"
+                  className="dropdown-item"
+                  onClick={() => handleInterviewClick()}
+                >
+                  Interview
+                </li>
+              ) : (
+                <li
+                  key="Interview"
+                  className="dropdown-item"
+                  onClick={() => handleInterviewClick()}
+                >
+                  مقابلات شخصية
+                </li>
+              )}
+              {language ? (
+                <li
+                  key="test"
+                  className="dropdown-item"
+                  onClick={() => handleTestClick()}
+                >
+                  Test
+                </li>
+              ) : (
+                <li
+                  key="test"
+                  className="dropdown-item"
+                  onClick={() => handleTestClick()}
+                >
+                  إختبار تربوي
+                </li>
+              )}
+              {pd.map((type) =>
+                language
+                  ? type.forms.map((form) => (
+                      <li
+                        key={form.id}
+                        className="dropdown-item"
+                        onClick={() =>
+                          handleClick(form.id, form.en_name, form.ar_name)
+                        }
+                      >
+                        {form.en_name}
+                      </li>
+                    ))
+                  : type.forms.map((form) => (
+                      <li
+                        key={form.id}
+                        className="dropdown-item"
+                        onClick={() =>
+                          handleClick(form.id, form.en_name, form.ar_name)
+                        }
+                      >
+                        {form.ar_name}
+                      </li>
+                    ))
+              )}
+            </ul>
+          </li>
+          <li
+            key="Daily Operations"
+            className={`relative group md:border-0 md:p-0 p-2 border-b-2 ${
+              language ? "text-start" : "text-end"
+            } border-black m-2`}
+          >
+            <button
+              className="font-bold relative z-10
+              after:content-['']
+              after:absolute
+              after:left-0
+              after:-bottom-[3px]
+              after:h-[3px]
+              after:rounded
+              after:w-full
+              after:bg-watomsBlue
+              after:transform
+              after:scale-x-0
+              after:origin-left
+              after:transition-transform
+              after:duration-300
+              group-hover:after:scale-x-100
+            "
+            >
+              {language ? (
+                <>{formLogo[8]} Daily Operations</>
+              ) : (
+                <>الأشراف المدرسي {formLogo[8]}</>
+              )}
+            </button>
+
+            <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
+              {language ? (
+                <li
+                  key="Teacher Substitutions"
+                  className="dropdown-item"
+                  onClick={() => handleTeacherSubstitutionClick()}
+                >
+                  Teacher Substitutions
+                </li>
+              ) : (
+                <li
+                  key="Teacher Substitutions"
+                  className="dropdown-item"
+                  onClick={() => handleTeacherSubstitutionClick()}
+                >
+                  الأحتياطي
+                </li>
+              )}
+              {language ? (
+                <li
+                  key="Teacher Latness"
+                  className="dropdown-item"
+                  onClick={() => handleTeacherLatnessClick()}
+                >
+                  Teacher Latness
+                </li>
+              ) : (
+                <li
+                  key="Teacher Latness"
+                  className="dropdown-item"
+                  onClick={() => handleTeacherLatnessClick()}
+                >
+                  تأخير المعلم
+                </li>
+              )}
+              {language ? (
+                <li
+                  key="Student Absence"
+                  className="dropdown-item"
+                  onClick={() => handleStudentAbsenceClick()}
+                >
+                  Student Absence
+                </li>
+              ) : (
+                <li
+                  key="Student Absence"
+                  className="dropdown-item"
+                  onClick={() => handleStudentAbsenceClick()}
+                >
+                  غياب الطالب
+                </li>
+              )}
+              {language ? (
+                <li
+                  key="School Incident"
+                  className="dropdown-item"
+                  onClick={() => handleSchoolIncidentClick()}
+                >
+                  School Incident
+                </li>
+              ) : (
+                <li
+                  key="School Incident"
+                  className="dropdown-item"
+                  onClick={() => handleSchoolIncidentClick()}
+                >
+                  حوادث المدرسة
+                </li>
+              )}
+              {dailyOperations.map((type) =>
+                language
+                  ? type.forms.map((form) => (
+                      <li
+                        key={form.id}
+                        className="dropdown-item"
+                        onClick={() =>
+                          handleClick(form.id, form.en_name, form.ar_name)
+                        }
+                      >
+                        {form.en_name}
+                      </li>
+                    ))
+                  : type.forms.map((form) => (
+                      <li
+                        key={form.id}
+                        className="dropdown-item"
+                        onClick={() =>
+                          handleClick(form.id, form.en_name, form.ar_name)
+                        }
+                      >
+                        {form.ar_name}
+                      </li>
+                    ))
+              )}
+            </ul>
+          </li>
+          {forms.map((type, index) => (
+            <li
+              key={type.id}
+              className={`relative group md:border-0 md:p-0 p-2 border-b-2 border-black m-2 ${
+                language ? "text-start" : "text-end"
+              }`}
+            >
+              <button
+                className="font-bold relative z-10
+              after:content-['']
+              after:absolute
+              after:left-0
+              after:-bottom-[3px]
+              after:h-[3px]
+              after:rounded
+              after:w-full
+              after:bg-watomsBlue
+              after:transform
+              after:scale-x-0
+              after:origin-left
+              after:transition-transform
+              after:duration-300
+              group-hover:after:scale-x-100
+            "
+              >
+                {language ? (
+                  <>{formLogo[orderedForms2[index]]} {type.code}</>
+                ) : (
+                  <>{type.codeAr} {formLogo[orderedForms2[index]]}</>
+                )}
+              </button>
+
+              <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
+                {language
+                  ? type.forms.map((form) => (
+                      <li
+                        key={form.id}
+                        className="dropdown-item"
+                        onClick={() =>
+                          handleClick(form.id, form.en_name, form.ar_name)
+                        }
+                      >
+                        {form.en_name}
+                      </li>
+                    ))
+                  : type.forms.map((form) => (
+                      <li
+                        key={form.id}
+                        className="dropdown-item"
+                        onClick={() =>
+                          handleClick(form.id, form.en_name, form.ar_name)
+                        }
+                      >
+                        {form.ar_name}
+                      </li>
+                    ))}
+              </ul>
+            </li>
+          ))}
+          <li
+            key="Student behavior"
+            className="relative group md:border-0 md:p-0 p-2 border-b-2 text-center border-black m-2"
+          >
+            <button
+              className="font-bold relative z-10
+              after:content-['']
+              after:absolute
+              after:left-0
+              after:-bottom-[3px]
+              after:h-[3px]
+              after:rounded
+              after:w-full
+              after:bg-watomsBlue
+              after:transform
+              after:scale-x-0
+              after:origin-left
+              after:transition-transform
+              after:duration-300
+              group-hover:after:scale-x-100"
+            >
+                {language ? (
+                  <>{formLogo[7]} Student behavior</>
+                ) : (
+                  <>سلوك الطالب {formLogo[7]}</>
+                )}
+            </button>
+
+            <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
+              {language ? (
+                <li
+                  key="StudentBehavior"
+                  className="dropdown-item"
+                  onClick={() => handleStudentBehaviorClick()}
+                >
+                  Student behavior
+                </li>
+              ) : (
+                <li
+                  key="StudentBehavior"
+                  className="dropdown-item"
+                  onClick={() => handleStudentBehaviorClick()}
+                >
+                  سلوك الطالب
+                </li>
+              )}
+            </ul>
+          </li>
+        </ul>
+        <ul className="md:hidden grid grid-cols-1 md:grid-cols-5 list-none p-[1%] m-[4%] shadow-lg shadow-black/30 md:text-start text-center">
+          {forms.map((type) => (
+            <div key={type.id} className="flex justify-center w-full">
+              <CollapsibleSection
+                title={language ? type.code : type.codeAr}
+                language={language}
+              >
+                <div className="w-full text-center max-w-[600px]">
+                  {type.forms.map((form, index) => (
+                    <div key={form.id} className="w-full mb-4">
+                      <button
+                        className="text-[18px] w-full text-center"
+                        onClick={() =>
+                          handleClick(
+                            form.id,
+                            language ? form.en_name : form.ar_name
+                          )
+                        }
+                      >
+                        {language ? form.en_name : form.ar_name}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleSection>
+            </div>
+          ))}
+          <div key="PD" className="flex justify-center w-full">
+            <CollapsibleSection
+              title={language ? "PD" : "التنمية المهنية"}
+              language={language}
+            >
+              <div className="w-full text-center max-w-[600px]">
+                {language ? (
+                  <div key="Interview" className="w-full mb-4">
+                    <button
+                      className="text-[18px] w-full text-center"
+                      onClick={() => handleInterviewClick()}
+                    >
+                      Interview
+                    </button>
+                  </div>
+                ) : (
+                  <div key="Interview" className="w-full mb-4">
+                    <button
+                      className="text-[18px] w-full text-center"
+                      onClick={() => handleInterviewClick()}
+                    >
+                      مقابلات شخصية
+                    </button>
+                  </div>
+                )}
+                {language ? (
+                  <div key="test" className="w-full mb-4">
+                    <button
+                      className="text-[18px] w-full text-center"
+                      onClick={() => handleInterviewClick()}
+                    >
+                      Test
+                    </button>
+                  </div>
+                ) : (
+                  <div key="test" className="w-full mb-4">
+                    <button
+                      className="text-[18px] w-full text-center"
+                      onClick={() => handleInterviewClick()}
+                    >
+                      إختبار تربوي
+                    </button>
+                  </div>
+                )}
+                {pd.map((type) =>
+                  type.forms.map((form) =>
+                    language ? (
+                      <div key={form.id} className="w-full mb-4">
+                        <button
+                          className="text-[18px] w-full text-center"
+                          onClick={() => handleClick(form.id, form.ar_name)}
+                        >
+                          {form.en_name}
+                        </button>
+                      </div>
+                    ) : (
+                      <div key={form.id} className="w-full mb-4">
+                        <button
+                          className="text-[18px] w-full text-center"
+                          onClick={() => handleClick(form.id, form.ar_name)}
+                        >
+                          {form.ar_name}
+                        </button>
+                      </div>
+                    )
+                  )
+                )}
+              </div>
+            </CollapsibleSection>
+          </div>
+          <div key="Daily Operations" className="flex justify-center w-full">
+            <CollapsibleSection
+              title={language ? "Daily Operations" : "الأشراف المدرسي"}
+              language={language}
+            >
+              <div className="w-full text-center max-w-[600px]">
+                <div key="Teacher Substitutions" className="w-full mb-4">
+                  <button
+                    className="text-[18px] w-full text-center"
+                    onClick={() => handleTeacherSubstitutionClick()}
+                  >
+                    {language ? "Teacher Substitutions" : "الأحتياطي"}
+                  </button>
+                </div>
+                <div key="Teacher Latness" className="w-full mb-4">
+                  <button
+                    className="text-[18px] w-full text-center"
+                    onClick={() => handleTeacherLatnessClick()}
+                  >
+                    {language ? "Teacher Latness" : "تأخير المعلم"}
+                  </button>
+                </div>
+                <div key="Student Absence" className="w-full mb-4">
+                  <button
+                    className="text-[18px] w-full text-center"
+                    onClick={() => handleStudentAbsenceClick()}
+                  >
+                    {language ? "Student Absence" : "غياب الطالب"}
+                  </button>
+                </div>
+                <div key="School Incident" className="w-full mb-4">
+                  <button
+                    className="text-[18px] w-full text-center"
+                    onClick={() => handleSchoolIncidentClick()}
+                  >
+                    {language ? "School Incident" : "حوادث المدرسة"}
+                  </button>
+                </div>
+                {dailyOperations.map((type) =>
+                  type.forms.map((form) =>
+                    language ? (
+                      <div key={form.id} className="w-full mb-4">
+                        <button
+                          className="text-[18px] w-full text-center"
+                          onClick={() => handleClick(form.id, form.ar_name)}
+                        >
+                          {form.en_name}
+                        </button>
+                      </div>
+                    ) : (
+                      <div key={form.id} className="w-full mb-4">
+                        <button
+                          className="text-[18px] w-full text-center"
+                          onClick={() => handleClick(form.id, form.ar_name)}
+                        >
+                          {form.ar_name}
+                        </button>
+                      </div>
+                    )
+                  )
+                )}
+              </div>
+            </CollapsibleSection>
+          </div>
+          <div key="Student behavior" className="flex justify-center w-full">
+            <CollapsibleSection
+              title={language ? "Student behavior" : "سلوك الطالب"}
+              language={language}
+            >
+              <div className="w-full text-center max-w-[600px]">
+                <div key="StudentBehavior" className="w-full mb-4">
+                  <button
+                    className="text-[18px] w-full text-center"
+                    onClick={() => handleStudentBehaviorClick()}
+                  >
+                    {language ? "StudentBehavior" : "سلوك الطالب"}
+                  </button>
+                </div>
+              </div>
+            </CollapsibleSection>
+          </div>
+        </ul>
+      </Navbar2>
+      {/* <ul className={language ? "forms" : "formsAr"}>
         {forms.map((type) => (
           <li key={type.id} className="categories">
             <button className="category">
@@ -372,13 +940,7 @@ const Pms = () => {
             )}
           </ul>
         </li>
-      </ul>
-      <img
-        className="newPms"
-        width="20%"
-        src={newPms}
-        alt="company logo"
-      ></img>
+      </ul> */}
     </>
   );
 };

@@ -298,22 +298,25 @@ function TomsForm() {
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
 
   return (
-    <div className="formPage">
+    <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-screen">
       <Toaster />
       <img
-        className="newLogo"
-        width="20%"
+        className="md:w-[60%] w-full md:h-[30vh]"
         src={newLogo2}
         alt="company logo"
       ></img>
-      <div className="form">
-        <h1 className="header">{formArName}</h1>
-        <form className="form2" onSubmit={handleSubmit}>
+      <div className="flex flex-col items-center justify-center mt-0 text-center md:w-[75%] w-full bg-formColor min-h-[80vh] mb-[5%] rounded-[15px]">
+        <h1 className="text-center my-[20px] text-2xl">{formArName}</h1>
+        <form
+          className="flex flex-col items-center justify-center w-full"
+          onSubmit={handleSubmit}
+        >
           {formType[0] === "ClassRoom Observation" ? (
-            <div className="selects">
-              <div className="select">
+            <div className="w-full flex md:justify-evenly flex-col md:flex-row">
+              <div className="flex flex-col items-center justify-center">
                 <label htmlFor="department">:المهنة</label>
                 <select
+                  className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
                   id="department"
                   name="department"
                   onChange={handleDepartmentChange}
@@ -329,9 +332,13 @@ function TomsForm() {
                   ))}
                 </select>
               </div>
-              <div className="select">
+              <div className="flex flex-col items-center justify-center">
                 <label>:المدرب</label>
-                <select id="user" name="user">
+                <select
+                  className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
+                  id="user"
+                  name="user"
+                >
                   <option value="" disabled selected>
                     الرجاء اختيار المدرب
                   </option>
@@ -345,9 +352,13 @@ function TomsForm() {
               </div>
             </div>
           ) : formType[0] === "curriculum" ? (
-            <div className="select">
+            <div className="flex flex-col items-center justify-center">
               <label>:المنهج</label>
-              <select id="curriculum" name="curriculum">
+              <select
+                className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
+                id="curriculum"
+                name="curriculum"
+              >
                 <option value="" disabled selected>
                   الرجاء اختيار المنهج
                 </option>
@@ -361,25 +372,23 @@ function TomsForm() {
           ) : null}
           {Object.entries(filteredForm2[0]).map(([fieldName, questions]) => (
             <CollapsibleSection key={fieldName} title={fieldName}>
-              <div key={fieldName} className="field-group">
+              <div key={fieldName} className="w-full max-w-[600px] text-center mb-[20px]">
                 {questions.map((question, index) => (
-                  <div key={question.question_id} className="questions">
-                    <h3 className="question">
+                  <div key={question.question_id} className="w-full mb-[15px] flex items-end text-right flex-col">
+                    <h3 className="text-[18px] text-bold mb-[10px] w-full">
                       {/* {`(${index})`} */}
                       {question.title}
                     </h3>
 
-                    <div className="question">
+                    <div className="text-[18px] text-bold mb-[10px] w-full">
                       {Array.from({ length: question.max_score }, (_, i) => (
                         <label
                           key={i}
-                          style={{
-                            display: "inline-block",
-                            marginRight: "10px",
-                          }}
+                          className="mr-[10px] inline-block"
                         >
                           <input
                             type="radio"
+                            className="accent-wisdomOrange"
                             name={`question:${question.question_id}`}
                             value={JSON.stringify({
                               score: question.max_score - i,
@@ -396,7 +405,7 @@ function TomsForm() {
             </CollapsibleSection>
           ))}
 
-          <button type="submit" className="submitButton">
+          <button type="submit" className="bg-wisdomOrange px-4 py-2 rounded-2xl text-white hover:bg-wisdomDarkOrange cursor-pointer">
             أرسال
           </button>
         </form>

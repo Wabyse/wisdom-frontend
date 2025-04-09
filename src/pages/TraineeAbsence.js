@@ -188,23 +188,22 @@ function TraineeAbsence() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="teacherLatnessForm">
+    <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
       <Toaster />
-      <div className="returnDiv-Ar">
-        <button onClick={returnPms}>رجوع &gt;</button>
+      <div className="flex justify-end w-full p-[5px] h-[6vh]">
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white text-center p-4 flex justify-center items-center rounded" onClick={returnPms}>رجوع &gt;</button>
       </div>
-      <div className="Div100">
+      <div className="w-full flex justify-center">
       <img
-        className="newLogo"
-        width="20%"
+        className="w-[60%] h-[30vh]"
         src={newLogo2}
         alt="company logo"
       ></img>
       </div>
-      <div className="Div100">
-        <h1>غياب المتدرب</h1>
+      <div className="w-full text-center">
+        <h1 className="text-2xl font-bold">غياب المتدرب</h1>
       </div>
-      <div className="select Div100">
+      <div className="flex flex-col justify-center items-center w-full mb-2">
         <label>:المركز</label>
         <select
           id="school"

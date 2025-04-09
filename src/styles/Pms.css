@@ -50,8 +50,8 @@
   color: black;
   font-size: 16px;
   cursor: pointer;
-  border-bottom: solid black 2px;
-  border-radius: 0 0 0 0;
+
+  border-radius: 0 0 0 0;  border-bottom: solid black 2px;
   /* padding: 10px; */
   /* border-radius: 50px; */
   /* background: linear-gradient(145deg, #cacaca, #f0f0f0); */

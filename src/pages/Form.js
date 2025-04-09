@@ -313,16 +313,15 @@ function Form() {
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
 
   return (
-    <div className="formPage">
+    <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-screen">
       <Toaster />
       <img
-        className="newLogo"
-        width="20%"
+        className="md:w-[60%] w-full md:h-[30vh]"
         src={newLogo}
         alt="company logo"
       ></img>
       <div className="form">
-        <h1 className="header">{language ? formEnName : formArName}</h1>
+        <h1 className="header text-2xl font-bold">{language ? formEnName : formArName}</h1>
         <form className="form2" onSubmit={handleSubmit}>
           {formType[0] === "360 Individual Assessment" ? (
             <div className="selects">
@@ -431,7 +430,7 @@ function Form() {
             )
           )}
 
-          <button type="submit" className="submitButton">
+          <button type="submit" className="submitButton bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded">
             {language ? "Submit" : "أرسال"}
           </button>
         </form>

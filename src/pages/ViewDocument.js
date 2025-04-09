@@ -43,9 +43,9 @@ const ViewDocument = () => {
   }, [id]);
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar upload={true}></Navbar>
       <div className="view">
-        <h1>View Document</h1>
+        <h1 className="text-2xl font-bold">View Document</h1>
         <div className="part">
           <div className="detail-container">
             <label>File: </label>

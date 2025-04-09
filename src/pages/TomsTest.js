@@ -84,25 +84,24 @@ function TomsTest() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="teacherLatnessForm">
+    <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
       <Toaster />
-      <div className="returnDiv-Ar">
-        <button onClick={returnPms}>رجوع &tg;</button>
+      <div className="flex justify-end w-full p-[5px] h-[6vh]">
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded flex justify-center items-center" onClick={returnPms}>رجوع &gt;</button>
       </div>
-      <div className="Div100">
+      <div className="w-full flex justify-center">
       <img
-        className="newLogo"
-        width="20%"
+        className="w-[60%] h-[30vh]"
         src={newLogo2}
         alt="company logo"
       ></img>
       </div>
-      <div className="Div100">
-        <h1>إختبار تربوي</h1>
+      <div className="w-full">
+        <h1 className="text-2xl font-bold text-center">إختبار تربوي</h1>
       </div>
-      <div className="select Div100">
-        <div className="select">
-          <label>:مدرب</label>
+      <div className="flex flex-col justify-center items-center w-[100%]">
+        <div className="flex flex-col">
+          <label className="text-center font-bold">:مدرب</label>
           <select id="user" name="user" onChange={selectUserHandler}>
             <option value="" disabled selected>
               الرجاء اختيار مدرب
@@ -126,7 +125,7 @@ function TomsTest() {
                   type="number"
                   max="100"
                   min="0"
-                  className="interviewResultInput"
+                  className="interviewResultInput border-black border-2"
                   value={testResultData[index] || ""}
                   key={index + 1}
                   onChange={(e) => changeInputResult(index, e.target.value)}
@@ -134,7 +133,7 @@ function TomsTest() {
               </div>
             </div>
           ))}
-          <button className="InBtn">ارسال</button>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded h-[5vh] flex justify-center items-center my-auto">ارسال</button>
         </form>
       ) : (
         <div className="noTeacher">لا يوجد بيانات حاليا</div>

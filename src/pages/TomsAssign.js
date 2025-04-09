@@ -103,15 +103,16 @@ const TomsAssign = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
+    <div className="bg-gray-500 h-[125vh] text-end">
       <Toaster />
-      <Navbar showNavigate={false}></Navbar>
+      <Navbar showNavigate={false} upload={true}></Navbar>
       <form onSubmit={submitTask} className="assignForm form2">
-        <h1>تعيين مهمة</h1>
+        <h1 className="text-2xl font-bold">تعيين مهمة</h1>
+        <div className="select-group">
         <div className="select">
-          <label key="user">:الموظف</label>
+          <label className="w-full" key="user">:الموظف</label>
           <select id="user" name="user">
-            <option value="" disabled selected>
+            <option className="text-end" value="" disabled selected>
               الرجاء اختيار موظف
             </option>
             {filteredUsers.map((user) => (
@@ -122,9 +123,9 @@ const TomsAssign = () => {
           </select>
         </div>
         <div className="select">
-          <label key="importance">:الاهمية</label>
+          <label className="w-full" key="importance">:الاهمية</label>
           <select id="importance" name="importance">
-            <option value="" disabled selected>
+            <option className="text-end" value="" disabled selected>
               الرجاء اختيار الاهمية
             </option>
             {importance.map((state) => (
@@ -134,10 +135,12 @@ const TomsAssign = () => {
             ))}
           </select>
         </div>
-        <label>:المهمة</label>
+        </div>
+
+        <label className="w-full">:المهمة</label>
         <input className="AssignText" type="text" name="task" />
 
-        <label>:الوصف</label>
+        <label className="w-full">:الوصف</label>
         <input className="AssignText" type="text" name="description" />
 
         <div className="date-time-group">
@@ -162,18 +165,18 @@ const TomsAssign = () => {
           </div>
         </div>
 
-        <label>:رفع ملف (اختياري)</label>
+        <label className="w-full">:رفع ملف (اختياري)</label>
         <input type="file" name="file" onChange={handleFileChange} />
 
         <div className="select-group">
           <div className="select">
-            <label key="category">:تصنيف</label>
+            <label className="w-full" key="category">:تصنيف</label>
             <select
               id="category"
               name="category"
               onChange={handleCategoryChange}
             >
-              <option value="" disabled selected>
+              <option className="text-end" value="" disabled selected>
                 الرجاء اختيار تصنيف
               </option>
               {categories.map((category, index) => (
@@ -185,14 +188,14 @@ const TomsAssign = () => {
           </div>
 
           <div className="select">
-            <label>:تصنيف فرعي</label>
+            <label className="w-full">:تصنيف فرعي</label>
             <select
               id="subCategory"
               name="subCategory"
               onClick={handleSubCategoryClick}
               // disabled={!selectedCategory}
             >
-              <option value="" disabled selected>
+              <option className="text-end" value="" disabled selected>
                 الرجاء اختيار تصنيف فرعي
               </option>
               {selectedCategories.map((subCategory) => (
@@ -202,9 +205,9 @@ const TomsAssign = () => {
           </div>
         </div>
 
-        <button>ارسال</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded">ارسال</button>
       </form>
-    </>
+    </div>
   );
 };
 
