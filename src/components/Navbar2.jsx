@@ -7,13 +7,14 @@ import wisdom from "../assets/wisdom.png";
 import { useEffect, useState } from "react";
 import ChangeLanguage from "./ChangeLanguage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faComment } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Page }) => {
+const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Page, description }) => {
     const { setUserCode } = useAuth();
-    const [sideBar, setSideBar] = useState(true);
-    const [profile, setProfile] = useState("hidden");
-    const [profileHover, setProfileHover] = useState(false);
+    const [sideBar, setSideBar] = useState(false);
+    // const [profile, setProfile] = useState("hidden");
+    // const [profileHover, setProfileHover] = useState(false);
     const { userCode } = useAuth();
     const [current, setCurrent] = useState(0);
     const [mobile, setMobile] = useState(false);
@@ -25,16 +26,17 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
         setUserCode(null);
         window.location.href = "/login";
     };
+    const { userInfo } = useAuth();
 
-    const viewProfile = () => {
-        setProfileHover(true);
-        setProfile("");
-    }
+    // const viewProfile = () => {
+    //     setProfileHover(true);
+    //     setProfile("");
+    // }
 
-    const hideProfile = () => {
-        setProfileHover(false);
-        setProfile("hidden");
-    }
+    // const hideProfile = () => {
+    //     setProfileHover(false);
+    //     setProfile("hidden");
+    // }
 
     const navItem = (label, path) => (
         <button
@@ -42,7 +44,7 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
                 navigate(path);
                 setMobile(false);
             }}
-            className={`relative bg-transparent text-black rounded-none shadow-none border-none px-2 py-1 group  ${mobile ? "" : profile}`}
+            className={`relative bg-transparent text-black rounded-none shadow-none border-none px-2 py-1 group`}
         >
             <span
                 className="font-bold relative z-10
@@ -72,7 +74,7 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
         }, 5000);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [img]);
 
     useEffect(() => {
         const { title, description } = img[current];
@@ -119,16 +121,16 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
             clearInterval(subtitleTimer);
             clearTimeout(subtitleDelay);
         };
-    }, [current]);
+    }, [current, img]);
 
     return (
         <div
-            className="w-full flex flex-col h-[700px] bg-cover bg-center m-0 transition-all duration-1000 ease-in-out"
+            className="w-full min-h-screen flex flex-col h-full bg-cover bg-center m-0 transition-all duration-1000 ease-in-out"
             style={{
                 backgroundImage: `url(${img[current].img})`,
             }}
         >
-            <div className="w-full flex justify-between items-center px-4 py-2">
+            <div className="w-screen flex justify-between items-center px-4 py-2">
                 <div className="flex items-center gap-2">
                     {showNavigate ? <img className="w-[15%]" src={wisdom} alt="Wabys Logo" /> : <img className="w-[8%]" src={watoms2} alt="Wabys Logo" />}
                     {showNavigate ? null : (
@@ -140,33 +142,31 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
                     )}
                 </div>
                 <div className="flex">
-                <div className="text-black text-md font-bold bg-blue-300 rounded-full shadow-lg shadow-black/30 mr-6">
+                    <div className="text-black text-md font-bold bg-blue-300 rounded-full shadow-lg shadow-black/30 mr-6">
                         <span className="inline-block px-1 py-2 rounded-full border-black border-2 m-1">
                             {Page}
                         </span>
                     </div>
                     <div
-                        className={`hidden md:flex items-center gap-4 bg-white p-1 rounded-full shadow-lg shadow-black/30 transition-all duration-300 ease-in-out overflow-hidden ${profileHover ? length : "w-[52px]"}`}
-                        onMouseEnter={viewProfile}
-                        onMouseLeave={hideProfile}
+                        className={`hidden md:flex items-center gap-4 bg-white p-1 rounded-full shadow-lg shadow-black/30 ${length}`}
                     >
-                        {showNavigate
+                        {Page !== "PMS" ? showNavigate
                             ? navItem("PMS", "/pms")
-                            : navItem("PMS", "/watoms/pms")}
-                        {showNavigate
+                            : navItem("PMS", "/watoms/pms") : null}
+                        {Page !== "DMS" && userInfo.user_role !== "Student" && userInfo.user_role !== "Trainee" ? showNavigate
                             ? navItem("DMS", "/dms")
-                            : navItem("DMS", "/watoms/dms")}
-                        {showNavigate
+                            : navItem("DMS", "/watoms/dms") : null}
+                        {Page !== "TMS" && userInfo.user_role !== "Student" && userInfo.user_role !== "Trainee" ? showNavigate
                             ? navItem("TMS", "/tms")
-                            : navItem("TMS", "/watoms/tms")}
-                        <div className={`${profile}`}>{showNavigate ? <ChangeLanguage /> : null}</div>
+                            : navItem("TMS", "/watoms/tms") : null}
+                        {showNavigate ? <ChangeLanguage /> : null}
                         <div className="flex items-center gap-2">
                             <div className="bg-white text-center p-2 rounded-full font-bold w-11 h-11 border-2 border-gray-300 flex items-center justify-center">
                                 {userCode || "Guest"}
                             </div>
                             <button
                                 onClick={loggingOut}
-                                className={`relative inline-block px-4 py-2 font-bold text-white rounded-full overflow-hidden bg-watomsBlue hover:bg-wisdomOrange ${style["nav-button"]} ${profile}`}
+                                className={`relative inline-block px-4 py-2 font-bold text-white rounded-full overflow-hidden bg-watomsBlue hover:bg-wisdomOrange ${style["nav-button"]}`}
                             >
                                 <span className="relative z-10 transition-colors duration-400">
                                     Logout
@@ -217,29 +217,50 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
                     {children}
                 </div>
             )}
-            <div className={`md:flex ${mobile ? "hidden" : ""} justify-between h-[650px]`}>
-                <div className="flex h-full flex-col justify-center p-5">
-                    <div className="text-black text-5xl">
-                        <span className="inline-block bg-white shadow-lg shadow-black/30 px-2 py-3 rounded">
-                            {typedTitle}
+            <div className={`md:flex ${mobile ? "hidden" : ""} justify-between`}>
+                <div className="flex flex-col">
+                    <div className={`text-black text-[18px] m-5 ${description ? "" : "hidden"}`}>
+                        <span className="opacity-75 inline-block h-[50vh] w-[400px] bg-white shadow-lg shadow-black/30 px-3 py-3 rounded">
+                            {Page === "PMS" ? <p className="text-[22px] font-bold">Performance Management System: </p> : null}{description}
                         </span>
                     </div>
-                    <div className="text-black text-2xl mt-4">
-                        <span className="inline-block bg-white shadow-lg shadow-black/30 px-2 rounded">
-                            {typedSubtitle}
+                    <div className="flex h-full flex-col justify-center px-5 min-h-[25vh]">
+                        <div className="text-black text-5xl mt-4">
+                            <span className="inline-block bg-white shadow-lg shadow-black/30 px-2 py-3 rounded">
+                                {typedTitle}
+                            </span>
+                        </div>
+                        <div className="text-black text-2xl mt-4">
+                            <span className="inline-block bg-white shadow-lg shadow-black/30 px-2 rounded">
+                                {typedSubtitle}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="text-black text-2xl flex hover:opacity-50 mx-5  items-end">
+                        <span className="inline-block bg-white shadow-lg shadow-black/30 py-2 px-3 rounded-full">
+                            <FontAwesomeIcon icon={faComment} />
                         </span>
+                        <p className="text-white my-auto ml-2">Ask me</p>
                     </div>
                 </div>
                 <div
-                    className={`relative bg-white opacity-75 my-2 mx-2 shadow-lg shadow-black/30 rounded hidden md:flex flex-col items-end transition-all duration-1000 ease-in-out ${sideBar ? "max-w-[100px] max-h-[40px] rounded-l-full" : "max-w-[500px] max-h-[600px]"
+                    className={`relative bg-white opacity-75 my-2 mx-2 shadow-lg shadow-black/30 rounded hidden md:flex flex-col items-end transition-all duration-1000 ease-in-out ${sideBar ? "max-h-[40px] rounded-l-full" : "max-w-[500px] max-h-[650px]"
                         }`}
-                    onMouseEnter={() => setSideBar(false)}
-                    onMouseLeave={() => setSideBar(true)}
                 >
-                    <div className={`w-full h-full p-2 transition-all duration-1000 ease-in-out ${sideBar ? "overflow-hidden" : "overflow-visible"}`}>
-                        {sideBar ? <FontAwesomeIcon icon={faArrowLeft} /> : children}
+                    <div className={`w-full h-full p-2 transition-all duration-1000 ease-in-out ${sideBar ? "overflow-hidden" : "overflow-visible min-w-[220px]"}`}>
+                        <button onClick={() => setSideBar(!sideBar)}><FontAwesomeIcon icon={faArrowRight} /></button>
+                        {sideBar ? null : children}
                     </div>
                 </div>
+                {/* <div
+                    className={`relative bg-white opacity-75 my-2 mx-2 shadow-lg shadow-black/30 rounded hidden md:flex flex-col items-end overflow-hidden transition-all duration-1000 ease-in-out 
+                    ${sideBar ? "max-w-[500px] max-h-[600px]" : "max-w-[100px] max-h-[50px] rounded-l-full"}`}
+                >
+                    <div className={`w-full h-full p-2`}>
+                        <button onClick={() => setSideBar(!sideBar)}><FontAwesomeIcon icon={faArrowRight} /></button>
+                        {sideBar ? children : null}
+                    </div>
+                </div> */}
 
             </div>
         </div>

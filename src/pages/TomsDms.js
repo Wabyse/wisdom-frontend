@@ -10,12 +10,15 @@ import dms1 from "../assets/dms1.jpg";
 import dms2 from "../assets/dms2.jpg";
 import dms3 from "../assets/dms3.jpg";
 import Navbar3 from "../components/Navbar3";
+import wabys from "../assets/wabys.png";
+
+const dmsDesc = "In today's information-rich environment, this module is vital for ensuring operational efficiency and regulatory compliance. It provides a secure and organized repository for all critical documents, enabling effortless access, version control, and collaboration. By streamlining document workflows and minimizing the risks associated with lost or mismanaged information"
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
 const TomsDms = () => {
   const navigate = useNavigate();
-
+  const { userInfo } = useAuth();
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedSchool, setSelectedSchool] = useState("");
@@ -30,7 +33,6 @@ const TomsDms = () => {
   const [dateFrom, setDateFrom] = useState();
   const [dateTo, setDateTo] = useState();
   const [test, setTest] = useState(0);
-  const { userInfo } = useAuth();
   const targetDivRef = useRef(null);
 
   const handleClick = (id) => {
@@ -91,7 +93,7 @@ const TomsDms = () => {
   };
 
   const openPDF = (fileName) => {
-    const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName.filteredPath}`; // Your PDF URL
+    const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName.filteredPath}`;
     window.open(pdfUrl, "_blank"); // Opens PDF in new tab
   };
 
@@ -122,10 +124,11 @@ const TomsDms = () => {
         const response = await fetchingFiles();
         let newFiltered = [];
         const paths = response.data.files;
-        let departmentId = selectedDepartment
+        let departmentId = selectedDepartment && (userInfo.user_role === "Operations Excellence Lead" ||userInfo.user_role === "Manager") 
           ? Number(selectedDepartment)
-          : null;
-        let organizationId = selectedSchool ? Number(selectedSchool) : null;
+          : userInfo.user_role !== "Operations Excellence Lead" || userInfo.user_role !== "Manager" ? userInfo.department_id : null;
+          console.log(userInfo)
+        let organizationId = selectedSchool && userInfo.user_role === "Operations Excellence Lead" ? Number(selectedSchool) : userInfo.user_role !== "Operations Excellence Lead" ? userInfo.organization_id : null;
         let fromDate = dateFrom ? new Date(dateFrom) : null;
         let toDate = dateTo ? new Date(dateTo) : null;
         let categoryFilter = selectedCategory ? Number(selectedCategory) : null;
@@ -287,26 +290,44 @@ const TomsDms = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="w-full">
       <Navbar3
         showNavigate={false}
         img={imgs}
-        length="w-[470px]"
+        length="w-[420px]"
         header={header}
         Page="DMS"
+        description={dmsDesc}
       >
         {/* <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange rounded px-4 py-2 text-white w-[90px]" onClick={uploadDocument}>رفع ملف</button> */}
-        <Selector
+        {userInfo.user_role === "Operations Excellence Lead" ? <Selector
           label="school"
           title=":المركز"
           description="الرجاء اختيار مركز"
           data={schools}
           value={selectedSchool}
           onChange={handleSchoolChange}
-        />
-        <Selector
+        /> : null}
+        {userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Manager" ? <Selector
           label="department"
           title=":المهنة"
           description="الرجاء اختيار مهنة"
@@ -314,7 +335,7 @@ const TomsDms = () => {
           value={selectedDepartment}
           onChange={handleDepartmentChange}
           name="Name"
-        />
+        /> : null}
         <Selector
           label="category"
           title=":التصنيف"

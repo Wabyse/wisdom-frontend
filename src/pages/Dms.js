@@ -11,6 +11,9 @@ import Navbar3 from "../components/Navbar3";
 import dms1 from "../assets/dms1.jpg";
 import dms2 from "../assets/dms2.jpg";
 import dms3 from "../assets/dms3.jpg";
+import wabys from "../assets/wabys.png";
+
+const dmsDesc = "In today's information-rich environment, this module is vital for ensuring operational efficiency and regulatory compliance. It provides a secure and organized repository for all critical documents, enabling effortless access, version control, and collaboration. By streamlining document workflows and minimizing the risks associated with lost or mismanaged information"
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -266,8 +269,6 @@ const Dms = () => {
     fetchCategories();
   }, [test]);
 
-  console.log(language);
-
   const header = (label, path) => (
     <div className="flex justify-evenly">
       <button
@@ -303,17 +304,35 @@ const Dms = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="w-full">
       <Navbar3
         showNavigate={true}
         img={imgs}
-        length={language ? "w-[620px]" : "w-[550px]"}
+        length={language ? "w-[560px]" : "w-[490px]"}
         header={header}
         Page="DMS"
+        description={dmsDesc}
       >
-        <Selector
+        {userInfo.user_role === "OEL" ? <Selector
           label="school"
           title={language ? "School:" : ":المدرسة"}
           description={
@@ -322,8 +341,8 @@ const Dms = () => {
           data={schools}
           value={selectedSchool}
           onChange={handleSchoolChange}
-        />
-        <Selector
+        /> : null}
+        {userInfo.user_role === "OEL" ? <Selector
           label="department"
           title={language ? "Department:" : ":القسم"}
           description={
@@ -333,7 +352,7 @@ const Dms = () => {
           value={selectedDepartment}
           onChange={handleDepartmentChange}
           name="Name"
-        />
+        /> : null}
         <Selector
           label="category"
           title={language ? "Category:" : ":التصنيف"}
@@ -381,7 +400,7 @@ const Dms = () => {
           />
         </div>
         <button
-          className="flex justify-center md:w-full w-[200px] md:mt-[41px] md:m-0 m-auto my-2 items-center bg-wisdomOrange hover:bg-wisdomDarkOrange text-white h-[5vh] px-4 py-2 rounded-md"
+          className="flex justify-center md:w-full w-[200px] md:mt-[30px] md:m-0 m-auto my-2 items-center bg-wisdomOrange hover:bg-wisdomDarkOrange text-white h-[5vh] px-4 py-2 rounded-md"
           onClick={resetFilters}
         >
           {language ? "Reset" : "مسح"}

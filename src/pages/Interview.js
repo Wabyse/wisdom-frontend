@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import style from "../styles/Loading.module.css";
 import "../styles/Interview.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
@@ -7,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
 import newLogo from "../assets/newLogo.jpg";
+import wabys from "../assets/wabys.png";
 
 const interviewResults = [
   "Title 1",
@@ -70,7 +72,8 @@ function Interview() {
     const loadTeachers = async () => {
       try {
         const response = await fetchAllTeachers();
-        serTeachers(response);
+        const RelatedUsers = response.filter(user => user.employee.organization_id === userInfo.organization_id);
+        serTeachers(RelatedUsers);
       } catch (err) {
         console.error("API Error:", err);
         setError(
@@ -82,18 +85,54 @@ function Interview() {
     };
 
     loadTeachers();
-  }, []);
+  }, [userInfo]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role !== "Academic Principle" && userInfo.user_role !== "Operations Excellence Lead") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
       <Toaster />
       <div
-        className={`flex w-full p-[5px] h-[6vh] ${
-          language ? "justify-start" : "justify-end"
-        }`}
+        className={`flex w-full p-[5px] h-[6vh] ${language ? "justify-start" : "justify-end"
+          }`}
       >
         <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded flex justify-center items-center" onClick={returnPms}>{language ? "< Return" : "رجوع >"}</button>
       </div>

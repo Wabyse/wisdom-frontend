@@ -3,10 +3,18 @@ import Navbar from "../components/Navbar";
 import "../styles/ViewDocument.css";
 import { useEffect, useState } from "react";
 import { fetchingFiles } from "../services/dms";
+import wabys from "../assets/wabys.png";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
 
 const ViewDocument = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
+  const { userInfo } = useAuth();
   const [document, setDocument] = useState(null);
+  const { language } = useLanguage();
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A"; // Handle undefined/null
@@ -41,70 +49,91 @@ const ViewDocument = () => {
     };
     loadingFiles();
   }, [id]);
+
+  if (userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
+
   return (
-    <>
-      <Navbar upload={true}></Navbar>
-      <div className="view">
-        <h1 className="text-2xl font-bold">View Document</h1>
+    <div className="bg-gray-500 h-screen">
+      <Navbar upload={true} length="w-[430px]">
+        <ChangeLanguage />
+      </Navbar>
+      <div className=" bg-slate-600 text-white p-[20px] rounded-[8px] max-w-[600px] w-full m-auto shadow-md mt-2">
+        <h1 className="text-2xl font-bold text-center">{language ? "View Document" : "تفاصيل الملف"}</h1>
         <div className="part">
-          <div className="detail-container">
-            <label>File: </label>
+          <div className="detail-container  bg-slate-200">
+            <label className="text-red-600">{language ? "File:" : ":الملف"}</label>
             <h1>{`${document?.file_path
               .split("\\")
               .pop()
               .replace(/^\d+-/, "")}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Created Date: </label>
+          <div className="detail-container  bg-slate-200">
+            <label className="text-red-600">{language ? "Created Date:" : ":تاريخ رفع الملف"}</label>
             <h1>{`${formatDate(document?.createdAt)}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Category: </label>
+          <div className="detail-container  bg-slate-200">
+            <label className="text-red-600">{language ? "Category:" : ":التصنيف"}</label>
             <h1>{`${document?.documentSubCategory.documentCategory.name}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Sub-Category: </label>
+          <div className="detail-container  bg-slate-200">
+            <label className="text-red-600">{language ? "Sub-Category:" : ":التصنيف الفرعي"}</label>
             <h1>{`${document?.documentSubCategory.name}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Department: </label>
+          <div className="detail-container  bg-slate-300">
+            <label className="text-red-600">{language ? "Department:" : ":القسم"}</label>
             <h1>{`${document?.department.Name}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Organization: </label>
+          <div className="detail-container  bg-slate-300">
+            <label className="text-red-600">{language ? "Organization:" : ":الجهة"}</label>
             <h1>{`${document?.organization.name}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Employee's Name: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Employee's Name:" : ":اسم الموظف"}</label>
             <h1>{`${document?.uploader.employee?.first_name} ${document?.uploader.employee?.middle_name} ${document?.uploader.employee?.last_name}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Employee's Role: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Employee's Role:" : ":مهنة الموظف"}</label>
             <h1>{`${document?.uploader.employee?.role.title}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Employee's Organization: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Employee's Organization:" : ":الجهة التابع لها الموظف"}</label>
             <h1>{`${document?.uploader.employee?.organization.name} (${document?.uploader.employee?.organization.type})`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Employee's Department: </label>
+              {document?.uploader.employee?.teacher ? <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Employee's Department:" : ":القسم التابع له الموظف"}</label>
             <h1>{`${document?.uploader.employee?.teacher?.department.Name}`}</h1>
-          </div>
+          </div> : null}
         </div>
-        <div className="detail-container">
-          <label>Employee's Subject: </label>
+        {document?.uploader.employee?.teacher ? <div className="detail-container bg-slate-400">
+          <label className="text-slate-600">{language ? "Employee's Subject:" : ":المادة"}</label>
           <h1>{`${document?.uploader.employee?.teacher?.subject.name}`}</h1>
-        </div>
+        </div> : null}
       </div>
-    </>
+    </div>
   );
 };
 

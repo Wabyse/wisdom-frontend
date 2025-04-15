@@ -9,9 +9,12 @@ import {
 } from "../services/data";
 import { sendStudentAttendance } from "../services/pms";
 import newLogo2 from "../assets/newLogo2.jpg";
+import { useAuth } from "../context/AuthContext";
+import wabys from "../assets/wabys.png";
 
 function TraineeAbsence() {
   const [students, setStudnets] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
   const [classes, setClasses] = useState([]);
   const [schools, setSchools] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState("");
@@ -20,6 +23,7 @@ function TraineeAbsence() {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { userInfo } = useAuth();
   const navigate = useNavigate(); //for navigate to another page (component)
 
   const returnPms = () => {
@@ -33,6 +37,10 @@ function TraineeAbsence() {
   };
 
   const handleClass = (e) => {
+    if (e.target.value !== "" && e.target.value !== "All") {
+      const filtering = students.filter(student => student.class_id === Number(e.target.value));
+      setFilteredStudents(filtering)
+    }
     if (e.target.value !== "") {
       setSelectedClass(e.target.value);
     }
@@ -69,7 +77,9 @@ function TraineeAbsence() {
     const loadStudents = async () => {
       try {
         const response = await fetchStudents();
-        setStudnets(response);
+        const filterOrg = userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "ADMIN" ? response : response.filter(org => org.school_id === userInfo.organization_id);
+        setStudnets(filterOrg);
+        setFilteredStudents(filterOrg);
       } catch (err) {
         console.error("API Error:", err);
         setError(
@@ -81,7 +91,13 @@ function TraineeAbsence() {
     const loadClasses = async () => {
       try {
         const response = await fetchClasses();
-        setClasses(response);
+        const response2 = await fetchStudents();
+        const response3 = [...new Set(response2
+          .filter(test => test.school_id === userInfo.organization_id)
+          .map(test => test.class_id)
+        )];
+        const response4 = response.filter(item => response3.includes(item.id));
+        setClasses(response4);
       } catch (err) {
         console.error("API Error:", err);
         setError(
@@ -106,32 +122,33 @@ function TraineeAbsence() {
     loadClasses();
     loadSchools();
     setLoading(false);
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     const filterStudents = (
       selectedId,
       selectClass,
-      selectStage,
+      // selectStage,
       selectSchool
     ) => {
       let filtered = [];
       let filteredStudents = students;
 
       let schoolFilter = selectSchool ? selectSchool : null;
-      let stageFilter = selectStage ? selectStage : null;
+      // let stageFilter = selectStage ? selectStage : null;
       let classFilter = selectClass ? selectClass : null;
       let studentFilter = selectedId ? selectedId : null;
 
       const hasFilter =
-        (selectSchool !== "All" && selectSchool !== "") ||
-        (selectStage !== "All" && selectStage !== "") ||
+        ((userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "ADMIN") && selectSchool !== "All" && selectSchool !== "") ||
+        // (selectStage !== "All" && selectStage !== "") ||
         (selectClass !== "All" && selectClass !== "") ||
         (selectedId !== "All" && selectedId !== "");
+      console.log(hasFilter)
 
-      const isStageClassMatch = classes.filter(
-        (classFilter) => classFilter.stage_id === Number(stageFilter)
-      );
+      // const isStageClassMatch = classes.filter(
+      //   (classFilter) => classFilter.stage_id === Number(stageFilter)
+      // );
 
       if (hasFilter) {
         filteredStudents.forEach((filter) => {
@@ -140,14 +157,14 @@ function TraineeAbsence() {
               ? true
               : !schoolFilter || Number(schoolFilter) === filter.school_id;
 
-          const isStageMatch =
-            selectStage === "All"
-              ? true
-              : isStageClassMatch.filter(
-                  (classFilter) => classFilter.id === filter.class_id
-                ).length > 0
-              ? true
-              : false;
+          // const isStageMatch =
+          //   selectStage === "All"
+          //     ? true
+          //     : isStageClassMatch.filter(
+          //       (classFilter) => classFilter.id === filter.class_id
+          //     ).length > 0
+          //       ? true
+          //       : false;
           const isClassMatch =
             selectClass === "All"
               ? true
@@ -156,12 +173,13 @@ function TraineeAbsence() {
             selectedId === "All"
               ? true
               : !studentFilter || Number(studentFilter) === filter.id;
-          if (isSchoolMatch && isClassMatch && isStudentMatch && isStageMatch) {
+          console.log(!studentFilter)
+          if (isSchoolMatch && isClassMatch && isStudentMatch) {
             filtered.push(filter);
           }
         });
       } else if (
-        selectSchool === "" &&
+        (userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "ADMIN" ? selectSchool === "" : true) &&
         selectClass === "" &&
         selectedId === ""
       ) {
@@ -182,10 +200,28 @@ function TraineeAbsence() {
     selectedClass,
     selectedSchool,
     classes,
+    userInfo
   ]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role !== "Operations Excellence Lead" && userInfo.user_role !== "Teacher" && userInfo.user_role !== "Trainer" && userInfo.user_role !== "ADMIN") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
@@ -194,33 +230,37 @@ function TraineeAbsence() {
         <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white text-center p-4 flex justify-center items-center rounded" onClick={returnPms}>رجوع &gt;</button>
       </div>
       <div className="w-full flex justify-center">
-      <img
-        className="w-[60%] h-[30vh]"
-        src={newLogo2}
-        alt="company logo"
-      ></img>
+        <img
+          className="w-[60%] h-[30vh]"
+          src={newLogo2}
+          alt="company logo"
+        ></img>
       </div>
       <div className="w-full text-center">
         <h1 className="text-2xl font-bold">غياب المتدرب</h1>
       </div>
       <div className="flex flex-col justify-center items-center w-full mb-2">
-        <label>:المركز</label>
-        <select
-          id="school"
-          name="school"
-          onChange={handleSchool}
-          value={selectedSchool}
-        >
-          <option value="" disabled selected>
-            الرجاء اختيار المركز
-          </option>
-          <option value="All">الكل</option>
-          {schools.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+        {userInfo.user_role === "" ?
+          <>
+            <label>:المركز</label>
+            <select
+              id="school"
+              name="school"
+              onChange={handleSchool}
+              value={selectedSchool}
+            >
+              <option value="" disabled selected>
+                الرجاء اختيار المركز
+              </option>
+              <option value="All">الكل</option>
+              {schools.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </>
+          : null}
         <label>:المجموعة</label>
         <select
           id="class"
@@ -249,7 +289,7 @@ function TraineeAbsence() {
             الرجاء اختيار متدرب
           </option>
           <option value="All">الكل</option>
-          {students.map((student) => (
+          {filteredStudents.map((student) => (
             <option key={student.id} value={student.id}>
               {`${student.first_name} ${student.middle_name} ${student.last_name}`}
             </option>

@@ -6,6 +6,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { fetchingOrgs, uploadDmsDocument } from "../services/dms";
 import { fetchDepartments, fetchDmsCategories } from "../services/data";
+import wabys from "../assets/wabys.png";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
+import style from "../styles/Loading.module.css";
 
 const UploadDocument = () => {
   const [schools, setSchools] = useState([]);
@@ -20,6 +24,7 @@ const UploadDocument = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userInfo } = useAuth();
+  const { language } = useLanguage();
 
   const navigate = useNavigate();
 
@@ -40,15 +45,15 @@ const UploadDocument = () => {
 
   const upload = async (e) => {
     e.preventDefault();
-    if (!file || !departmentId || !subCategory || !organizationId) {
-      return alert("Please fill all fields and select a file");
+    if (!file || !subCategory || (userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? (!departmentId || !organizationId) : false)) {
+      return toast.error("Please fill all fields and select a file");
     }
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("department_id", departmentId);
+    formData.append("department_id", userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? departmentId : userInfo.department_id);
     formData.append("sub_category", subCategory);
-    formData.append("organization_id", organizationId);
+    formData.append("organization_id", userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? organizationId : userInfo.organization_id);
     formData.append("user_id", userInfo.id);
 
     try {
@@ -103,21 +108,61 @@ const UploadDocument = () => {
     setLoading(false);
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-gray-500 h-[100vh]">
       <Toaster />
-      <Navbar upload={true} length="2-[400px]"></Navbar>
-      <form onSubmit={upload} className="assignForm form2">
-        <h1 className="text-2xl font-bold">Upload Document</h1>
+      <Navbar upload={true} length="w-[430px]">
+        <ChangeLanguage />
+      </Navbar>
+      <form onSubmit={upload} className="assignForm form2 bg-slate-600">
+        <h1 className="text-2xl font-bold text-white">{language ? "Upload Document" : "رفع الملف"}</h1>
         <div className="select-group">
-          <div className="select">
-            <label>Organization:</label>
+          {userInfo.user_role === "Operations Excellence Lead" ?
+          <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
+            <label className=" text-white">{language ? "Organization:" : ":الجهة"}</label>
             <select onChange={(e) => setOrganizationId(e.target.value)}>
-              <option value="" disabled selected>
-                Please Select an organization
+              <option value="" disabled selected className={language ? "text-start" : "text-end"}>
+                {language ? "Please Select an organization" : "الرجاء اختيار جهة"}
               </option>
               {schools.map((school) => (
                 <option key={school.id} value={school.id}>
@@ -125,12 +170,13 @@ const UploadDocument = () => {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="select">
-            <label>Department:</label>
+          </div> : null}
+          {userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ?
+          <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
+            <label className=" text-white">{language ? "Department:" : ":القسم"}</label>
             <select onChange={(e) => setDepartmentId(e.target.value)}>
-              <option value="" disabled selected>
-                Please Select a Department
+              <option value="" disabled selected className={language ? "text-start" : "text-end"}>
+                {language ? "Please Select a Department" : "الرجاء اختيار القسم"}
               </option>
               {departments.map((department) => (
                 <option key={department.id} value={department.id}>
@@ -138,16 +184,16 @@ const UploadDocument = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> : null}
         </div>
-        <label className="w-full">Attach File:</label>
-        <input type="file" name="file" onChange={handleFileChange} />
+        <label className={`w-full flex flex-col  text-white justify-center ${language ? "items-start" : "items-end"}`}>{language ? "Attach File:" : ":رفع ملف"}</label>
+        <input type="file" name="file" className="bg-white" onChange={handleFileChange} />
         <div className="select-group">
-          <div className="select">
-            <label>Category:</label>
+          <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
+            <label className=" text-white">{language ? "Category:" : ":التصنيف"}</label>
             <select onChange={handleCategoryChange}>
-              <option value="" disabled selected>
-                Please Select a Category
+              <option value="" disabled selected className={language ? "text-start" : "text-end"}>
+                {language ? "Please Select a Category" : "الرجاء اختيار تصنيف"}
               </option>
               {categories.map((category, index) => (
                 <option key={index} value={index}>
@@ -156,14 +202,14 @@ const UploadDocument = () => {
               ))}
             </select>
           </div>
-          <div className="select">
-            <label>Sub-Category:</label>
+          <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
+            <label className=" text-white">{language ? "Sub-Category:" : ":التصنيف الفرعي"}</label>
             <select
               onClick={handleSubCategoryClick}
               onChange={(e) => setSubCategory(e.target.value)}
             >
-              <option value="" disabled selected>
-                Please Select a Sub-Category
+              <option value="" disabled selected className={language ? "text-start" : "text-end"}>
+                {language ? "Please Select a Sub-Category" : "الرجاء اختيار تصنيف فرعي"}
               </option>
               {selectedCategories.map((subCategory) => (
                 <option key={subCategory.id} value={subCategory.id}>
@@ -174,7 +220,7 @@ const UploadDocument = () => {
           </div>
         </div>
         <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">
-          Submit
+          {language ? "Submit" : "ارسال"}
         </button>
       </form>
     </div>

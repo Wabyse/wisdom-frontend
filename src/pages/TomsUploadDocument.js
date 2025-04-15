@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { fetchingOrgs, uploadDmsDocument } from "../services/dms";
 import { fetchDepartments, fetchDmsCategories } from "../services/data";
+import wabys from "../assets/wabys.png";
 
 const TomsUploadDocument = () => {
   const [schools, setSchools] = useState([]);
@@ -40,15 +41,15 @@ const TomsUploadDocument = () => {
 
   const upload = async (e) => {
     e.preventDefault();
-    if (!file || !departmentId || !subCategory || !organizationId) {
-      return alert("Please fill all fields and select a file");
+    if (!file || !subCategory || (userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? (!departmentId || !organizationId) : false)) {
+      return toast.error("Please fill all fields and select a file");
     }
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("department_id", departmentId);
+    formData.append("department_id", userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? departmentId : userInfo.department_id);
     formData.append("sub_category", subCategory);
-    formData.append("organization_id", organizationId);
+    formData.append("organization_id", userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? organizationId : userInfo.organization_id);
     formData.append("user_id", userInfo.id);
 
     try {
@@ -105,16 +106,33 @@ const TomsUploadDocument = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-gray-500 h-[100vh] text-end">
       <Toaster />
       <Navbar showNavigate={false} upload={true}></Navbar>
-      <form onSubmit={upload} className="assignForm form2">
-        <h1 className="text-2xl font-bold">رفع ملف</h1>
+      <form onSubmit={upload} className="assignForm form2 bg-slate-600">
+        <h1 className="text-2xl font-bold text-white">رفع ملف</h1>
         <div className="select-group">
-          <div className="select">
-            <label className="w-full">:المركز</label>
+          {userInfo.user_role === "Operations Excellence Lead" ? <div className="select">
+            <label className="w-full text-white">:المركز</label>
             <select onChange={(e) => setOrganizationId(e.target.value)}>
               <option className="text-end" value="" disabled selected>
                 برجاء اختيار مركز
@@ -125,9 +143,9 @@ const TomsUploadDocument = () => {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="select">
-            <label className="w-full">:المهنة</label>
+          </div> : null}
+          {userInfo.user_role === "Operations Excellence Lead" ? <div className="select">
+            <label className="w-full text-white">:المهنة</label>
             <select onChange={(e) => setDepartmentId(e.target.value)}>
               <option className="text-end" value="" disabled selected>
                 برجاء اختيار مهنة
@@ -138,13 +156,13 @@ const TomsUploadDocument = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> : null}
         </div>
-        <label className="w-full">:رفع الملف</label>
+        <label className="w-full text-white">:رفع الملف</label>
         <input type="file" name="file" onChange={handleFileChange} />
         <div className="select-group">
           <div className="select">
-            <label className="w-full">:التصنيف</label>
+            <label className="w-full text-white">:التصنيف</label>
             <select onChange={handleCategoryChange}>
               <option className="text-end" value="" disabled selected>
                 برجاء اختيار تصنيف
@@ -157,7 +175,7 @@ const TomsUploadDocument = () => {
             </select>
           </div>
           <div className="select">
-            <label className="w-full">:تصنيف فرعي</label>
+            <label className="w-full text-white">:تصنيف فرعي</label>
             <select
               onClick={handleSubCategoryClick}
               onChange={(e) => setSubCategory(e.target.value)}

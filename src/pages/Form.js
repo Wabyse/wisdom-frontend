@@ -18,12 +18,29 @@ import {
 } from "../services/data";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
+import wabys from "../assets/wabys.png";
+import style from "../styles/Loading.module.css";
+
+const rolePermission = {
+  T: "Teacher",
+  HOD: "Head of Department (HOD)",
+  AC: "Academic Principle",
+  EX: "Executive Manager",
+  S: "Student",
+  Self: "Self",
+  Cl: "Teacher",
+  QA: "Quality Officer",
+  ML: "Line Supervisor",
+  E: "Employee",
+  AD: "ADMIN"
+};
 
 function Form() {
   const { id } = useParams();
   const location = useLocation();
   const formEnName = location.state?.formEnName || "Form"; //check this
   const formArName = location.state?.formArName || "استمارة";
+  const code = location.state?.code;
   const { language } = useLanguage();
   const [form, setForm] = useState([]);
   const [curriculums, setCurriculums] = useState([]);
@@ -68,8 +85,16 @@ function Form() {
       allAnswers.push(parsedValue);
     });
 
-    const userEntry = allAnswers.find((entry) => entry.question_id === "user");
+    let userEntry;
     let userIdValue;
+    if (code === "Self") {
+      userEntry = {
+        questionId: 'user',
+        result: userInfo.id
+      }
+    } else {
+      userEntry = allAnswers.find((entry) => entry.question_id === "user");
+    }
     if (!userEntry || !userEntry.result) {
       return toast.error("Please fill the required data");
     } else {
@@ -212,7 +237,6 @@ function Form() {
       try {
         const formId = { formId: id };
         const response = await fetchForm(formId);
-
         setForm(response || []);
         setQuesLength(response.length || 0);
       } catch (err) {
@@ -255,8 +279,9 @@ function Form() {
     const loadUsers = async () => {
       try {
         const response = await fetchUsers();
-        setUsers(response);
-        setFilteredUsers(response);
+        const RelatedUsers = response.filter(user => user.employee.organization_id === userInfo.organization_id);
+        setUsers(RelatedUsers);
+        setFilteredUsers(RelatedUsers);
       } catch (err) {
         console.error("API Error:", err);
         setError(err.message || "An error occurred while fetching users data.");
@@ -267,7 +292,7 @@ function Form() {
     loadDepartments();
     loadUsers();
     setLoading(false);
-  }, []);
+  }, [userInfo]);
 
   const filteredForm2 = form.reduce(
     (acc, question) => {
@@ -308,9 +333,50 @@ function Form() {
     ),
   ];
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
+  if (((code && code !== userInfo.user_role)
+    || (form[0].sub_field.field.form.form_code && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[0]] !== userInfo.user_role && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[0]] !== "Self")
+    || (form[0].sub_field.field.form.form_code && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[1]] !== userInfo.user_role && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[1]] === "Self")
+    || (userInfo.user_role === "Head of Department (HOD)" && code === "Teacher"))
+    && userInfo.user_role !== "Operations Excellence Lead") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-screen">
@@ -323,7 +389,7 @@ function Form() {
       <div className="form">
         <h1 className="header text-2xl font-bold">{language ? formEnName : formArName}</h1>
         <form className="form2" onSubmit={handleSubmit}>
-          {formType[0] === "360 Individual Assessment" ? (
+          {formType[0] === "360 Individual Assessment" && code !== "Self" ? (
             <div className="selects">
               <div className="select">
                 <label htmlFor="department">
@@ -418,6 +484,7 @@ function Form() {
                                   : question.max_score - i,
                                 questionId: question.question_id,
                               })}
+                              class="accent-wisdomOrange"
                             />
                             {language ? i + 1 : question.max_score - i}
                           </label>

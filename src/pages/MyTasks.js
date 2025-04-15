@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { LuDownload } from "react-icons/lu";
 import { downloadTaskFile, fetchTasks, updateMyTask } from "../services/tms";
+import wabys from "../assets/wabys.png";
+import { useNavigate } from "react-router-dom";
 
 const statusOptions = [
   "0",
@@ -27,6 +29,7 @@ const MyTasks = () => {
   const [status, setStatus] = useState({}); // Fix: Maintain statuses for each task
   const { userInfo } = useAuth();
   const [editStates, setEditStates] = useState({});
+  const navigate = useNavigate();
 
   const downloadFile = async (path) => {
     try {
@@ -114,11 +117,28 @@ const MyTasks = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role === "Trainee" || userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/watoms/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
       <Toaster />
-      <Navbar upload={true}/>
+      <Navbar upload={true} length="w-[370px]"/>
       <h1 className="myTaskTitle text-2xl font-bold">My Tasks:</h1>
       <div className="files">
         <div className="myTasks">
@@ -201,7 +221,7 @@ const MyTasks = () => {
             </div>
           ))
         ) : (
-          <p>No tasks available</p>
+          <p className="text-center">No tasks available</p>
         )}
       </div>
     </>

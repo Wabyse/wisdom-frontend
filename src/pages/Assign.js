@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { assignTask, fetchTaskCategories } from "../services/tms";
 import { fetchUsers } from "../services/data";
 import toast, { Toaster } from "react-hot-toast";
+import wabys from "../assets/wabys.png";
 
 const importance = ["normal", "important", "urgent"];
 
@@ -101,16 +102,33 @@ const Assign = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-gray-500 m-0 h-[130vh]">
       <Toaster />
-      <Navbar upload={true}></Navbar>
-      <form onSubmit={submitTask} className="assignForm form2">
-        <h1 className="text-2xl font-bold">Assign Task</h1>
+      <Navbar upload={true} length="w-[370px]"></Navbar>
+      <form onSubmit={submitTask} className="assignForm form2 bg-slate-600">
+        <h1 className="text-2xl font-bold text-white">Assign Task</h1>
         <div className="select-group">
         <div className="select">
-          <label key="user">Employee:</label>
+          <label key="user" className=" text-white">Employee:</label>
           <select id="user" name="user">
             <option value="" disabled selected>
               Please Select a Teacher
@@ -123,7 +141,7 @@ const Assign = () => {
           </select>
         </div>
         <div className="select">
-          <label key="importance">Importance:</label>
+          <label key="importance" className=" text-white">Importance:</label>
           <select id="importance" name="importance">
             <option value="" disabled selected>
               Please Select an importance
@@ -136,40 +154,40 @@ const Assign = () => {
           </select>
         </div>
         </div>
-        <label className="w-full">Task:</label>
+        <label className="w-full text-white">Task:</label>
         <input className="AssignText" type="text" name="task" />
 
-        <label className="w-full">Description:</label>
+        <label className="w-full text-white">Description:</label>
         <input className="AssignText" type="text" name="description" />
 
         <div className="date-time-group">
           <div>
-            <label>Start Date:</label>
+            <label className=" text-white">Start Date:</label>
             <input type="date" name="startDate" />
           </div>
           <div>
-            <label>Start Time: (optional)</label>
+            <label className=" text-white">Start Time: (optional)</label>
             <input type="time" name="startTime" />
           </div>
         </div>
 
         <div className="date-time-group">
           <div>
-            <label>End Date:</label>
+            <label className=" text-white">End Date:</label>
             <input type="date" name="endDate" />
           </div>
           <div>
-            <label>End Time: (optional)</label>
+            <label className=" text-white">End Time: (optional)</label>
             <input type="time" name="endTime" />
           </div>
         </div>
 
-        <label>Attach File:</label>
-        <input type="file" name="file" onChange={handleFileChange} />
+        <label className=" text-white">Attach File:</label>
+        <input className="bg-white" type="file" name="file" onChange={handleFileChange} />
 
         <div className="select-group">
           <div className="select">
-            <label key="category">Category:</label>
+            <label key="category" className=" text-white">Category:</label>
             <select
               id="category"
               name="category"
@@ -187,7 +205,7 @@ const Assign = () => {
           </div>
 
           <div className="select">
-            <label>Sub-Category:</label>
+            <label className=" text-white">Sub-Category:</label>
             <select
               id="subCategory"
               name="subCategory"

@@ -22,6 +22,11 @@ import {
 import pms1 from "../assets/pms1.jpg";
 import pms2 from "../assets/pms2.jpg";
 import pms3 from "../assets/pms3.jpg";
+import wabys from "../assets/wabys.png";
+import style from "../styles/Loading.module.css";
+import { useAuth } from "../context/AuthContext";
+
+const pmsDesc = "This module is crucial for driving organizational success by providing tools to set clear goals, track individual and team progress, and offer insightful feedback. It enables data-driven decisions regarding talent development, performance improvement, and ultimately, the achievement of strategic objectives. By optimizing employee potential and aligning efforts with organizational targets, it significantly boosts overall productivity and effectiveness."
 
 const roleArMapping = {
   QM: "إدارة الجودة",
@@ -37,6 +42,15 @@ const roleArMapping = {
   TA: "المتدرب",
   PD: "التنمية المهنية",
   AD: "الادارة",
+};
+
+const rolePermission = {
+  Self: "Self",
+  T: "Trainer",
+  TR: "Trainee",
+  AD: "ADMIN",
+  MGR: "Manager",
+  OEL: "Operations Excellence Lead"
 };
 
 const formLogo = [
@@ -62,6 +76,7 @@ const TomsPms = () => {
   const [forms, setForms] = useState([]);
   const [pd, setPd] = useState([]);
   const [dailyOperations, setDailyOperations] = useState([]);
+  const { userInfo } = useAuth();
 
   const navigate = useNavigate(); //for navigate to another page (component)
 
@@ -102,25 +117,31 @@ const TomsPms = () => {
 
         filtertomsForms.forEach((item) => {
           const codeKey2 = item.code.split(" | ")[1];
+          const codePermission = item.code.split(" | ")[0];
+          const codePermission2 = rolePermission[codePermission] || null;
           const codeKey = roleArMapping[codeKey2] || null;
+          console.log(codePermission)
 
-          let existingGroup = groupedData.find(
-            (group) => group.code === codeKey
-          );
+          if (codePermission2 === userInfo.user_role || (codePermission2 === "Self" && codeKey === userInfo.user_role) || userInfo.user_role === "Operations Excellence Lead" || codePermission === "SV" || codePermission === "AU" || codePermission === "T" || codePermission === "TC" || codePermission === "AD" || codePermission === "TR") {
+            let existingGroup = groupedData.find(
+              (group) => group.code === codeKey
+            );
 
-          if (!existingGroup) {
-            existingGroup = {
+            if (!existingGroup) {
+              existingGroup = {
+                id: item.id,
+                code: codeKey,
+                permission: codePermission2 === "Self" ? codeKey : codePermission2,
+                forms: [],
+              };
+              groupedData.push(existingGroup);
+            }
+
+            existingGroup.forms.push({
               id: item.id,
-              code: codeKey,
-              forms: [],
-            };
-            groupedData.push(existingGroup);
+              ar_name: item.ar_name,
+            });
           }
-
-          existingGroup.forms.push({
-            id: item.id,
-            ar_name: item.ar_name,
-          });
         });
 
         const generalForms = groupedData.filter(
@@ -136,7 +157,8 @@ const TomsPms = () => {
           (testData) => testData.code === "Daily Operations"
         );
         const orderedForms = [4, 1, 2, 6, 8, 3, 0, 5, 9, 7];
-        const newForms = orderedForms.map((id) => filteredGeneralForms[id]);
+        const newForms = orderedForms.map((id) => filteredGeneralForms[id]).filter((f) => f !== undefined);;
+        console.log(newForms)
         setForms(newForms);
         setPd(filter1);
         setDailyOperations(filter2);
@@ -149,7 +171,7 @@ const TomsPms = () => {
     };
 
     loadForms();
-  }, []);
+  }, [userInfo]);
 
   const imgs = [
     {
@@ -172,59 +194,64 @@ const TomsPms = () => {
     },
   ];
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
 
   return (
     <>
-      <Navbar2 showNavigate={false} img={imgs} length="w-[370px]" Page="PMS">
+      <Navbar2 showNavigate={false} img={imgs} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[155px]" : "w-[290px]" } Page="PMS" description={pmsDesc}>
         <ul className="hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start text-center md:h-[80vh]">
           <li
             key="PD"
-            className="m-2 relative group md:border-0 md:p-0 p-2 border-b-2 text-end border-black"
+            className="m-2 relative hover:text-lg hover:text-wisdomLightOrange text-black group md:border-0 md:p-0 p-2 border-b-2 text-end border-black"
           >
             <button
-              className="font-bold relative z-10
-              after:content-['']
-              after:absolute
-              after:left-0
-              after:-bottom-[3px]
-              after:h-[3px]
-              after:rounded
-              after:w-full
-              after:bg-watomsBlue
-              after:transform
-              after:scale-x-0
-              after:origin-left
-              after:transition-transform
-              after:duration-300
-              group-hover:after:scale-x-100
-            "
+              className="font-bold"
             >
               التنمية المهنية
               {formLogo[10]}
             </button>
 
             <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-50">
-              <li
+              {userInfo.user_role === "Manager" || userInfo.user_role === "Operations Excellence Lead" ? <li
                 key="Interview"
-                className="dropdown-item"
+                className="dropdown-item text-base"
                 onClick={() => handleInterviewClick()}
               >
                 مقابلات شخصية
-              </li>
-              <li
+              </li> : null}
+              {userInfo.user_role === "Trainer" || userInfo.user_role === "Operations Excellence Lead" ? <li
                 key="test"
-                className="dropdown-item"
+                className="dropdown-item text-base"
                 onClick={() => handleTestClick()}
               >
                 إختبار تربوي
-              </li>
+              </li> : null}
               {pd.map((type) =>
                 type.forms.map((form) => (
                   <li
                     key={form.id}
-                    className="dropdown-item"
+                    className="dropdown-item text-base"
                     onClick={() => handleClick(form.id, form.ar_name)}
                   >
                     {form.ar_name}
@@ -236,25 +263,10 @@ const TomsPms = () => {
           {forms.map((type, index) => (
             <li
               key={type.id}
-              className="relative group md:border-0 md:p-0 p-2 border-b-2 border-black m-2 text-end"
+              className="relative group hover:text-lg hover:text-wisdomLightOrange text-black md:border-0 md:p-0 p-2 border-b-2 border-black m-2 text-end"
             >
               <button
-                className="font-bold relative z-10
-                after:content-['']
-                after:absolute
-                after:left-0
-                after:-bottom-[3px]
-                after:h-[3px]
-                after:rounded
-                after:w-full
-                after:bg-watomsBlue
-                after:transform
-                after:scale-x-0
-                after:origin-left
-                after:transition-transform
-                after:duration-300
-                group-hover:after:scale-x-100
-              "
+                className="font-bold"
               >
                 {type.code}
                 {formLogo[orderedForms2[index]]}
@@ -264,7 +276,7 @@ const TomsPms = () => {
                 {type.forms.map((form) => (
                   <li
                     key={form.id}
-                    className="dropdown-item"
+                    className="dropdown-item text-base"
                     onClick={() => handleClick(form.id, form.ar_name)}
                   >
                     {form.ar_name}
@@ -273,60 +285,51 @@ const TomsPms = () => {
               </ul>
             </li>
           ))}
-          <li
-            key="Daily Operations"
-            className="m-2 relative group md:border-0 md:p-0 p-2 border-b-2 text-end border-black"
-          >
-            <button
-              className="font-bold relative z-10
-              after:content-['']
-              after:absolute
-              after:left-0
-              after:-bottom-[3px]
-              after:h-[3px]
-              after:rounded
-              after:w-full
-              after:bg-watomsBlue
-              after:transform
-              after:scale-x-0
-              after:origin-left
-              after:transition-transform
-              after:duration-300
-              group-hover:after:scale-x-100
-            "
+          {dailyOperations.length > 0 && (userInfo.user_role === "Trainer" || userInfo.user_role === "Operations Excellence Lead") ?
+            <li
+              key="Daily Operations"
+              className="m-2 relative group md:border-0 md:p-0 hover:text-lg hover:text-wisdomLightOrange text-black p-2 border-b-2 text-end border-black"
             >
-              الأشراف اليومي
-              {formLogo[11]}
-            </button>
+              <button
+                className="font-bold"
+              >
+                الأشراف اليومي
+                {formLogo[11]}
+              </button>
+              <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-50">
+                {userInfo.user_role === "Trainer" || userInfo.user_role === "Operations Excellence Lead" ?
+                  <>
+                    <li
+                      key="Student Absence"
+                      className="dropdown-item text-base"
+                      onClick={() => handleTraineeAbsenceClick()}
+                    >
+                      غياب المتدرب
+                    </li>
+                    <li
+                      key="School Incident"
+                      className="dropdown-item text-base"
+                      onClick={() => handleInistituteIncidentClick()}
+                    >
+                      وقائع المركز
+                    </li>
+                  </>
+                  : null}
 
-            <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-50">
-              <li
-                key="Student Absence"
-                className="dropdown-item"
-                onClick={() => handleTraineeAbsenceClick()}
-              >
-                غياب المتدرب
-              </li>
-              <li
-                key="School Incident"
-                className="dropdown-item"
-                onClick={() => handleInistituteIncidentClick()}
-              >
-                وقائع المركز
-              </li>
-              {dailyOperations.map((type) =>
-                type.forms.map((form) => (
-                  <li
-                    key={form.id}
-                    className="dropdown-item"
-                    onClick={() => handleClick(form.id, form.ar_name)}
-                  >
-                    {form.ar_name}
-                  </li>
-                ))
-              )}
-            </ul>
-          </li>
+                {dailyOperations.map((type) =>
+                  type.forms.map((form) => (
+                    <li
+                      key={form.id}
+                      className="dropdown-item text-base"
+                      onClick={() => handleClick(form.id, form.ar_name)}
+                    >
+                      {form.ar_name}
+                    </li>
+                  ))
+                )}
+              </ul>
+            </li>
+            : null}
         </ul>
         <ul className="md:hidden grid grid-cols-1 md:grid-cols-5 list-none p-[1%] m-[4%] shadow-lg shadow-black/30 md:text-start text-center">
           {forms.map((type) => (

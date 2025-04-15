@@ -11,6 +11,10 @@ import tms2 from "../assets/tms2.jpg";
 import tms3 from "../assets/tms3.jpg";
 import Navbar3 from "../components/Navbar3";
 import Selector from "../components/Selector";
+import wabys from "../assets/wabys.png";
+import { useAuth } from "../context/AuthContext";
+
+const tmsDesc = "This module is fundamental for enhancing accountability and project execution. It allows for the clear assignment of responsibilities, the establishment of deadlines, and the real-time monitoring of task progress. By providing a transparent overview of workloads and potential bottlenecks, it improves team coordination, reduces delays, and ensures the timely completion of crucial activities, directly contributing to increased efficiency and project success."
 
 const statusOptions = [
   // "0",
@@ -30,6 +34,7 @@ const importance = ["normal", "important", "urgent"];
 
 const TomsTms = () => {
   const navigate = useNavigate(); //for navigate to another page (component)
+  const { userInfo } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -367,15 +372,33 @@ const TomsTms = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
       <Navbar3
         showNavigate={false}
         img={imgs}
-        length="w-[550px]"
+        length="w-[490px]"
         header={header}
         Page="TMS"
+        description={tmsDesc}
       >
         <div className="grid grid-cols-2 gap-2">
           <Selector
@@ -386,6 +409,16 @@ const TomsTms = () => {
             value={selectedStatus}
             onChange={handleStatusChange}
             name=""
+          />
+          <Selector
+            label="importance"
+            title=":الاهمية"
+            description="برجاء اخيار الاهمية"
+            data={importance}
+            value={selectedImportance}
+            onChange={handleImportanceChange}
+            name=""
+            keyType={true}
           />
           <Selector
             label="category"
@@ -421,16 +454,6 @@ const TomsTms = () => {
             value={selectedAssigneeUser}
             onChange={handleAssigneeChange}
             name="user"
-          />
-          <Selector
-            label="importance"
-            title=":الاهمية"
-            description="برجاء اخيار الاهمية"
-            data={importance}
-            value={selectedImportance}
-            onChange={handleImportanceChange}
-            name=""
-            keyType={true}
           />
           <div className="flex flex-col items-end justify-center">
             <label

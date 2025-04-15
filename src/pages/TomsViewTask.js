@@ -51,43 +51,43 @@ const TomsViewTask = () => {
     loadingTasks();
   }, [id]);
   return (
-    <>
+    <div className="bg-gray-500 h-screen">
       <Navbar showNavigate={false} upload={true}></Navbar>
-      <div className="view">
-        <h1 className="text-2xl font-bold">تفاصيل المهمة</h1>
+      <div className="bg-slate-600 p-[20px] rounded-[8px] max-w-[600px] w-full m-auto shadow-md mt-2">
+        <h1 className="text-2xl font-bold text-center text-white">تفاصيل المهمة</h1>
         <div className="part">
-          <div className="detail-container">
-            <label>:المهمة</label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600">:المهمة</label>
             <h1>{`${task?.task}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>:الوصف</label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600">:الوصف</label>
             <h1>{`${task?.description}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>:تاريخ البدئ</label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600">:تاريخ البدئ</label>
             <h1>{`${formatDate(task?.start_date)}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>:تاريخ الانتهاء</label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600">:تاريخ الانتهاء</label>
             <h1>{`${formatDate(task?.end_date)}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>:الحالة</label>
+          <div className="detail-container bg-slate-300">
+            <label className="text-red-600">:الحالة</label>
             <h1>{`${task?.status}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>:الاهمية</label>
+          <div className="detail-container bg-slate-300">
+            <label className="text-red-600">:الاهمية</label>
             <h1>{`${task?.importance}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>:الملف</label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">:الملف</label>
             <h1
               className="tmsFile"
               onClick={
@@ -99,33 +99,33 @@ const TomsViewTask = () => {
                 : "No File"
             }`}</h1>
           </div>
-          <div className="detail-container">
-            <label>:تاريخ انشاء المهمة</label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">:تاريخ انشاء المهمة</label>
             <h1>{`${formatDate(task?.createdAt)}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>:تصنيف</label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">:تصنيف</label>
             <h1 className="viewDocument">{`${task?.taskSubCategory.taskCategory.name}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>:تصنيف فرعي</label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">:تصنيف فرعي</label>
             <h1 className="viewDocument">{`${task?.taskSubCategory.name}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>:المعين</label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">:المعين</label>
             <h1>{`${task?.assigner.first_name} ${task?.assigner.middle_name} ${task?.assigner.last_name}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>:المعين له</label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">:المعين له</label>
             <h1>{`${task?.assignee.first_name} ${task?.assignee.middle_name} ${task?.assignee.last_name}`}</h1>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

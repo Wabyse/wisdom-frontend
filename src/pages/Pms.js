@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import style from "../styles/Loading.module.css";
 import "../styles/Pms.css";
 import { useNavigate } from "react-router-dom";
 import { fetchForms } from "../services/pms";
@@ -21,6 +22,8 @@ import {
 import pms1 from "../assets/pms1.jpg";
 import pms2 from "../assets/pms2.jpg";
 import pms3 from "../assets/pms3.jpg";
+import wabys from "../assets/wabys.png";
+import { useAuth } from "../context/AuthContext";
 
 const roleMapping = {
   T: "Teacher",
@@ -34,6 +37,8 @@ const roleMapping = {
   DO: "Daily Operations",
   PD: "PD",
 };
+
+const pmsDesc = "This module is crucial for driving organizational success by providing tools to set clear goals, track individual and team progress, and offer insightful feedback. It enables data-driven decisions regarding talent development, performance improvement, and ultimately, the achievement of strategic objectives. By optimizing employee potential and aligning efforts with organizational targets, it significantly boosts overall productivity and effectiveness."
 
 const formLogo = [
   <FontAwesomeIcon icon={faUserTie} />,
@@ -63,6 +68,21 @@ const roleArMapping = {
   PD: "التنمية المهنية",
 };
 
+const rolePermission = {
+  T: "Teacher",
+  HOD: "Head of Department (HOD)",
+  AC: "Academic Principle",
+  EX: "Executive Manager",
+  S: "Student",
+  Self: "Self",
+  Cl: "Teacher",
+  QA: "Quality Officer",
+  ML: "Line Supervisor",
+  E: "Employee",
+  AD: "ADMIN",
+  OEL: "Operations Excellence Lead"
+};
+
 const Pms = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,12 +90,13 @@ const Pms = () => {
   const [pd, setPd] = useState([]);
   const [dailyOperations, setDailyOperations] = useState([]);
   const { language } = useLanguage();
+  const { userInfo } = useAuth();
 
   const navigate = useNavigate(); //for navigate to another page (component)
 
-  const handleClick = (id, en_name, ar_name) => {
+  const handleClick = (id, en_name, ar_name, code) => {
     navigate(`/pms/form/${id}`, {
-      state: { formEnName: en_name, formArName: ar_name, lang: language },
+      state: { formEnName: en_name, formArName: ar_name, lang: language, code },
     });
   };
 
@@ -122,28 +143,32 @@ const Pms = () => {
 
         filtertomsForms.forEach((item) => {
           const codeKey2 = item.code.split(" | ")[1];
+          const codePermission = item.code.split(" | ")[0];
+          const codePermission2 = rolePermission[codePermission] || null;
           const codeKey = roleMapping[codeKey2] || null;
           const codeAr = roleArMapping[codeKey2] || null;
+          if (codePermission2 === userInfo.user_role || (codePermission2 === "Employee" && userInfo.user_role !== "Student") || (codePermission2 === "Self" && codeKey === userInfo.user_role) || (codePermission2 === "Self" && codeKey === "Teacher" && userInfo.user_role === "Head of Department (HOD)") || (codePermission === "Cl" && userInfo.user_role === "Head of Department (HOD)") || userInfo.user_role === "Operations Excellence Lead") {
+            let existingGroup = groupedData.find(
+              (group) => group.code === codeKey
+            );
 
-          let existingGroup = groupedData.find(
-            (group) => group.code === codeKey
-          );
+            if (!existingGroup) {
+              existingGroup = {
+                id: item.id,
+                code: codeKey,
+                permission: codePermission2 === "Self" ? codeKey : codePermission2,
+                codeAr: codeAr,
+                forms: [],
+              };
+              groupedData.push(existingGroup);
+            }
 
-          if (!existingGroup) {
-            existingGroup = {
+            existingGroup.forms.push({
               id: item.id,
-              code: codeKey,
-              codeAr: codeAr,
-              forms: [],
-            };
-            groupedData.push(existingGroup);
+              en_name: item.en_name,
+              ar_name: item.ar_name,
+            });
           }
-
-          existingGroup.forms.push({
-            id: item.id,
-            en_name: item.en_name,
-            ar_name: item.ar_name,
-          });
         });
 
         const generalForms = groupedData.filter(
@@ -158,8 +183,11 @@ const Pms = () => {
         const filter2 = groupedData.filter(
           (testData) => testData.code === "Daily Operations"
         );
+
         const orderedForms = [0, 2, 4, 6, 5, 1, 3];
-        const newForms = orderedForms.map((id) => filteredGeneralForms[id]);
+        const newForms = orderedForms
+          .map((id) => filteredGeneralForms[id])
+          .filter((f) => f !== undefined); // ✅ Prevent crash
         setForms(newForms);
         setPd(filter1);
         setDailyOperations(filter2);
@@ -172,7 +200,8 @@ const Pms = () => {
     };
 
     loadForms();
-  }, []);
+  }, [userInfo]);
+
 
   const imgs = [
     {
@@ -195,40 +224,42 @@ const Pms = () => {
     },
   ];
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
 
   return (
     <>
-      <Navbar2 showNavigate={true} img={imgs} length="w-[430px]" Page="PMS">
+      <Navbar2 showNavigate={true} img={imgs} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[230px]" : "w-[370px]" } Page="PMS" description={pmsDesc}>
         <ul
-          className={`hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start ${
-            language ? "text-start" : "text-end"
-          } md:h-[85vh]`}
+          className={`hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start ${language ? "text-start" : "text-end"
+            } md:h-[85vh]`}
         >
-          <li
+          {userInfo.user_role === "Teacher" || userInfo.user_role === "Head of Department (HOD)" || userInfo.user_role === "Operations Excellence Lead" ? <li
             key="PD"
-            className={`relative group md:border-0 md:p-0 p-2 border-b-2 ${
-              language ? "text-start" : "text-end"
-            } border-black m-2`}
+            className={`relative group md:border-0 md:p-0 hover:text-lg hover:text-wisdomLightOrange text-black p-2 border-b-2 ${language ? "text-start" : "text-end"
+              } border-black m-2`}
           >
-            <button
-              className="font-bold relative z-10
-              after:content-['']
-              after:absolute
-              after:left-0
-              after:-bottom-[3px]
-              after:h-[3px]
-              after:rounded
-              after:w-full
-              after:bg-watomsBlue
-              after:transform
-              after:scale-x-0
-              after:origin-left
-              after:transition-transform
-              after:duration-300
-              group-hover:after:scale-x-100"
-            >
+            <button className="font-bold">
               {language ? (
                 <>{formLogo[9]} PD</>
               ) : (
@@ -237,74 +268,55 @@ const Pms = () => {
             </button>
 
             <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
-              {language ? (
-                <li
+              {userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" ?
+                <><li
                   key="Interview"
-                  className="dropdown-item"
+                  className="dropdown-item text-base"
                   onClick={() => handleInterviewClick()}
                 >
-                  Interview
+                  {language ? "Interview" : "مقابلات شخصية"}
                 </li>
-              ) : (
-                <li
-                  key="Interview"
-                  className="dropdown-item"
-                  onClick={() => handleInterviewClick()}
-                >
-                  مقابلات شخصية
-                </li>
-              )}
-              {language ? (
-                <li
-                  key="test"
-                  className="dropdown-item"
-                  onClick={() => handleTestClick()}
-                >
-                  Test
-                </li>
-              ) : (
-                <li
-                  key="test"
-                  className="dropdown-item"
-                  onClick={() => handleTestClick()}
-                >
-                  إختبار تربوي
-                </li>
-              )}
+                  <li
+                    key="test"
+                    className="dropdown-item text-base"
+                    onClick={() => handleTestClick()}
+                  >
+                    {language ? "Test" : "إختبار تربوي"}
+                  </li></>
+                : null}
               {pd.map((type) =>
                 language
                   ? type.forms.map((form) => (
-                      <li
-                        key={form.id}
-                        className="dropdown-item"
-                        onClick={() =>
-                          handleClick(form.id, form.en_name, form.ar_name)
-                        }
-                      >
-                        {form.en_name}
-                      </li>
-                    ))
+                    <li
+                      key={form.id}
+                      className="dropdown-item text-base"
+                      onClick={() =>
+                        handleClick(form.id, form.en_name, form.ar_name, form)
+                      }
+                    >
+                      {form.en_name}
+                    </li>
+                  ))
                   : type.forms.map((form) => (
-                      <li
-                        key={form.id}
-                        className="dropdown-item"
-                        onClick={() =>
-                          handleClick(form.id, form.en_name, form.ar_name)
-                        }
-                      >
-                        {form.ar_name}
-                      </li>
-                    ))
+                    <li
+                      key={form.id}
+                      className="dropdown-item text-base"
+                      onClick={() =>
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                      }
+                    >
+                      {form.ar_name}
+                    </li>
+                  ))
               )}
             </ul>
-          </li>
-          <li
+          </li> : null}
+          {userInfo.user_role === "Supervisor" || userInfo.user_role === "Student Affairs Officer" ? <li
             key="Daily Operations"
-            className={`relative group md:border-0 md:p-0 p-2 border-b-2 ${
-              language ? "text-start" : "text-end"
-            } border-black m-2`}
+            className={`relative group hover:text-lg hover:text-wisdomLightOrange text-black md:border-0 md:p-0 p-2 border-b-2 ${language ? "text-start" : "text-end"
+              } border-black m-2`}
           >
-            <button
+            {/* <button
               className="font-bold relative z-10
               after:content-['']
               after:absolute
@@ -321,7 +333,8 @@ const Pms = () => {
               after:duration-300
               group-hover:after:scale-x-100
             "
-            >
+            > */}
+            <button className="font-bold">
               {language ? (
                 <>{formLogo[8]} Daily Operations</>
               ) : (
@@ -330,193 +343,124 @@ const Pms = () => {
             </button>
 
             <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
-              {language ? (
+              {userInfo.user_role === "Supervisor" ? <>
                 <li
                   key="Teacher Substitutions"
-                  className="dropdown-item"
+                  className="dropdown-item text-base"
                   onClick={() => handleTeacherSubstitutionClick()}
                 >
-                  Teacher Substitutions
+                  {language ? "Teacher Substitutions" : "الأحتياطي"}
                 </li>
-              ) : (
-                <li
-                  key="Teacher Substitutions"
-                  className="dropdown-item"
-                  onClick={() => handleTeacherSubstitutionClick()}
-                >
-                  الأحتياطي
-                </li>
-              )}
-              {language ? (
                 <li
                   key="Teacher Latness"
-                  className="dropdown-item"
+                  className="dropdown-item text-base"
                   onClick={() => handleTeacherLatnessClick()}
                 >
-                  Teacher Latness
+                  {language ? "Teacher Latness" : "تأخير المعلم"}
                 </li>
-              ) : (
-                <li
-                  key="Teacher Latness"
-                  className="dropdown-item"
-                  onClick={() => handleTeacherLatnessClick()}
-                >
-                  تأخير المعلم
-                </li>
-              )}
-              {language ? (
-                <li
-                  key="Student Absence"
-                  className="dropdown-item"
-                  onClick={() => handleStudentAbsenceClick()}
-                >
-                  Student Absence
-                </li>
-              ) : (
-                <li
-                  key="Student Absence"
-                  className="dropdown-item"
-                  onClick={() => handleStudentAbsenceClick()}
-                >
-                  غياب الطالب
-                </li>
-              )}
-              {language ? (
                 <li
                   key="School Incident"
-                  className="dropdown-item"
+                  className="dropdown-item text-base"
                   onClick={() => handleSchoolIncidentClick()}
                 >
-                  School Incident
-                </li>
-              ) : (
-                <li
-                  key="School Incident"
-                  className="dropdown-item"
-                  onClick={() => handleSchoolIncidentClick()}
-                >
-                  حوادث المدرسة
-                </li>
-              )}
+                  {language ? "School Incident" : "حوادث المدرسة"}
+                </li></> : null}
+              {userInfo.user_role === "Student Affairs Officer" ? <li
+                key="Student Absence"
+                className="dropdown-item text-base"
+                onClick={() => handleStudentAbsenceClick()}
+              >
+                {language ? "Student Absence" : "غياب الطالب"}
+              </li> : null}
               {dailyOperations.map((type) =>
                 language
                   ? type.forms.map((form) => (
-                      <li
-                        key={form.id}
-                        className="dropdown-item"
-                        onClick={() =>
-                          handleClick(form.id, form.en_name, form.ar_name)
-                        }
-                      >
-                        {form.en_name}
-                      </li>
-                    ))
+                    <li
+                      key={form.id}
+                      className="dropdown-item text-base"
+                      onClick={() =>
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                      }
+                    >
+                      {form.en_name}
+                    </li>
+                  ))
                   : type.forms.map((form) => (
-                      <li
-                        key={form.id}
-                        className="dropdown-item"
-                        onClick={() =>
-                          handleClick(form.id, form.en_name, form.ar_name)
-                        }
-                      >
-                        {form.ar_name}
-                      </li>
-                    ))
+                    <li
+                      key={form.id}
+                      className="dropdown-item text-base"
+                      onClick={() =>
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                      }
+                    >
+                      {form.ar_name}
+                    </li>
+                  ))
               )}
             </ul>
-          </li>
+          </li> : null}
           {forms.map((type, index) => (
             <li
               key={type.id}
-              className={`relative group md:border-0 md:p-0 p-2 border-b-2 border-black m-2 ${
-                language ? "text-start" : "text-end"
-              }`}
+              className={`relative group md:border-0 hover:text-lg hover:text-wisdomLightOrange text-black md:p-0 p-2 border-b-2 border-black m-2 ${language ? "text-start" : "text-end"
+                }`}
             >
-              <button
-                className="font-bold relative z-10
-              after:content-['']
-              after:absolute
-              after:left-0
-              after:-bottom-[3px]
-              after:h-[3px]
-              after:rounded
-              after:w-full
-              after:bg-watomsBlue
-              after:transform
-              after:scale-x-0
-              after:origin-left
-              after:transition-transform
-              after:duration-300
-              group-hover:after:scale-x-100
-            "
-              >
+              <button className="font-bold">
                 {language ? (
-                  <>{formLogo[orderedForms2[index]]} {type.code}</>
+                  <>
+                    {formLogo[orderedForms2[index]]} {type.code}
+                  </>
                 ) : (
-                  <>{type.codeAr} {formLogo[orderedForms2[index]]}</>
+                  <>
+                    {type.codeAr} {formLogo[orderedForms2[index]]}
+                  </>
                 )}
               </button>
 
               <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
                 {language
                   ? type.forms.map((form) => (
-                      <li
-                        key={form.id}
-                        className="dropdown-item"
-                        onClick={() =>
-                          handleClick(form.id, form.en_name, form.ar_name)
-                        }
-                      >
-                        {form.en_name}
-                      </li>
-                    ))
+                    <li
+                      key={form.id}
+                      className="dropdown-item text-base"
+                      onClick={() =>
+                        handleClick(form.id, form.en_name, form.ar_name, type.permission)
+                      }
+                    >
+                      {form.en_name}
+                    </li>
+                  ))
                   : type.forms.map((form) => (
-                      <li
-                        key={form.id}
-                        className="dropdown-item"
-                        onClick={() =>
-                          handleClick(form.id, form.en_name, form.ar_name)
-                        }
-                      >
-                        {form.ar_name}
-                      </li>
-                    ))}
+                    <li
+                      key={form.id}
+                      className="dropdown-item text-base"
+                      onClick={() =>
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                      }
+                    >
+                      {form.ar_name}
+                    </li>
+                  ))}
               </ul>
             </li>
           ))}
-          <li
+          {userInfo.user_role === "Social Worker" ? <li
             key="Student behavior"
-            className="relative group md:border-0 md:p-0 p-2 border-b-2 text-center border-black m-2"
+            className="relative group md:border-0 md:p-0 hover:text-wisdomLightOrange text-black p-2 border-b-2 text-center border-black m-2"
           >
-            <button
-              className="font-bold relative z-10
-              after:content-['']
-              after:absolute
-              after:left-0
-              after:-bottom-[3px]
-              after:h-[3px]
-              after:rounded
-              after:w-full
-              after:bg-watomsBlue
-              after:transform
-              after:scale-x-0
-              after:origin-left
-              after:transition-transform
-              after:duration-300
-              group-hover:after:scale-x-100"
-            >
-                {language ? (
-                  <>{formLogo[7]} Student behavior</>
-                ) : (
-                  <>سلوك الطالب {formLogo[7]}</>
-                )}
+            <button className="font-bold">
+              {language ? (
+                <>{formLogo[7]} Student behavior</>
+              ) : (
+                <>سلوك الطالب {formLogo[7]}</>
+              )}
             </button>
 
             <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
               {language ? (
                 <li
                   key="StudentBehavior"
-                  className="dropdown-item"
+                  className="dropdown-item text-base"
                   onClick={() => handleStudentBehaviorClick()}
                 >
                   Student behavior
@@ -524,15 +468,15 @@ const Pms = () => {
               ) : (
                 <li
                   key="StudentBehavior"
-                  className="dropdown-item"
+                  className="dropdown-item text-base"
                   onClick={() => handleStudentBehaviorClick()}
                 >
                   سلوك الطالب
                 </li>
               )}
             </ul>
-          </li>
-        </ul>
+          </li> : null}
+        </ul >
         <ul className="md:hidden grid grid-cols-1 md:grid-cols-5 list-none p-[1%] m-[4%] shadow-lg shadow-black/30 md:text-start text-center">
           {forms.map((type) => (
             <div key={type.id} className="flex justify-center w-full">
@@ -549,6 +493,7 @@ const Pms = () => {
                           handleClick(
                             form.id,
                             language ? form.en_name : form.ar_name
+                            , form.code
                           )
                         }
                       >
@@ -610,7 +555,7 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name)}
+                          onClick={() => handleClick(form.id, form.ar_name, form.code)}
                         >
                           {form.en_name}
                         </button>
@@ -619,7 +564,7 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name)}
+                          onClick={() => handleClick(form.id, form.ar_name, form.code)}
                         >
                           {form.ar_name}
                         </button>
@@ -674,8 +619,8 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name)}
-                        >
+                          onClick={() => handleClick(form.id, form.ar_name, form.code )}
+                       >
                           {form.en_name}
                         </button>
                       </div>
@@ -683,8 +628,8 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name)}
-                        >
+                          onClick={() => handleClick(form.id, form.ar_name, form.code)}
+                    >
                           {form.ar_name}
                         </button>
                       </div>
@@ -712,7 +657,7 @@ const Pms = () => {
             </CollapsibleSection>
           </div>
         </ul>
-      </Navbar2>
+      </Navbar2 >
       {/* <ul className={language ? "forms" : "formsAr"}>
         {forms.map((type) => (
           <li key={type.id} className="categories">
@@ -727,7 +672,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name)
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
                       }
                     >
                       {form.en_name}
@@ -738,7 +683,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name)
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
                       }
                     >
                       {form.ar_name}
@@ -828,7 +773,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name)
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
                       }
                     >
                       {form.en_name}
@@ -839,7 +784,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name)
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
                       }
                     >
                       {form.ar_name}
@@ -895,7 +840,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name)
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
                       }
                     >
                       {form.en_name}
@@ -906,7 +851,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name)
+                        handleClick(form.id, form.en_name, form.ar_name, form.code)
                       }
                     >
                       {form.ar_name}

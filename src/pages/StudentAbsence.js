@@ -12,6 +12,9 @@ import { sendStudentAttendance } from "../services/pms";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
 import newLogo from "../assets/newLogo.jpg";
+import wabys from "../assets/wabys.png";
+import { useAuth } from "../context/AuthContext";
+import style from "../styles/Loading.module.css";
 
 function StudentAbsence() {
   const { language } = useLanguage();
@@ -27,6 +30,7 @@ function StudentAbsence() {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { userInfo } = useAuth();
   const navigate = useNavigate(); //for navigate to another page (component)
 
   const returnPms = () => {
@@ -117,6 +121,7 @@ function StudentAbsence() {
     const loadSchools = async () => {
       try {
         const response = await fetchShools();
+        console.log(response);
         setSchools(response);
       } catch (err) {
         console.error("API Error:", err);
@@ -233,8 +238,45 @@ function StudentAbsence() {
     classes,
   ]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role !== "Operations Excellence Lead" && userInfo.user_role !== "Supervisor") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">

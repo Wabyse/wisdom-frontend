@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import style from "../styles/Loading.module.css";
 // import SchoolIncidentCSS from "../styles/SchoolIncident.module.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { fetchIncidentCategories, fetchShools } from "../services/data";
 import { submitIncident } from "../services/pms";
+import wabys from "../assets/wabys.png";
+import { useAuth } from "../context/AuthContext";
 
 const SchoolIncident = () => {
   const [schools, setSchools] = useState([]);
@@ -19,6 +22,7 @@ const SchoolIncident = () => {
   const [schoolId, setSchoolId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { userInfo } = useAuth();
 
   const navigate = useNavigate();
 
@@ -51,14 +55,14 @@ const SchoolIncident = () => {
 
   const upload = async (e) => {
     e.preventDefault();
-    if (!subCategory || !schoolId) {
+    if (!subCategory || (userInfo.user_role !== "Operations Excellence Lead" ? false : !schoolId)) {
       return toast.error("Please fill all fields and select a file");
     }
 
     const formData = new FormData();
     formData.append("file", file);
     formData.append("sub_category", subCategory);
-    formData.append("school_id", schoolId);
+    formData.append("school_id", userInfo.user_role !== "Operations Excellence Lead" ? userInfo.organization_id : schoolId);
     formData.append("comment", comment);
     formData.append("location", location);
     formData.append("incident_date", date);
@@ -101,8 +105,45 @@ const SchoolIncident = () => {
     setLoading(false);
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role !== "Operations Excellence Lead" || userInfo.user_role !== "Supervisor") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-gray-500 h-[115vh]">
@@ -110,19 +151,21 @@ const SchoolIncident = () => {
       <Navbar upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2">
         <h1 className="text-2xl font-bold">School Incident</h1>
-        <div className="text-start">
-          <label>School:</label>
-          <select onChange={(e) => setSchoolId(e.target.value)}>
-            <option value="" disabled selected>
-              Please Select a school
-            </option>
-            {schools.map((school) => (
-              <option key={school.id} value={school.id}>
-                {school.name}
+        {userInfo.user_role === "Operations Excellence Lead" ?
+          <div className="text-start">
+            <label>School:</label>
+            <select onChange={(e) => setSchoolId(e.target.value)}>
+              <option value="" disabled selected>
+                Please Select a school
               </option>
-            ))}
-          </select>
-        </div>
+              {schools.map((school) => (
+                <option key={school.id} value={school.id}>
+                  {school.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          : null}
         <label htmlFor="comment" className="text-start w-full">Comment:</label>
         <input type="text" name="comment" id="comment" onChange={handleCommentChange} />
         <label htmlFor="location" className="text-start w-full">Location:</label>

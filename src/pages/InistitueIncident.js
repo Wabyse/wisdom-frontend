@@ -5,6 +5,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { fetchIncidentCategories, fetchShools } from "../services/data";
 import { submitIncident } from "../services/pms";
+import wabys from "../assets/wabys.png";
+import { useAuth } from "../context/AuthContext";
 
 const InistituteIncident = () => {
   const [schools, setSchools] = useState([]);
@@ -19,6 +21,7 @@ const InistituteIncident = () => {
   const [schoolId, setSchoolId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { userInfo } = useAuth();
 
   const navigate = useNavigate();
 
@@ -51,14 +54,14 @@ const InistituteIncident = () => {
 
   const upload = async (e) => {
     e.preventDefault();
-    if (!subCategory || !schoolId) {
+    if (!subCategory || (userInfo.user_role !== "Operations Excellence Lead" ? false : !schoolId)) {
       return toast.error("Please fill all fields and select a file");
     }
 
     const formData = new FormData();
     formData.append("file", file);
     formData.append("sub_category", subCategory);
-    formData.append("school_id", schoolId);
+    formData.append("school_id", userInfo.user_role !== "Operations Excellence Lead" ? userInfo.organization_id : schoolId);
     formData.append("comment", comment);
     formData.append("location", location);
     formData.append("incident_date", date);
@@ -103,6 +106,23 @@ const InistituteIncident = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role !== "Operations Excellence Lead" || userInfo.user_role !== "Supervisor") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-gray-500 h-[115vh]">
@@ -110,7 +130,7 @@ const InistituteIncident = () => {
       <Navbar showNavigate={false} upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2">
         <h1 className="text-2xl font-bold">وقائع المركز</h1>
-        <div className="flex flex-col justify-center items-center">
+        {userInfo.user_role === "Operations Excellence Lead" ? <div className="flex flex-col justify-center items-center">
           <label className="text-center w-full">المركز:</label>
           <select onChange={(e) => setSchoolId(e.target.value)}>
             <option value="" disabled selected>
@@ -122,7 +142,7 @@ const InistituteIncident = () => {
               </option>
             ))}
           </select>
-        </div>
+        </div> : null}
         <label htmlFor="comment">:تعليق</label>
         <input type="text" name="comment" id="comment" onChange={handleCommentChange} />
         <label htmlFor="location">:المكان</label>

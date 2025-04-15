@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { assignTask, fetchTaskCategories } from "../services/tms";
 import { fetchUsers } from "../services/data";
 import toast, { Toaster } from "react-hot-toast";
+import wabys from "../assets/wabys.png";
 
 const importance = ["normal", "important", "urgent"];
 
@@ -101,16 +102,34 @@ const TomsAssign = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  console.log(userInfo.user_role)
+  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-gray-500 h-[125vh] text-end">
       <Toaster />
       <Navbar showNavigate={false} upload={true}></Navbar>
-      <form onSubmit={submitTask} className="assignForm form2">
-        <h1 className="text-2xl font-bold">تعيين مهمة</h1>
+      <form onSubmit={submitTask} className="assignForm form2 bg-slate-600">
+        <h1 className="text-2xl font-bold text-white">تعيين مهمة</h1>
         <div className="select-group">
         <div className="select">
-          <label className="w-full" key="user">:الموظف</label>
+          <label className="w-full text-white" key="user">:الموظف</label>
           <select id="user" name="user">
             <option className="text-end" value="" disabled selected>
               الرجاء اختيار موظف
@@ -123,7 +142,7 @@ const TomsAssign = () => {
           </select>
         </div>
         <div className="select">
-          <label className="w-full" key="importance">:الاهمية</label>
+          <label className="w-full text-white" key="importance">:الاهمية</label>
           <select id="importance" name="importance">
             <option className="text-end" value="" disabled selected>
               الرجاء اختيار الاهمية
@@ -137,40 +156,40 @@ const TomsAssign = () => {
         </div>
         </div>
 
-        <label className="w-full">:المهمة</label>
+        <label className="w-full text-white">:المهمة</label>
         <input className="AssignText" type="text" name="task" />
 
-        <label className="w-full">:الوصف</label>
+        <label className="w-full text-white">:الوصف</label>
         <input className="AssignText" type="text" name="description" />
 
         <div className="date-time-group">
           <div>
-            <label>:تاريخ البدء</label>
+            <label className=" text-white">:تاريخ البدء</label>
             <input type="date" name="startDate" />
           </div>
           <div>
-            <label>:موعد البدء (اختياري)</label>
+            <label className=" text-white">:موعد البدء (اختياري)</label>
             <input type="time" name="startTime" />
           </div>
         </div>
 
         <div className="date-time-group">
           <div>
-            <label>:تاريخ الانتهاء</label>
+            <label className=" text-white">:تاريخ الانتهاء</label>
             <input type="date" name="endDate" />
           </div>
           <div>
-            <label>:موعد الانتهاء (اختياري)</label>
+            <label className=" text-white">:موعد الانتهاء (اختياري)</label>
             <input type="time" name="endTime" />
           </div>
         </div>
 
-        <label className="w-full">:رفع ملف (اختياري)</label>
-        <input type="file" name="file" onChange={handleFileChange} />
+        <label className="w-full text-white">:رفع ملف (اختياري)</label>
+        <input type="file" name="file" className="bg-white" onChange={handleFileChange} />
 
         <div className="select-group">
           <div className="select">
-            <label className="w-full" key="category">:تصنيف</label>
+            <label className="w-full text-white" key="category">:تصنيف</label>
             <select
               id="category"
               name="category"
@@ -188,7 +207,7 @@ const TomsAssign = () => {
           </div>
 
           <div className="select">
-            <label className="w-full">:تصنيف فرعي</label>
+            <label className="w-full text-white">:تصنيف فرعي</label>
             <select
               id="subCategory"
               name="subCategory"

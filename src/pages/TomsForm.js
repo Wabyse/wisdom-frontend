@@ -251,8 +251,9 @@ function TomsForm() {
     const loadUsers = async () => {
       try {
         const response = await fetchUsers();
-        setUsers(response);
-        setFilteredUsers(response);
+        const RelatedUsers = response.filter(user => user.employee.organization_id === userInfo.organization_id);
+        setUsers(RelatedUsers);
+        setFilteredUsers(RelatedUsers);
       } catch (err) {
         console.error("API Error:", err);
         setError(err.message || "An error occurred while fetching users data.");
@@ -263,7 +264,7 @@ function TomsForm() {
     loadDepartments();
     loadUsers();
     setLoading(false);
-  }, []);
+  }, [userInfo]);
 
   const filteredForm2 = form.reduce(
     (acc, question) => {

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import style from "../styles/Loading.module.css";
 import "../styles/TeacherSubstitutions.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ import {
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
 import newLogo from "../assets/newLogo.jpg";
+import wabys from "../assets/wabys.png";
 
 function TeacherSubstitutions() {
   const { language } = useLanguage();
@@ -44,7 +46,8 @@ function TeacherSubstitutions() {
         const filteredTeachers = response.filter(
           (teacher) => teacher.id !== userInfo.id
         );
-        setTeachers(filteredTeachers);
+        const RelatedUsers = filteredTeachers.filter(user => user.employee.organization_id === userInfo.organization_id);
+        setTeachers(RelatedUsers);
       } catch (err) {
         console.error("API Error:", err);
         setError(err.message || "An error occurred while fetching users data.");
@@ -104,8 +107,45 @@ function TeacherSubstitutions() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="bg-formColor w-full h-screen flex justify-center items-center">
+        <div className="relative w-[25%] aspect-[4/1]">
+          {" "}
+          <div
+            className={`w-full h-full ${style["animated-mask"]}`}
+            style={{
+              WebkitMaskImage: `url(${wabys})`,
+              maskImage: `url(${wabys})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
+        </div>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
+  if (userInfo.user_role !== "ADMIN" || userInfo.user_role !== "Supervisor") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-8xl font-bold">401</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
@@ -448,7 +488,7 @@ function TeacherSubstitutions() {
             </div>
           ))}
           <div className="flex justify-center items-center w-full">
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 flex self-center items-center">{language ? "Submit" : "ارسال"}</button>
+            <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 flex self-center items-center">{language ? "Submit" : "ارسال"}</button>
           </div>
         </form>
       ) : (

@@ -3,10 +3,18 @@ import Navbar from "../components/Navbar";
 import "../styles/ViewTask.css";
 import { useEffect, useState } from "react";
 import { downloadTaskFile, fetchTasks } from "../services/tms";
+import ChangeLanguage from "../components/ChangeLanguage";
+import { useLanguage } from "../context/LanguageContext";
+import wabys from "../assets/wabys.png";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ViewTask = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
+  const { userInfo } = useAuth();
   const [task, setTask] = useState(null);
+  const { language } = useLanguage();
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -50,82 +58,102 @@ const ViewTask = () => {
     };
     loadingTasks();
   }, [id]);
+
+  if (userInfo.user_role === "Student") {
+    return (
+      <>
+        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
+          <img
+            className="w-[25%]"
+            src={wabys}
+            alt=""
+          />
+          <h1 className="text-6xl font-bold">401</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
+          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
+          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
+        </div>
+      </>
+    )
+  }
+
   return (
-    <>
-      <Navbar upload={true}></Navbar>
-      <div className="view">
-        <h1 className="text-2xl font-bold">View Task</h1>
+    <div className="bg-gray-500 h-screen">
+      <Navbar upload={true} length="w-[430px]">
+        <ChangeLanguage />
+      </Navbar>
+      <div className="bg-slate-600 p-[20px] rounded-[8px] max-w-[600px] w-full m-auto shadow-md mt-2">
+        <h1 className="text-2xl font-bold text-center text-white">{language ? "View Task" : "تفاصيل المهمة"}</h1>
         <div className="part">
-          <div className="detail-container">
-            <label>Task: </label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600">{language ? "Task:" : ":المهمة"}</label>
             <h1>{`${task?.task}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Description: </label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600">{language ? "Description:" : ":التفاصيل"}</label>
             <h1>{`${task?.description}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Task Starting Date: </label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600" >{language ? "Task Starting Date:" : ":تاريخ بدء المهمة"}</label>
             <h1>{`${formatDate(task?.start_date)}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Task Ending Date: </label>
+          <div className="detail-container bg-slate-200">
+            <label className="text-red-600">{language ? "Task Ending Date:" : ":تاريخ انتهاء المهمة"}</label>
             <h1>{`${formatDate(task?.end_date)}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Status: </label>
+          <div className="detail-container bg-slate-300">
+            <label className="text-red-600">{language ? "Status:" : ":الحالة"}</label>
             <h1>{`${task?.status}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Importance: </label>
+          <div className="detail-container bg-slate-300">
+            <label className="text-red-600">{language ? "Importance:" : ":الاهمية"}</label>
             <h1>{`${task?.importance}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>File: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "File:" : ":الملف"}</label>
             <h1
               className="tmsFile"
               onClick={
                 task?.file_path ? () => downloadFile(task?.file_path) : null
               }
-            >{`${
-              task?.file_path
+            >{`${task?.file_path
                 ? task?.file_path.split("\\").pop().replace(/^\d+-/, "")
                 : "No File"
-            }`}</h1>
+              }`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Task Create Date: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Task Create Date:" : ":تاريخ تكليف المهمة"}</label>
             <h1>{`${formatDate(task?.createdAt)}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Category: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Category:" : ":التصنيف"}</label>
             <h1 className="viewDocument">{`${task?.taskSubCategory.taskCategory.name}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Sub-Category: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Sub-Category:" : ":التصنيف الفرعي"}</label>
             <h1 className="viewDocument">{`${task?.taskSubCategory.name}`}</h1>
           </div>
         </div>
         <div className="part">
-          <div className="detail-container">
-            <label>Assigner: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Assigner:" : ":تكليف من"}</label>
             <h1>{`${task?.assigner.first_name} ${task?.assigner.middle_name} ${task?.assigner.last_name}`}</h1>
           </div>
-          <div className="detail-container">
-            <label>Assignee: </label>
+          <div className="detail-container bg-slate-400">
+            <label className="text-slate-600">{language ? "Assignee:" : ":تكليف الي"}</label>
             <h1>{`${task?.assignee.first_name} ${task?.assignee.middle_name} ${task?.assignee.last_name}`}</h1>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
