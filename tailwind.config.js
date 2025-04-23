@@ -10,6 +10,7 @@ module.exports = {
         formColor: "rgb(230, 235, 239)",
         watomsBlue: "#001c56",
         watomsLightBlue: "#0d3486",
+        wisdomNewOrange: "#eb5812",
       },
       animation: {
         overlaySlide: "overlaySlide 3s linear infinite",

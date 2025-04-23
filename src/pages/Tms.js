@@ -12,10 +12,11 @@ import tms1 from "../assets/tms1.jpg";
 import tms2 from "../assets/tms2.jpg";
 import tms3 from "../assets/tms3.jpg";
 import Selector from "../components/Selector";
-import wabys from "../assets/wabys.png";
 import { useAuth } from "../context/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
+import DenyAccessPage from "../components/DenyAccessPage";
 
-const tmsDesc = "This module is fundamental for enhancing accountability and project execution. It allows for the clear assignment of responsibilities, the establishment of deadlines, and the real-time monitoring of task progress. By providing a transparent overview of workloads and potential bottlenecks, it improves team coordination, reduces delays, and ensures the timely completion of crucial activities, directly contributing to increased efficiency and project success."
+const tmsDesc = "This module boosts accountability and project execution through clear task assignment, deadlines, and real-time tracking. It streamlines coordination, cuts delays, and ensures timely completion, driving efficiency and project success."
 
 const statusOptions = [
   // "0",
@@ -373,32 +374,16 @@ const Tms = () => {
     },
   ];
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
-  if (userInfo.user_role === "Student") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-6xl font-bold">401</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
 
   return (
     <>
       <Navbar3
         showNavigate={true}
         img={imgs}
-        length="w-[650px]"
+        length="w-[740px]"
         header={header}
         Page="TMS"
         description={tmsDesc}

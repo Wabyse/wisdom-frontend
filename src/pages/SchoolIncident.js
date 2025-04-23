@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import style from "../styles/Loading.module.css";
 // import SchoolIncidentCSS from "../styles/SchoolIncident.module.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { fetchIncidentCategories, fetchShools } from "../services/data";
 import { submitIncident } from "../services/pms";
-import wabys from "../assets/wabys.png";
 import { useAuth } from "../context/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const SchoolIncident = () => {
   const [schools, setSchools] = useState([]);
@@ -105,45 +105,9 @@ const SchoolIncident = () => {
     setLoading(false);
   }, []);
 
-  if (loading)
-    return (
-      <div className="bg-formColor w-full h-screen flex justify-center items-center">
-        <div className="relative w-[25%] aspect-[4/1]">
-          {" "}
-          <div
-            className={`w-full h-full ${style["animated-mask"]}`}
-            style={{
-              WebkitMaskImage: `url(${wabys})`,
-              maskImage: `url(${wabys})`,
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskSize: "contain",
-              maskSize: "contain",
-              WebkitMaskPosition: "center",
-              maskPosition: "center",
-            }}
-          />
-        </div>
-      </div>
-    );
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
-  if (userInfo.user_role !== "Operations Excellence Lead" || userInfo.user_role !== "Supervisor") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-8xl font-bold">401</h1>
-          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+  if (userInfo.user_role !== "Operations Excellence Lead" || userInfo.user_role !== "Supervisor") return <DenyAccessPage homePage='/pms' />;
 
   return (
     <div className="bg-gray-500 h-[115vh]">

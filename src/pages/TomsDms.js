@@ -10,7 +10,8 @@ import dms1 from "../assets/dms1.jpg";
 import dms2 from "../assets/dms2.jpg";
 import dms3 from "../assets/dms3.jpg";
 import Navbar3 from "../components/Navbar3";
-import wabys from "../assets/wabys.png";
+import LoadingScreen from "../components/LoadingScreen";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const dmsDesc = "In today's information-rich environment, this module is vital for ensuring operational efficiency and regulatory compliance. It provides a secure and organized repository for all critical documents, enabling effortless access, version control, and collaboration. By streamlining document workflows and minimizing the risks associated with lost or mismanaged information"
 
@@ -288,25 +289,9 @@ const TomsDms = () => {
     }
   ]
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
-  if (userInfo.user_role === "Student") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-6xl font-bold">401</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+  if (userInfo.user_role === "Student") return <DenyAccessPage homePage='/watoms/pms' />;
 
   return (
     <div className="w-full">

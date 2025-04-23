@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { assignTask, fetchTaskCategories } from "../services/tms";
 import { fetchUsers } from "../services/data";
 import toast, { Toaster } from "react-hot-toast";
-import wabys from "../assets/wabys.png";
+import LoadingScreen from "../components/LoadingScreen";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const importance = ["normal", "important", "urgent"];
 
@@ -100,26 +101,10 @@ const TomsAssign = () => {
     setLoading(false);
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />
   if (error) return <p>Error: {error}</p>;
   console.log(userInfo.user_role)
-  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-8xl font-bold">401</h1>
-          <h1 className="text-5xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-5xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/watoms/pms' />;
 
   return (
     <div className="bg-gray-500 h-[125vh] text-end">

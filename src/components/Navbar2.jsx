@@ -125,7 +125,7 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
 
     return (
         <div
-            className="w-full min-h-screen flex flex-col h-full bg-cover bg-center m-0 transition-all duration-1000 ease-in-out"
+            className="w-screen min-h-screen flex flex-col h-full bg-cover bg-center m-0 transition-all duration-1000 ease-in-out"
             style={{
                 backgroundImage: `url(${img[current].img})`,
             }}
@@ -142,11 +142,6 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
                     )}
                 </div>
                 <div className="flex">
-                    <div className="text-black text-md font-bold bg-blue-300 rounded-full shadow-lg shadow-black/30 mr-6">
-                        <span className="inline-block px-1 py-2 rounded-full border-black border-2 m-1">
-                            {Page}
-                        </span>
-                    </div>
                     <div
                         className={`hidden md:flex items-center gap-4 bg-white p-1 rounded-full shadow-lg shadow-black/30 ${length}`}
                     >
@@ -159,6 +154,7 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
                         {Page !== "TMS" && userInfo.user_role !== "Student" && userInfo.user_role !== "Trainee" ? showNavigate
                             ? navItem("TMS", "/tms")
                             : navItem("TMS", "/watoms/tms") : null}
+                        {showNavigate ? <a href="https://www.google.com" rel="noopener noreferrer" target="_blank" className={`px-5 py-2 rounded-full cursor-pointer bg-gray-700 text-white hover:bg-gray-300 hover:text-black`}>DashBoard</a> : null}
                         {showNavigate ? <ChangeLanguage /> : null}
                         <div className="flex items-center gap-2">
                             <div className="bg-white text-center p-2 rounded-full font-bold w-11 h-11 border-2 border-gray-300 flex items-center justify-center">
@@ -166,7 +162,7 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
                             </div>
                             <button
                                 onClick={loggingOut}
-                                className={`relative inline-block px-4 py-2 font-bold text-white rounded-full overflow-hidden bg-watomsBlue hover:bg-wisdomOrange ${style["nav-button"]}`}
+                                className={`relative inline-block px-6 py-2 font-bold text-white rounded-full overflow-hidden bg-watomsBlue hover:bg-wisdomOrange ${style["nav-button"]}`}
                             >
                                 <span className="relative z-10 transition-colors duration-400">
                                     Logout
@@ -220,8 +216,24 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
             <div className={`md:flex ${mobile ? "hidden" : ""} justify-between`}>
                 <div className="flex flex-col">
                     <div className={`text-black text-[18px] m-5 ${description ? "" : "hidden"}`}>
-                        <span className="opacity-75 inline-block h-[50vh] w-[400px] bg-white shadow-lg shadow-black/30 px-3 py-3 rounded">
-                            {Page === "PMS" ? <p className="text-[22px] font-bold">Performance Management System: </p> : null}{description}
+                        <span className="opacity-75 flex flex-col gap-12 h-[50vh] w-[400px] bg-white shadow-lg shadow-black/30 px-3 py-3 rounded">
+                            <div className="flex justify-between">
+                                {Page === "PMS" ? (
+                                    <div className="relative">
+                                        <p className="text-[46px] font-bold italic text-right">Performance</p>
+                                        <p className="text-[24px] font-bold italic text-wisdomNewOrange text-right -mr-4">
+                                            Management System:
+                                        </p>
+                                    </div>
+                                ) : null}
+
+                                <div className="text-black text-md font-bold bg-wisdomNewOrange rounded-full shadow-lg shadow-black/30 h-[60px] w-[60px] self-center flex justify-center items-center mr-3 bg-opacity-100">
+                                    <span className="inline-block px-1 py-2 rounded-full border-black border-2 m-1">
+                                        {Page}
+                                    </span>
+                                </div>
+                            </div>
+                            <p className="w-[90%]">{description}</p>
                         </span>
                     </div>
                     <div className="flex h-full flex-col justify-center px-5 min-h-[25vh]">

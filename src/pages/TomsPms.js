@@ -22,11 +22,10 @@ import {
 import pms1 from "../assets/pms1.jpg";
 import pms2 from "../assets/pms2.jpg";
 import pms3 from "../assets/pms3.jpg";
-import wabys from "../assets/wabys.png";
-import style from "../styles/Loading.module.css";
 import { useAuth } from "../context/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
 
-const pmsDesc = "This module is crucial for driving organizational success by providing tools to set clear goals, track individual and team progress, and offer insightful feedback. It enables data-driven decisions regarding talent development, performance improvement, and ultimately, the achievement of strategic objectives. By optimizing employee potential and aligning efforts with organizational targets, it significantly boosts overall productivity and effectiveness."
+const pmsDesc = "This module drives organizational success by setting clear goals, tracking progress, and offering feedback. It supports data-driven decisions for talent development, performance improvement, and strategic goal achievement, boosting efficiency and effectiveness."
 
 const roleArMapping = {
   QM: "إدارة الجودة",
@@ -42,6 +41,20 @@ const roleArMapping = {
   TA: "المتدرب",
   PD: "التنمية المهنية",
   AD: "الادارة",
+};
+
+const formsCodes = {
+  IP: "الاداء المؤسسي",
+  PO: "التخطيط و التشغيل",
+  W: "بيئة العمل",
+  TE: "بيئة التدريب",
+  QD: "الجودة و التطوير",
+  DD: "الرقمنة و تخزين البيانات",
+  TP: "مسار التدريب",
+  TG: "البرامج التدريبية",
+  TR: "اداء المتدرب",
+  T: "اداء المدرب",
+  CP: "المشاركة المجتمعية"
 };
 
 const rolePermission = {
@@ -119,7 +132,7 @@ const TomsPms = () => {
           const codeKey2 = item.code.split(" | ")[1];
           const codePermission = item.code.split(" | ")[0];
           const codePermission2 = rolePermission[codePermission] || null;
-          const codeKey = roleArMapping[codeKey2] || null;
+          const codeKey = formsCodes[codeKey2] || null;
           console.log(codePermission)
 
           if (codePermission2 === userInfo.user_role || (codePermission2 === "Self" && codeKey === userInfo.user_role) || userInfo.user_role === "Operations Excellence Lead" || codePermission === "SV" || codePermission === "AU" || codePermission === "T" || codePermission === "TC" || codePermission === "AD" || codePermission === "TR") {
@@ -194,27 +207,7 @@ const TomsPms = () => {
     },
   ];
 
-  if (loading)
-    return (
-      <div className="bg-formColor w-full h-screen flex justify-center items-center">
-        <div className="relative w-[25%] aspect-[4/1]">
-          {" "}
-          <div
-            className={`w-full h-full ${style["animated-mask"]}`}
-            style={{
-              WebkitMaskImage: `url(${wabys})`,
-              maskImage: `url(${wabys})`,
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskSize: "contain",
-              maskSize: "contain",
-              WebkitMaskPosition: "center",
-              maskPosition: "center",
-            }}
-          />
-        </div>
-      </div>
-    );
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
 
   return (

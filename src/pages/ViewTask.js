@@ -5,12 +5,10 @@ import { useEffect, useState } from "react";
 import { downloadTaskFile, fetchTasks } from "../services/tms";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
-import wabys from "../assets/wabys.png";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const ViewTask = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
   const { userInfo } = useAuth();
   const [task, setTask] = useState(null);
@@ -59,23 +57,7 @@ const ViewTask = () => {
     loadingTasks();
   }, [id]);
 
-  if (userInfo.user_role === "Student") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-6xl font-bold">401</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
 
   return (
     <div className="bg-gray-500 h-screen">

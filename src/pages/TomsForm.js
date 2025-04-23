@@ -16,6 +16,7 @@ import {
   fetchDepartments,
   fetchUsers,
 } from "../services/data";
+import LoadingScreen from "../components/LoadingScreen";
 
 function TomsForm() {
   const { id } = useParams();
@@ -294,7 +295,7 @@ function TomsForm() {
     ),
   ];
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
 

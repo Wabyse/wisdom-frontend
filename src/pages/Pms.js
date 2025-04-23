@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import style from "../styles/Loading.module.css";
 import "../styles/Pms.css";
 import { useNavigate } from "react-router-dom";
 import { fetchForms } from "../services/pms";
@@ -22,8 +21,8 @@ import {
 import pms1 from "../assets/pms1.jpg";
 import pms2 from "../assets/pms2.jpg";
 import pms3 from "../assets/pms3.jpg";
-import wabys from "../assets/wabys.png";
 import { useAuth } from "../context/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
 
 const roleMapping = {
   T: "Teacher",
@@ -38,7 +37,7 @@ const roleMapping = {
   PD: "PD",
 };
 
-const pmsDesc = "This module is crucial for driving organizational success by providing tools to set clear goals, track individual and team progress, and offer insightful feedback. It enables data-driven decisions regarding talent development, performance improvement, and ultimately, the achievement of strategic objectives. By optimizing employee potential and aligning efforts with organizational targets, it significantly boosts overall productivity and effectiveness."
+const pmsDesc = "This module drives organizational success by setting clear goals, tracking progress, and offering feedback. It supports data-driven decisions for talent development, performance improvement, and strategic goal achievement, boosting efficiency and effectiveness."
 
 const formLogo = [
   <FontAwesomeIcon icon={faUserTie} />,
@@ -224,32 +223,12 @@ const Pms = () => {
     },
   ];
 
-  if (loading)
-    return (
-      <div className="bg-formColor w-full h-screen flex justify-center items-center">
-        <div className="relative w-[25%] aspect-[4/1]">
-          {" "}
-          <div
-            className={`w-full h-full ${style["animated-mask"]}`}
-            style={{
-              WebkitMaskImage: `url(${wabys})`,
-              maskImage: `url(${wabys})`,
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskSize: "contain",
-              maskSize: "contain",
-              WebkitMaskPosition: "center",
-              maskPosition: "center",
-            }}
-          />
-        </div>
-      </div>
-    );
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
 
   return (
     <>
-      <Navbar2 showNavigate={true} img={imgs} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[230px]" : "w-[370px]" } Page="PMS" description={pmsDesc}>
+      <Navbar2 showNavigate={true} img={imgs} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[230px]" : "w-[520px]" } Page="PMS" description={pmsDesc}>
         <ul
           className={`hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start ${language ? "text-start" : "text-end"
             } md:h-[85vh]`}
@@ -311,7 +290,7 @@ const Pms = () => {
               )}
             </ul>
           </li> : null}
-          {userInfo.user_role === "Supervisor" || userInfo.user_role === "Student Affairs Officer" ? <li
+          {userInfo.user_role === "Supervisor" || userInfo.user_role === "Student Affairs Officer" || userInfo.user_role === "Operations Excellence Lead" ? <li
             key="Daily Operations"
             className={`relative group hover:text-lg hover:text-wisdomLightOrange text-black md:border-0 md:p-0 p-2 border-b-2 ${language ? "text-start" : "text-end"
               } border-black m-2`}
@@ -343,7 +322,7 @@ const Pms = () => {
             </button>
 
             <ul className="hidden group-hover:block absolute top-0 right-full list-none p-0 shadow-md shadow-black/10 rounded min-w-[400px] z-[1000]">
-              {userInfo.user_role === "Supervisor" ? <>
+              {userInfo.user_role === "Supervisor" || userInfo.user_role === "Operations Excellence Lead" ? <>
                 <li
                   key="Teacher Substitutions"
                   className="dropdown-item text-base"
@@ -365,7 +344,7 @@ const Pms = () => {
                 >
                   {language ? "School Incident" : "حوادث المدرسة"}
                 </li></> : null}
-              {userInfo.user_role === "Student Affairs Officer" ? <li
+              {userInfo.user_role === "Student Affairs Officer" || userInfo.user_role === "Operations Excellence Lead" ? <li
                 key="Student Absence"
                 className="dropdown-item text-base"
                 onClick={() => handleStudentAbsenceClick()}
@@ -444,7 +423,7 @@ const Pms = () => {
               </ul>
             </li>
           ))}
-          {userInfo.user_role === "Social Worker" ? <li
+          {userInfo.user_role === "Social Worker" || userInfo.user_role === "Operations Excellence Lead" ? <li
             key="Student behavior"
             className="relative group md:border-0 md:p-0 hover:text-wisdomLightOrange text-black p-2 border-b-2 text-center border-black m-2"
           >

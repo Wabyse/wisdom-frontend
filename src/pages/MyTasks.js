@@ -5,8 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { LuDownload } from "react-icons/lu";
 import { downloadTaskFile, fetchTasks, updateMyTask } from "../services/tms";
-import wabys from "../assets/wabys.png";
-import { useNavigate } from "react-router-dom";
+import LoadingScreen from "../components/LoadingScreen";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const statusOptions = [
   "0",
@@ -29,7 +29,6 @@ const MyTasks = () => {
   const [status, setStatus] = useState({}); // Fix: Maintain statuses for each task
   const { userInfo } = useAuth();
   const [editStates, setEditStates] = useState({});
-  const navigate = useNavigate();
 
   const downloadFile = async (path) => {
     try {
@@ -115,25 +114,9 @@ const MyTasks = () => {
     (task) => task.assignee.id === userInfo.id
   );
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
-  if (userInfo.user_role === "Trainee" || userInfo.user_role === "Student") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-6xl font-bold">401</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/watoms/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+  if (userInfo.user_role === "Trainee" || userInfo.user_role === "Student") return <DenyAccessPage homePage='/pms' />;
 
   return (
     <>

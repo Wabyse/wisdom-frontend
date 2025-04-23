@@ -18,8 +18,8 @@ import {
 } from "../services/data";
 import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
-import wabys from "../assets/wabys.png";
-import style from "../styles/Loading.module.css";
+import LoadingScreen from "../components/LoadingScreen";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const rolePermission = {
   T: "Teacher",
@@ -333,50 +333,14 @@ function Form() {
     ),
   ];
 
-  if (loading)
-    return (
-      <div className="bg-formColor w-full h-screen flex justify-center items-center">
-        <div className="relative w-[25%] aspect-[4/1]">
-          {" "}
-          <div
-            className={`w-full h-full ${style["animated-mask"]}`}
-            style={{
-              WebkitMaskImage: `url(${wabys})`,
-              maskImage: `url(${wabys})`,
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskSize: "contain",
-              maskSize: "contain",
-              WebkitMaskPosition: "center",
-              maskPosition: "center",
-            }}
-          />
-        </div>
-      </div>
-    );
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
   if (((code && code !== userInfo.user_role)
     || (form[0].sub_field.field.form.form_code && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[0]] !== userInfo.user_role && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[0]] !== "Self")
     || (form[0].sub_field.field.form.form_code && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[1]] !== userInfo.user_role && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[1]] === "Self")
     || (userInfo.user_role === "Head of Department (HOD)" && code === "Teacher"))
-    && userInfo.user_role !== "Operations Excellence Lead") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-6xl font-bold">401</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+    && userInfo.user_role !== "Operations Excellence Lead") return <DenyAccessPage homePage='/pms' />;
 
   return (
     <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-screen">

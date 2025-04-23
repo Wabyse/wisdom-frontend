@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { fetchAllTeachers, sendTeacherEvaluation } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
 import newLogo2 from "../assets/newLogo2.jpg";
-import wabys from "../assets/wabys.png";
+import LoadingScreen from "../components/LoadingScreen";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const testResults = [
   "عنوان 6",
@@ -82,25 +83,9 @@ function TomsTest() {
     loadTeachers();
   }, [userInfo]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error: {error}</p>;
-  if (userInfo.user_role !== "Trainer" || userInfo.user_role !== "Operations Excellence Lead") {
-    return (
-      <>
-        <div className="bg-formColor w-full h-screen flex flex-col justify-center items-center">
-          <img
-            className="w-[25%]"
-            src={wabys}
-            alt=""
-          />
-          <h1 className="text-6xl font-bold">401</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">You are not authorized to view this page.</h1>
-          <h1 className="text-4xl text-center text-watomsBlue">Please contact your administrator if you believe this is an error.</h1>
-          <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 m-4" onClick={() => navigate('/watoms/pms')}>Go Back</button>
-        </div>
-      </>
-    )
-  }
+  if (userInfo.user_role !== "Trainer" || userInfo.user_role !== "Operations Excellence Lead") return <DenyAccessPage homePage='/watoms/pms' />;
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
