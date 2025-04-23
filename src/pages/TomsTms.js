@@ -15,7 +15,7 @@ import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 
-const tmsDesc = "This module is fundamental for enhancing accountability and project execution. It allows for the clear assignment of responsibilities, the establishment of deadlines, and the real-time monitoring of task progress. By providing a transparent overview of workloads and potential bottlenecks, it improves team coordination, reduces delays, and ensures the timely completion of crucial activities, directly contributing to increased efficiency and project success."
+const tmsDesc = "This module boosts accountability and project execution through clear task assignment, deadlines, and real-time tracking. It streamlines coordination, cuts delays, and ensures timely completion, driving efficiency and project success."
 
 const statusOptions = [
   // "0",
@@ -380,7 +380,7 @@ const TomsTms = () => {
       <Navbar3
         showNavigate={false}
         img={imgs}
-        length="w-[490px]"
+        length="w-[640px]"
         header={header}
         Page="TMS"
         description={tmsDesc}

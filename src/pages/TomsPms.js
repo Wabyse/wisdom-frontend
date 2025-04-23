@@ -27,21 +27,21 @@ import LoadingScreen from "../components/LoadingScreen";
 
 const pmsDesc = "This module drives organizational success by setting clear goals, tracking progress, and offering feedback. It supports data-driven decisions for talent development, performance improvement, and strategic goal achievement, boosting efficiency and effectiveness."
 
-const roleArMapping = {
-  QM: "إدارة الجودة",
-  T: "المدرب",
-  C: "المناهج",
-  GL: "الحوكمة والقيادة",
-  W: "بيئة العمل",
-  TE: "بيئة التدريب",
-  SP: "التخطيط الاستراتيجي",
-  AP: "الاداريين",
-  TC: "مدير",
-  SS: "العمليات",
-  TA: "المتدرب",
-  PD: "التنمية المهنية",
-  AD: "الادارة",
-};
+// const roleArMapping = {
+//   QM: "إدارة الجودة",
+//   T: "المدرب",
+//   C: "المناهج",
+//   GL: "الحوكمة والقيادة",
+//   W: "بيئة العمل",
+//   TE: "بيئة التدريب",
+//   SP: "التخطيط الاستراتيجي",
+//   AP: "الاداريين",
+//   TC: "مدير",
+//   SS: "العمليات",
+//   TA: "المتدرب",
+//   PD: "التنمية المهنية",
+//   AD: "الادارة",
+// };
 
 const formsCodes = {
   IP: "الاداء المؤسسي",
@@ -212,7 +212,7 @@ const TomsPms = () => {
 
   return (
     <>
-      <Navbar2 showNavigate={false} img={imgs} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[155px]" : "w-[290px]" } Page="PMS" description={pmsDesc}>
+      <Navbar2 showNavigate={false} img={imgs} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[155px]" : "w-[440px]" } Page="PMS" description={pmsDesc}>
         <ul className="hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start text-center md:h-[80vh]">
           <li
             key="PD"

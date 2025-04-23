@@ -13,7 +13,7 @@ import Navbar3 from "../components/Navbar3";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 
-const dmsDesc = "In today's information-rich environment, this module is vital for ensuring operational efficiency and regulatory compliance. It provides a secure and organized repository for all critical documents, enabling effortless access, version control, and collaboration. By streamlining document workflows and minimizing the risks associated with lost or mismanaged information"
+const dmsDesc = "This module ensures operational efficiency and compliance by providing a secure, organized repository for critical documents. It streamlines access, version control, collaboration, and reduces risks from lost or mismanaged information."
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -298,7 +298,7 @@ const TomsDms = () => {
       <Navbar3
         showNavigate={false}
         img={imgs}
-        length="w-[420px]"
+        length="w-[570px]"
         header={header}
         Page="DMS"
         description={dmsDesc}

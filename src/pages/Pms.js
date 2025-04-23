@@ -425,7 +425,7 @@ const Pms = () => {
           ))}
           {userInfo.user_role === "Social Worker" || userInfo.user_role === "Operations Excellence Lead" ? <li
             key="Student behavior"
-            className="relative group md:border-0 md:p-0 hover:text-wisdomLightOrange text-black p-2 border-b-2 text-center border-black m-2"
+            className="relative group md:border-0 md:p-0 hover:text-wisdomLightOrange text-black p-2 border-b-2 text-right border-black m-2"
           >
             <button className="font-bold">
               {language ? (

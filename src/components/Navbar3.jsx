@@ -154,7 +154,7 @@ const Navbar3 = ({ children, showNavigate = true, img, length = "w-[300px]", hea
                             ? navItem("TMS", "/tms")
                             : navItem("TMS", "/watoms/tms") : null}
                         {header && typeof header === "function" ? header() : header}
-                        {showNavigate ? <a href="https://www.google.com" rel="noopener noreferrer" target="_blank" className={`px-5 py-2 rounded-full cursor-pointer bg-gray-700 text-white hover:bg-gray-300 hover:text-black`}>DashBoard</a> : null}
+                        <a href={showNavigate ? "https://app.powerbi.com/view?r=eyJrIjoiYjc0MjM0MDYtZmQ4YS00OTMzLTljZmQtOGY4NjRkZDdiN2U5IiwidCI6IjMzYzJiZGQ1LWNiYWUtNDRmNS04ODE0LWE4MzVjOGRjYzQ5OSJ9" : ""} rel="noopener noreferrer" target="_blank" className={`px-5 py-2 rounded-full cursor-pointer bg-gray-700 text-white hover:bg-gray-300 hover:text-black`}>DashBoard</a>
                         <div>{showNavigate ? <ChangeLanguage /> : null}</div>
                         <div className="flex items-center gap-2">
                             <div className="bg-white text-center p-2 rounded-full font-bold w-11 h-11 border-2 border-gray-300 flex items-center justify-center">
