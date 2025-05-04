@@ -1,9 +1,12 @@
 import api from "./api";
 
-export const fetchForms = async () => {
+export const fetchForms = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/forms/AllForms`, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response.data.data;
   } catch (error) {

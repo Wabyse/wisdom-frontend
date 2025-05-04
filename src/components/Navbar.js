@@ -5,6 +5,7 @@ import GovLogo from "../assets/NewLogoGovEbda.png";
 import watoms2 from "../assets/watoms2.jpg";
 import wisdom from "../assets/wisdom.png";
 import { useState } from "react";
+import ChangeLanguage from "./ChangeLanguage";
 // this is comment test
 
 const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", upload = false }) => {
@@ -22,39 +23,6 @@ const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", uplo
     setUserCode(null);
     window.location.href = "/login";
   };
-
-  // const viewProfile = () => {
-  //   setProfileHover(true);
-  //   setProfile("");
-  // }
-
-  // const hideProfile = () => {
-  //   setProfileHover(false);
-  //   setProfile("hidden");
-  // }
-
-  // const slides = [
-  //   {
-  //     id: 1,
-  //     image: img,
-  //     title: "Explore Nature",
-  //     subtitle: "Discover the beauty of the world around you.",
-  //   },
-  //   {
-  //     id: 2,
-  //     image:
-  //       "https://static.vecteezy.com/system/resources/previews/001/871/388/non_2x/illustration-of-hours-and-schedules-to-improve-company-performance-company-profits-increasing-on-chart-women-and-men-workers-designed-for-website-web-landing-page-apps-ui-ux-poster-flyer-free-vector.jpg",
-  //     title: "City Lights",
-  //     subtitle: "Experience the energy of urban life.",
-  //   },
-  //   {
-  //     id: 3,
-  //     image:
-  //       "https://www.talentlms.com/blog/wp-content/uploads/2024/06/Performance-Management-Process_15May2024b_big.png",
-  //     title: "Mountain Adventure",
-  //     subtitle: "Reach new heights and conquer your fears.",
-  //   },
-  // ];
 
   const navItem = (label, path) => (
     <button
@@ -87,65 +55,9 @@ const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", uplo
     </button>
   );
 
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setCurrent((prev) => (prev + 1) % img.length);
-  //   }, 5000);
-
-  //   return () => clearInterval(timer);
-  // }, [img]);
-
-  // useEffect(() => {
-  //   const { title, description } = img[current];
-  //   let titleIndex = 0;
-  //   let subtitleIndex = 0;
-
-  //   setTypedTitle("");
-  //   setTypedSubtitle("");
-
-  //   let titleTimer = null;
-  //   let subtitleTimer = null;
-
-  //   function typeTitle() {
-  //     titleTimer = setInterval(() => {
-  //       setTypedTitle((prev) => {
-  //         const next = prev + title.charAt(titleIndex);
-  //         titleIndex++;
-  //         if (titleIndex >= title.length) {
-  //           clearInterval(titleTimer);
-  //         }
-  //         return next;
-  //       });
-  //     }, 50);
-  //   }
-
-  //   function typeSubtitle() {
-  //     subtitleTimer = setInterval(() => {
-  //       setTypedSubtitle((prev) => {
-  //         const next = prev + description.charAt(subtitleIndex);
-  //         subtitleIndex++;
-  //         if (subtitleIndex >= description.length) {
-  //           clearInterval(subtitleTimer);
-  //         }
-  //         return next;
-  //       });
-  //     }, 30);
-  //   }
-
-  //   typeTitle();
-  //   const subtitleDelay = setTimeout(typeSubtitle, 600);
-
-  //   // Cleanup
-  //   return () => {
-  //     clearInterval(titleTimer);
-  //     clearInterval(subtitleTimer);
-  //     clearTimeout(subtitleDelay);
-  //   };
-  // }, [current, img]);
-
   return (
     <div
-      className={`w-full flex flex-col ${upload ? "h-[75px] bg-gray-500" : "h-[600px]"} bg-cover bg-center m-0 transition-all duration-1000 ease-in-out`}
+      className={`w-full flex flex-col ${upload ? "md:h-[75px] h-[45px] bg-gray-500" : "h-[600px]"} bg-cover bg-center m-0 transition-all duration-1000 ease-in-out`}
       style={{
         // backgroundImage: upload ? "none" : `url(${img[current].image})`,
         backgroundColor: upload ? "gray" : "none"
@@ -175,6 +87,7 @@ const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", uplo
           {showNavigate
             ? navItem("TMS", "/tms")
             : navItem("TMS", "/watoms/tms")}
+            {showNavigate ? <ChangeLanguage /> : null}
           <div className="flex items-center gap-2">
             <div className={`flex justify-evenly items-center`}>{children}</div>
             <div className="bg-white text-center p-2 rounded-full font-bold w-10 h-10 border-2 border-gray-300 flex items-center justify-center">
@@ -223,7 +136,7 @@ const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", uplo
       </div> */}
 
       {mobile && (
-        <div className="md:hidden w-screen flex flex-col gap-2 bg-white px-4 py-4 shadow-md">
+        <div className="md:hidden w-screen flex flex-col gap-2 bg-white px-4 py-4 shadow-md z-[1000]">
           {showNavigate
             ? navItem("PMS", "/pms")
             : navItem("PMS", "/watoms/pms")}

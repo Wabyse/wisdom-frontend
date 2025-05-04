@@ -15,10 +15,13 @@ export const fetchCurriculums = async () => {
   }
 };
 
-export const fetchDepartments = async () => {
+export const fetchDepartments = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/forms/AllDepartments`, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response.data?.data || [];
   } catch (error) {
@@ -30,10 +33,13 @@ export const fetchDepartments = async () => {
   }
 };
 
-export const fetchDmsCategories = async () => {
+export const fetchDmsCategories = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/files/categories`, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response.data?.categories || [];
   } catch (error) {
@@ -45,10 +51,13 @@ export const fetchDmsCategories = async () => {
   }
 };
 
-export const fetchUsers = async () => {
+export const fetchUsers = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/forms/AllUsers`, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response.data?.data || [];
   } catch (error) {

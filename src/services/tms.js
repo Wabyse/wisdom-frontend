@@ -12,10 +12,13 @@ export const assignTask = async (formData) => {
   }
 };
 
-export const fetchTaskCategories = async () => {
+export const fetchTaskCategories = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/tasks/categories`, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response.data?.categories || [];
   } catch (error) {

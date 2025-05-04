@@ -22,10 +22,13 @@ export const downloadFileDms = async (fileName) => {
   }
 };
 
-export const fetchingFiles = async () => {
+export const fetchingFiles = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/files/view`, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response;
   } catch (error) {
@@ -37,10 +40,13 @@ export const fetchingFiles = async () => {
   }
 };
 
-export const fetchingOrgs = async () => {
+export const fetchingOrgs = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/forms/AllOrgs`, {
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response.data?.data || [];
   } catch (error) {

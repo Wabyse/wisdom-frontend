@@ -236,7 +236,7 @@ const Navbar3 = ({ children, showNavigate = true, img, length = "w-[300px]", hea
                                 ) : null}
 
                                 <div className={`text-white text-md font-bold ${Page === "DMS" ? "bg-blue-800" : "bg-slate-600"} rounded-full shadow-lg shadow-black/30 h-[60px] w-[60px] self-center flex justify-center items-center mr-3 bg-opacity-100`}>
-                                    <span className="inline-block px-1 py-2 rounded-full border-white border-2 m-1">
+                                    <span className="inline-block px-2 py-3 rounded-full border-white text-sm border-2 m-1">
                                         {Page}
                                     </span>
                                 </div>
@@ -257,7 +257,7 @@ const Navbar3 = ({ children, showNavigate = true, img, length = "w-[300px]", hea
                         </div>
                     </div>
                     <div className="text-black text-2xl flex hover:opacity-50 mx-5  items-end">
-                        <span className="inline-block bg-white shadow-lg shadow-black/30 py-2 px-3 rounded-full">
+                        <span className="inline-block bg-white shadow-lg shadow-black/30 py-2 px-3 mb-2 rounded-full">
                             <FontAwesomeIcon icon={faComment} />
                         </span>
                         <p className="text-white my-auto ml-2">Ask me</p>
