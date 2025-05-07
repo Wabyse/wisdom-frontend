@@ -87,6 +87,7 @@ const Pms = () => {
                 codeAr: codeAr,
                 forms: [],
               };
+              console.log(codeKey)
               groupedData.push(existingGroup);
             }
 
@@ -119,7 +120,7 @@ const Pms = () => {
         setDailyOperations(filter2);
       } catch (err) {
         console.error("API Error:", err);
-        setError(err.message);
+        setError(err);
       } finally {
         setLoading(false);
       }
@@ -313,7 +314,7 @@ const Pms = () => {
           ))}
           {userInfo.user_role === "Social Worker" || userInfo.user_role === "Operations Excellence Lead" ? <li
             key="Student behavior"
-            className="relative group md:border-0 md:p-0 hover:text-wisdomLightOrange text-black p-2 border-b-2 text-right border-black m-2"
+            className={`relative group md:border-0 md:p-0 hover:text-wisdomLightOrange text-black p-2 border-b-2 border-black m-2 ${!language && "text-end"}`}
           >
             <button className="font-bold">
               {language ? (

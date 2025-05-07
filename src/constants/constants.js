@@ -23,6 +23,10 @@ import tms3 from "../assets/tms3.jpg";
 import dms1 from "../assets/dms1.jpg";
 import dms2 from "../assets/dms2.jpg";
 import dms3 from "../assets/dms3.jpg";
+import ebda from '../assets/EBDA.jpeg';
+import wabys from '../assets/wabys.png';
+import GOL from '../assets/Gov.png';
+import wahby from '../assets/wahby_group.png';
 
 export const IMPORTANCE_LEVELS = ["normal", "important", "urgent"];
 
@@ -261,3 +265,10 @@ export const WATOMS_TEST_TITLES = [
     "عنوان 2",
     "عنوان 1",
 ];
+
+export const PARTNERS = [
+    { title: "ابدأ لتنمية الصناعات", image: ebda, width: "w-40" },
+    { title: "وابيز للتدريب و التعليم", image: wabys, width: "w-40" },
+    { title: "وزارة العمل المصرية", image: GOL, width: "w-24" },
+    { title: "وهبي جروب", image: wahby, width: "w-56" },
+  ];

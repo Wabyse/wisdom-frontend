@@ -5,11 +5,14 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/auth";
 import wabys from "../assets/wabys.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/pms";
+  const from = location.state?.from?.pathname || "/watoms/pms";
+  const [revealPassword, setRevealPassword] = useState(false);
   const { setUserCode } = useAuth();
   const { setUserInfo } = useAuth();
   const [code, setCode] = useState("");
@@ -64,13 +67,12 @@ const Login = () => {
         </div>
         <div className="w-[67%] flex h-full flex-col justify-center  gap-6 p-5">
           <div className="flex flex-col gap-2">
-            <label className="text-white" HtmlFor="code">
+            <label className="text-white" htmlFor="code">
               Username
             </label>
             <input
-              className={`w-4/5 md:w-4/5 p-[2px] rounded mb-[5%] ${
-                status ? "border-none" : "border-2 border-red-500"
-              }`}
+              className={`w-4/5 md:w-4/5 p-[2px] rounded mb-[5%] ${status ? "border-none" : "border-2 border-red-500"
+                }`}
               type="text"
               id="code"
               name="code"
@@ -79,19 +81,26 @@ const Login = () => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-white" HtmlFor="password">
+            <label className="text-white" htmlFor="password">
               Password
             </label>
-            <input
-              className={`w-4/5 md:w-4/5 p-[2px] rounded mb-[5%] ${
-                status ? "border-none" : "border-2 border-red-500"
-              }`}
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative w-4/5 md:w-4/5">
+              <input
+                className={`w-full p-[2px] rounded mb-[5%] pr-10 ${status ? "border-none" : "border-2 border-red-500"}`}
+                type={revealPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setRevealPassword(prev => !prev)}
+                className="absolute right-2 top-[15px] transform -translate-y-1/2 text-black focus:outline-none"
+              >
+                <FontAwesomeIcon icon={revealPassword ? faEyeSlash : faEye} />
+              </button>
+            </div>
           </div>
           <button
             className="bg-wisdomOrange text-white hover:bg-wisdomDarkOrange w-1/5 min-w-[100px] p-2 border-none rounded cursor-pointer"

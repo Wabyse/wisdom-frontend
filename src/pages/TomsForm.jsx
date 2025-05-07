@@ -12,16 +12,22 @@ import {
   EnvironmentForm,
 } from "../services/pms";
 import {
+  fetchClasses,
   fetchCurriculums,
   fetchDepartments,
+  fetchStudents,
   fetchUsers,
 } from "../services/data";
 import LoadingScreen from "../components/LoadingScreen";
+import Popup from "../components/Popup";
 
 function TomsForm() {
   const { id } = useParams();
   const location = useLocation();
   const formArName = location.state?.formArName || "استمارة";
+  const code = location.state?.code;
+  const reviewee = location.state?.reviewee;
+  const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState([]);
   const [curriculums, setCurriculums] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -30,6 +36,11 @@ function TomsForm() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [students, setStudnets] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [classes, setClasses] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
   const { userInfo } = useAuth();
   const [quesLength, setQuesLength] = useState();
 
@@ -89,11 +100,12 @@ function TomsForm() {
     try {
       const submittedData = {
         assessor: userInfo.id,
-        assessee: userIdValue,
+        assessee: code === "Self" ? userInfo.id : userIdValue,
         questionsResult: questionAnswers,
       };
       await IndividualForm(submittedData);
-      navigate(`/watoms/pms`);
+      toast.success("تم ارسال التقييم");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
@@ -138,7 +150,8 @@ function TomsForm() {
         questionsResult: questionAnswers,
       };
       await CurriculumForm(submittedData);
-      navigate(`/watoms/pms`);
+      toast.success("تم ارسال التقييم");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
@@ -179,7 +192,8 @@ function TomsForm() {
         questionsResult: questionAnswers,
       };
       await EnvironmentForm(submittedData);
-      navigate(`/watoms/pms`);
+      toast.success("تم ارسال التقييم");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
       toast.error("Submission failed.");
@@ -188,6 +202,16 @@ function TomsForm() {
 
   const handleDepartmentChange = (e) => {
     setSelectedDepartment(e.target.value);
+  };
+
+  const handleClassChange = (e) => {
+    if (e.target.value !== "" && e.target.value !== "All") {
+      const filtering = students.filter(student => student.class_id === Number(e.target.value));
+      setFilteredStudents(filtering)
+    }
+    if (e.target.value !== "") {
+      setSelectedClass(e.target.value);
+    }
   };
 
   useEffect(() => {
@@ -262,9 +286,44 @@ function TomsForm() {
       }
     };
 
+    const loadStudents = async () => {
+      try {
+        const response = await fetchStudents();
+        const filterOrg = userInfo.user_role === "Operations Excellence Lead" ? response : response.filter(org => org.school_id === userInfo.organization_id);
+        setStudnets(filterOrg);
+        setFilteredStudents(filterOrg);
+      } catch (err) {
+        console.error("API Error:", err);
+        setError(err);
+      }
+    };
+
+    const loadClasses = async () => {
+      try {
+        const response = await fetchClasses();
+        const response2 = await fetchStudents();
+        let response3;
+        if (userInfo.user_role !== "Operations Excellence Lead") {
+          response3 = [...new Set(response2
+            .filter(test => test.school_id === userInfo.organization_id)
+            .map(test => test.class_id)
+          )];
+        } else {
+          response3 = response2.map(test => test.class_id);
+        }
+        const response4 = response.filter(item => response3.includes(item.id));
+        setClasses(response4);
+      } catch (err) {
+        console.error("API Error:", err);
+        setError(err);
+      }
+    };
+
     loadCurriculums();
     loadDepartments();
     loadUsers();
+    loadStudents();
+    loadClasses();
     setLoading(false);
   }, [userInfo]);
 
@@ -296,6 +355,11 @@ function TomsForm() {
     ),
   ];
 
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/watoms/pms');
+  };
+
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
@@ -315,7 +379,7 @@ function TomsForm() {
           className="flex flex-col items-center justify-center w-full"
           onSubmit={handleSubmit}
         >
-          {formType[0] === "ClassRoom Observation" ? (
+          {formType[0] === "ClassRoom Observation" ? code !== "Self" ? reviewee !== "Student" ? (
             <div className="w-full flex md:justify-evenly flex-col md:flex-row">
               <div className="flex flex-col items-center justify-center">
                 <label htmlFor="department">:المهنة</label>
@@ -355,7 +419,47 @@ function TomsForm() {
                 </select>
               </div>
             </div>
-          ) : formType[0] === "curriculum" ? (
+          ) : (
+            <div className="w-full flex md:justify-evenly flex-col md:flex-row">
+              <div className="flex flex-col items-center justify-center">
+                <label htmlFor="class">:الدورة</label>
+                <select
+                  className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
+                  id="class"
+                  name="class"
+                  onChange={handleClassChange}
+                  value={selectedClass}
+                >
+                  <option value="" disabled selected>
+                    الرجاء اختيار المهنة
+                  </option>
+                  {classes.map((eachClass) => (
+                    <option key={eachClass.id} value={eachClass.id}>
+                      {eachClass.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col items-center justify-center">
+                <label>:المتدرب</label>
+                <select
+                  className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
+                  id="user"
+                  name="user"
+                >
+                  <option value="" disabled selected>
+                    الرجاء اختيار المتدرب
+                  </option>
+                  {filteredStudents.map((student) => (
+                    <option
+                      value={student.id}
+                      key={student.id}
+                    >{`${student.first_name} ${student.middle_name} ${student.last_name}`}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : null : formType[0] === "curriculum" ? (
             <div className="flex flex-col items-center justify-center">
               <label>:المنهج</label>
               <select
@@ -414,6 +518,11 @@ function TomsForm() {
           </button>
         </form>
       </div>
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message="تم تسجيل رايك بنجاح"
+      />
     </div>
   );
 }

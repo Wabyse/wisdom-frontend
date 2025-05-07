@@ -64,7 +64,12 @@ function Test() {
     const loadTeachers = async () => {
       try {
         const response = await fetchAllTeachers();
-        const RelatedUsers = response.filter(user => user.employee.organization_id === userInfo.organization_id);
+        let RelatedUsers;
+        if (userInfo.user_role !== "Operations Excellence Lead") {
+          RelatedUsers = response.filter(user => user.employee.organization_id === userInfo.organization_id);
+        } else {
+          RelatedUsers = response;
+        }
         serTeachers(RelatedUsers);
       } catch (err) {
         console.error("API Error:", err);

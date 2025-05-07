@@ -44,9 +44,9 @@ const TomsPms = () => {
   };
 
 
-  const handleClick = (id, ar_name) => {
+  const handleClick = (id, ar_name, code, reviewee) => {
     navigate(`/watoms/pms/form/${id}`, {
-      state: { formArName: ar_name },
+      state: { formArName: ar_name, code: code, reviewee },
     });
   };
 
@@ -95,7 +95,7 @@ const TomsPms = () => {
               existingGroup = {
                 id: item.id,
                 code: codeKey,
-                permission: codePermission2 === "Self" ? codeKey : codePermission2,
+                reviewee: codeKey3,
                 forms: [],
               };
               groupedData.push(existingGroup);
@@ -104,6 +104,7 @@ const TomsPms = () => {
             existingGroup.forms.push({
               id: item.id,
               ar_name: item.ar_name,
+              permission: codePermission2,
             });
           }
         });
@@ -120,7 +121,8 @@ const TomsPms = () => {
         const filter2 = groupedData.filter(
           (testData) => testData.code === "Daily Operations"
         );
-        const newForms = WATOMS_PMS_FORMS_ORDER.map((id) => filteredGeneralForms[id]).filter((f) => f !== undefined);;
+        const newForms = WATOMS_PMS_FORMS_ORDER.map((id) => filteredGeneralForms[id]).filter((f) => f !== undefined);
+        console.log(newForms)
         setForms(newForms);
         setPd(filter1);
         setDailyOperations(filter2);
@@ -174,7 +176,7 @@ const TomsPms = () => {
                   <li
                     key={form.id}
                     className="dropdown-item text-base"
-                    onClick={() => handleClick(form.id, form.ar_name)}
+                    onClick={() => handleClick(form.id, form.ar_name, form.permission, type.reviewee)}
                   >
                     {form.ar_name}
                   </li>
@@ -237,7 +239,7 @@ const TomsPms = () => {
                     <li
                       key={form.id}
                       className="dropdown-item text-base"
-                      onClick={() => handleClick(form.id, form.ar_name)}
+                      onClick={() => handleClick(form.id, form.ar_name, form.permission, type.reviewee)}
                     >
                       {form.ar_name}
                     </li>
@@ -257,7 +259,7 @@ const TomsPms = () => {
                     <div key={form.id} className="w-full mb-4">
                       <button
                         className="text-[18px] w-full text-center"
-                        onClick={() => handleClick(form.id, form.ar_name)}
+                        onClick={() => handleClick(form.id, form.ar_name, form.permission, type.reviewee)}
                       >
                         {form.ar_name}
                       </button>
@@ -292,7 +294,7 @@ const TomsPms = () => {
                   <div key={form.id} className="w-full mb-4">
                     <button
                       className="text-[18px] w-full text-center"
-                      onClick={() => handleClick(form.id, form.ar_name)}
+                      onClick={() => handleClick(form.id, form.ar_name, form.permission, type.reviewee)}
                     >
                       {form.ar_name}
                     </button>
@@ -326,7 +328,7 @@ const TomsPms = () => {
                   <div key={form.id} className="w-full mb-4">
                     <button
                       className="text-[18px] w-full text-center"
-                      onClick={() => handleClick(form.id, form.ar_name)}
+                      onClick={() => handleClick(form.id, form.ar_name, form.permission, type.reviewee)}
                     >
                       {form.ar_name}
                     </button>

@@ -41,6 +41,7 @@ function Form() {
   const formEnName = location.state?.formEnName || "Form"; //check this
   const formArName = location.state?.formArName || "استمارة";
   const code = location.state?.code;
+  console.log(code)
   const { language } = useLanguage();
   const [form, setForm] = useState([]);
   const [curriculums, setCurriculums] = useState([]);
@@ -275,7 +276,12 @@ function Form() {
     const loadUsers = async () => {
       try {
         const response = await fetchUsers(userInfo);
-        const RelatedUsers = response.filter(user => user.employee.organization_id === userInfo.organization_id);
+        let RelatedUsers;
+        if (userInfo.user_role !== "Operations Excellence Lead") {
+          RelatedUsers = response.filter(user => user.employee.organization_id === userInfo.organization_id);
+        } else {
+          RelatedUsers = response;
+        }
         setUsers(RelatedUsers);
         setFilteredUsers(RelatedUsers);
       } catch (err) {

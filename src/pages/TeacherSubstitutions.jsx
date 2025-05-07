@@ -47,7 +47,12 @@ function TeacherSubstitutions() {
         const filteredTeachers = response.filter(
           (teacher) => teacher.id !== userInfo.id
         );
-        const RelatedUsers = filteredTeachers.filter(user => user.employee.organization_id === userInfo.organization_id);
+        let RelatedUsers;
+        if (userInfo.user_role !== "Operations Excellence Lead") {
+          RelatedUsers = filteredTeachers.filter(user => user.employee.organization_id === userInfo.organization_id);
+        } else {
+          RelatedUsers = response;
+        }
         setTeachers(RelatedUsers);
       } catch (err) {
         console.error("API Error:", err);
@@ -110,7 +115,7 @@ function TeacherSubstitutions() {
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
-  if (userInfo.user_role !== "ADMIN" || userInfo.user_role !== "Supervisor") return <DenyAccessPage homePage='/pms' />;
+  if (userInfo.user_role !== "Operations Excellence Lead" && userInfo.user_role !== "Supervisor") return <DenyAccessPage homePage='/pms' />;
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">

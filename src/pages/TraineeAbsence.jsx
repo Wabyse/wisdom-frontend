@@ -215,12 +215,12 @@ function TraineeAbsence() {
       </div>
       <div className="w-full flex justify-center">
         <img
-          className="w-[60%] h-[30vh]"
+          className="md:w-[60%] md:h-[30vh] w-full"
           src={newLogo2}
           alt="company logo"
         ></img>
       </div>
-      <div className="w-full text-center">
+      <div className="w-full text-center flex justify-center items-center">
         <h1 className="text-2xl font-bold">غياب المتدرب</h1>
       </div>
       <div className="flex flex-col justify-center items-center w-full mb-2">
@@ -289,15 +289,16 @@ function TraineeAbsence() {
           </div>
           {selectedStudents.map((student) => (
             <div className="students" key={student.id}>
-              <div className="studentName reason">
+              <div className="md:min-w-[200px] text-center flex justify-center items-center flex-col w-[30%]">
                 <div className="">
                   {student.first_name} {student.middle_name} {student.last_name}
                 </div>
               </div>
-              <div className="reason">
+              <div className="flex justify-center items-center flex-col w-[30%]">
                 <select
                   id={`absenceStatus-${student.id}`}
                   name={`absenceStatus-${student.id}`}
+                  className="w-full"
                 >
                   <option value="attend">حاضر</option>
                   <option value="absent">غائب</option>
@@ -305,12 +306,12 @@ function TraineeAbsence() {
                   <option value="left with parent">رحل</option>
                 </select>
               </div>
-              <div className="reason">
+              <div className="flex justify-center items-center flex-col w-[30%]">
                 <input
                   id={`reasonInput ${student.id}`}
                   name={`reason-${student.id}`}
                   type="text"
-                  className="studentReasonInput"
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none transition-colors duration-200 w-full"
                 />
               </div>
             </div>

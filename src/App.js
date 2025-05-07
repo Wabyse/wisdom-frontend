@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Pms from "./pages/Pms";
 import Form from "./pages/Form";
 import Dms from "./pages/Dms";
+import Home from "./pages/Home";
 import Tms from "./pages/Tms";
 import Assign from "./pages/Assign";
 import MyTasks from "./pages/MyTasks";
@@ -36,14 +37,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route
+        <Route
           path="/"
           element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
+            <Home />
           }
-        /> */}
+        />
         <Route path="/login" element={<Login />} />
         {/* <Route path="/signup" element={<SignUp />} /> */}
         <Route
