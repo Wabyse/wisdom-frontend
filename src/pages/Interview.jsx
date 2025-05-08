@@ -109,7 +109,7 @@ function Interview() {
       {/* <div className="w-full text-center">
         <button>{language ? "AR" : "EN"}</button>
       </div> */}
-      <ChangeLanguage className="LangBtn" />
+      <ChangeLanguage className="h-[5vh]" />
       <div className="select w-full text-center">
         <div className="flex flex-col justify-center items-center w-[99%]">
           <label>{language ? "Teacher:" : ":معلم"}</label>
@@ -128,13 +128,13 @@ function Interview() {
       </div>
       {selectedTeacher ? (
         <form
-          className="teacherSessions EmpScore"
+          className="teacherSessions flex justify-evenly flex-row"
           onSubmit={interviewResultHandler}
         >
           {WISDOM_INTERVIEW_TITLES.map((interviewResult, index) => (
             <div className="employeeSection">
               <div className="interviewResultTitle">{interviewResult}</div>
-              <div id={index + 1} className="interviewResult">
+              <div id={index + 1} className="w-[50%] m-auto">
                 <input
                   type="number"
                   max="100"

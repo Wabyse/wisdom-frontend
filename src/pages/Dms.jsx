@@ -363,16 +363,16 @@ const Dms = () => {
         {filtered.length > 0 ? (
           filtered.map((file, index) => (
             <div className="file">
-              <div className="openFile" onClick={() => handleClick(file.id)}>
+              <div className="cursor-pointer" onClick={() => handleClick(file.id)}>
                 <div>{file.filteredPath.replace(/^\d+-/, "")}</div>
                 <div>{formatDate(file.date)}</div>
               </div>
               <div>
-                <button className="dmsButton" onClick={() => openPDF(file)}>
+                <button className="m-[5px]" onClick={() => openPDF(file)}>
                   فتح
                 </button>
                 <button
-                  className="dmsButton"
+                  className="m-[5px]"
                   onClick={() => handleDownload2(file)}
                 >
                   تحميل

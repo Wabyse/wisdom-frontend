@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import "../styles/MyTasks.css";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { LuDownload } from "react-icons/lu";
@@ -112,33 +111,33 @@ const MyTasks = () => {
     <>
       <Toaster />
       <Navbar upload={true} length="w-[440px]"/>
-      <h1 className="myTaskTitle text-2xl font-bold">My Tasks:</h1>
+      <h1 className="ml-[3%] text-2xl font-bold">My Tasks:</h1>
       <div className="files">
-        <div className="myTasks">
-          <div className="myTitle">Task:</div>
-          <div className="myTitle">Description:</div>
-          <div className="myTitle">Start Date:</div>
-          <div className="myTitle">End Date:</div>
-          <div className="myTitle">Status:</div>
-          <div className="myTitle">Sub-Category:</div>
-          <div className="myTitle">Category:</div>
-          <div className="myTitle">Assigned By:</div>
-          <div className="myTitle">Assignee:</div>
-          <div className="myTitle">File:</div>
-          <div className="myTitle">Action:</div>
+        <div className="flex text-center m-2.5 p-1.5 justify-between items-center shadow-[3px_3px_5px_gray]">
+          <div className="font-bold w-[9%] m-[5px]">Task:</div>
+          <div className="font-bold w-[9%] m-[5px]">Description:</div>
+          <div className="font-bold w-[9%] m-[5px]">Start Date:</div>
+          <div className="font-bold w-[9%] m-[5px]">End Date:</div>
+          <div className="font-bold w-[9%] m-[5px]">Status:</div>
+          <div className="font-bold w-[9%] m-[5px]">Sub-Category:</div>
+          <div className="font-bold w-[9%] m-[5px]">Category:</div>
+          <div className="font-bold w-[9%] m-[5px]">Assigned By:</div>
+          <div className="font-bold w-[9%] m-[5px]">Assignee:</div>
+          <div className="font-bold w-[9%] m-[5px]">File:</div>
+          <div className="font-bold w-[9%] m-[5px]">Action:</div>
         </div>
         {filteredTasks.length > 0 ? (
           filteredTasks.map((file, index) => (
-            <div className="tasks myTaskColumn" key={file.id}>
-              <div className="myTask">{file.task}</div>
-              <div className="myTask">{file.description}</div>
-              <div className="myTask">{formatDate(file.start_date)}</div>
-              <div className="myTask">{formatDate(file.end_date)}</div>
+            <div className="tasks hover:bg-gray-300 cursor-pointer" key={file.id}>
+              <div className="w-[9%]">{file.task}</div>
+              <div className="w-[9%]">{file.description}</div>
+              <div className="w-[9%]">{formatDate(file.start_date)}</div>
+              <div className="w-[9%]">{formatDate(file.end_date)}</div>
 
               {editStates[index] ? (
                 // ✅ Fixed `value` to correctly reflect status changes
                 <select
-                  className="myTask"
+                  className="w-[9%]"
                   onChange={(e) => changeStatus(file.id, e)}
                   value={
                     status[file.id] !== undefined
@@ -153,36 +152,31 @@ const MyTasks = () => {
                   ))}
                 </select>
               ) : (
-                <div className="myTask">
+                <div className="w-[9%]">
                   {status[file.id] !== undefined
                     ? status[file.id]
                     : file.status}
                 </div>
               )}
 
-              <div className="myTask">{file.taskSubCategory.name}</div>
-              <div className="myTask">
+              <div className="w-[9%]">{file.taskSubCategory.name}</div>
+              <div className="w-[9%]">
                 {file.taskSubCategory.taskCategory.name}
               </div>
-              <div className="myTask">{file.assigner.first_name}</div>
-              <div className="myTask">{file.assignee.first_name}</div>
+              <div className="w-[9%]">{file.assigner.first_name}</div>
+              <div className="w-[9%]">{file.assignee.first_name}</div>
               {file.file_path ? (
                 <div
-                  className="myTask"
+                  className="w-[9%]"
                   onClick={() => downloadFile(file?.file_path)}
                 >
                   <LuDownload size={24} />
                 </div>
               ) : (
-                <div className="myTask">No File</div>
+                <div className="w-[9%]">No File</div>
               )}
-              {/* {editStates[index] ? (
-                <input type="file" name={`file-${file.id}`} />
-              ) : (
-                <div className="myTask"></div>
-              )} */}
               <button
-                className="myTask"
+                className="w-[9%]"
                 onClick={() =>
                   editStates[index]
                     ? confirmStatus(index, file.id)

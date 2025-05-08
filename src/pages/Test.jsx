@@ -1,5 +1,4 @@
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
-import "../styles/Test.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { fetchAllTeachers, sendTeacherEvaluation } from "../services/pms";
@@ -124,11 +123,11 @@ function Test() {
         </div>
       </div>
       {selectedTeacher ? (
-        <form className="teacherSessions EmpScore" onSubmit={testResultHandler}>
+        <form className="teacherSessions flex justify-evenly flex-row" onSubmit={testResultHandler}>
           {WISDOM_TEST_TITLES.map((interviewResult, index) => (
             <div className="employeeSection">
               <div className="interviewResultTitle">{interviewResult}</div>
-              <div id={index + 1} className="interviewResult">
+              <div id={index + 1} className="w-[50%] m-auto">
                 <input
                   type="number"
                   max="100"

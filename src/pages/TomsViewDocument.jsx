@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import "../styles/ViewDocument.css";
 import { useEffect, useState } from "react";
 import { fetchingFiles } from "../services/dms";
 import { useAuth } from "../context/AuthContext";
@@ -49,62 +48,62 @@ const TomsViewDocument = () => {
       <div className="bg-slate-600 p-[20px] rounded-[8px] max-w-[600px] w-full m-auto shadow-md mt-2">
         <h1 className="text-2xl font-bold text-center text-white">بيانات الملف</h1>
         <div className="flex justify-between gap-[15px]">
-          <div className="detail-container bg-slate-200">
-            <label className="text-red-600">:الملف</label>
-            <h1>{`${document?.file_path
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-200">
+            <label className="text-red-600 text-[13px] font-bold block mb-[3px]">:الملف</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.file_path
               .split("\\")
               .pop()
               .replace(/^\d+-/, "")}`}</h1>
           </div>
-          <div className="detail-container bg-slate-200">
-            <label className="text-red-600">:تاريخ رفع الملف</label>
-            <h1>{`${formatDate(document?.createdAt)}`}</h1>
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-200">
+            <label className="text-red-600 text-[13px] font-bold block mb-[3px]">:تاريخ رفع الملف</label>
+            <h1 className="text-lg m-0 font-normal">{`${formatDate(document?.createdAt)}`}</h1>
           </div>
         </div>
         <div className="flex justify-between gap-[15px]">
-          <div className="detail-container bg-slate-200">
-            <label className="text-red-600">:التصنيف</label>
-            <h1>{`${document?.documentSubCategory.documentCategory.name}`}</h1>
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-200">
+            <label className="text-red-600 text-[13px] font-bold block mb-[3px]">:التصنيف</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.documentSubCategory.documentCategory.name}`}</h1>
           </div>
-          <div className="detail-container bg-slate-200">
-            <label className="text-red-600">:التصنيف الفرعي</label>
-            <h1>{`${document?.documentSubCategory.name}`}</h1>
-          </div>
-        </div>
-        <div className="flex justify-between gap-[15px]">
-          <div className="detail-container bg-slate-300">
-            <label className="text-red-600">:المهنة</label>
-            <h1>{`${document?.department.Name}`}</h1>
-          </div>
-          <div className="detail-container bg-slate-300">
-            <label className="text-red-600">:المركز</label>
-            <h1>{`${document?.organization.name}`}</h1>
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-200">
+            <label className="text-red-600 text-[13px] font-bold block mb-[3px]">:التصنيف الفرعي</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.documentSubCategory.name}`}</h1>
           </div>
         </div>
         <div className="flex justify-between gap-[15px]">
-          <div className="detail-container bg-slate-400">
-            <label className="text-slate-600">:اسم الموظف</label>
-            <h1>{`${document?.uploader.employee?.first_name} ${document?.uploader.employee?.middle_name} ${document?.uploader.employee?.last_name}`}</h1>
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-300">
+            <label className="text-red-600 text-[13px] font-bold block mb-[3px]">:المهنة</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.department.Name}`}</h1>
           </div>
-          <div className="detail-container bg-slate-400">
-            <label className="text-slate-600">:عمل الموظف</label>
-            <h1>{`${document?.uploader.employee?.role.title}`}</h1>
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-300">
+            <label className="text-red-600 text-[13px] font-bold block mb-[3px]">:المركز</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.organization.name}`}</h1>
           </div>
         </div>
         <div className="flex justify-between gap-[15px]">
-          <div className="detail-container bg-slate-400">
-            <label className="text-slate-600">:مركز الموظف</label>
-            <h1>{`${document?.uploader.employee?.organization.name} (${document?.uploader.employee?.organization.type})`}</h1>
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-400">
+            <label className="text-slate-600 text-[13px] font-bold block mb-[3px]">:اسم الموظف</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.uploader.employee?.first_name} ${document?.uploader.employee?.middle_name} ${document?.uploader.employee?.last_name}`}</h1>
           </div>
-          <div className="detail-container bg-slate-400">
-            <label className="text-slate-600">:مهنة الموظف</label>
-            <h1>{`${document?.uploader.employee?.teacher?.department.Name}`}</h1>
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-400">
+            <label className="text-slate-600 text-[13px] font-bold block mb-[3px]">:عمل الموظف</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.uploader.employee?.role.title}`}</h1>
           </div>
         </div>
-        <div className="detail-container bg-slate-400">
-          <label className="text-slate-600">:دورة الموظف التابع لها</label>
-          <h1>{`${document?.uploader.employee?.teacher?.subject.name}`}</h1>
+        <div className="flex justify-between gap-[15px]">
+          <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-400">
+            <label className="text-slate-600 text-[13px] font-bold block mb-[3px]">:مركز الموظف</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.uploader.employee?.organization.name} (${document?.uploader.employee?.organization.type})`}</h1>
+          </div>
+          {document?.uploader.employee?.teacher ? <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-400">
+            <label className="text-slate-600 text-[13px] font-bold block mb-[3px]">:مهنة الموظف</label>
+            <h1 className="text-lg m-0 font-normal">{`${document?.uploader.employee?.teacher?.department.Name}`}</h1>
+          </div> : null}
         </div>
+        {document?.uploader.employee?.teacher ? <div className="text-center border-2 border-black m-[2px] flex-1 p-[10px] rounded-[6px] bg-slate-400">
+          <label className="text-slate-600 text-[13px] font-bold block mb-[3px]">:دورة الموظف التابع لها</label>
+          <h1 className="text-lg m-0 font-normal">{`${document?.uploader.employee?.teacher?.subject.name}`}</h1>
+        </div> : null}
       </div>
     </div>
   );

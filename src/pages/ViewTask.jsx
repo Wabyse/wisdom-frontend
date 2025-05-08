@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import "../styles/ViewTask.css";
 import { useEffect, useState } from "react";
 import { downloadTaskFile, fetchTasks } from "../services/tms";
 import { useLanguage } from "../context/LanguageContext";

@@ -1,4 +1,3 @@
-import "./styles/App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
@@ -32,17 +31,20 @@ import TomsTms from "./pages/TomsTms";
 import TomsViewTask from "./pages/TomsViewTask";
 import TomsAssign from "./pages/TomsAssign";
 import TomsMyTasks from "./pages/TomsMyTask";
+import HomeEVOTS from "./pages/HomeEVOTS";
+import HomeCareers from "./pages/HomeCareers";
+import HomeAboutUs from "./pages/HomeAboutUs";
+import HomeContactUs from "./pages/HomeContactUs";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Home />
-          }
-        />
+        <Route path="/" element={<Home />} />
+        <Route path="/evots" element={<HomeEVOTS />} />
+        <Route path="/careers" element={<HomeCareers />} />
+        <Route path="/aboutus" element={<HomeAboutUs />} />
+        <Route path="/contactus" element={<HomeContactUs />} />
         <Route path="/login" element={<Login />} />
         {/* <Route path="/signup" element={<SignUp />} /> */}
         <Route

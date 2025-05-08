@@ -1,5 +1,4 @@
 import { useLanguage } from "../context/LanguageContext";
-// import ChangeLanguageBtn from "../styles/ChangeLanguageBtn.module.css";
 
 export default function ChangeLanguage({ additionalCSS = "" }) {
   const { language, setLanguage } = useLanguage();

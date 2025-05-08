@@ -484,16 +484,16 @@ const Tms = () => {
       </Navbar3>
       <div className="files" ref={targetDivRef}>
         <div className="tasks">
-          <div className="title">{language ? "Task:" : ":مهمة"}</div>
-          <div className="title">{language ? "Description:" : ":الوصف"}</div>
-          <div className="title">{language ? "Start Date:" : ":من"}</div>
-          <div className="title">{language ? "End Date:" : ":الي"}</div>
-          <div className="title">{language ? "Status:" : ":الحالة"}</div>
-          <div className="title">{language ? "Importance:" : ":الاهمية"}</div>
-          <div className="title">{language ? "Sub Category:" : ":التصنيف الفرعي"}</div>
-          <div className="title">{language ? "Category:" : ":التصنيف"}</div>
-          <div className="title">{language ? "Assignee:" : ":تكليف الي"}</div>
-          <div className="title">{language ? "AssignedBy:" : ":تكليف من"}</div>
+          <div className="font-bold w-[10%]">{language ? "Task:" : ":مهمة"}</div>
+          <div className="font-bold w-[10%]">{language ? "Description:" : ":الوصف"}</div>
+          <div className="font-bold w-[10%]">{language ? "Start Date:" : ":من"}</div>
+          <div className="font-bold w-[10%]">{language ? "End Date:" : ":الي"}</div>
+          <div className="font-bold w-[10%]">{language ? "Status:" : ":الحالة"}</div>
+          <div className="font-bold w-[10%]">{language ? "Importance:" : ":الاهمية"}</div>
+          <div className="font-bold w-[10%]">{language ? "Sub Category:" : ":التصنيف الفرعي"}</div>
+          <div className="font-bold w-[10%]">{language ? "Category:" : ":التصنيف"}</div>
+          <div className="font-bold w-[10%]">{language ? "Assignee:" : ":تكليف الي"}</div>
+          <div className="font-bold w-[10%]">{language ? "AssignedBy:" : ":تكليف من"}</div>
         </div>
         {tasks.length > 0 ? (
           tasks.map((file, index) => (
@@ -501,18 +501,18 @@ const Tms = () => {
               className="tasks taskColumn"
               onClick={() => handleClick(file.id)}
             >
-              <div className="task">{file.task}</div>
-              <div className="task taskDescription">{file.description}</div>
-              <div className="task">{formatDate(file.start_date)}</div>
-              <div className="task">{formatDate(file.end_date)}</div>
-              <div className="task">{file.status}</div>
-              <div className="task">{file.importance}</div>
-              <div className="task">{file.taskSubCategory.name}</div>
-              <div className="task">
+              <div className="w-[10%]">{file.task}</div>
+              <div className="w-[10%] whitespace-nowrap overflow-hidden text-ellipsis">{file.description}</div>
+              <div className="w-[10%]">{formatDate(file.start_date)}</div>
+              <div className="w-[10%]">{formatDate(file.end_date)}</div>
+              <div className="w-[10%]">{file.status}</div>
+              <div className="w-[10%]">{file.importance}</div>
+              <div className="w-[10%]">{file.taskSubCategory.name}</div>
+              <div className="w-[10%]">
                 {file.taskSubCategory.taskCategory.name}
               </div>
-              <div className="task">{file.assigner.first_name}</div>
-              <div className="task">{file.assignee.first_name}</div>
+              <div className="w-[10%]">{file.assigner.first_name}</div>
+              <div className="w-[10%]">{file.assignee.first_name}</div>
               {/* <div>
                 <div>Assignee:</div>
                 <div>{file.assignee.first_name}</div>

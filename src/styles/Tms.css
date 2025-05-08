@@ -56,15 +56,6 @@
   text-align: end;
 }
 
-.title {
-  font-weight: bold;
-  width: 10%;
-}
-
-.task {
-  width: 10%;
-}
-
 .taskColumn:hover {
   background-color: lightgray;
   cursor: pointer;
@@ -82,16 +73,6 @@
   box-sizing: border-box;
 }
 
-.selectTms {
-  display: flex;
-  width: 20%;
-}
-
-.selectTms-ar {
-  display: flex;
-  width: 20%;
-}
-
 .filtersTms {
   width: 100%;
   /* margin-bottom: 1%; */
@@ -107,67 +88,8 @@
   display: flex;
 }
 
-.TmsFilters {
-  width: 100%;
-}
-
 .sectionTms {
   width: 90%;
   display: flex;
   justify-content: space-between;
-}
-
-.selectTms label {
-  margin-bottom: 5px;
-  margin-right: 5px;
-  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
-  text-align: right; /* Align text */
-  font-size: 0.9rem; /* Adjust size if needed */
-  font-weight: bolder;
-}
-
-.selectTms-ar label {
-  margin-bottom: 5px;
-  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
-  text-align: left; /* Align text */
-  font-size: 0.9rem; /* Adjust size if needed */
-  font-weight: bolder;
-}
-
-.selectTms select {
-  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
-  font-size: 0.9rem;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.selectTms-ar select {
-  width: 100%; /* Each child takes 50% of parent width (10%) = 5% */
-  font-size: 0.9rem;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.taskDescription {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.green:hover {
-  background-color: darkgreen !important;
-}
-
-.TmsBtn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: auto;
-  margin-bottom: auto;
-  width: 10%;
-  height: 5vh;
 }

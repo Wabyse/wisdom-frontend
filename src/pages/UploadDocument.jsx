@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
-import "../styles/UploadDocument.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { fetchingOrgs, uploadDmsDocument } from "../services/dms";

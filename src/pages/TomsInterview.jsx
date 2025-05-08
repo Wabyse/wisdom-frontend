@@ -119,13 +119,13 @@ function TomsInterview() {
       </div>
       {selectedTeacher ? (
         <form
-          className="teacherSessions EmpScore"
+          className="teacherSessions flex justify-evenly flex-row"
           onSubmit={interviewResultHandler}
         >
           {WATOMS_INTERVIEW_TITLES.map((interviewResult, index) => (
             <div className="employeeSection">
               <div className="interviewResultTitle">{interviewResult}</div>
-              <div id={index + 1} className="interviewResult">
+              <div id={index + 1} className="w-[50%] m-auto">
                 <input
                   type="number"
                   max="100"

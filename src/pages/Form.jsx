@@ -354,10 +354,10 @@ function Form() {
         alt="company logo"
       ></img>
       <div className="form">
-        <h1 className="header text-2xl font-bold">{language ? formEnName : formArName}</h1>
+        <h1 className="text-center mb-[20px] text-2xl font-bold">{language ? formEnName : formArName}</h1>
         <form className="form2" onSubmit={handleSubmit}>
           {formType[0] === "360 Individual Assessment" && code !== "Self" ? (
-            <div className="selects">
+            <div className="flex justify-evenly w-full">
               <div className="select">
                 <label htmlFor="department">
                   {language ? "Department:" : ":القسم"}

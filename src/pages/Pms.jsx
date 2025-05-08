@@ -157,14 +157,14 @@ const Pms = () => {
               {userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" ?
                 <><li
                   key="Interview"
-                  className="dropdown-item text-base"
+                  className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                   onClick={() => handleInterviewClick()}
                 >
                   {language ? "Interview" : "مقابلات شخصية"}
                 </li>
                   <li
                     key="test"
-                    className="dropdown-item text-base"
+                    className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                     onClick={() => handleTestClick()}
                   >
                     {language ? "Test" : "إختبار تربوي"}
@@ -175,7 +175,7 @@ const Pms = () => {
                   ? type.forms.map((form) => (
                     <li
                       key={form.id}
-                      className="dropdown-item text-base"
+                      className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                       onClick={() =>
                         handleClick(form.id, form.en_name, form.ar_name, form)
                       }
@@ -186,7 +186,7 @@ const Pms = () => {
                   : type.forms.map((form) => (
                     <li
                       key={form.id}
-                      className="dropdown-item text-base"
+                      className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                       onClick={() =>
                         handleClick(form.id, form.en_name, form.ar_name, form.code)
                       }
@@ -214,14 +214,14 @@ const Pms = () => {
               {userInfo.user_role === "Supervisor" || userInfo.user_role === "Operations Excellence Lead" ? <>
                 <li
                   key="Teacher Substitutions"
-                  className="dropdown-item text-base"
+                  className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                   onClick={() => handleTeacherSubstitutionClick()}
                 >
                   {language ? "Teacher Substitutions" : "الأحتياطي"}
                 </li>
                 <li
                   key="Teacher Latness"
-                  className="dropdown-item text-base"
+                  className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                   onClick={() => handleTeacherLatnessClick()}
                 >
                   {language ? "Teacher Latness" : "تأخير المعلم"}

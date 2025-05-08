@@ -267,8 +267,8 @@ export const WATOMS_TEST_TITLES = [
 ];
 
 export const PARTNERS = [
-    { title: "ابدأ لتنمية الصناعات", image: ebda, width: "w-40" },
     { title: "وابيز للتدريب و التعليم", image: wabys, width: "w-40" },
     { title: "وزارة العمل المصرية", image: GOL, width: "w-24" },
+    { title: "ابدأ لتنمية الصناعات", image: ebda, width: "w-40" },
     { title: "وهبي جروب", image: wahby, width: "w-56" },
   ];

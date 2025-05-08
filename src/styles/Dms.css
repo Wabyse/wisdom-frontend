@@ -58,10 +58,6 @@
   background-color: lightgray;
 }
 
-.openFile {
-  cursor: pointer;
-}
-
 .upload {
   display: flex;
   justify-content: center;
@@ -69,25 +65,11 @@
   align-items: center;
 }
 
-.dmsButton {
-  margin: 5px;
-}
-
-.filters {
-    display: flex;
-    justify-content: space-evenly;
-}
-
 .date-DMS {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-}
-
-.date-section-DMS {
-  display: flex;
-  flex-direction: column;
 }
 
 .DMS-date-label {

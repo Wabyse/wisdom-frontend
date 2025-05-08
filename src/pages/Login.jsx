@@ -1,4 +1,3 @@
-import "../styles/login.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
