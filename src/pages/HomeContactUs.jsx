@@ -1,7 +1,11 @@
+import HomeNabvar from "../components/HomeNavbar";
+
 const HomeContactUs = () => {
     return (
         <>
-            Contact Us
+            <div className="bg-zinc-600">
+                <HomeNabvar current="contactus" />
+            </div>
         </>
     )
 };

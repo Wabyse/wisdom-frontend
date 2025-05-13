@@ -20,28 +20,17 @@ import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
-
-const rolePermission = {
-  T: "Teacher",
-  HOD: "Head of Department (HOD)",
-  AC: "Academic Principle",
-  EX: "Executive Manager",
-  S: "Student",
-  Self: "Self",
-  Cl: "Teacher",
-  QA: "Quality Officer",
-  ML: "Line Supervisor",
-  E: "Employee",
-  AD: "ADMIN"
-};
+import Popup from "../components/Popup";
+import Selector2 from "../components/Selector2";
 
 function Form() {
   const { id } = useParams();
   const location = useLocation();
   const formEnName = location.state?.formEnName || "Form"; //check this
   const formArName = location.state?.formArName || "استمارة";
-  const code = location.state?.code;
-  console.log(code)
+  const reviewee = location.state?.code === "Self" ? location.state?.reviewee : location.state?.code;
+  const code = location.state?.code
+  const [submitted, setSubmitted] = useState(false);
   const { language } = useLanguage();
   const [form, setForm] = useState([]);
   const [curriculums, setCurriculums] = useState([]);
@@ -51,6 +40,8 @@ function Form() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedCurriculum, setSelectedCurriculum] = useState("");
   const { userInfo } = useAuth();
   const [quesLength, setQuesLength] = useState();
 
@@ -89,10 +80,7 @@ function Form() {
     let userEntry;
     let userIdValue;
     if (code === "Self") {
-      userEntry = {
-        questionId: 'user',
-        result: userInfo.id
-      }
+      userEntry = { result: userInfo.id };
     } else {
       userEntry = allAnswers.find((entry) => entry.question_id === "user");
     }
@@ -118,11 +106,12 @@ function Form() {
     try {
       const submittedData = {
         assessor: userInfo.id,
-        assessee: userIdValue,
+        assessee: code === "Self" ? userInfo.id : userIdValue,
         questionsResult: questionAnswers,
       };
       await IndividualForm(submittedData);
-      navigate(`/pms`);
+      toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
@@ -167,7 +156,8 @@ function Form() {
         questionsResult: questionAnswers,
       };
       await CurriculumForm(submittedData);
-      navigate(`/pms`);
+      toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
@@ -208,7 +198,8 @@ function Form() {
         questionsResult: questionAnswers,
       };
       await EnvironmentForm(submittedData);
-      navigate(`/pms`);
+      toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
       toast.error("Submission failed.");
@@ -217,6 +208,14 @@ function Form() {
 
   const handleDepartmentChange = (e) => {
     setSelectedDepartment(e.target.value);
+  };
+
+  const handleUserChange = (e) => {
+    setSelectedUser(e.target.value);
+  };
+
+  const handleCurriculumChange = (e) => {
+    setSelectedCurriculum(e.target.value);
   };
 
   useEffect(() => {
@@ -335,18 +334,21 @@ function Form() {
     ),
   ];
 
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/pms');
+  };
+
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
-  if (((code && code !== userInfo.user_role)
-    || (form[0].sub_field.field.form.form_code && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[0]] !== userInfo.user_role && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[0]] !== "Self")
-    || (form[0].sub_field.field.form.form_code && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[1]] !== userInfo.user_role && rolePermission[form[0].sub_field.field.form.form_code.split(" | ")[1]] === "Self")
-    || (userInfo.user_role === "Head of Department (HOD)" && code === "Teacher"))
-    && userInfo.user_role !== "Operations Excellence Lead") return <DenyAccessPage homePage='/pms' />;
+  if (((reviewee && reviewee !== userInfo.user_role)
+    || (userInfo.user_role === "Head of Department (HOD)" && reviewee === "Teacher"))
+    && userInfo.user_role !== "Operations Excellence Lead" && (reviewee !== "Employee" && userInfo.user_role === "Student")) return <DenyAccessPage homePage='/pms' />;
 
   return (
-    <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-screen">
+    <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-full">
       <Toaster />
       <img
         className="md:w-[60%] w-full md:h-[30vh]"
@@ -357,62 +359,42 @@ function Form() {
         <h1 className="text-center mb-[20px] text-2xl font-bold">{language ? formEnName : formArName}</h1>
         <form className="form2" onSubmit={handleSubmit}>
           {formType[0] === "360 Individual Assessment" && code !== "Self" ? (
-            <div className="flex justify-evenly w-full">
-              <div className="select">
-                <label htmlFor="department">
-                  {language ? "Department:" : ":القسم"}
-                </label>
-                <select
-                  id="department"
-                  name="department"
-                  onChange={handleDepartmentChange}
-                  value={selectedDepartment}
-                >
-                  <option value="" disabled selected>
-                    {language
-                      ? "Please Select a Department"
-                      : "الرجاء اختيار القسم"}
-                  </option>
-                  {departments.map((department) => (
-                    <option key={department.id} value={department.id}>
-                      {department.Name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="select">
-                <label>{language ? "Teacher:" : ":المعلم"}</label>
-                <select id="user" name="user">
-                  <option value="" disabled selected>
-                    {language
-                      ? "Please Select a Teacher"
-                      : "الرجاء اختيار المعلم"}
-                  </option>
-                  {filteredUsers.map((user) => (
-                    <option
-                      value={user.id}
-                      key={user.id}
-                    >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
-                  ))}
-                </select>
-              </div>
+            <div className="flex md:flex-row flex-col md:justify-evenly w-full">
+              <Selector2
+                label="department"
+                title={language ? "Department:" : ":القسم"}
+                description={language
+                  ? "Please Select a Department"
+                  : "الرجاء اختيار القسم"}
+                data={departments}
+                value={selectedDepartment}
+                onChange={handleDepartmentChange}
+                name="Name"
+              />
+              <Selector2
+                label="user"
+                title={language ? "Teacher:" : ":المعلم"}
+                description={language
+                  ? "Please Select a Teacher"
+                  : "الرجاء اختيار المعلم"}
+                data={filteredUsers}
+                value={selectedUser}
+                onChange={handleUserChange}
+                name="userEmp"
+              />
             </div>
           ) : formType[0] === "360 Curriculum Assessment" ? (
-            <div className="select">
-              <label>{language ? "Curriculum:" : ":المنهج"}</label>
-              <select id="curriculum" name="curriculum">
-                <option value="" disabled selected>
-                  {language
-                    ? "Please select a Curriculum"
-                    : "الرجاء اختيار المنهج"}
-                </option>
-                {curriculums.map((curriculum) => (
-                  <option key={curriculum.id} value={curriculum.id}>
-                    {curriculum.code}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Selector2
+              label="curriculum"
+              title={language ? "Curriculum:" : ":المنهج"}
+              description={language
+                ? "Please select a Curriculum"
+                : "الرجاء اختيار المنهج"}
+              data={curriculums}
+              value={selectedCurriculum}
+              onChange={handleCurriculumChange}
+              name="code"
+            />
           ) : null}
           <ChangeLanguage />
           {Object.entries(language ? filteredForm2[0] : filteredForm2[1]).map(
@@ -422,18 +404,18 @@ function Form() {
                 title={fieldName}
                 language={language}
               >
-                <div key={fieldName} className="field-group">
+                <div key={fieldName} className="w-full text-center mb-[20px]">
                   {questions.map((question, index) => (
                     <div
                       key={question.question_id}
-                      className={language ? "questions-en" : "questions"}
+                      className={`w-full mb-[15px] flex flex-col ${language ? "items-start text-left" : "items-end text-right"}`}
                     >
-                      <h3 className="question">
+                      <h3 className="text-[18px] text-bold mb-[10px] w-full">
                         {/* {`(${index})`} */}
                         {question.title}
                       </h3>
 
-                      <div className="question">
+                      <div className="text-[18px] text-bold mb-[10px] w-full flex justify-evenly">
                         {Array.from({ length: question.max_score }, (_, i) => (
                           <label
                             key={i}
@@ -469,6 +451,11 @@ function Form() {
           </button>
         </form>
       </div>
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message={language ? "Form has been submitted successfully" : "تم تسجيل تقييمك بنجاح"}
+      />
     </div>
   );
 }

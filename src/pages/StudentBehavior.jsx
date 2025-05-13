@@ -14,9 +14,12 @@ import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { useLanguage } from "../context/LanguageContext";
+import Popup from "../components/Popup";
+import Selector2 from "../components/Selector2";
 
 const StudentBehavior = () => {
   const location = useLocation();
+  const [submitted, setSubmitted] = useState(false);
   const [schools, setSchools] = useState([]);
   const [schoolId, setSchoolId] = useState("");
   const [stages, setStages] = useState([]);
@@ -114,8 +117,8 @@ const StudentBehavior = () => {
 
     try {
       await submitBehavior(payload);
-      toast.success("Submitted");
-      navigate(`/pms`);
+      toast.success(language ? "Case has been submitted successfully" : "تم تسجيل البيانات بنجاح");
+      setSubmitted(true);
     } catch (error) {
       console.error("Upload error", error);
       toast.error("Submission failed. Please try again.");
@@ -183,6 +186,12 @@ const StudentBehavior = () => {
     setLoading(false);
   }, []);
 
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/pms');
+  };
+
+
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
@@ -195,64 +204,52 @@ const StudentBehavior = () => {
       <form onSubmit={upload} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">{language ? "Student Behavior" : "سلوك الطالب"}</h1>
         <div className="select-group">
-          <div className="select">
-            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "School:" : ":مدرسة"}</label>
-            <select onChange={(e) => setSchoolId(e.target.value)} className={!language && "w-full text-end"}>
-              <option value="" disabled selected>
-                {language ? "Please Select a school" : "الرجاء اختيار المدرسة"}
-              </option>
-              <option value="All">{language ? "All" : "الكل"}</option>
-              {schools.map((school) => (
-                <option key={school.id} value={school.id}>
-                  {school.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="select">
-            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Stage:" : ":المرحلة"}</label>
-            <select onChange={(e) => setSelectedStages(e.target.value)} className={!language && "w-full text-end"}>
-              <option value="" disabled selected>
-                {language ? "Please Select a stage" : "الرجاء اختيار مرحلة"}
-              </option>
-              <option value="All">{language ? "All" : "الكل"}</option>
-              {stages.map((school) => (
-                <option key={school.id} value={school.id}>
-                  {school.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {userInfo.user_role === "Operations Excellence Lead" && <Selector2
+            label="school"
+            title={language ? "School:" : ":مدرسة"}
+            description={language ? "Please Select a school" : "الرجاء اختيار المدرسة"}
+            data={schools}
+            value={schoolId}
+            onChange={(e) => setSchoolId(e.target.value)}
+            name="name"
+            labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
+            selectCSS={`${language ? "text-start" : "text-end"}`}
+          />}
+          <Selector2
+            label="stage"
+            title={language ? "Stage:" : ":المرحلة"}
+            description={language ? "Please Select a stage" : "الرجاء اختيار مرحلة"}
+            data={stages}
+            value={selectedStages}
+            onChange={(e) => setSelectedStages(e.target.value)}
+            name="name"
+            labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
+            selectCSS={`${language ? "text-start" : "text-end"}`}
+          />
         </div>
         <div className="select-group">
-          <div className="select">
-            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Class:" : ":الفصل"}</label>
-            <select onChange={(e) => setSelectedClasses(e.target.value)} className={!language && "w-full text-end"}>
-              <option value="" disabled selected>
-                {language ? "Please Select a Class" : "الرجاء اختيار فصل"}
-              </option>
-              <option value="All">{language ? "All" : "الكل"}</option>
-              {classes.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="select">
-            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Student:" : ":الطالب"}</label>
-            <select onChange={(e) => setSelectedStudnets(e.target.value)} className={!language && "w-full text-end"}>
-              <option value="" disabled selected>
-                {language ? "Please Select a student" : "الرجاء اختيار طالب"}
-              </option>
-              <option value="All">{language ? "All" : "الكل"}</option>
-              {students.map((school) => (
-                <option key={school.id} value={school.id}>
-                  {`${school.first_name} ${school.middle_name} ${school.last_name}`}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Selector2
+            label="class"
+            title={language ? "Class:" : ":الفصل"}
+            description={language ? "Please Select a Class" : "الرجاء اختيار فصل"}
+            data={classes}
+            value={selectedClasses}
+            onChange={(e) => setSelectedClasses(e.target.value)}
+            name="name"
+            labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
+            selectCSS={`${language ? "text-start" : "text-end"}`}
+          />
+          <Selector2
+            label="student"
+            title={language ? "Student:" : ":الطالب"}
+            description={language ? "Please Select a student" : "الرجاء اختيار طالب"}
+            data={students}
+            value={selectedStudents}
+            onChange={(e) => setSelectedStudnets(e.target.value)}
+            name="userStd"
+            labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
+            selectCSS={`${language ? "text-start" : "text-end"}`}
+          />
         </div>
         <label htmlFor="comment" className={`text-white w-full ${language ? "text-start" : "text-end"}`}>{language ? "Comment:" : ":تعليق"}</label>
         <input
@@ -263,36 +260,31 @@ const StudentBehavior = () => {
           className={!language && "text-end"}
         />
         <div className="select-group">
-          <div className="select">
-            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Catgeory:" : ":التصنيف"}</label>
-            <select onChange={handleCategoryChange} className={!language && "w-full text-end"}>
-              <option value="" disabled selected>
-                {language ? "Please Select a Catgeory" : "الرجاء اختيار تصنيف"}
-              </option>
-              {categories.map((category, index) => (
-                <option key={index} value={index}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="select">
-            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Type:" : ":النوع"}</label>
-            <select
-              onClick={handleSubCategoryClick}
-              onChange={(e) => setSubCategory(e.target.value)}
-              className={!language && "w-full text-end"}
-            >
-              <option value="" disabled selected>
-                {language ? "Please Select a Type" : "الرجاء اختيار نوع"}
-              </option>
-              {selectedTypes.map((subCategory) => (
-                <option key={subCategory.id} value={subCategory.id}>
-                  {subCategory.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Selector2
+            label="category"
+            title={language ? "Category:" : ":التصنيف"}
+            description={language ? "Please Select a Category" : "الرجاء اختيار تصنيف"}
+            data={categories}
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            name="name"
+            labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
+            selectCSS={`${language ? "text-start" : "text-end"}`}
+            keyType={true}
+          />
+          <Selector2
+            label="type"
+            title={language ? "Type:" : ":النوع"}
+            description={language ? "Please Select a Type" : "الرجاء اختيار نوع"}
+            data={selectedTypes}
+            value={subCategory}
+            onClick={handleSubCategoryClick}
+            onChange={(e) => setSubCategory(e.target.value)}
+            name="name"
+            labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
+            selectCSS={`${language ? "text-start" : "text-end"}`}
+            keyType={true}
+          />
         </div>
         <div className="select">
           <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Date:" : ":تاريخ"}</label>
@@ -300,6 +292,11 @@ const StudentBehavior = () => {
         </div>
         <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">{language ? "Submit" : "ارسال"}</button>
       </form>
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message={language ? "Case has been submitted successfully" : "تم تسجيل البيانات بنجاح"}
+      />
     </div>
   );
 };

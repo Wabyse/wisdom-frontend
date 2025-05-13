@@ -21,9 +21,9 @@ const Pms = () => {
 
   const navigate = useNavigate(); //for navigate to another page (component)
 
-  const handleClick = (id, en_name, ar_name, code) => {
+  const handleClick = (id, en_name, ar_name, code, reviewee) => {
     navigate(`/pms/form/${id}`, {
-      state: { formEnName: en_name, formArName: ar_name, lang: language, code },
+      state: { formEnName: en_name, formArName: ar_name, lang: language, code, reviewee },
     });
   };
 
@@ -74,6 +74,7 @@ const Pms = () => {
           const codePermission2 = WISDOM_PMS_ROLE_PERMISSION[codePermission] || null;
           const codeKey = WISDOM_PMS_EN_LIST[codeKey2] || null;
           const codeAr = WISDOM_PMS_AR_LIST[codeKey2] || null;
+          const codeKey3 = WISDOM_PMS_ROLE_PERMISSION[codeKey2] || null;
           if (codePermission2 === userInfo.user_role || (codePermission2 === "Employee" && userInfo.user_role !== "Student") || (codePermission2 === "Self" && codeKey === userInfo.user_role) || (codePermission2 === "Self" && codeKey === "Teacher" && userInfo.user_role === "Head of Department (HOD)") || (codePermission === "Cl" && userInfo.user_role === "Head of Department (HOD)") || userInfo.user_role === "Operations Excellence Lead") {
             let existingGroup = groupedData.find(
               (group) => group.code === codeKey
@@ -83,7 +84,7 @@ const Pms = () => {
               existingGroup = {
                 id: item.id,
                 code: codeKey,
-                permission: codePermission2 === "Self" ? codeKey : codePermission2,
+                reviewee: codeKey3,
                 codeAr: codeAr,
                 forms: [],
               };
@@ -95,6 +96,7 @@ const Pms = () => {
               id: item.id,
               en_name: item.en_name,
               ar_name: item.ar_name,
+              permission: codePermission2,
             });
           }
         });
@@ -137,10 +139,9 @@ const Pms = () => {
     <>
       <Navbar2 showNavigate={true} img={WISDOM_PMS_HERO_INFO} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[380px]" : "w-[520px]"} Page="PMS" description={PMS_DISCREPTION}>
         <ul
-          className={`hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start ${language ? "text-start" : "text-end"
-            } md:h-[85vh]`}
+          className={`hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start ${language ? "text-start" : "text-end"} md:h-[85vh]`}
         >
-          {userInfo.user_role === "Teacher" || userInfo.user_role === "Head of Department (HOD)" || userInfo.user_role === "Operations Excellence Lead" ? <li
+          {userInfo.user_role === "Teacher" || userInfo.user_role === "Head of Department (HOD)" || userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" ? <li
             key="PD"
             className={`relative group md:border-0 md:p-0 hover:text-lg hover:text-wisdomLightOrange text-black p-2 border-b-2 ${language ? "text-start" : "text-end"
               } border-black m-2`}
@@ -177,7 +178,7 @@ const Pms = () => {
                       key={form.id}
                       className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name, form)
+                        handleClick(form.id, form.en_name, form.ar_name, type.permission, type.reviewee)
                       }
                     >
                       {form.en_name}
@@ -188,7 +189,7 @@ const Pms = () => {
                       key={form.id}
                       className="p-2.5 text-black cursor-pointer bg-white border-t border-black hover:bg-white text-base"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                        handleClick(form.id, form.en_name, form.ar_name, type.permission, type.reviewee)
                       }
                     >
                       {form.ar_name}
@@ -247,7 +248,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item text-base"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                        handleClick(form.id, form.en_name, form.ar_name, type.permission, type.reviewee)
                       }
                     >
                       {form.en_name}
@@ -258,7 +259,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item text-base"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                        handleClick(form.id, form.en_name, form.ar_name, type.permission, type.reviewee)
                       }
                     >
                       {form.ar_name}
@@ -292,7 +293,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item text-base"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name, type.permission)
+                        handleClick(form.id, form.en_name, form.ar_name, form.permission, type.reviewee)
                       }
                     >
                       {form.en_name}
@@ -303,7 +304,7 @@ const Pms = () => {
                       key={form.id}
                       className="dropdown-item text-base"
                       onClick={() =>
-                        handleClick(form.id, form.en_name, form.ar_name, form.code)
+                        handleClick(form.id, form.en_name, form.ar_name, form.permission, type.reviewee)
                       }
                     >
                       {form.ar_name}
@@ -359,9 +360,8 @@ const Pms = () => {
                         className="text-[18px] w-full text-center"
                         onClick={() =>
                           handleClick(
-                            form.id,
-                            language ? form.en_name : form.ar_name
-                            , form.code
+                            form.id, form.en_name, form.ar_name
+                            , form.permission, type.reviewee
                           )
                         }
                       >
@@ -423,7 +423,7 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name, form.code)}
+                          onClick={() => handleClick(form.id, form.en_name, form.ar_name, form.permission, type.reviewee)}
                         >
                           {form.en_name}
                         </button>
@@ -432,7 +432,7 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name, form.code)}
+                          onClick={() => handleClick(form.id, form.en_name, form.ar_name, form.permission, type.reviewee)}
                         >
                           {form.ar_name}
                         </button>
@@ -487,7 +487,7 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name, form.code)}
+                          onClick={() => handleClick(form.id, form.ar_name, form.permission, type.reviewee)}
                         >
                           {form.en_name}
                         </button>
@@ -496,7 +496,7 @@ const Pms = () => {
                       <div key={form.id} className="w-full mb-4">
                         <button
                           className="text-[18px] w-full text-center"
-                          onClick={() => handleClick(form.id, form.ar_name, form.code)}
+                          onClick={() => handleClick(form.id, form.ar_name, form.permission, type.reviewee)}
                         >
                           {form.ar_name}
                         </button>

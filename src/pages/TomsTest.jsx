@@ -7,11 +7,12 @@ import newLogo2 from "../assets/newLogo2.jpg";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { WATOMS_TEST_TITLES } from "../constants/constants";
+import Selector2 from "../components/Selector2";
 
 function TomsTest() {
   const location = useLocation();
   const [teachers, serTeachers] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState("");
   const [testResultData, setTestResultData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -82,7 +83,7 @@ function TomsTest() {
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
-  if (userInfo.user_role !== "Trainer" && userInfo.user_role !== "Operations Excellence Lead") return <DenyAccessPage homePage='/watoms/pms' />;
+  if (userInfo.user_role !== "Teacher" && userInfo.user_role !== "Operations Excellence Lead") return <DenyAccessPage homePage='/watoms/pms' />;
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
@@ -101,7 +102,17 @@ function TomsTest() {
         <h1 className="text-2xl font-bold text-center">إختبار تربوي</h1>
       </div>
       <div className="flex flex-col justify-center items-center w-[100%]">
-        <div className="flex flex-col">
+        <Selector2
+          label="user"
+          title=":المدرب"
+          description="الرجاء اختيار مدرب"
+          data={teachers}
+          value={selectedTeacher}
+          onChange={selectUserHandler}
+          name="user"
+          optionValue="user"
+        />
+        {/* <div className="flex flex-col">
           <label className="text-center font-bold">:مدرب</label>
           <select id="user" name="user" className="text-right" onChange={selectUserHandler}>
             <option value="" disabled selected>
@@ -114,7 +125,7 @@ function TomsTest() {
               >{`${teacher.employee?.first_name} ${teacher.employee?.middle_name} ${teacher.employee?.last_name}`}</option>
             ))}
           </select>
-        </div>
+        </div> */}
       </div>
       {selectedTeacher ? (
         <form className="teacherSessions flex justify-evenly flex-row" onSubmit={testResultHandler}>

@@ -97,7 +97,7 @@ const TomsMyTasks = () => {
   }, []);
 
   const filteredTasks = tasks.filter(
-    (task) => task.assignee.id === userInfo.id
+    (task) => task.assignee.id === userInfo.employee_id
   );
 
   if (loading) return <LoadingScreen />;
@@ -139,7 +139,7 @@ const TomsMyTasks = () => {
               </button>
               {file.file_path ? (
                 <div
-                  className="w-[9%]"
+                  className="w-[9%] flex justify-center"
                   onClick={() => downloadFile(file?.file_path)}
                 >
                   <LuDownload size={24} />

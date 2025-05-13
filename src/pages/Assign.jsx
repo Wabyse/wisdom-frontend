@@ -11,9 +11,11 @@ import DenyAccessPage from "../components/DenyAccessPage";
 import { createTaskFormData } from "../utils/createTaskFormData";
 import { IMPORTANCE_LEVELS } from "../constants/constants";
 import { useLanguage } from "../context/LanguageContext";
+import Popup from "../components/Popup";
 
 const Assign = () => {
   const location = useLocation();
+  const [submitted, setSubmitted] = useState(false);
   const [file, setFile] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -54,7 +56,8 @@ const Assign = () => {
     try {
       const formData = createTaskFormData(e.target, file, userInfo);
       await assignTask(formData);
-      navigate(`/tms`);
+      toast.success(language ? "Task has been assigned" : "تم تكليف المهمة");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
@@ -79,6 +82,11 @@ const Assign = () => {
 
     fetchData();
   }, [userInfo]);
+
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/tms');
+  };
 
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
@@ -191,6 +199,11 @@ const Assign = () => {
 
         <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">{language ? "Submit" : "ارسال"}</button>
       </form>
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message={language ? "Task has been assigned successfully" : "تم تكليف المهمة بنجاح"}
+      />
     </div>
   );
 };

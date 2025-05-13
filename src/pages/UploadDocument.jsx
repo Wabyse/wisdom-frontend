@@ -5,7 +5,6 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { fetchingOrgs, uploadDmsDocument } from "../services/dms";
 import { fetchDepartments, fetchDmsCategories } from "../services/data";
-import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
@@ -114,9 +113,7 @@ const UploadDocument = () => {
   return (
     <div className="bg-gray-500 h-[100vh]">
       <Toaster />
-      <Navbar upload={true} length="w-[430px]">
-        <ChangeLanguage />
-      </Navbar>
+      <Navbar upload={true} length="w-[440px]"></Navbar>
       <form onSubmit={upload} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">{language ? "Upload Document" : "رفع الملف"}</h1>
         <div className="select-group">

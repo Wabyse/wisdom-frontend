@@ -18,12 +18,12 @@ const HomeBody = () => {
         <div>
             <div className="flex justify-between m-12">
                 <div className="w-[50%]">
-                    <p className="text-wisdomOrange text-7xl">EBDA EDU: Transforming Visions into Reality</p>
+                    <p className="text-wisdomOrange md:text-7xl text-xl">EBDA EDU: Transforming Visions into Reality</p>
                 </div>
                 <button onClick={openPopup} className="bg-wisdomOrange hover:bg-wisdomDarkOrange h-[8vh] px-8 flex self-center items-center">Learn More</button>
             </div>
-            <div className="flex justify-between m-12">
-                <div className="w-[45%] mt-10 group">
+            <div className="flex md:flex-row flex-col justify-between m-12">
+                <div className="md:w-[45%] w-full mt-10 group md:mb-auto mb-5">
                     <div className="w-[15%] border-2 border-black transition-all duration-300 group-hover:w-[100%]"></div>
                     <h1 className="text-6xl font-bold">EVOTS</h1>
                     <p className="font-bold text-2xl">Elevating Vocational Training System</p>
@@ -32,11 +32,11 @@ const HomeBody = () => {
                     </p>
                     <p className="text-xl mt-4"> It also promotes strong collaboration among training providers, industry, and government to improve practical learning and facilitate workforce integration. Through improved governance, clear policies, and continuous evaluation, EVOTS strengthens accountability and system efficiency. EBDA EDU supports this vision by actively contributing to the development of a skilled, adaptable workforce that supports Egypt’s long-term economic sustainability.</p>
                 </div>
-                <img src={img1} alt="" className="w-[45%]" />
+                <img src={img1} alt="" className="md:w-[45%] w-screen" />
             </div>
-            <div className="flex justify-between m-12">
-                <img src={img2} alt="" className="w-[45%]" />
-                <div className="w-[45%] mt-20 group">
+            <div className="flex md:flex-row flex-col justify-between m-12">
+                <img src={img2} alt="" className="w-[45%] hidden md:flex" />
+                <div className="md:w-[45%] w-full mt-20 group md:mb-auto mb-5">
                     <div className="w-[15%] border-2 border-black transition-all duration-300 group-hover:w-[100%]"></div>
                     <h1 className="text-6xl font-bold">WATOMS</h1>
                     <p className="text-2xl font-bold">WABYS Automated Training Operations Managment System</p>
@@ -48,6 +48,7 @@ const HomeBody = () => {
                         Designed to support decision-making, the system offers interactive dashboards that track KPIs, highlight operational challenges, and assess training quality and compliance. With these capabilities, WATOMS plays a key role in strengthening the vocational training system and promoting continuous improvement.
                     </p>
                 </div>
+                <img src={img2} alt="" className="w-screen md:hidden" />
             </div>
             <div className="w-full overflow-hidden py-10">
                 <h1 className="text-center text-4xl font-bold mb-8">OUR PARTNERS</h1>

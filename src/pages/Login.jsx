@@ -62,7 +62,7 @@ const Login = () => {
       >
         {/* <img className="w-2/6 md:w-1/5" src={GovLogo} alt="Wabys Logo" /> */}
         <div className="w-[33%] bg-white h-full  rounded-l-xl flex justify-center items-end">
-          <img className="w-[70%] h-fit rounded-l-xl" src={wabys} alt="" />
+          <img className="w-[70%] h-fit max-h-[55px] rounded-l-xl" src={wabys} alt="" />
         </div>
         <div className="w-[67%] flex h-full flex-col justify-center  gap-6 p-5">
           <div className="flex flex-col gap-2">

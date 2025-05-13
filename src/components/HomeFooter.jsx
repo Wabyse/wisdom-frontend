@@ -15,19 +15,19 @@ const HomeFooter = () => {
     };
     return (
         <div className="m-12 border-t-2 border-black">
-            <div className="flex justify-between mt-10">
-                <div className=" w-[15%]">
+            <div className="flex flex-wrap justify-between mt-10">
+                <div className="md:w-[15%] w-[45%]">
                     <h1 className="font-bold text-xl">EBDA EDU</h1>
                     <p>for Development and Training</p>
                 </div>
-                <div className="flex flex-col gap-4 w-[15%]">
+                <div className="flex flex-col gap-4 md:w-[15%] w-[45%]">
                     <h1 className="font-bold text-xl">Head Office</h1>
                     <p>Fifth Settlement, North 90 St, Chillout Lotus, Bld.1, 3rd Floor</p>
                     <p>(+20) 11-517-84-361</p>
                     <p>(+20) 11-532-41-515</p>
                     <p>info@ebda-edu.com</p>
                 </div>
-                <div className="flex flex-col gap-4 w-[15%]">
+                <div className="flex flex-col gap-4 md:w-[15%] w-[45%]">
                     <h1 className="font-bold text-xl">Socials</h1>
                     <div className="flex flex-col">
                         <a href="https://www.facebook.com/profile.php?id=61571999491577"><FontAwesomeIcon icon={faSquareFacebook} /> facebook</a>
@@ -35,7 +35,7 @@ const HomeFooter = () => {
                         <a href="https://www.linkedin.com/company/ebda-edu-for-development-and-training/posts/?feedView=all"><FontAwesomeIcon icon={faLinkedin} /> linkedIn</a>
                     </div>
                 </div>
-                <div className="flex flex-col gap-4 w-[15%]">
+                <div className="flex flex-col gap-4 md:w-[15%] w-[45%]">
                     <h1 className="font-bold text-xl">Inquires</h1>
                     <div>
                         <p>For any inquires, questions or commendations, please call:</p>

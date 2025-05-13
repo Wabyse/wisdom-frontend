@@ -30,13 +30,22 @@ import wahby from '../assets/wahby_group.png';
 
 export const IMPORTANCE_LEVELS = ["normal", "important", "urgent"];
 
-export const WISDOM_INTERVIEW_TITLES = [
-    "Title 1",
-    "Title 2",
-    "Title 3",
-    "Title 4",
-    "Title 5",
-    "Title 6",
+export const WISDOM_INTERVIEW_EN_TITLES = [
+    "Planning for Teaching/Learning Process",
+    "Integrating Technology into Teaching",
+    "Utilized Teaching Methods",
+    "Selecting and Utilizing Teaching/Learning Resources",
+    "Classroom Management & Student Motivation",
+    "Assessment Techniques & Feedback",
+];
+
+export const WISDOM_INTERVIEW_AR_TITLES = [
+    "التخطيط لعملية التعليم/التعلم",
+    "دمج التكنولوجيا في التعليم",
+    "أساليب التدريس المستخدمة",
+    "اختيار واستخدام مصادر التعليم",
+    "إدارة الصف وتحفيز الطلاب",
+    "تقنيات التقييم والتغذية الراجعة",
 ];
 
 export const STATUS_OPTIONS = [
@@ -134,13 +143,22 @@ export const WISDOM_PMS_HERO_INFO = [
 
 export const WISDOM_LATNESS_OPTIONS = ["5", "10", "15", "20", "25", "30"];
 
-export const WISDOM_TEST_TITLES = [
-    "Title 1",
-    "Title 2",
-    "Title 3",
-    "Title 4",
-    "Title 5",
-    "Title 6",
+export const WISDOM_TEST_EN_TITLES = [
+    "Planning for Teaching/Learning Process",
+    "Integrating Technology into Teaching",
+    "Utilized Teaching Methods",
+    "Selecting and Utilizing Teaching/Learning Resources",
+    "Classroom Management & Student Motivation",
+    "Assessment Techniques & Feedback",
+];
+
+export const WISDOM_TEST_AR_TITLES = [
+    "التخطيط لعملية التعليم/التعلم",
+    "دمج التكنولوجيا في التعليم",
+    "أساليب التدريس المستخدمة",
+    "اختيار واستخدام مصادر التعليم",
+    "إدارة الصف وتحفيز الطلاب",
+    "تقنيات التقييم والتغذية الراجعة",
 ];
 
 export const TMS_DESCRIPTION = "This module boosts accountability and project execution through clear task assignment, deadlines, and real-time tracking. It streamlines coordination, cuts delays, and ensures timely completion, driving efficiency and project success."

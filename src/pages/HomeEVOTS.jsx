@@ -1,7 +1,11 @@
+import HomeNabvar from "../components/HomeNavbar";
+
 const HomeEVOTS = () => {
     return (
         <>
-        EVOTS
+            <div className="bg-zinc-600">
+                <HomeNabvar current="evots"/>
+            </div>
         </>
     )
 };

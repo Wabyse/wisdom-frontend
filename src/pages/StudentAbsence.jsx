@@ -15,10 +15,13 @@ import newLogo from "../assets/newLogo.jpg";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
+import Popup from "../components/Popup";
+import Selector2 from "../components/Selector2";
 
 function StudentAbsence() {
   const location = useLocation();
   const { language } = useLanguage();
+  const [submitted, setSubmitted] = useState(false);
   const [students, setStudnets] = useState([]);
   const [classes, setClasses] = useState([]);
   const [unfilteredClasses, setUnfilteredClasses] = useState([]);
@@ -75,7 +78,8 @@ function StudentAbsence() {
 
     try {
       await sendStudentAttendance(attendanceData);
-      toast.success("submitted");
+      toast.success(language ? "Attendance has been submitted" : "تم تسجيل الحضور");
+      setSubmitted(true);
     } catch (err) {
       toast.error("please fill all data required");
     }
@@ -133,7 +137,7 @@ function StudentAbsence() {
   useEffect(() => {
     const filteringClasses = () => {
       try {
-        if (selectedStage !== "All") {
+        if (selectedStage !== "All" && selectedStage !== "") {
           const filter = unfilteredClasses.filter(
             (filterClass) => filterClass.stage_id === Number(selectedStage)
           );
@@ -166,7 +170,7 @@ function StudentAbsence() {
       let studentFilter = selectedId ? selectedId : null;
 
       const hasFilter =
-        (selectSchool !== "All" && selectSchool !== "") ||
+        (selectSchool !== "0" && selectSchool !== "") ||
         (selectStage !== "All" && selectStage !== "") ||
         (selectClass !== "All" && selectClass !== "") ||
         (selectedId !== "All" && selectedId !== "");
@@ -178,24 +182,24 @@ function StudentAbsence() {
       if (hasFilter) {
         filteredStudents.forEach((filter) => {
           const isSchoolMatch =
-            selectSchool === "All"
+            (selectSchool === "0" || selectSchool === "")
               ? true
               : !schoolFilter || Number(schoolFilter) === filter.school_id;
 
           const isStageMatch =
-            selectStage === "All"
+            selectStage === "All" || selectStage === ""
               ? true
               : isStageClassMatch.filter(
-                  (classFilter) => classFilter.id === filter.class_id
-                ).length > 0
-              ? true
-              : false;
+                (classFilter) => classFilter.id === filter.class_id
+              ).length > 0
+                ? true
+                : false;
           const isClassMatch =
-            selectClass === "All"
+            selectClass === "All" || selectClass === ""
               ? true
               : !classFilter || Number(classFilter) === filter.class_id;
           const isStudentMatch =
-            selectedId === "All"
+            selectedId === "All" || selectedId === ""
               ? true
               : !studentFilter || Number(studentFilter) === filter.id;
           if (isSchoolMatch && isClassMatch && isStudentMatch && isStageMatch) {
@@ -228,6 +232,12 @@ function StudentAbsence() {
     classes,
   ]);
 
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/pms');
+  };
+
+
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
@@ -237,9 +247,8 @@ function StudentAbsence() {
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">
       <Toaster />
       <div
-        className={`flex w-full p-[5px] h-[6vh] ${
-          language ? "justify-start" : "justify-end"
-        }`}
+        className={`flex w-full p-[5px] h-[6vh] ${language ? "justify-start" : "justify-end"
+          }`}
       >
         <button
           className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2 flex justify-center items-center"
@@ -261,80 +270,50 @@ function StudentAbsence() {
         </h1>
       </div>
       <ChangeLanguage />
-      <div className="flex flex-col justify-center items-center w-[99%] mb-2">
-        <label>{language ? "School:" : ":مدرسة"}</label>
-        <select
-          id="school"
-          name="school"
-          onChange={handleSchool}
-          value={selectedSchool}
-          className={!language && "text-end"}
-        >
-          <option value="" disabled selected>
-            {language ? "Please Select a school" : "الرجاء اختيار مدرسة"}
-          </option>
-          <option value="All">{language ? "All" : "الكل"}</option>
-          {schools.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-        <label>{language ? "Grade:" : ":مرحلة"}</label>
-        <select
-          id="grade"
-          name="grade"
-          onChange={handleStage}
-          value={selectedStage}
-          className={!language && "text-end"}
-        >
-          <option value="" disabled selected>
-            {language ? "Please Select a grade" : "الرجاء اختيار مرحلة"}
-          </option>
-          <option value="All">{language ? "All" : "الكل"}</option>
-          {stages.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-        <label>{language ? "Class:" : ":فصل"}</label>
-        <select
-          id="class"
-          name="class"
-          onChange={handleClass}
-          value={selectedClass || ""}
-          className={!language && "text-end"}
-        >
-          <option value="" disabled selected>
-            {language ? "Please Select a class" : "الرجاء اختيار فصل"}
-          </option>
-          <option value="All">{language ? "All" : "الكل"}</option>
-          {classes.map((singleClass) => (
-            <option key={singleClass.id} value={singleClass.id}>
-              {singleClass.name}
-            </option>
-          ))}
-        </select>
-        <label>{language ? "Student:" : ":طالب"}</label>
-        <select
-          id="student"
-          name="student"
-          onChange={handleStudent}
-          value={selectedStudent || ""}
-          className={!language && "text-end"}
-        >
-          <option value="" disabled>
-            {language ? "Please Select a student" : "الرجاء اختيار طالب"}
-          </option>
-          <option value="All">{language ? "All" : "الكل"}</option>
-          {students.map((student) => (
-            <option key={student.id} value={student.id}>
-              {`${student.first_name} ${student.middle_name} ${student.last_name}`}
-            </option>
-          ))}
-        </select>
-      </div>
+      {userInfo.user_role === "Operations Excellence Lead" ? <Selector2
+        label="school"
+        title={language ? "School:" : ":مدرسة"}
+        description={language ? "Please Select a school" : "الرجاء اختيار مدرسة"}
+        data={schools}
+        value={selectedSchool}
+        onChange={handleSchool}
+        name="name"
+        extraCSS="w-[99%]"
+        All={true}
+      /> : null}
+      <Selector2
+        label="grade"
+        title={language ? "Grade:" : ":مرحلة"}
+        description={language ? "Please Select a grade" : "الرجاء اختيار مرحلة"}
+        data={stages}
+        value={selectedStage}
+        onChange={handleStage}
+        name="name"
+        extraCSS="w-[99%]"
+        All={true}
+      />
+      <Selector2
+        label="class"
+        title={language ? "Class:" : ":فصل"}
+        description={language ? "Please Select a class" : "الرجاء اختيار فصل"}
+        data={classes}
+        value={selectedClass || ""}
+        onChange={handleClass}
+        name="name"
+        extraCSS="w-[99%]"
+        All={true}
+      />
+      <Selector2
+        label="student"
+        title={language ? "Student:" : ":طالب"}
+        description={language ? "Please Select a student" : "الرجاء اختيار طالب"}
+        data={students}
+        value={selectedStudent || ""}
+        onChange={handleStudent}
+        name="userStd"
+        extraCSS="w-[99%]"
+        All={true}
+      />
       {selectedStudents.length > 0 ? (
         <form className="teacherSessions" onSubmit={submitStudentAttendance}>
           <div className="students">
@@ -389,6 +368,11 @@ function StudentAbsence() {
           {language ? "No Data Available" : "لا يوجد بيانات حاليا"}
         </div>
       )}
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message={language ? "Attendance has been submitted successfully" : "تم تسجيل الحضور بنجاح"}
+      />
     </div>
   );
 }

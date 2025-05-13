@@ -119,11 +119,11 @@ export const fetchShools = async () => {
     const response = await api.get(`/api/v1/users/schools`, {
       headers: { "Content-Type": "application/json" },
     });
-    return response.data?.students || [];
+    return response.data?.schools || [];
   } catch (error) {
     console.error(
       "Error fetching forms:",
-      error.response?.students || error.message
+      error.response?.schools || error.message
     );
     throw error;
   }

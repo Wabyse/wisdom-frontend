@@ -97,9 +97,10 @@ const MyTasks = () => {
 
     loadTasks();
   }, []);
+  console.log(userInfo)
 
   const filteredTasks = tasks.filter(
-    (task) => task.assignee.id === userInfo.id
+    (task) => task.assignee.id === userInfo.employee_id
   );
 
   if (loading) return <LoadingScreen />;
@@ -167,7 +168,7 @@ const MyTasks = () => {
               <div className="w-[9%]">{file.assignee.first_name}</div>
               {file.file_path ? (
                 <div
-                  className="w-[9%]"
+                  className="w-[9%] flex justify-center"
                   onClick={() => downloadFile(file?.file_path)}
                 >
                   <LuDownload size={24} />

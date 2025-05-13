@@ -8,9 +8,11 @@ import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { useLanguage } from "../context/LanguageContext";
+import Popup from "../components/Popup";
 
 const SchoolIncident = () => {
   const urlLocation = useLocation();
+  const [submitted, setSubmitted] = useState(false);
   const [schools, setSchools] = useState([]);
   const [comment, setComment] = useState("");
   const [location, setLocation] = useState("");
@@ -74,8 +76,8 @@ const SchoolIncident = () => {
       setFile(null);
       setSubCategory("");
       setSchoolId("");
-      toast.success("submitted");
-      navigate(`/pms`);
+      toast.success(language ? "Incident has been submitted" : "تم تسجيل الحادثة");
+      setSubmitted(true);
     } catch (error) {
       console.error("Upload error", error);
       alert("File upload failed");
@@ -106,6 +108,11 @@ const SchoolIncident = () => {
     loadCategories();
     setLoading(false);
   }, []);
+
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/pms');
+  };
 
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: urlLocation }} replace />;
@@ -177,6 +184,11 @@ const SchoolIncident = () => {
         </div>
         <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded">{language ? "Submit" : "ارسال"}</button>
       </form>
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message={language ? "Incident has been submitted successfully" : "تم تسجيل الحادثة بنجاح"}
+      />
     </div>
   );
 };

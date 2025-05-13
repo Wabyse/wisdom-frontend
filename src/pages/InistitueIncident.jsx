@@ -8,9 +8,11 @@ import { submitIncident } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
+import Popup from "../components/Popup";
 
 const InistituteIncident = () => {
   const urlLocation = useLocation();
+  const [submitted, setSubmitted] = useState(false);
   const [schools, setSchools] = useState([]);
   const [comment, setComment] = useState("");
   const [location, setLocation] = useState("");
@@ -73,8 +75,8 @@ const InistituteIncident = () => {
       setFile(null);
       setSubCategory("");
       setSchoolId("");
-      toast.success("submitted");
-      navigate(`/watoms/pms`);
+      toast.success("تم تسجيل الواقعة");
+      setSubmitted(true);
     } catch (error) {
       console.error("Upload error", error);
       toast.error("File upload failed");
@@ -105,6 +107,11 @@ const InistituteIncident = () => {
     loadCategories();
     setLoading(false);
   }, []);
+
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/watoms/pms');
+  };
 
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: urlLocation }} replace />;
@@ -174,6 +181,11 @@ const InistituteIncident = () => {
         </div>
         <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">ارسال</button>
       </form>
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message="تم تسجيل الواقعة بنجاح"
+      />
     </div>
   );
 };

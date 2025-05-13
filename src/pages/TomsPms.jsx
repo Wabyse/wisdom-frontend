@@ -122,7 +122,6 @@ const TomsPms = () => {
           (testData) => testData.code === "Daily Operations"
         );
         const newForms = WATOMS_PMS_FORMS_ORDER.map((id) => filteredGeneralForms[id]).filter((f) => f !== undefined);
-        console.log(newForms)
         setForms(newForms);
         setPd(filter1);
         setDailyOperations(filter2);

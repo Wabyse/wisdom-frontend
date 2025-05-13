@@ -20,6 +20,7 @@ import {
 } from "../services/data";
 import LoadingScreen from "../components/LoadingScreen";
 import Popup from "../components/Popup";
+import Selector2 from "../components/Selector2";
 
 function TomsForm() {
   const { id } = useParams();
@@ -37,10 +38,10 @@ function TomsForm() {
   const [error, setError] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [students, setStudnets] = useState([]);
-  const [selectedStudent, setSelectedStudent] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [classes, setClasses] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
   const { userInfo } = useAuth();
   const [quesLength, setQuesLength] = useState();
 
@@ -204,6 +205,10 @@ function TomsForm() {
     setSelectedDepartment(e.target.value);
   };
 
+  const handleUserChange = (e) => {
+    setSelectedUser(e.target.value);
+  };
+
   const handleClassChange = (e) => {
     if (e.target.value !== "" && e.target.value !== "All") {
       const filtering = students.filter(student => student.class_id === Number(e.target.value));
@@ -365,6 +370,7 @@ function TomsForm() {
   if (error) return <p>Error: {error.message}</p>;
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
 
+
   return (
     <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-full">
       <Toaster />
@@ -381,65 +387,36 @@ function TomsForm() {
         >
           {formType[0] === "ClassRoom Observation" ? code !== "Self" ? reviewee !== "Student" ? (
             <div className="w-full flex md:justify-evenly flex-col md:flex-row">
-              <div className="flex flex-col items-center justify-center">
-                <label htmlFor="department">:المهنة</label>
-                <select
-                  className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
-                  id="department"
-                  name="department"
-                  onChange={handleDepartmentChange}
-                  value={selectedDepartment}
-                >
-                  <option value="" disabled selected>
-                    الرجاء اختيار المهنة
-                  </option>
-                  {departments.map((department) => (
-                    <option key={department.id} value={department.id}>
-                      {department.Name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-col items-center justify-center">
-                <label>:المدرب</label>
-                <select
-                  className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
-                  id="user"
-                  name="user"
-                >
-                  <option value="" disabled selected>
-                    الرجاء اختيار المدرب
-                  </option>
-                  {filteredUsers.map((user) => (
-                    <option
-                      value={user.id}
-                      key={user.id}
-                    >{`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`}</option>
-                  ))}
-                </select>
-              </div>
+              <Selector2
+                label="department"
+                title=":المهنة"
+                description="الرجاء اختيار المهنة"
+                data={departments}
+                value={selectedDepartment}
+                onChange={handleDepartmentChange}
+                name="Name"
+              />
+              <Selector2
+                label="user"
+                title=":المدرب"
+                description="الرجاء اختيار المدرب"
+                data={filteredUsers}
+                value={selectedUser}
+                onChange={handleUserChange}
+                name="userEmp"
+              />
             </div>
           ) : (
             <div className="w-full flex md:justify-evenly flex-col md:flex-row">
-              <div className="flex flex-col items-center justify-center">
-                <label htmlFor="class">:الدورة</label>
-                <select
-                  className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
-                  id="class"
-                  name="class"
-                  onChange={handleClassChange}
-                  value={selectedClass}
-                >
-                  <option value="" disabled selected>
-                    الرجاء اختيار المهنة
-                  </option>
-                  {classes.map((eachClass) => (
-                    <option key={eachClass.id} value={eachClass.id}>
-                      {eachClass.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Selector2
+                label="class"
+                title=":الدورة"
+                description="الرجاء اختيار المهنة"
+                data={classes}
+                value={selectedClass}
+                onChange={handleClassChange}
+                name="name"
+              />
               <div className="flex flex-col items-center justify-center">
                 <label>:المتدرب</label>
                 <select
