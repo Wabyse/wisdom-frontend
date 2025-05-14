@@ -38,7 +38,7 @@ const TomsTms = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [filteredAssignedUsers, setFilteredAssignedUsers] = useState([]);
   const [filteredAssigneeUsers, setFilteredAssigneeUsers] = useState([]);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [assigneeInistitutions, setAssigneeInistitutions] = useState([]);
   const [assignerInistitutions, setAssignerInistitutions] = useState([]);
   const [test, setTest] = useState(0);
@@ -68,23 +68,23 @@ const TomsTms = () => {
     setSelectedAssigneeOrganization("");
   };
 
-  useEffect(() => {
-    // Filter Assigned Users to exclude the selected Assignee
-    setFilteredAssignedUsers(
-      users.filter(
-        (user) => user.employee?.employee_id !== Number(selectedAssigneeUser)
-      )
-    );
-  }, [selectedAssigneeUser, users, tasks]);
+  // useEffect(() => {
+  //   // Filter Assigned Users to exclude the selected Assignee
+  //   setFilteredAssignedUsers(
+  //     users.filter(
+  //       (user) => user.employee?.employee_id !== Number(selectedAssigneeUser)
+  //     )
+  //   );
+  // }, [selectedAssigneeUser, users, tasks]);
 
-  useEffect(() => {
-    // Filter Assignee Users to exclude the selected Assigned By user
-    setFilteredAssigneeUsers(
-      users.filter(
-        (user) => user.employee?.employee_id !== Number(selectedAssignedUser)
-      )
-    );
-  }, [selectedAssignedUser, users, tasks]);
+  // useEffect(() => {
+  //   // Filter Assignee Users to exclude the selected Assigned By user
+  //   setFilteredAssigneeUsers(
+  //     users.filter(
+  //       (user) => user.employee?.employee_id !== Number(selectedAssignedUser)
+  //     )
+  //   );
+  // }, [selectedAssignedUser, users, tasks]);
 
   const handleDateFromChange = (event) => {
     setDateFrom(event.target.value);
@@ -213,8 +213,9 @@ const TomsTms = () => {
     const loadUsers = async () => {
       try {
         const response = await fetchUsers(userInfo);
+        console.log(response)
 
-        setUsers(response);
+        // setUsers(response);
         setFilteredAssignedUsers(response);
         setFilteredAssigneeUsers(response);
       } catch (err) {
@@ -451,6 +452,7 @@ const TomsTms = () => {
             value={selectedAssignedUser}
             onChange={handleAssignedByChange}
             name="user"
+            optionValue="emp"
           />
           <Selector
             label="assignee"
@@ -460,6 +462,7 @@ const TomsTms = () => {
             value={selectedAssigneeUser}
             onChange={handleAssigneeChange}
             name="user"
+            optionValue="emp"
           />
           <div className="flex flex-col items-end justify-center">
             <label

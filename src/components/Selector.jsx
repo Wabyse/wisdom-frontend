@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Selector({ label, title, description, data, value, onChange, name="name", keyType=false }) {
+function Selector({ label, title, description, data, value, onChange, name="name", keyType=false, optionValue="" }) {
   return (
     <div className="flex flex-col items-end justify-center">
       <label htmlFor={label} className="font-bold m-[5px]">
@@ -18,7 +18,7 @@ function Selector({ label, title, description, data, value, onChange, name="name
         </option>
         <option value="0">All</option>
         {data.map((option, index) => (
-          <option key={keyType ? index : option.id} value={option.id}>
+          <option key={keyType ? index : option.id} value={optionValue === "emp" ? option.employee.employee_id : option.id}>
             {name === "" ? option : name === "user" ? `${option.employee?.employee_first_name} ${option.employee?.employee_middle_name} ${option.employee?.employee_last_name}` : option[name]}
           </option>
         ))}

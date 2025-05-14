@@ -37,7 +37,7 @@ const Tms = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [filteredAssignedUsers, setFilteredAssignedUsers] = useState([]);
   const [filteredAssigneeUsers, setFilteredAssigneeUsers] = useState([]);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [test, setTest] = useState(0);
 
   const handleClick = (id) => {
@@ -64,23 +64,23 @@ const Tms = () => {
     setSelectedSubCategory("");
   };
 
-  useEffect(() => {
-    // Filter Assigned Users to exclude the selected Assignee
-    setFilteredAssignedUsers(
-      users.filter(
-        (user) => user.employee?.employee_id !== Number(selectedAssigneeUser)
-      )
-    );
-  }, [selectedAssigneeUser, users, tasks]);
+  // useEffect(() => {
+  //   // Filter Assigned Users to exclude the selected Assignee
+  //   setFilteredAssignedUsers(
+  //     users.filter(
+  //       (user) => user.employee?.employee_id !== Number(selectedAssigneeUser)
+  //     )
+  //   );
+  // }, [selectedAssigneeUser, users, tasks]);
 
-  useEffect(() => {
-    // Filter Assignee Users to exclude the selected Assigned By user
-    setFilteredAssigneeUsers(
-      users.filter(
-        (user) => user.employee?.employee_id !== Number(selectedAssignedUser)
-      )
-    );
-  }, [selectedAssignedUser, users, tasks]);
+  // useEffect(() => {
+  //   // Filter Assignee Users to exclude the selected Assigned By user
+  //   setFilteredAssigneeUsers(
+  //     users.filter(
+  //       (user) => user.employee?.employee_id !== Number(selectedAssignedUser)
+  //     )
+  //   );
+  // }, [selectedAssignedUser, users, tasks]);
 
   const handleDateFromChange = (event) => {
     setDateFrom(event.target.value);
@@ -188,7 +188,7 @@ const Tms = () => {
       try {
         const response = await fetchUsers(userInfo);
 
-        setUsers(response);
+        // setUsers(response);
         setFilteredAssignedUsers(response);
         setFilteredAssigneeUsers(response);
       } catch (err) {
@@ -396,6 +396,7 @@ const Tms = () => {
             value={selectedAssignedUser}
             onChange={handleAssignedByChange}
             name="user"
+            optionValue="emp"
           />
           <Selector
             label="assignee"
@@ -407,6 +408,7 @@ const Tms = () => {
             value={selectedAssigneeUser}
             onChange={handleAssigneeChange}
             name="user"
+            optionValue="emp"
           />
           <Selector
             label="importance"
