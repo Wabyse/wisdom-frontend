@@ -12,6 +12,9 @@ module.exports = {
         watomsLightBlue: "#0d3486",
         wisdomNewOrange: "#eb5812",
       },
+      fontFamily: {
+        sans: ['"Cairo"', 'ui-sans-serif', 'system-ui'],
+      },
       animation: {
         overlaySlide: "overlaySlide 3s linear infinite",
       },

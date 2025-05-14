@@ -4,6 +4,7 @@ import "../styles/Form.css";
 import CollapsibleSection from "../components/CollapsibleSection";
 import toast, { Toaster } from "react-hot-toast";
 import newLogo from "../assets/newLogo.jpg";
+import wisdomForm from "../assets/wisdomForm.jpg";
 import { useAuth } from "../context/AuthContext";
 import {
   IndividualForm,
@@ -351,12 +352,12 @@ function Form() {
     <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-full">
       <Toaster />
       <img
-        className="md:w-[60%] w-full md:h-[30vh]"
+        className="w-full md:h-[50vh]"
         src={newLogo}
         alt="company logo"
       ></img>
+      <h1 className="text-center mb-[20px] mt-[10px] bg-black text-white w-full py-2 text-3xl font-bold">{language ? formEnName : formArName}</h1>
       <div className="form">
-        <h1 className="text-center mb-[20px] text-2xl font-bold">{language ? formEnName : formArName}</h1>
         <form className="form2" onSubmit={handleSubmit}>
           {formType[0] === "360 Individual Assessment" && code !== "Self" ? (
             <div className="flex md:flex-row flex-col md:justify-evenly w-full">

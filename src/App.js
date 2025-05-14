@@ -38,249 +38,251 @@ import HomeContactUs from "./pages/HomeContactUs";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/evots" element={<HomeEVOTS />} />
-        <Route path="/careers" element={<HomeCareers />} />
-        <Route path="/aboutus" element={<HomeAboutUs />} />
-        <Route path="/contactus" element={<HomeContactUs />} />
-        <Route path="/login" element={<Login />} />
-        {/* <Route path="/signup" element={<SignUp />} /> */}
-        <Route
-          path="/pms"
-          element={
-            <ProtectedRoute>
-              <Pms />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/form/:id"
-          element={
-            <ProtectedRoute>
-              <Form />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/teacher-substitutions"
-          element={
-            <ProtectedRoute>
-              <TeacherSubstitutions />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/teacher-latness"
-          element={
-            <ProtectedRoute>
-              <TeacherLatness />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/student-absence"
-          element={
-            <ProtectedRoute>
-              <StudentAbsence />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/student-behavior"
-          element={
-            <ProtectedRoute>
-              <StudentBehavior />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/school-incident"
-          element={
-            <ProtectedRoute>
-              <SchoolIncident />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/interview"
-          element={
-            <ProtectedRoute>
-              <Interview />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pms/test"
-          element={
-            <ProtectedRoute>
-              <Test />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dms"
-          element={
-            <ProtectedRoute>
-              <Dms />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tms"
-          element={
-            <ProtectedRoute>
-              <Tms />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dms/upload"
-          element={
-            <ProtectedRoute>
-              <UploadDocument />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dms/view/:id"
-          element={
-            <ProtectedRoute>
-              <ViewDocument />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tms/assign"
-          element={
-            <ProtectedRoute>
-              <Assign />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tms/my-tasks"
-          element={
-            <ProtectedRoute>
-              <MyTasks />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tms/view/:id"
-          element={
-            <ProtectedRoute>
-              <ViewTask />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/pms"
-          element={
-            <ProtectedRoute>
-              <TomsPms />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/pms/form/:id"
-          element={
-            <ProtectedRoute>
-              <TomsForm />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/pms/trainee-absence"
-          element={
-            <ProtectedRoute>
-              <TraineeAbsence />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/pms/inistitute-incident"
-          element={
-            <ProtectedRoute>
-              <InistituteIncident />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/pms/interview"
-          element={
-            <ProtectedRoute>
-              <TomsInterview />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/pms/test"
-          element={
-            <ProtectedRoute>
-              <TomsTest />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/dms"
-          element={
-            <ProtectedRoute>
-              <TomsDms />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/dms/upload"
-          element={
-            <ProtectedRoute>
-              <TomsUploadDocument />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/dms/view/:id"
-          element={
-            <ProtectedRoute>
-              <TomsViewDocument />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/tms"
-          element={
-            <ProtectedRoute>
-              <TomsTms />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/tms/assign"
-          element={
-            <ProtectedRoute>
-              <TomsAssign />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/tms/my-tasks"
-          element={
-            <ProtectedRoute>
-              <TomsMyTasks />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/watoms/tms/view/:id"
-          element={
-            <ProtectedRoute>
-              <TomsViewTask />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Router>
+    <div className="font-sans">
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/evots" element={<HomeEVOTS />} />
+          <Route path="/careers" element={<HomeCareers />} />
+          <Route path="/aboutus" element={<HomeAboutUs />} />
+          <Route path="/contactus" element={<HomeContactUs />} />
+          <Route path="/login" element={<Login />} />
+          {/* <Route path="/signup" element={<SignUp />} /> */}
+          <Route
+            path="/pms"
+            element={
+              <ProtectedRoute>
+                <Pms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/form/:id"
+            element={
+              <ProtectedRoute>
+                <Form />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/teacher-substitutions"
+            element={
+              <ProtectedRoute>
+                <TeacherSubstitutions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/teacher-latness"
+            element={
+              <ProtectedRoute>
+                <TeacherLatness />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/student-absence"
+            element={
+              <ProtectedRoute>
+                <StudentAbsence />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/student-behavior"
+            element={
+              <ProtectedRoute>
+                <StudentBehavior />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/school-incident"
+            element={
+              <ProtectedRoute>
+                <SchoolIncident />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/interview"
+            element={
+              <ProtectedRoute>
+                <Interview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pms/test"
+            element={
+              <ProtectedRoute>
+                <Test />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dms"
+            element={
+              <ProtectedRoute>
+                <Dms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tms"
+            element={
+              <ProtectedRoute>
+                <Tms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dms/upload"
+            element={
+              <ProtectedRoute>
+                <UploadDocument />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dms/view/:id"
+            element={
+              <ProtectedRoute>
+                <ViewDocument />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tms/assign"
+            element={
+              <ProtectedRoute>
+                <Assign />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tms/my-tasks"
+            element={
+              <ProtectedRoute>
+                <MyTasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tms/view/:id"
+            element={
+              <ProtectedRoute>
+                <ViewTask />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pms"
+            element={
+              <ProtectedRoute>
+                <TomsPms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pms/form/:id"
+            element={
+              <ProtectedRoute>
+                <TomsForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pms/trainee-absence"
+            element={
+              <ProtectedRoute>
+                <TraineeAbsence />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pms/inistitute-incident"
+            element={
+              <ProtectedRoute>
+                <InistituteIncident />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pms/interview"
+            element={
+              <ProtectedRoute>
+                <TomsInterview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pms/test"
+            element={
+              <ProtectedRoute>
+                <TomsTest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/dms"
+            element={
+              <ProtectedRoute>
+                <TomsDms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/dms/upload"
+            element={
+              <ProtectedRoute>
+                <TomsUploadDocument />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/dms/view/:id"
+            element={
+              <ProtectedRoute>
+                <TomsViewDocument />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/tms"
+            element={
+              <ProtectedRoute>
+                <TomsTms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/tms/assign"
+            element={
+              <ProtectedRoute>
+                <TomsAssign />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/tms/my-tasks"
+            element={
+              <ProtectedRoute>
+                <TomsMyTasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/tms/view/:id"
+            element={
+              <ProtectedRoute>
+                <TomsViewTask />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
