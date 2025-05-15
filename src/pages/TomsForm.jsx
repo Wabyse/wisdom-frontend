@@ -77,8 +77,13 @@ function TomsForm() {
       allAnswers.push(parsedValue);
     });
 
-    const userEntry = allAnswers.find((entry) => entry.question_id === "user");
+    let userEntry;
     let userIdValue;
+    if (code === "Self") {
+      userEntry = { result: userInfo.id };
+    } else {
+      userEntry = allAnswers.find((entry) => entry.question_id === "user");
+    }
     if (!userEntry || !userEntry.result) {
       return toast.error("Please fill the required data");
     } else {
