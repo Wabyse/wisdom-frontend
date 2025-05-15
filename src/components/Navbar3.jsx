@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar3 = ({ children, showNavigate = true, img, length = "w-[300px]", header, Page, description }) => {
+const Navbar3 = ({ children, showNavigate = true, img, header, Page, description }) => {
     const { setUserCode } = useAuth();
     const [sideBar, setSideBar] = useState(false);
     // const [profile, setProfile] = useState("hidden");
@@ -142,7 +142,7 @@ const Navbar3 = ({ children, showNavigate = true, img, length = "w-[300px]", hea
                 </div>
                 <div className="flex">
                     <div
-                        className={`hidden md:flex items-center gap-4 bg-white p-1 rounded-full shadow-lg shadow-black/30 transition-all duration-300 ease-in-out overflow-hidden ${length}`}
+                        className={`hidden md:flex items-center gap-4 bg-white p-1 rounded-full shadow-lg shadow-black/30 transition-all duration-300 ease-in-out overflow-hidden w-fit`}
                     >
                         {Page !== "PMS" ? showNavigate
                             ? navItem("PMS", "/pms")
@@ -155,8 +155,8 @@ const Navbar3 = ({ children, showNavigate = true, img, length = "w-[300px]", hea
                             : navItem("TMS", "/watoms/tms") : null}
                         {header && typeof header === "function" ? header() : header}
                         <a href={showNavigate ? "https://app.powerbi.com/view?r=eyJrIjoiYjc0MjM0MDYtZmQ4YS00OTMzLTljZmQtOGY4NjRkZDdiN2U5IiwidCI6IjMzYzJiZGQ1LWNiYWUtNDRmNS04ODE0LWE4MzVjOGRjYzQ5OSJ9" : ""} rel="noopener noreferrer" target="_blank" className={`px-5 py-2 rounded-full cursor-pointer bg-gray-700 text-white hover:bg-gray-300 hover:text-black`}>DashBoard</a>
-                        <div>{showNavigate ? <ChangeLanguage /> : null}</div>
-                        <div className="flex items-center gap-2">
+                        {showNavigate && <div> <ChangeLanguage /></div>}
+                        <div className="flex items-center gap-4">
                             <div className="bg-white text-center p-2 rounded-full font-bold w-11 h-11 border-2 border-gray-300 flex items-center justify-center">
                                 {userCode || "Guest"}
                             </div>

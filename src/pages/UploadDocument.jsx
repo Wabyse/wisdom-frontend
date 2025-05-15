@@ -113,7 +113,7 @@ const UploadDocument = () => {
   return (
     <div className="bg-gray-500 h-[100vh]">
       <Toaster />
-      <Navbar upload={true} length="w-[440px]"></Navbar>
+      <Navbar upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">{language ? "Upload Document" : "رفع الملف"}</h1>
         <div className="select-group">

@@ -142,7 +142,7 @@ const TomsPms = () => {
 
   return (
     <>
-      <Navbar2 showNavigate={false} img={WATOMS_PMS_HERO_INFO} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[305px]" : "w-[440px]"} Page="PMS" description={PMS_DISCREPTION}>
+      <Navbar2 showNavigate={false} img={WATOMS_PMS_HERO_INFO} Page="PMS" description={PMS_DISCREPTION}>
         <ul className="hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start text-center md:h-[80vh]">
           {pd.length > 0 || userInfo.user_role === "Manager" || userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Trainer" || userInfo.user_role === "Teacher" ? <li
             key="PD"

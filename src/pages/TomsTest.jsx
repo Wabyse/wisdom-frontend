@@ -8,11 +8,15 @@ import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { WATOMS_TEST_TITLES } from "../constants/constants";
 import Selector2 from "../components/Selector2";
+import { fetchShools } from "../services/data";
 
 function TomsTest() {
   const location = useLocation();
-  const [teachers, serTeachers] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState("");
+  const [trainers, serTrainers] = useState([]);
+  const [filteredTrainers, setFilteredTrainers] = useState([]);
+  const [selectedTrainer, setSelectedTrainer] = useState("");
+  const [institutions, setInstitutions] = useState([]);
+  const [selectedInstitution, setSelectedInstitution] = useState("");
   const [testResultData, setTestResultData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,7 +28,13 @@ function TomsTest() {
   };
 
   const selectUserHandler = (e) => {
-    setSelectedTeacher(e.target.value);
+    setSelectedTrainer(e.target.value);
+  };
+
+  const selectInstitutionHandler = (e) => {
+    const FilteringTrainers = trainers.filter(trainer => Number(e.target.value) === trainer.employee.organization_id)
+    setFilteredTrainers(FilteringTrainers)
+    setSelectedInstitution(e.target.value);
   };
 
   const changeInputResult = (index, value) => {
@@ -35,12 +45,12 @@ function TomsTest() {
 
   const testResultHandler = async (e) => {
     e.preventDefault();
-    if (!selectedTeacher || testResultData.length < 6) {
+    if (!selectedTrainer || testResultData.length < 6) {
       return toast.error("please fill all required data");
     }
     const updatedTestData = {
       type: "test",
-      teacher_id: Number(selectedTeacher),
+      teacher_id: Number(selectedTrainer),
       employee_id: userInfo.employee_id,
       first_result: Number(testResultData[0]),
       second_result: Number(testResultData[1]),
@@ -59,7 +69,22 @@ function TomsTest() {
   };
 
   useEffect(() => {
-    const loadTeachers = async () => {
+    const loadInstitutions = async () => {
+      try {
+        let response;
+        if (userInfo.user_role === "Operations Excellence Lead") response = await fetchShools();
+        setInstitutions(response);
+      } catch (err) {
+        console.error("API Error:", err);
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadInstitutions();
+
+    const loadTrainers = async () => {
       try {
         const response = await fetchAllTeachers();
         let RelatedUsers;
@@ -68,7 +93,8 @@ function TomsTest() {
         } else {
           RelatedUsers = response;
         }
-        serTeachers(RelatedUsers);
+        serTrainers(RelatedUsers);
+        setFilteredTrainers(RelatedUsers);
       } catch (err) {
         console.error("API Error:", err);
         setError(err);
@@ -77,7 +103,7 @@ function TomsTest() {
       }
     };
 
-    loadTeachers();
+    loadTrainers();
   }, [userInfo]);
 
   if (loading) return <LoadingScreen />;
@@ -93,7 +119,7 @@ function TomsTest() {
       </div>
       <div className="w-full flex justify-center">
         <img
-          className="w-[60%] h-[30vh]"
+          className="md:w-[60%] w-full md:h-[30vh] h-fit"
           src={newLogo2}
           alt="company logo"
         ></img>
@@ -102,15 +128,26 @@ function TomsTest() {
         <h1 className="text-2xl font-bold text-center">إختبار تربوي</h1>
       </div>
       <div className="flex flex-col justify-center items-center w-[100%]">
+        {userInfo.user_role === "Operations Excellence Lead" && <Selector2
+          label="institution"
+          title=":المركز"
+          description="الرجاء اختيار مركز"
+          data={institutions}
+          value={selectedInstitution}
+          onChange={selectInstitutionHandler}
+          name="name"
+          extraCSS="w-full"
+        />}
         <Selector2
           label="user"
           title=":المدرب"
           description="الرجاء اختيار مدرب"
-          data={teachers}
-          value={selectedTeacher}
+          data={filteredTrainers}
+          value={selectedTrainer}
           onChange={selectUserHandler}
           name="user"
           optionValue="user"
+          extraCSS="w-full"
         />
         {/* <div className="flex flex-col">
           <label className="text-center font-bold">:مدرب</label>
@@ -127,7 +164,7 @@ function TomsTest() {
           </select>
         </div> */}
       </div>
-      {selectedTeacher ? (
+      {selectedTrainer ? (
         <form className="teacherSessions flex justify-evenly flex-row" onSubmit={testResultHandler}>
           {WATOMS_TEST_TITLES.map((interviewResult, index) => (
             <div className="employeeSection">

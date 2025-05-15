@@ -111,7 +111,7 @@ const MyTasks = () => {
   return (
     <>
       <Toaster />
-      <Navbar upload={true} length="w-[440px]"/>
+      <Navbar upload={true}/>
       <h1 className="ml-[3%] text-2xl font-bold">My Tasks:</h1>
       <div className="files">
         <div className="flex text-center m-2.5 p-1.5 justify-between items-center shadow-[3px_3px_5px_gray]">

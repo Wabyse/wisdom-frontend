@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Page, description }) => {
+const Navbar2 = ({ children, showNavigate = true, img, Page, description }) => {
     const { setUserCode } = useAuth();
     const [sideBar, setSideBar] = useState(false);
     // const [profile, setProfile] = useState("hidden");
@@ -149,7 +149,7 @@ const Navbar2 = ({ children, showNavigate = true, img, length = "w-[300px]", Pag
                     </div>
                     <div className="flex">
                         <div
-                            className={`hidden md:flex items-center gap-4 bg-white p-1 rounded-full shadow-lg shadow-black/30 ${length}`}
+                            className={`hidden md:flex items-center gap-2 bg-white p-1 rounded-full shadow-lg shadow-black/30 w-fit`}
                         >
                             {Page !== "PMS" ? showNavigate
                                 ? navItem("PMS", "/pms")

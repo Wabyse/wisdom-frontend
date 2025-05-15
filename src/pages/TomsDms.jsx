@@ -258,7 +258,7 @@ const TomsDms = () => {
 
   const header = (label, path) => (
     <button
-      className="text-wisdomOrange hover:text-wisdomDarkOrange rounded w-[100px] h-[5vh] flex items-center justify-center self-center"
+      className="text-wisdomOrange hover:text-wisdomDarkOrange rounded w-[60px] h-[5vh] flex items-center justify-center self-center"
       onClick={uploadDocument}
     >
       رفع ملف
@@ -275,7 +275,6 @@ const TomsDms = () => {
       <Navbar3
         showNavigate={false}
         img={DMS_HERO_INFO}
-        length="w-[570px]"
         header={header}
         Page="DMS"
         description={DMS_DESCRIPTION}

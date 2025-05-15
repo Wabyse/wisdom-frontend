@@ -50,7 +50,7 @@ const ViewDocument = () => {
 
   return (
     <div className="bg-gray-500 h-screen">
-      <Navbar upload={true} length="w-[445px]"></Navbar>
+      <Navbar upload={true} />
       <div className=" bg-slate-600 text-white p-[20px] rounded-[8px] max-w-[600px] w-full m-auto shadow-md mt-2">
         <h1 className="text-2xl font-bold text-center">{language ? "View Document" : "تفاصيل الملف"}</h1>
         <div className="flex justify-between gap-[15px]">

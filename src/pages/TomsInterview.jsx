@@ -120,7 +120,7 @@ function TomsInterview() {
       </div>
       <div className="w-full flex justify-center">
         <img
-          className="md:w-[60%] w-full md:h-[30vh] h-[20vh]"
+          className="md:w-[60%] w-full md:h-[30vh] h-fit"
           src={newLogo2}
           alt="company logo"
         ></img>
@@ -128,7 +128,7 @@ function TomsInterview() {
       <div className="w-full">
         <h1 className="text-2xl font-bold text-center">مقابلات شخصية</h1>
       </div>
-      <div className="w-full text-center">
+      <div className="flex flex-col justify-center items-center w-[100%]">
         {userInfo.user_role === "Operations Excellence Lead" && <Selector2
           label="institution"
           title=":المركز"

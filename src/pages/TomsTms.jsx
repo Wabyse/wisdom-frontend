@@ -360,16 +360,16 @@ const TomsTms = () => {
   ]);
 
   const header = (label, path) => (
-    <div className="flex justify-evenly">
+    <div className="flex justify-evenly gap-5">
       <button
         onClick={myTasks}
-        className="w-[60px] text-wisdomOrange rounded p-2 text:bg-wisdomDarkOrange text-center"
+        className="w-[60px] text-wisdomOrange rounded text:bg-wisdomDarkOrange text-center"
       >
         مهامي
       </button>
       <button
         onClick={assignTasks}
-        className="w-[90px] text-wisdomOrange rounded hover:text-wisdomDarkOrange p-2 mx-2"
+        className="w-[75px] text-wisdomOrange rounded hover:text-wisdomDarkOrange"
       >
         تعين مهمة
       </button>
@@ -386,7 +386,6 @@ const TomsTms = () => {
       <Navbar3
         showNavigate={false}
         img={TMS_HERO_INFO}
-        length="w-[640px]"
         header={header}
         Page="TMS"
         description={TMS_DESCRIPTION}

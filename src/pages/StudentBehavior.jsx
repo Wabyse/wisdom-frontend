@@ -200,7 +200,7 @@ const StudentBehavior = () => {
   return (
     <div className="bg-gray-500 h-[100vh]">
       <Toaster />
-      <Navbar upload={true} length="400px"></Navbar>
+      <Navbar upload={true} />
       <form onSubmit={upload} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">{language ? "Student Behavior" : "سلوك الطالب"}</h1>
         <div className="select-group">

@@ -122,7 +122,7 @@ const SchoolIncident = () => {
   return (
     <div className="bg-gray-500 h-[115vh]">
       <Toaster />
-      <Navbar upload={true} length="w-[440px]"></Navbar>
+      <Navbar upload={true}></Navbar>
       <form onSubmit={upload} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">{language ? "School Incident" : "حوادث المدرسة"}</h1>
         {userInfo.user_role === "Operations Excellence Lead" ?

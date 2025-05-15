@@ -13,7 +13,7 @@ import ChangeLanguage from "../components/ChangeLanguage";
 import { useLanguage } from "../context/LanguageContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
-import { WISDOM_LATNESS_OPTIONS } from "../constants/constants";
+import { TEACHER_LATENESS_ARABIC_TITLES, TEACHER_LATENESS_ENGLISH_TITLES, WISDOM_LATNESS_OPTIONS } from "../constants/constants";
 
 function TeacherLatness() {
   const location = useLocation();
@@ -152,17 +152,11 @@ function TeacherLatness() {
       {selectedUser !== null ? (
         <form className="teacherSessions" onSubmit={submitLatness}>
           <div className="TLTitle">
-            <div className="TLTitleContent">Class</div>
-            <div className="TLTitleContent">Session 1</div>
-            <div className="TLTitleContent">Session 2</div>
-            <div className="TLTitleContent">Session 3</div>
-            <div className="TLTitleContent">Session 4</div>
-            <div className="TLTitleContent">Session 5</div>
-            <div className="TLTitleContent">Session 6</div>
-            <div className="TLTitleContent">Session 7</div>
-            <div className="TLTitleContent">Session 8</div>
-            <div className="TLTitleContent">Session 9</div>
-            <div className="TLTitleContent">Session 10</div>
+            {(language ? TEACHER_LATENESS_ENGLISH_TITLES : TEACHER_LATENESS_ARABIC_TITLES).map((title, index) => (
+              <div className="TLTitleContent" key={index}>
+                {title}
+              </div>
+            ))}
           </div>
           {teacher?.employee?.teacher?.sessions?.map((classes, index) => (
             <div className="TLTitle" key={`${classes.class.id}-${index}`}>

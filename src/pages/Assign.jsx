@@ -96,7 +96,7 @@ const Assign = () => {
   return (
     <div className="bg-gray-500 m-0 min-h-[130vh] overflow-auto">
       <Toaster />
-      <Navbar upload={true} length="w-[440px]"></Navbar>
+      <Navbar upload={true}></Navbar>
       <form onSubmit={submitTask} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">{language ? "Assign Task" : "تعيين مهمة"}</h1>
         <div className="select-group">

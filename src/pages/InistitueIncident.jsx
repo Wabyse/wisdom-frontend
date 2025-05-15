@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import Popup from "../components/Popup";
+import Selector2 from "../components/Selector2";
 
 const InistituteIncident = () => {
   const urlLocation = useLocation();
@@ -121,22 +122,21 @@ const InistituteIncident = () => {
   return (
     <div className="bg-gray-500 h-[115vh]">
       <Toaster />
-      <Navbar showNavigate={false} upload={true}></Navbar>
+      <Navbar showNavigate={false} upload={true}/>
       <form onSubmit={upload} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">وقائع المركز</h1>
-        {userInfo.user_role === "Operations Excellence Lead" ? <div className="flex flex-col justify-center items-center">
-          <label className="text-center w-full text-white">المركز:</label>
-          <select onChange={(e) => setSchoolId(e.target.value)}>
-            <option value="" disabled selected>
-              برجاء اختيار مركز
-            </option>
-            {schools.map((school) => (
-              <option key={school.id} value={school.id}>
-                {school.name}
-              </option>
-            ))}
-          </select>
-        </div> : null}
+        {userInfo.user_role === "Operations Excellence Lead" && <Selector2
+          label="institution"
+          title=":المركز"
+          description="برجاء اختيار مركز"
+          data={schools}
+          value={schoolId}
+          onChange={(e) => setSchoolId(e.target.value)}
+          name="name"
+          extraCSS="md:w-[25%] w-full"
+          labelCSS="text-white"
+          selectCSS="text-end"
+        />}
         <label htmlFor="comment" className="text-white">:تعليق</label>
         <input type="text" name="comment" id="comment" className="text-end" onChange={handleCommentChange} />
         <label htmlFor="location" className="text-white">:المكان</label>
@@ -144,36 +144,30 @@ const InistituteIncident = () => {
         <label className="text-white">:رفع الملف</label>
         <input type="file" name="file" className="bg-white" onChange={handleFileChange} />
         <div className="select-group">
-          <div className="select">
-            <label className="text-end w-full text-white">:التصنيف</label>
-            <select onChange={handleCategoryChange} className="text-right">
-              <option value="" disabled selected>
-                برجاء اختيار تصنيف
-              </option>
-              {categories.map((category, index) => (
-                <option key={index} value={index}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="select">
-            <label className="text-end w-full text-white">:تصنيف فرعي</label>
-            <select
-              onClick={handleSubCategoryClick}
-              onChange={(e) => setSubCategory(e.target.value)}
-              className="text-right"
-            >
-              <option value="" disabled selected>
-                برجاء اختيار تصنيف
-              </option>
-              {selectedCategories.map((subCategory) => (
-                <option key={subCategory.id} value={subCategory.id}>
-                  {subCategory.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Selector2
+            label="subCategory"
+            title=":تصنيف فرعي"
+            description="برجاء اختيار تصنيف"
+            data={selectedCategories}
+            value={subCategory}
+            onChange={(e) => setSubCategory(e.target.value)}
+            onClick={handleSubCategoryClick}
+            name="name"
+            labelCSS="text-white text-end w-full"
+            selectCSS="text-end"
+          />
+          <Selector2
+            label="category"
+            title=":التصنيف"
+            description="برجاء اختيار تصنيف"
+            data={categories}
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            name="name"
+            labelCSS="text-white text-end w-full"
+            selectCSS="text-end"
+            keyType={true}
+          />
         </div>
         <div className="select">
           <label className="w-full text-center text-white">:التاريخ</label>

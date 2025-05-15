@@ -215,7 +215,7 @@ function TraineeAbsence() {
       </div>
       <div className="w-full flex justify-center">
         <img
-          className="md:w-[60%] md:h-[30vh] w-full"
+          className="md:w-[60%] w-full md:h-[30vh] h-fit"
           src={newLogo2}
           alt="company logo"
         ></img>

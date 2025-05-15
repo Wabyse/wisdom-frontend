@@ -8,7 +8,7 @@ import { useState } from "react";
 import ChangeLanguage from "./ChangeLanguage";
 // this is comment test
 
-const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", upload = false }) => {
+const Navbar = ({ children, showNavigate = true, img, upload = false }) => {
   const { setUserCode } = useAuth();
   // const [profile, setProfile] = useState("hidden");
   // const [profileHover, setProfileHover] = useState(false);
@@ -76,7 +76,7 @@ const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", uplo
         </div>
 
         <div
-          className={`hidden md:flex items-center gap-4 bg-white py-2 px-2 rounded-full shadow-lg shadow-black/30 ${length}`}
+          className={`hidden md:flex items-center gap-4 bg-white py-2 px-2 rounded-full shadow-lg shadow-black/30 w-fit`}
         >
           {showNavigate
             ? navItem("PMS", "/pms")
@@ -88,8 +88,8 @@ const Navbar = ({ children, showNavigate = true, img, length = "w-[370px]", uplo
             ? navItem("TMS", "/tms")
             : navItem("TMS", "/watoms/tms")}
             {showNavigate ? <ChangeLanguage /> : null}
-          <div className="flex items-center gap-2">
-            <div className={`flex justify-evenly items-center`}>{children}</div>
+          <div className="flex items-center gap-4">
+            {children !== undefined && <div className={`flex justify-evenly items-center`}>{children}</div>}
             <div className="bg-white text-center p-2 rounded-full font-bold w-10 h-10 border-2 border-gray-300 flex items-center justify-center">
               {userCode || "Guest"}
             </div>

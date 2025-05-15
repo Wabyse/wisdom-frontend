@@ -59,8 +59,7 @@ const ViewTask = () => {
 
   return (
     <div className="bg-gray-500 h-screen">
-      <Navbar upload={true} length="w-[440px]">
-      </Navbar>
+      <Navbar upload={true} />
       <div className="bg-slate-600 p-[20px] rounded-[8px] max-w-[600px] w-full m-auto shadow-md mt-2">
         <h1 className="text-2xl font-bold text-center text-white">{language ? "View Task" : "تفاصيل المهمة"}</h1>
         <div className="flex justify-between gap-[15px]">

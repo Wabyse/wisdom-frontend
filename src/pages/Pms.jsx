@@ -137,7 +137,7 @@ const Pms = () => {
 
   return (
     <>
-      <Navbar2 showNavigate={true} img={WISDOM_PMS_HERO_INFO} length={userInfo.user_role === "Student" || userInfo.user_role === "Trainee" ? "w-[380px]" : "w-[520px]"} Page="PMS" description={PMS_DISCREPTION}>
+      <Navbar2 showNavigate={true} img={WISDOM_PMS_HERO_INFO} Page="PMS" description={PMS_DISCREPTION}>
         <ul
           className={`hidden md:grid md:grid-cols-1 md:auto-rows-fr list-none md:text-start ${language ? "text-start" : "text-end"} md:h-[85vh]`}
         >

@@ -151,14 +151,6 @@ const Tms = () => {
       .replace(",", ""); // Remove comma
   };
 
-  const assignTasks = () => {
-    navigate(`/tms/assign`);
-  };
-
-  const myTasks = () => {
-    navigate(`/tms/my-tasks`);
-  };
-
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -320,16 +312,16 @@ const Tms = () => {
   ]);
 
   const header = (label, path) => (
-    <div className="flex justify-evenly">
+    <div className="flex justify-evenly gap-5">
       <button
-        onClick={myTasks}
-        className="w-[90px] text-wisdomOrange rounded hover:text-wisdomDarkOrange text-center"
+        onClick={() => navigate(`/tms/my-tasks`)}
+        className="w-fit text-wisdomOrange rounded hover:text-wisdomDarkOrange text-center"
       >
         {language ? "My Tasks" : "مهامي"}
       </button>
       <button
-        onClick={assignTasks}
-        className="w-[100px] text-wisdomOrange rounded hover:text-wisdomDarkOrange mx-2"
+        onClick={() => navigate(`/tms/assign`)}
+        className="w-[75px] text-wisdomOrange rounded hover:text-wisdomDarkOrange"
       >
         {language ? "Assign Task" : "تعين مهمة"}
       </button>
@@ -346,7 +338,6 @@ const Tms = () => {
       <Navbar3
         showNavigate={true}
         img={TMS_HERO_INFO}
-        length="w-[740px]"
         header={header}
         Page="TMS"
         description={TMS_DESCRIPTION}

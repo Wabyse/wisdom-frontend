@@ -290,3 +290,31 @@ export const PARTNERS = [
     { title: "ابدأ لتنمية الصناعات", image: ebda, width: "w-40" },
     { title: "وهبي جروب", image: wahby, width: "w-56" },
   ];
+
+  export const TEACHER_LATENESS_ENGLISH_TITLES = [
+  "Class",
+  "Session 1",
+  "Session 2",
+  "Session 3",
+  "Session 4",
+  "Session 5",
+  "Session 6",
+  "Session 7",
+  "Session 8",
+  "Session 9",
+  "Session 10"
+];
+
+export const TEACHER_LATENESS_ARABIC_TITLES = [
+  "الفصل",
+  "الحصة ١",
+  "الحصة ٢",
+  "الحصة ٣",
+  "الحصة ٤",
+  "الحصة ٥",
+  "الحصة ٦",
+  "الحصة ٧",
+  "الحصة ٨",
+  "الحصة ٩",
+  "الحصة ١٠"
+];

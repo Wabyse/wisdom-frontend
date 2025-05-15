@@ -261,7 +261,7 @@ const Dms = () => {
   const header = (label, path) => (
     <div className="flex justify-evenly">
       <button
-        className={`text-wisdomOrange p-1 rounded hover:Text-wisdomDarkOrange mx-2 ${language ? "w-[160px]" : "w-[90px]"
+        className={`text-wisdomOrange p-1 rounded hover:Text-wisdomDarkOrange ${language ? "w-[160px]" : "w-[90px]"
           }`}
         onClick={uploadDocument}
       >
@@ -280,7 +280,6 @@ const Dms = () => {
       <Navbar3
         showNavigate={true}
         img={DMS_HERO_INFO}
-        length={language ? "w-[710px]" : "w-[640px]"}
         header={header}
         Page="DMS"
         description={DMS_DESCRIPTION}
