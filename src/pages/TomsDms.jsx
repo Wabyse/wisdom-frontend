@@ -107,8 +107,8 @@ const TomsDms = () => {
 
   const handleDownload2 = (path) => {
     try {
-      // Ensure correct filename extraction for Windows
-      const fileName = path.filteredPath.split("\\").pop();
+      // Ensure correct filename extraction for both windows and ubuntu
+      const fileName = encodeURIComponent(path.filteredPath.replace(/\\/g, "/"));
       downloadFileDms(fileName);
     } catch (error) {
       console.error("Download error", error);
@@ -122,7 +122,7 @@ const TomsDms = () => {
         const response = await fetchingFiles(userInfo);
         let newFiltered = [];
         const paths = response.data.files;
-        let departmentId = selectedDepartment && (userInfo.user_role === "Operations Excellence Lead" ||userInfo.user_role === "Manager") 
+        let departmentId = selectedDepartment && (userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Manager")
           ? Number(selectedDepartment)
           : userInfo.user_role !== "Operations Excellence Lead" || userInfo.user_role !== "Manager" ? userInfo.department_id : null;
         let organizationId = selectedSchool && userInfo.user_role === "Operations Excellence Lead" ? Number(selectedSchool) : userInfo.user_role !== "Operations Excellence Lead" ? userInfo.organization_id : null;
@@ -344,71 +344,6 @@ const TomsDms = () => {
           مسح
         </button>
       </Navbar3>
-      {/* <div className="w-100 flex justify-end text-white md:h-[70vh] h-[20vh] bg-[url('../assets/DMS.jpg')] bg-no-repeat bg-center bg-[length:100%_100%]">
-        <h1 className="mt-[2%] mr-[3%] text-end">:نظام إدارة المستندات</h1>
-      </div> */}
-      {/* <div className="flex md:flex-row md:justify-evenly flex-col">
-        <Selector
-          label="school"
-          title=":المركز"
-          description="الرجاء اختيار مركز"
-          data={schools}
-          value={selectedSchool}
-          onChange={handleSchoolChange}
-        />
-        <Selector
-          label="department"
-          title=":المهنة"
-          description="الرجاء اختيار مهنة"
-          data={departments}
-          value={selectedDepartment}
-          onChange={handleDepartmentChange}
-          name="Name"
-        />
-        <Selector
-          label="category"
-          title=":التصنيف"
-          description="برجاء اختيار تصنيف"
-          data={categories}
-          value={selectedCategory}
-          onChange={handleCategoryChange}
-        />
-        <Selector
-          label="subCategory"
-          title=":التصنيف الفرعي"
-          description="برجاء اختيار تصنيف فرعي"
-          data={subCategories}
-          value={selectedSubCategory}
-          onChange={handleSubCategoryChange}
-        />
-        <div className="flex flex-col items-center justify-center">
-          <label htmlFor="dateFrom" className="mb-[10px] text-center font-bold">
-            :من
-          </label>
-          <input
-            id="dateFrom"
-            name="dateFrom"
-            type="date"
-            className="p-[10px] border border-[#ccc] box-border w-[150px]"
-            onChange={handleDateFromChange}
-          />
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <label htmlFor="dateTo" className="mb-[10px] text-center font-bold">
-            :الي
-          </label>
-          <input
-            id="dateTo"
-            name="dateTo"
-            type="date"
-            className="p-[10px] border border-[#ccc] box-border w-[150px]"
-            onChange={handleDateToChange}
-          />
-        </div>
-        <button className="flex justify-center md:w-[75px] w-[200px] md:mt-[41px] md:m-0 m-auto my-2 items-center bg-wisdomOrange hover:bg-wisdomDarkOrange text-white h-[5vh] px-4 py-2 rounded-md" onClick={resetFilters}>
-          مسح
-        </button>
-      </div> */}
       <div className="files" ref={targetDivRef}>
         {filtered.length > 0 ? (
           filtered.map((file, index) => (

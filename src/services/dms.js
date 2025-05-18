@@ -8,14 +8,16 @@ export const downloadFileDms = async (fileName) => {
 
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
+
+    const cleanName = fileName.split("/").pop();
     link.href = url;
-    link.setAttribute("download", fileName);
+    link.setAttribute("download", cleanName);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   } catch (error) {
     console.error(
-      "Error creating form:",
+      "Error downloading file:",
       error.response?.data || error.message
     );
     throw error;
@@ -43,7 +45,7 @@ export const fetchingFiles = async (userInfo) => {
 export const fetchingOrgs = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/forms/AllOrgs`, {
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${userInfo.token}`,
         "Content-Type": "application/json"
       },

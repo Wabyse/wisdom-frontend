@@ -1,10 +1,12 @@
-import React from "react";
 import { PARTNERS } from "../constants/constants";
 import style from '../styles/HomeBody.module.css';
 import img1 from '../assets/test4.jpg';
 import img2 from '../assets/test2.jpg';
+import ebda1 from '../assets/ebda-body.jpg';
+// import ebdaeduBlack from '../assets/ebda-edu-black.jpg';
 import { useState } from "react";
 import Popup from "../components/Popup";
+import ebdaVideo from '../assets/ebda-edu-video.mp4';
 
 const HomeBody = () => {
     const [notAvailable, setNotAvailable] = useState(false);
@@ -21,6 +23,17 @@ const HomeBody = () => {
                     <p className="text-wisdomOrange md:text-7xl text-xl">EBDA EDU: Transforming Visions into Reality</p>
                 </div>
                 <button onClick={openPopup} className="bg-wisdomOrange hover:bg-wisdomDarkOrange h-[8vh] px-8 flex self-center items-center">Learn More</button>
+            </div>
+            <div className="flex justify-center items-center">
+                <div className="w-[94%] bg-slate-200 flex md:flex-row flex-col p-4 rounded items-center">
+                    <div className="gap-4 flex flex-col md:mb-0 mb-2 justify-center">
+                        {/* <img src={ebdaeduBlack} alt="" className="w-[25%]" /> */}
+                        <h1 className="text-6xl font-bold">EBDA EDU</h1>
+                        <p className="text-xl">EBDA EDU is a dynamic and innovative academy for technical education and vocational training services  dedicated to fostering excellence in education and workforce development.</p>
+                        <p className="text-xl">With a comprehensive range of services, EBDA EDU is committed to empowering individuals, schools and organizations in the vocational sector to achieve their full potential.</p>
+                    </div>
+                    <img src={ebda1} alt="" />
+                </div>
             </div>
             <div className="flex md:flex-row flex-col justify-between m-12">
                 <div className="md:w-[45%] w-full mt-10 group md:mb-auto mb-5">
@@ -41,7 +54,7 @@ const HomeBody = () => {
                     <h1 className="text-6xl font-bold">WATOMS</h1>
                     <p className="text-2xl font-bold">WABYS Automated Training Operations Managment System</p>
                     <p className="text-xl mt-4">
-                    It is a holistic integrated electronic system developed to support digital transformation and enhance governance in vocational training centers. As part of the project’s digital transformation efforts and commitment to improved governance in vocational training centers, WATOMS was developed as a central digital platform for managing and monitoring all aspects of the training process. It supports the entire training lifecycle—from trainee registration and performance tracking to the issuance of accredited certificates.
+                        It is a holistic integrated electronic system developed to support digital transformation and enhance governance in vocational training centers. As part of the project’s digital transformation efforts and commitment to improved governance in vocational training centers, WATOMS was developed as a central digital platform for managing and monitoring all aspects of the training process. It supports the entire training lifecycle—from trainee registration and performance tracking to the issuance of accredited certificates.
 
                         WATOMS enables centralized management of data related to trainees, trainers, and programs; monitors performance; documents attendance and progress using modern tools; and stores feedback from various stakeholders, with over 130 surveys already analyzed to enhance training quality.
 
@@ -49,6 +62,17 @@ const HomeBody = () => {
                     </p>
                 </div>
                 <img src={img2} alt="" className="w-screen md:hidden" />
+            </div>
+            <div className="flex justify-center my-12">
+                <video
+                    className="w-[90%] max-w-5xl rounded-lg shadow-lg"
+                    autoPlay
+                    muted
+                    loop
+                >
+                    <source src={ebdaVideo} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
             </div>
             <div className="w-full overflow-hidden py-10">
                 <h1 className="text-center text-4xl font-bold mb-8">OUR PARTNERS</h1>

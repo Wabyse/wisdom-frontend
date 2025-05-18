@@ -48,7 +48,7 @@ const HomeFooter = () => {
             <p className="mt-6">2025 by EBDA EDU for Development and Training</p>
             <button
                 onClick={scrollToTop}
-                className="fixed bottom-4 right-4 bg-wisdomOrange text-white px-4 py-2 rounded-full shadow-lg hover:bg-wisdomDarkOrange transition"
+                className="fixed bottom-4 right-4 bg-wisdomOrange text-white px-4 py-2 rounded-full shadow-lg hover:bg-wisdomDarkOrange transition z-[9999]"
             >
                 <FontAwesomeIcon icon={faUpLong} />
             </button>

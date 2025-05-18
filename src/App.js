@@ -35,6 +35,7 @@ import HomeEVOTS from "./pages/HomeEVOTS";
 import HomeCareers from "./pages/HomeCareers";
 import HomeAboutUs from "./pages/HomeAboutUs";
 import HomeContactUs from "./pages/HomeContactUs";
+import HomeServicesTraining from "./pages/HomeServicesTraining";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="/careers" element={<HomeCareers />} />
           <Route path="/aboutus" element={<HomeAboutUs />} />
           <Route path="/contactus" element={<HomeContactUs />} />
+          <Route path="/services/training" element={<HomeServicesTraining />} />
           <Route path="/login" element={<Login />} />
           {/* <Route path="/signup" element={<SignUp />} /> */}
           <Route
