@@ -158,3 +158,12 @@ export const fetchBehaviorCategories = async () => {
     throw error;
   }
 };
+
+export const sendCheckInOut = async (data) => {
+  try {
+    await api.post(`/api/v1/users/checkinout`, data); // DO NOT manually set headers
+  } catch (error) {
+    console.error("Error sending form:", error.response?.data || error.message);
+    throw error;
+  }
+};

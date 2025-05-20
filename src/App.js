@@ -36,6 +36,8 @@ import HomeCareers from "./pages/HomeCareers";
 import HomeAboutUs from "./pages/HomeAboutUs";
 import HomeContactUs from "./pages/HomeContactUs";
 import HomeServicesTraining from "./pages/HomeServicesTraining";
+import CheckInOut from "./pages/CheckInOut";
+import QRList from "./pages/QRList";
 
 function App() {
   return (
@@ -48,6 +50,8 @@ function App() {
           <Route path="/aboutus" element={<HomeAboutUs />} />
           <Route path="/contactus" element={<HomeContactUs />} />
           <Route path="/services/training" element={<HomeServicesTraining />} />
+          <Route path="/checkin" element={<CheckInOut />} />
+          <Route path="/qrcodes" element={<QRList />} />
           <Route path="/login" element={<Login />} />
           {/* <Route path="/signup" element={<SignUp />} /> */}
           <Route
