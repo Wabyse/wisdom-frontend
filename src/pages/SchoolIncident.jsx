@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
-import { fetchIncidentCategories, fetchShools } from "../services/data";
+import { fetchIncidentCategories, fetchSchools } from "../services/data";
 import { submitIncident } from "../services/pms";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
@@ -87,7 +87,7 @@ const SchoolIncident = () => {
   useEffect(() => {
     const loadingOrg = async () => {
       try {
-        const response = await fetchShools();
+        const response = await fetchSchools();
         setSchools(response);
       } catch (error) {
         console.error("no files", error);

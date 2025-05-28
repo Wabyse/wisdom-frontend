@@ -5,7 +5,7 @@ import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import {
   fetchBehaviorCategories,
   fetchClasses,
-  fetchShools,
+  fetchSchools,
   fetchStages,
   fetchStudents,
 } from "../services/data";
@@ -129,7 +129,7 @@ const StudentBehavior = () => {
   useEffect(() => {
     const loadingOrg = async () => {
       try {
-        const response = await fetchShools();
+        const response = await fetchSchools();
         setSchools(response);
       } catch (error) {
         console.error("no files", error);

@@ -318,3 +318,9 @@ export const TEACHER_LATENESS_ARABIC_TITLES = [
   "الحصة ٩",
   "الحصة ١٠"
 ];
+
+export const NEQATY_PERMISSION_STATUS = [
+    "accepted",
+    "pending",
+    "denied"
+]

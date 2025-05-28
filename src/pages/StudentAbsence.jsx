@@ -4,7 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import {
   fetchClasses,
-  fetchShools,
+  fetchSchools,
   fetchStages,
   fetchStudents,
 } from "../services/data";
@@ -119,7 +119,7 @@ function StudentAbsence() {
 
     const loadSchools = async () => {
       try {
-        const response = await fetchShools();
+        const response = await fetchSchools();
         setSchools(response);
       } catch (err) {
         console.error("API Error:", err);

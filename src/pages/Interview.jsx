@@ -11,7 +11,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { WISDOM_INTERVIEW_AR_TITLES, WISDOM_INTERVIEW_EN_TITLES } from "../constants/constants";
 import Selector2 from "../components/Selector2";
-import { fetchShools } from "../services/data";
+import { fetchSchools } from "../services/data";
 import Popup from "../components/Popup";
 
 function Interview() {
@@ -80,7 +80,7 @@ function Interview() {
     const loadSchools = async () => {
       try {
         let response;
-        if (userInfo.user_role === "Operations Excellence Lead") response = await fetchShools();
+        if (userInfo.user_role === "Operations Excellence Lead") response = await fetchSchools();
         setSchools(response);
       } catch (err) {
         console.error("API Error:", err);

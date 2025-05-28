@@ -114,7 +114,7 @@ export const fetchStages = async () => {
   }
 };
 
-export const fetchShools = async () => {
+export const fetchSchools = async () => {
   try {
     const response = await api.get(`/api/v1/users/schools`, {
       headers: { "Content-Type": "application/json" },
@@ -167,3 +167,39 @@ export const sendCheckInOut = async (data) => {
     throw error;
   }
 };
+
+export const getCheckInOut = async (data) => {
+  try {
+    const response = await api.get('/api/v1/users/checkinout/view', {
+      params: data,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const fetchSchoolEmployees = async () => {
+  try {
+    const response = await api.get(`/api/v1/users/school/employees`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Users || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const fetchVtcEmployees = async () => {
+  try {
+    const response = await api.get(`/api/v1/users/vtc/employees`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Users || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}

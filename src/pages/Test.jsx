@@ -9,7 +9,7 @@ import newLogo from "../assets/newLogo.jpg";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { WISDOM_TEST_AR_TITLES, WISDOM_TEST_EN_TITLES } from "../constants/constants";
-import { fetchShools } from "../services/data";
+import { fetchSchools } from "../services/data";
 import Selector2 from "../components/Selector2";
 
 function Test() {
@@ -76,7 +76,7 @@ function Test() {
     const loadSchools = async () => {
       try {
         let response;
-        if (userInfo.user_role === "Operations Excellence Lead") response = await fetchShools();
+        if (userInfo.user_role === "Operations Excellence Lead") response = await fetchSchools();
         setSchools(response);
       } catch (err) {
         console.error("API Error:", err);

@@ -38,6 +38,14 @@ import HomeContactUs from "./pages/HomeContactUs";
 import HomeServicesTraining from "./pages/HomeServicesTraining";
 import CheckInOut from "./pages/CheckInOut";
 import QRList from "./pages/QRList";
+import NeqatyLogin from "./pages/NeqatyLogin";
+import Neqaty from "./pages/Neqaty";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import ViewCheckInOut from "./pages/ViewCheckInOut";
+import NeqatySchool from "./pages/NeqatySchool";
+import NeqatyVtc from "./pages/NeqatyVtc";
+import NeqatySchoolPermissions from "./pages/NeqatySchoolPermission";
+import NeqatyVtcPermissions from "./pages/NeqatyVtcPermissions";
 
 function App() {
   return (
@@ -53,6 +61,32 @@ function App() {
           <Route path="/checkin" element={<CheckInOut />} />
           <Route path="/qrcodes" element={<QRList />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/neqaty/login" element={<NeqatyLogin />} />
+          <Route path="/neqaty" element={
+            <ProtectedAdminRoute>
+              <Neqaty />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/neqaty/schools" element={
+            <ProtectedAdminRoute>
+              <NeqatySchool />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/neqaty/vtcs" element={
+            <ProtectedAdminRoute>
+              <NeqatyVtc />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/neqaty/school-permissions" element={
+            <ProtectedAdminRoute>
+              <NeqatySchoolPermissions />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/neqaty/vtc-permissions" element={
+            <ProtectedAdminRoute>
+              <NeqatyVtcPermissions />
+            </ProtectedAdminRoute>
+          } />
           {/* <Route path="/signup" element={<SignUp />} /> */}
           <Route
             path="/pms"
@@ -283,6 +317,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <TomsViewTask />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkIns"
+            element={
+              <ProtectedRoute>
+                <ViewCheckInOut />
               </ProtectedRoute>
             }
           />

@@ -6,13 +6,16 @@ import reportWebVitals from "./reportWebVitals";
 import { AuthProvider } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import '@fortawesome/fontawesome-svg-core/styles.css';
+import { AdminAuthProvider } from "./context/AdminAuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <AuthProvider>
-    <LanguageProvider>
-      <App />
-    </LanguageProvider>
+    <AdminAuthProvider>
+      <LanguageProvider>
+        <App />
+      </LanguageProvider>
+    </AdminAuthProvider>
   </AuthProvider>
 );
 

@@ -62,7 +62,7 @@ export const fetchTeacherInfo = async (formData) => {
   }
 };
 
-export const fetchAllTeachers = async (formData) => {
+export const fetchAllTeachers = async () => {
   try {
     const response = await api.get("/api/v1/users/teachers");
     return response.data?.Users || null;

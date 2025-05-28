@@ -9,7 +9,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { WATOMS_INTERVIEW_TITLES } from "../constants/constants";
 import Selector2 from "../components/Selector2";
-import { fetchShools } from "../services/data";
+import { fetchSchools } from "../services/data";
 
 function TomsInterview() {
   const location = useLocation();
@@ -73,7 +73,7 @@ function TomsInterview() {
     const loadInstitutions = async () => {
       try {
         let response;
-        if (userInfo.user_role === "Operations Excellence Lead") response = await fetchShools();
+        if (userInfo.user_role === "Operations Excellence Lead") response = await fetchSchools();
         setInstitutions(response);
       } catch (err) {
         console.error("API Error:", err);
