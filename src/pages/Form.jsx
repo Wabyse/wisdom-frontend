@@ -4,7 +4,6 @@ import "../styles/Form.css";
 import CollapsibleSection from "../components/CollapsibleSection";
 import toast, { Toaster } from "react-hot-toast";
 import newLogo from "../assets/newLogo.jpg";
-import wisdomForm from "../assets/wisdomForm.jpg";
 import { useAuth } from "../context/AuthContext";
 import {
   IndividualForm,
@@ -23,6 +22,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import Popup from "../components/Popup";
 import Selector2 from "../components/Selector2";
+import WisdomSchoolFilter from "../components/WisdomSchoolFilter";
 
 function Form() {
   const { id } = useParams();
@@ -45,8 +45,13 @@ function Form() {
   const [selectedCurriculum, setSelectedCurriculum] = useState("");
   const { userInfo } = useAuth();
   const [quesLength, setQuesLength] = useState();
+  const [selectedSchool, setSelectedSchool] = useState("");
 
   const navigate = useNavigate(); //for navigate to another page (component)
+
+  const handleSchoolChange = (value) => {
+    setSelectedSchool(value);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -196,6 +201,7 @@ function Form() {
     try {
       const submittedData = {
         userId: userInfo.id,
+        organization_id: userInfo.user_role === "Operations Excellence Lead" ? Number(selectedSchool) : userInfo.organization_id,
         questionsResult: questionAnswers,
       };
       await EnvironmentForm(submittedData);
@@ -397,6 +403,7 @@ function Form() {
               name="code"
             />
           ) : null}
+          {formType[0] === "normal" && userInfo.user_role === "Operations Excellence Lead" && <WisdomSchoolFilter onSchoolChange={handleSchoolChange} />}
           <ChangeLanguage />
           {Object.entries(language ? filteredForm2[0] : filteredForm2[1]).map(
             ([fieldName, questions]) => (

@@ -88,7 +88,6 @@ const Pms = () => {
                 codeAr: codeAr,
                 forms: [],
               };
-              console.log(codeKey)
               groupedData.push(existingGroup);
             }
 

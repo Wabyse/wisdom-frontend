@@ -21,6 +21,7 @@ import {
 import LoadingScreen from "../components/LoadingScreen";
 import Popup from "../components/Popup";
 import Selector2 from "../components/Selector2";
+import WatomsInstitutionFilters from "../components/WatomsInstitutionFilters";
 
 function TomsForm() {
   const { id } = useParams();
@@ -44,8 +45,13 @@ function TomsForm() {
   const [selectedUser, setSelectedUser] = useState("");
   const { userInfo } = useAuth();
   const [quesLength, setQuesLength] = useState();
+  const [selectedVtc, setSelectedVtc] = useState("");
 
   const navigate = useNavigate(); //for navigate to another page (component)
+
+  const handleVtcChange = (value) => {
+    setSelectedVtc(value);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -195,6 +201,7 @@ function TomsForm() {
     try {
       const submittedData = {
         userId: userInfo.id,
+        organization_id: userInfo.user_role === "Operations Excellence Lead" ? Number(selectedVtc) : userInfo.organization_id,
         questionsResult: questionAnswers,
       };
       await EnvironmentForm(submittedData);
@@ -375,7 +382,6 @@ function TomsForm() {
   if (error) return <p>Error: {error.message}</p>;
   if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
 
-
   return (
     <div className="flex flex-col items-center bg-formColor min-h-[100vh] w-full">
       <Toaster />
@@ -460,6 +466,7 @@ function TomsForm() {
               </select>
             </div>
           ) : null}
+          {formType[0] === "normal2" && userInfo.user_role === "Operations Excellence Lead" && <WatomsInstitutionFilters onVtcChange={handleVtcChange} />}
           {Object.entries(filteredForm2[0]).map(([fieldName, questions]) => (
             <CollapsibleSection key={fieldName} title={fieldName}>
               <div key={fieldName} className="w-full text-center mb-[20px]">
