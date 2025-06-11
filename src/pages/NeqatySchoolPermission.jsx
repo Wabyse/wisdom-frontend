@@ -14,6 +14,14 @@ const NeqatySchoolPermissions = () => {
     const [error, setError] = useState(null);
     const [pointsRequests, setPointsRequests] = useState([]);
     const [updateStatus, setUpdateStatus] = useState({});
+    const [selectedStatus, setSelectedStatus] = useState({
+        id: "",
+        status: ""
+    });
+
+    const handleSelectChange = (event, id) => {
+        setSelectedStatus({id, status: event.target.value});
+    };
 
     const handleCheck = (id) => {
         setUpdateStatus((prev) => ({ ...prev, [id]: true }));
@@ -62,7 +70,8 @@ const NeqatySchoolPermissions = () => {
                                 <div>{request.point.name}</div>
                                 <div>{request.point.points}</div>
                                 <div>{request.point.type}</div>
-                                {isChecked ? <select className="w-[8%]">
+                                {isChecked ? <select className="w-[8%]" value={selectedStatus.status}
+                                    onChange={(e) => handleSelectChange(e, id)}>
                                     {NEQATY_PERMISSION_STATUS.map((option) => (
                                         <option key={option} value={option}>
                                             {option}

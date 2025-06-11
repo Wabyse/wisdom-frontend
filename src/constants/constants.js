@@ -68,7 +68,7 @@ export const WISDOM_PMS_EN_LIST = {
     C: "Curriculum",
     H: "HOD",
     EDU: "Edu Environment",
-    EX: "Executive Principle",
+    EX: "Executive Manager",
     SPEC: "Specialist",
     W: "Work Enivornment",
     DO: "Daily Operations",

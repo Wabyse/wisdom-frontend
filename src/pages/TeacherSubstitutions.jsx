@@ -18,6 +18,7 @@ function TeacherSubstitutions() {
   const location = useLocation();
   const { language } = useLanguage();
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const [teachers, setTeachers] = useState([]);
   const [teacher, setTeacher] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,7 +70,7 @@ function TeacherSubstitutions() {
     const loadTeacher = async () => {
       try {
         const teacherData = {
-          id: selectedUser,
+          id: Number(selectedUserId?.id),
         };
         const response = await fetchTeacherInfo(teacherData);
         setTeacher(response);
@@ -82,7 +83,7 @@ function TeacherSubstitutions() {
     };
 
     loadTeacher();
-  }, [selectedUser]);
+  }, [selectedUserId]);
 
   const submitSubstitutions = async (e) => {
     e.preventDefault();
@@ -136,7 +137,7 @@ function TeacherSubstitutions() {
       <ChangeLanguage />
       <div className="flex flex-col justify-center items-center w-[99%]">
         <label>{language ? "Teacher:" : ":المعلم"}</label>
-        <select id="teacher" name="teacher" onClick={handleTeacher}>
+        <select id="teacher" name="teacher" onChange={e => setSelectedUserId(teachers.find(t => t.employee?.id === Number(e.target.value)))} onClick={handleTeacher}>
           <option value="" disabled selected>
             {language ? "Please Select a Teacher" : "الرجاء اختيار المعلم"}
           </option>
@@ -168,15 +169,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 1`}
+                  id={`${classes.id} 1`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 1`)}
+                  onChange={() => addSubstitute(`${classes.id} 1`)}
                 ></input>
-                {substitute[`${classes.class.id} 1`] ? (
+                {substitute[`${classes.id} 1`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 1`}
+                    name={`${classes.id} 1`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -197,15 +198,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 2`}
+                  id={`${classes.id} 2`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 2`)}
+                  onChange={() => addSubstitute(`${classes.id} 2`)}
                 ></input>
-                {substitute[`${classes.class.id} 2`] ? (
+                {substitute[`${classes.id} 2`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 2`}
+                    name={`${classes.id} 2`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -226,15 +227,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 3`}
+                  id={`${classes.id} 3`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 3`)}
+                  onChange={() => addSubstitute(`${classes.id} 3`)}
                 ></input>
-                {substitute[`${classes.class.id} 3`] ? (
+                {substitute[`${classes.id} 3`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 3`}
+                    name={`${classes.id} 3`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -255,15 +256,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 4`}
+                  id={`${classes.id} 4`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 4`)}
+                  onChange={() => addSubstitute(`${classes.id} 4`)}
                 ></input>
-                {substitute[`${classes.class.id} 4`] ? (
+                {substitute[`${classes.id} 4`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 4`}
+                    name={`${classes.id} 4`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -284,15 +285,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 5`}
+                  id={`${classes.id} 5`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 5`)}
+                  onChange={() => addSubstitute(`${classes.id} 5`)}
                 ></input>
-                {substitute[`${classes.class.id} 5`] ? (
+                {substitute[`${classes.id} 5`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 5`}
+                    name={`${classes.id} 5`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -313,15 +314,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 6`}
+                  id={`${classes.id} 6`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 6`)}
+                  onChange={() => addSubstitute(`${classes.id} 6`)}
                 ></input>
-                {substitute[`${classes.class.id} 6`] ? (
+                {substitute[`${classes.id} 6`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 6`}
+                    name={`${classes.id} 6`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -342,15 +343,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 7`}
+                  id={`${classes.id} 7`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 7`)}
+                  onChange={() => addSubstitute(`${classes.id} 7`)}
                 ></input>
-                {substitute[`${classes.class.id} 7`] ? (
+                {substitute[`${classes.id} 7`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 7`}
+                    name={`${classes.id} 7`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -371,15 +372,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 8`}
+                  id={`${classes.id} 8`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 8`)}
+                  onChange={() => addSubstitute(`${classes.id} 8`)}
                 ></input>
-                {substitute[`${classes.class.id} 8`] ? (
+                {substitute[`${classes.id} 8`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 8`}
+                    name={`${classes.id} 8`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -400,15 +401,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 9`}
+                  id={`${classes.id} 9`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 9`)}
+                  onChange={() => addSubstitute(`${classes.id} 9`)}
                 ></input>
-                {substitute[`${classes.class.id} 9`] ? (
+                {substitute[`${classes.id} 9`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 9`}
+                    name={`${classes.id} 9`}
                   >
                     <option value="" disabled selected>
                       {language
@@ -429,15 +430,15 @@ function TeacherSubstitutions() {
               <div className="TSContent">
                 <input
                   type="checkbox"
-                  id={`${classes.class.id} 10`}
+                  id={`${classes.id} 10`}
                   value=""
-                  onChange={() => addSubstitute(`${classes.class.id} 10`)}
+                  onChange={() => addSubstitute(`${classes.id} 10`)}
                 ></input>
-                {substitute[`${classes.class.id} 10`] ? (
+                {substitute[`${classes.id} 10`] ? (
                   <select
                     className="TSSelect"
                     id="teacher"
-                    name={`${classes.class.id} 10`}
+                    name={`${classes.id} 10`}
                   >
                     <option value="" disabled selected>
                       {language

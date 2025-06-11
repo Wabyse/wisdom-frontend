@@ -19,6 +19,7 @@ function TeacherLatness() {
   const location = useLocation();
   const { language } = useLanguage();
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const [teachers, setTeachers] = useState([]);
   const [teacher, setTeacher] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -60,7 +61,7 @@ function TeacherLatness() {
     const loadTeacher = async () => {
       try {
         const teacherData = {
-          id: selectedUser,
+          id: Number(selectedUserId?.id),
         };
         const response = await fetchTeacherInfo(teacherData);
         setTeacher(response);
@@ -73,7 +74,7 @@ function TeacherLatness() {
     };
 
     loadTeacher();
-  }, [selectedUser]);
+  }, [selectedUserId]);
 
   const submitLatness = async (e) => {
     e.preventDefault();
@@ -137,7 +138,7 @@ function TeacherLatness() {
       <ChangeLanguage />
       <div className="flex flex-col justify-center items-center w-[99%]">
         <label>{language ? "Teacher:" : ":المعلم"}</label>
-        <select id="teacher" name="teacher" onClick={handleTeacher}>
+        <select id="teacher" name="teacher" onChange={e => setSelectedUserId(teachers.find(t => t.employee?.id === Number(e.target.value)))} onClick={handleTeacher}>
           <option value="" disabled selected>
             {language ? "Please Select a Teacher" : "الرجاء اختيار المعلم"}
           </option>
@@ -159,13 +160,13 @@ function TeacherLatness() {
             ))}
           </div>
           {teacher?.employee?.teacher?.sessions?.map((classes, index) => (
-            <div className="TLTitle" key={`${classes.class.id}-${index}`}>
+            <div className="TLTitle" key={`${classes.id}-${index}`}>
               <div className="TLContent">{classes.class.name}</div>
               {[...Array(10)].map((_, sessionIndex) => (
                 <div className="TLContent" key={sessionIndex}>
                   <select
                     className="TLSelect"
-                    name={`${classes.class.id} ${sessionIndex + 1}`}
+                    name={`${classes.id} ${sessionIndex + 1}`}
                   >
                     <option value="" disabled selected>
                       {language ? "On Time" : "في الموعد"}
