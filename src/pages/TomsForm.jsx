@@ -22,6 +22,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import Popup from "../components/Popup";
 import Selector2 from "../components/Selector2";
 import WatomsInstitutionFilters from "../components/WatomsInstitutionFilters";
+import { INSTITUTION_CURRICULUM_RELATION } from "../constants/constants";
 
 function TomsForm() {
   const { id } = useParams();
@@ -46,6 +47,7 @@ function TomsForm() {
   const { userInfo } = useAuth();
   const [quesLength, setQuesLength] = useState();
   const [selectedVtc, setSelectedVtc] = useState("");
+  const [formCode, setFormCode] = useState("");
 
   const navigate = useNavigate(); //for navigate to another page (component)
 
@@ -158,9 +160,11 @@ function TomsForm() {
     try {
       const submittedData = {
         userId: userInfo.id,
-        curriculumId: curriculum,
+        organization_id: userInfo.user_role === "Operations Excellence Lead" ? Number(selectedVtc) : userInfo.organization_id,
+        curriculumId: Number(curriculum),
         questionsResult: questionAnswers,
       };
+      console.log(submittedData)
       await CurriculumForm(submittedData);
       toast.success("تم ارسال التقييم");
       setSubmitted(true);
@@ -251,6 +255,7 @@ function TomsForm() {
         const formId = { formId: id };
         const response = await fetchForm(formId);
 
+        setFormCode(response[0].sub_field.field.form.form_code.split(" | ")[1])
         setForm(response || []);
         setQuesLength(response.length || 0);
       } catch (err) {
@@ -268,8 +273,13 @@ function TomsForm() {
     const loadCurriculums = async () => {
       try {
         const response = await fetchCurriculums();
-
-        setCurriculums(response);
+        const unWantedCurriculum = [1, 2, 3, 13, 14, 15, 16, 17, 18]
+        const filteredCurriculums = response.filter(curriculum => !unWantedCurriculum.includes(curriculum.id))
+        const curriculumIds = userInfo.user_role === "Operations Excellence Lead" ? new Set(INSTITUTION_CURRICULUM_RELATION[Number(selectedVtc)] || []) :  new Set(INSTITUTION_CURRICULUM_RELATION[userInfo.organization_id] || []);
+        const selectedOrganization = (selectedVtc !== "" || userInfo.user_role !== "Operations Excellence Lead")
+          ? filteredCurriculums.filter(item => curriculumIds.has(item.id))
+          : filteredCurriculums;
+        setCurriculums(selectedOrganization);
       } catch (err) {
         console.error("API Error:", err);
         setError(err);
@@ -342,7 +352,7 @@ function TomsForm() {
     loadStudents();
     loadClasses();
     setLoading(false);
-  }, [userInfo]);
+  }, [userInfo, selectedVtc]);
 
   const filteredForm2 = form.reduce(
     (acc, question) => {
@@ -449,14 +459,14 @@ function TomsForm() {
             </div>
           ) : null : formType[0] === "curriculum" ? (
             <div className="flex flex-col items-center justify-center">
-              <label>:المنهج</label>
+              <label className="font-bold">{formCode === "TG" ? ":الدورة" : formCode === "TE" ? ":الورشة" : ":المنهج"}</label>
               <select
                 className="p-[10px] text-[16px] text-center w-[250px] rounded-[5px]"
                 id="curriculum"
                 name="curriculum"
               >
                 <option value="" disabled selected>
-                  الرجاء اختيار المنهج
+                  {formCode === "TG" ? "الرجاء اختيار دورة" : formCode === "TE" ? "الرجاء اختيار ورشة" : "الرجاء اختيار منهج"}
                 </option>
                 {curriculums.map((curriculum) => (
                   <option key={curriculum.id} value={curriculum.id}>
@@ -466,7 +476,7 @@ function TomsForm() {
               </select>
             </div>
           ) : null}
-          {formType[0] === "normal2" && userInfo.user_role === "Operations Excellence Lead" && <WatomsInstitutionFilters onVtcChange={handleVtcChange} />}
+          {(formType[0] === "normal2" || formType[0] === "curriculum") && userInfo.user_role === "Operations Excellence Lead" && <WatomsInstitutionFilters onVtcChange={handleVtcChange} />}
           {Object.entries(filteredForm2[0]).map(([fieldName, questions]) => (
             <CollapsibleSection key={fieldName} title={fieldName}>
               <div key={fieldName} className="w-full text-center mb-[20px]">

@@ -289,34 +289,34 @@ export const PARTNERS = [
     { title: "وزارة العمل المصرية", image: GOL, width: "w-24" },
     { title: "ابدأ لتنمية الصناعات", image: ebda, width: "w-40" },
     { title: "وهبي جروب", image: wahby, width: "w-56" },
-  ];
+];
 
-  export const TEACHER_LATENESS_ENGLISH_TITLES = [
-  "Class",
-  "Session 1",
-  "Session 2",
-  "Session 3",
-  "Session 4",
-  "Session 5",
-  "Session 6",
-  "Session 7",
-  "Session 8",
-  "Session 9",
-  "Session 10"
+export const TEACHER_LATENESS_ENGLISH_TITLES = [
+    "Class",
+    "Session 1",
+    "Session 2",
+    "Session 3",
+    "Session 4",
+    "Session 5",
+    "Session 6",
+    "Session 7",
+    "Session 8",
+    "Session 9",
+    "Session 10"
 ];
 
 export const TEACHER_LATENESS_ARABIC_TITLES = [
-  "الفصل",
-  "الحصة ١",
-  "الحصة ٢",
-  "الحصة ٣",
-  "الحصة ٤",
-  "الحصة ٥",
-  "الحصة ٦",
-  "الحصة ٧",
-  "الحصة ٨",
-  "الحصة ٩",
-  "الحصة ١٠"
+    "الفصل",
+    "الحصة ١",
+    "الحصة ٢",
+    "الحصة ٣",
+    "الحصة ٤",
+    "الحصة ٥",
+    "الحصة ٦",
+    "الحصة ٧",
+    "الحصة ٨",
+    "الحصة ٩",
+    "الحصة ١٠"
 ];
 
 export const NEQATY_PERMISSION_STATUS = [
@@ -324,3 +324,16 @@ export const NEQATY_PERMISSION_STATUS = [
     "pending",
     "denied"
 ]
+
+export const INSTITUTION_CURRICULUM_RELATION = {
+    4: [4, 21, 22, 23, 24, 25, 26, 27, 28, 29, 7, 30, 6, 5, 31, 9, 20, 12, 8, 32, 33],
+    5: [6, 8, 4, 30, 5, 7, 34, 32],
+    7: [5, 20, 9, 34, 24, 4, 7, 30, 6, 8, 37],
+    8: [12, 38, 39, 30, 4, 6, 8, 40, 24, 41, 31, 9, 42, 43, 36, 5, 7, 44, 45],
+    9: [6, 8, 4, 30, 35, 7, 31, 9, 36, 37]
+}
+
+export const SCHOOL_CURRICULUM_RELATION = {
+    1: [1, 2, 3, 13, 14, 15, 16, 17, 18],
+    2: [1, 2, 3, 13, 14, 15, 16, 17, 18]
+}

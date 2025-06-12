@@ -23,6 +23,7 @@ import DenyAccessPage from "../components/DenyAccessPage";
 import Popup from "../components/Popup";
 import Selector2 from "../components/Selector2";
 import WisdomSchoolFilter from "../components/WisdomSchoolFilter";
+import { SCHOOL_CURRICULUM_RELATION } from "../constants/constants";
 
 function Form() {
   const { id } = useParams();
@@ -158,9 +159,11 @@ function Form() {
     try {
       const submittedData = {
         userId: userInfo.id,
-        curriculumId: curriculum,
+        organization_id: userInfo.user_role === "Operations Excellence Lead" ? Number(selectedSchool) : userInfo.organization_id,
+        curriculumId: Number(curriculum),
         questionsResult: questionAnswers,
       };
+      console.log(submittedData)
       await CurriculumForm(submittedData);
       toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
       setSubmitted(true);
@@ -261,8 +264,13 @@ function Form() {
     const loadCurriculums = async () => {
       try {
         const response = await fetchCurriculums();
-
-        setCurriculums(response);
+        const wantedCurriculum = [1, 2, 3, 13, 14, 15, 16, 17, 18]
+        const filteredCurriculums = response.filter(curriculum => wantedCurriculum.includes(curriculum.id))
+        const curriculumIds = userInfo.user_role === "Operations Excellence Lead" ? new Set(SCHOOL_CURRICULUM_RELATION[Number(selectedSchool)] || []) : new Set(SCHOOL_CURRICULUM_RELATION[userInfo.organization_id] || []);
+        const selectedOrganization = (selectedSchool !== "" || userInfo.user_role !== "Operations Excellence Lead")
+          ? filteredCurriculums.filter(item => curriculumIds.has(item.id))
+          : filteredCurriculums;
+        setCurriculums(selectedOrganization);
       } catch (err) {
         console.error("API Error:", err);
         setError(err);
@@ -300,7 +308,7 @@ function Form() {
     loadDepartments();
     loadUsers();
     setLoading(false);
-  }, [userInfo]);
+  }, [userInfo, selectedSchool]);
 
   const filteredForm2 = form.reduce(
     (acc, question) => {
@@ -403,7 +411,7 @@ function Form() {
               name="code"
             />
           ) : null}
-          {formType[0] === "normal" && userInfo.user_role === "Operations Excellence Lead" && <WisdomSchoolFilter onSchoolChange={handleSchoolChange} />}
+          {(formType[0] === "normal" || formType[0] === "360 Curriculum Assessment") && userInfo.user_role === "Operations Excellence Lead" && <WisdomSchoolFilter onSchoolChange={handleSchoolChange} />}
           <ChangeLanguage />
           {Object.entries(language ? filteredForm2[0] : filteredForm2[1]).map(
             ([fieldName, questions]) => (
