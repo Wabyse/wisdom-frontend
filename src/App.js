@@ -46,6 +46,7 @@ import NeqatySchool from "./pages/NeqatySchool";
 import NeqatyVtc from "./pages/NeqatyVtc";
 import NeqatySchoolPermissions from "./pages/NeqatySchoolPermission";
 import NeqatyVtcPermissions from "./pages/NeqatyVtcPermissions";
+import BulkData from "./pages/BulkData";
 
 function App() {
   return (
@@ -88,6 +89,14 @@ function App() {
             </ProtectedAdminRoute>
           } />
           {/* <Route path="/signup" element={<SignUp />} /> */}
+          <Route
+            path="/bulk-data"
+            element={
+              <ProtectedRoute>
+                <BulkData />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/pms"
             element={

@@ -203,3 +203,15 @@ export const fetchVtcEmployees = async () => {
     throw error;
   }
 }
+
+export const fetchSpecializations = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/students/specializations`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Specializations || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}

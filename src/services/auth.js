@@ -38,3 +38,16 @@ export const signUpUser = async (formData) => {
     throw error;
   }
 };
+
+export const signUpBulkUsers = async (formData) => {
+  try {
+    const response = await api.post("/api/v1/auth/bulk/signup", formData);
+    return response.data.users;
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

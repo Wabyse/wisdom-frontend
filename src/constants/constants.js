@@ -337,3 +337,13 @@ export const SCHOOL_CURRICULUM_RELATION = {
     1: [1, 2, 3, 13, 14, 15, 16, 17, 18],
     2: [1, 2, 3, 13, 14, 15, 16, 17, 18]
 }
+
+export const ORGANIZATIONS_PASSWORD_CODE= {
+    "Badr": "badr",
+    "Damietta": "damietta",
+    "مركز الاسماعيلية": "ismaili",
+    "مركز السويس": "suez",
+    "مركز الشرابية": "sharabya",
+    "مركز بولاق": "boulaq",
+    "مركز الشرقية": "sharqia"
+}
