@@ -14,6 +14,10 @@ const NeqatyVtcPermissions = () => {
     const [error, setError] = useState(null);
     const [pointsRequests, setPointsRequests] = useState([]);
     const [updateStatus, setUpdateStatus] = useState({});
+    const [selectedStatus, setSelectedStatus] = useState({
+        id: "",
+        status: ""
+    });
 
     const handleCheck = (id) => {
         setUpdateStatus((prev) => ({ ...prev, [id]: true }));
@@ -21,7 +25,6 @@ const NeqatyVtcPermissions = () => {
 
     const handleConfirm = (id) => {
         setUpdateStatus((prev) => ({ ...prev, [id]: false }));
-        console.log(updateStatus)
     };
 
     useEffect(() => {

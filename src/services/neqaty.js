@@ -47,3 +47,15 @@ export const fetchPointsRequests = async () => {
     throw error;
   }
 }
+
+export const grantUserPoints = async (data) => {
+  try {
+    const response = await api.patch(`/api/v1/neqaty/grantPointsRequests`, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
