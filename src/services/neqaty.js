@@ -59,3 +59,15 @@ export const grantUserPoints = async (data) => {
     throw error;
   }
 }
+
+export const fetchUserPoints = async (data) => {
+  try {
+    const response = await api.post(`/api/v1/neqaty/userPoints`, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Points || null;
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}

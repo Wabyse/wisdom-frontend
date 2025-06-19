@@ -9,6 +9,7 @@ import ChangeLanguage from "./ChangeLanguage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { fetchUserPoints } from "../services/neqaty";
 
 const Navbar2 = ({ children, showNavigate = true, img, Page, description }) => {
     const { setUserCode } = useAuth();
@@ -20,6 +21,8 @@ const Navbar2 = ({ children, showNavigate = true, img, Page, description }) => {
     const [mobile, setMobile] = useState(false);
     const [typedTitle, setTypedTitle] = useState("");
     const [typedSubtitle, setTypedSubtitle] = useState("");
+    const [userPoints, setUserPoints] = useState(null);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const loggingOut = async () => {
         localStorage.removeItem("token");
@@ -27,6 +30,22 @@ const Navbar2 = ({ children, showNavigate = true, img, Page, description }) => {
         window.location.href = "/login";
     };
     const { userInfo } = useAuth();
+
+    useEffect(() => {
+        const loadUserPoints = async () => {
+            try {
+                const response = await fetchUserPoints({
+                    user_id: userInfo.id
+                });
+                setUserPoints(response)
+            } catch (error) {
+                console.error("no files", error);
+                setError(error);
+            }
+        }
+
+        loadUserPoints();
+    }, [userInfo])
 
     // const viewProfile = () => {
     //     setProfileHover(true);
@@ -123,6 +142,8 @@ const Navbar2 = ({ children, showNavigate = true, img, Page, description }) => {
         };
     }, [current, img]);
 
+    if (error) return <p>Error: {error.message}</p>;
+
     return (
         <div className="w-full min-h-screen relative overflow-hidden">
             <div
@@ -147,10 +168,13 @@ const Navbar2 = ({ children, showNavigate = true, img, Page, description }) => {
                             />
                         )}
                     </div>
-                    <div className="flex">
+                    <div className="flex min-w-fit">
                         <div
                             className={`hidden md:flex items-center gap-2 bg-white p-1 rounded-full shadow-lg shadow-black/30 w-fit`}
                         >
+                            {userPoints !== null && <div className="bg-white text-center p-2 rounded-full font-bold min-w-fit h-11 border-2 border-gray-300 flex items-center justify-center">
+                                {`Points: ${userPoints.points}`}
+                            </div>}
                             {Page !== "PMS" ? showNavigate
                                 ? navItem("PMS", "/pms")
                                 : navItem("PMS", "/watoms/pms") : null}
