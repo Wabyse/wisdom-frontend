@@ -341,7 +341,7 @@ export const SCHOOL_CURRICULUM_RELATION = {
 export const ORGANIZATIONS_PASSWORD_CODE= {
     "Badr": "badr",
     "Damietta": "damietta",
-    "مركز الاسماعيلية": "ismaili",
+    "مركز الاسماعيلية": "ismailia",
     "مركز السويس": "suez",
     "مركز الشرابية": "sharabya",
     "مركز بولاق": "boulaq",

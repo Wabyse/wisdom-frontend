@@ -173,7 +173,7 @@ export const getCheckInOut = async (data) => {
     const response = await api.get('/api/v1/users/checkinout/view', {
       params: data,
     });
-    return response.data;
+    return response.data.checkInOuts;
   } catch (error) {
     console.error("API Error:", error.response?.data || error.message);
     throw error;
