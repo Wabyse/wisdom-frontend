@@ -3,10 +3,40 @@ import style from '../styles/HomeBody.module.css';
 import img1 from '../assets/test4.jpg';
 import img2 from '../assets/test2.jpg';
 import ebda1 from '../assets/ebda-body.jpg';
+import phone from '../assets/phone repair.png';
+import car from '../assets/car.jpg';
+import fridge from '../assets/fridge.png';
+import sweing from '../assets/sweing.png';
+import sun from '../assets/solar panel.jpg';
 // import ebdaeduBlack from '../assets/ebda-edu-black.jpg';
 import { useState } from "react";
 import Popup from "../components/Popup";
 import ebdaVideo from '../assets/ebda-edu-video.mp4';
+import news from '../assets/news.mp4';
+
+const CourseCard = ({ img1, text1, img2, text2 }) => {
+    return (
+        <div className="relative w-[20%] border-gray-500 border-2 group h-[40vh] overflow-hidden p-4">
+
+            <div className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-700 opacity-100 group-hover:opacity-0">
+                <img src={img1} alt="" className="w-52" />
+                <p className="text-center text-gray-500">{text1}</p>
+            </div>
+
+            <div
+                className="absolute inset-0 flex items-center justify-center transition-opacity duration-700 opacity-0 group-hover:opacity-100"
+            >
+                <div
+                    className="absolute inset-0 bg-cover bg-center z-0"
+                    style={{ backgroundImage: `url(${img2})` }}
+                ></div>
+                <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
+                <p className="text-white text-xl font-semibold z-10 relative">{text2}</p>
+            </div>
+
+        </div>
+    )
+}
 
 const HomeBody = () => {
     const [notAvailable, setNotAvailable] = useState(false);
@@ -47,6 +77,43 @@ const HomeBody = () => {
                 </div>
                 <img src={img1} alt="" className="md:w-[45%] w-screen" />
             </div>
+            <div className="flex justify-center">
+                <div className="flex flex-wrap border-gray-500 border-2 w-[80%]">
+
+                    <CourseCard
+                        img1={sun}
+                        text1="this is a test"
+                        img2={img2}
+                        text2="this is a test 2"
+                    />
+                    <CourseCard
+                        img1={car}
+                        text1="this is a test"
+                        img2={img2}
+                        text2="this is a test 2"
+                    />
+                    <CourseCard
+                        img1={sweing}
+                        text1="this is a test"
+                        img2={img2}
+                        text2="this is a test 2"
+                    />
+                    <CourseCard
+                        img1={phone}
+                        text1="this is a test"
+                        img2={img2}
+                        text2="this is a test 2"
+                    />
+                    <CourseCard
+                        img1={fridge}
+                        text1="this is a test"
+                        img2={img2}
+                        text2="this is a test 2"
+                    />
+
+                </div>
+            </div>
+
             <div className="flex md:flex-row flex-col justify-between m-12">
                 <img src={img2} alt="" className="w-[45%] hidden md:flex" />
                 <div className="md:w-[45%] w-full mt-20 group md:mb-auto mb-5">
@@ -71,6 +138,19 @@ const HomeBody = () => {
                     loop
                 >
                     <source src={ebdaVideo} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div className="flex justify-center">
+                <h1 className="text-center text-4xl font-bold border-b-4 border-black pb-2 w-[20%]">Our Latest News</h1>
+
+            </div>
+            <div className="flex justify-center my-12">
+                <video
+                    className="w-[90%] max-w-5xl rounded-lg shadow-lg"
+                    controls
+                >
+                    <source src={news} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
             </div>
