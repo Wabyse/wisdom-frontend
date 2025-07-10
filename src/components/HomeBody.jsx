@@ -4,14 +4,37 @@ import img1 from '../assets/test4.jpg';
 import img2 from '../assets/test2.jpg';
 import ebda1 from '../assets/ebda-body.jpg';
 // import ebdaeduBlack from '../assets/ebda-edu-black.jpg';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Popup from "../components/Popup";
 import ebdaVideo from '../assets/ebda-edu-video.mp4';
 import news from '../assets/news.mp4';
 import InstitutionCourses from "./institutionCourses";
 
+const slides = [
+    {
+        image: require("../assets/homeCover.jpg"),
+        text: "Welcome to EBDA EDU",
+    },
+    {
+        image: require("../assets/homeCover2.jpg"),
+        text: "Discover Amazing Features",
+    },
+    {
+        image: require("../assets/homeCover3.jpg"),
+        text: "Join Us Today",
+    },
+];
+
 const HomeBody = () => {
     const [notAvailable, setNotAvailable] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveIndex((prev) => (prev + 1) % slides.length);
+        }, 3000); // 2 seconds
+        return () => clearInterval(interval);
+    }, []);
 
     const openPopup = () => setNotAvailable(true);
 
@@ -81,6 +104,20 @@ const HomeBody = () => {
                     <source src={ebdaVideo} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
+            </div>
+            <div className="relative w-full h-screen overflow-hidden">
+                {slides.map((slide, index) => (
+                    <div
+                        key={index}
+                        className={`absolute top-0 left-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 ${index === activeIndex ? "opacity-100" : "opacity-0"
+                            }`}
+                        style={{ backgroundImage: `url(${slide.image})` }}
+                    >
+                        <div className="w-full h-full bg-black/50 flex items-center justify-center">
+                            <h1 className="text-white text-4xl font-bold">{slide.text}</h1>
+                        </div>
+                    </div>
+                ))}
             </div>
             <div className="flex justify-center">
                 <h1 className="text-center text-4xl font-bold border-b-4 border-black pb-2 w-[20%]">Our Latest News</h1>

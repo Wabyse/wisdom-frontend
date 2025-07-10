@@ -334,7 +334,7 @@ export const INSTITUTION_CURRICULUM_RELATION = {
 }
 
 export const SCHOOL_CURRICULUM_RELATION = {
-    1: [1, 2, 3, 13, 14, 15, 16, 17, 18],
+    1: [1, 2, 3, 13, 14, 15, 16, 17, 18, 46, 47],
     2: [1, 2, 3, 13, 14, 15, 16, 17, 18]
 }
 

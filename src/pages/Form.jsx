@@ -264,7 +264,7 @@ function Form() {
     const loadCurriculums = async () => {
       try {
         const response = await fetchCurriculums();
-        const wantedCurriculum = [1, 2, 3, 13, 14, 15, 16, 17, 18]
+        const wantedCurriculum = [1, 2, 3, 13, 14, 15, 16, 17, 18, 46, 47]
         const filteredCurriculums = response.filter(curriculum => wantedCurriculum.includes(curriculum.id))
         const curriculumIds = userInfo.user_role === "Operations Excellence Lead" ? new Set(SCHOOL_CURRICULUM_RELATION[Number(selectedSchool)] || []) : new Set(SCHOOL_CURRICULUM_RELATION[userInfo.organization_id] || []);
         const selectedOrganization = (selectedSchool !== "" || userInfo.user_role !== "Operations Excellence Lead")
