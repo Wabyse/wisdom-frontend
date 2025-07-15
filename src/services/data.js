@@ -215,3 +215,42 @@ export const fetchSpecializations = async () => {
     throw error;
   }
 }
+
+export const studentTeacherFormBulk = async (formData) => {
+  try {
+    const response = await api.post("/api/v1/forms/bulkData/students/teacher", formData);
+    return response.data.users;
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const bulkCurriculumForms = async (formData) => {
+  try {
+    const response = await api.post("/api/v1/forms/bulkData/curriculum", formData);
+    return response.data.users;
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const bulkEnvironmentForms = async (formData) => {
+  try {
+    const response = await api.post("/api/v1/forms/bulkData/environment", formData);
+    return response.data.users;
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

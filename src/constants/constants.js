@@ -347,3 +347,13 @@ export const ORGANIZATIONS_PASSWORD_CODE= {
     "مركز بولاق": "boulaq",
     "مركز الشرقية": "sharqia"
 }
+
+export const ORGANIZATIONS_TYPE= [
+    "School",
+    "Institution"
+]
+
+export const ASSESSOR_TYPE= [
+    "Employee / Teacher / Trainer",
+    "Student / Trainee"
+]
