@@ -9,7 +9,9 @@ const HomeNabvar = ({ current, setViewValue }) => {
   const [mobile, setMobile] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
   const [showServicesDropdown, setShowServicesDropdown] = useState(false);
+  const [showTestDropdown, setShowTestDropdown] = useState(false);
   let dropdownTimeout;
+  let dropdownTimeout2;
 
   const openPopup = () => setNotAvailable(true);
   const closePopup = () => setNotAvailable(false);
@@ -69,6 +71,48 @@ const HomeNabvar = ({ current, setViewValue }) => {
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
                   Education
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+        <div
+          className="relative"
+          onMouseEnter={() => {
+            clearTimeout(dropdownTimeout2);
+            setShowTestDropdown(true);
+          }}
+          onMouseLeave={() => {
+            dropdownTimeout2 = setTimeout(() => {
+              setShowTestDropdown(false);
+            }, 200); // 1 second delay
+          }}
+        >
+          <button className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 h-full ${current === 'services' ? "bg-white text-black font-bold" : "text-black"}`}>
+            Placement Test
+          </button>
+          {showTestDropdown && (
+            <div className="absolute left-0 mt-1 bg-slate-200 text-black shadow-md rounded-md z-50">
+              <ul className="w-40 py-2">
+                <li
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <a href='https://docs.google.com/forms/d/e/1FAIpQLSexD9SALHhpeaTaKjlI8tqEpNNBt2ny0Z0bXNs0E0L4HpXnxw/viewform?usp=header'>Home Appliances Maintenance</a>
+                </li>
+                <li
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <a href='https://docs.google.com/forms/d/e/1FAIpQLSfUQdXi1p8m4IC6U0a-TYgydI6-Lg6uyXV3psuok93ngl8xCw/viewform?usp=header'>Mobile Electronics</a>
+                </li>
+                <li
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <a href='https://docs.google.com/forms/d/e/1FAIpQLScX8VXDCefcRcWrAVumUK449fo-Nv4uplgnI3iRSAW7yFBvdg/viewform?usp=header'>PV and Electricity</a>
+                </li>
+                <li
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <a href='https://docs.google.com/forms/d/e/1FAIpQLSdge2JpdUv8xUVtVPfptA7REr97iPkiK6ktIWgtun2804HXUg/viewform?usp=header'>Car Mechanics</a>
                 </li>
               </ul>
             </div>
