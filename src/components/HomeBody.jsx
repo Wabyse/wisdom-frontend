@@ -47,7 +47,7 @@ const HomeBody = () => {
                 <div className="w-[50%]">
                     <p className="text-wisdomOrange md:text-7xl text-xl">EBDA EDU: Transforming Visions into Reality</p>
                 </div>
-                <button onClick={openPopup} className="bg-wisdomOrange hover:bg-wisdomDarkOrange h-[8vh] px-8 flex self-center items-center">Learn More</button>
+                <button onClick={openPopup} className="bg-wisdomOrange hover:bg-wisdomDarkOrange h-[8vh] px-8 flex self-center items-center text-white">Learn More</button>
             </div>
             <div className="flex justify-center items-center">
                 <div className="w-[94%] bg-slate-200 flex md:flex-row flex-col p-4 rounded items-center">
@@ -120,7 +120,7 @@ const HomeBody = () => {
                 ))}
             </div>
             <div className="flex justify-center">
-                <h1 className="text-center text-4xl font-bold border-b-4 border-black pb-2 w-[20%]">Our Latest News</h1>
+                <h1 className="text-center md:text-4xl text-2xl font-bold border-b-4 border-black pb-2 md:w-[20%]">Our Latest News</h1>
 
             </div>
             <div className="flex justify-center my-12">
@@ -133,7 +133,7 @@ const HomeBody = () => {
                 </video>
             </div>
             <div className="w-full overflow-hidden py-10">
-                <h1 className="text-center text-4xl font-bold mb-8">OUR PARTNERS</h1>
+                <h1 className="text-center md:text-4xl text-2xl font-bold mb-8">OUR PARTNERS</h1>
                 <div className="relative w-full overflow-hidden">
                     <div className={`${style["animate-scroll"]} flex whitespace-nowrap`}>
                         {infiniteItems.map((item, index) => (

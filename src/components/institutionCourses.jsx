@@ -51,10 +51,10 @@ import realComputer from '../assets/real_computer.jpg';
 
 const CourseCard = ({ img1, text, img2 }) => {
     return (
-        <div className="relative w-[20%] border-gray-500 border-2 group h-[40vh] overflow-hidden p-4">
+        <div className="relative md:w-[20%] w-[50%] border-gray-500 border-2 group h-[40vh] overflow-hidden p-4">
 
             <div className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-700 opacity-100 group-hover:opacity-0">
-                <img src={img1} alt="" className="w-52" />
+                <img src={img1} alt="" className="w-40" />
                 <p className="text-center text-gray-500">{text}</p>
             </div>
 
