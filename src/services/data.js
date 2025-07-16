@@ -254,3 +254,16 @@ export const bulkEnvironmentForms = async (formData) => {
     throw error;
   }
 };
+
+export const fetchWaitingUserNumber = async () => {
+  try {
+    const response = await api.post("/api/v1/users/addWaitingList");
+    return response.data.waiter;
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

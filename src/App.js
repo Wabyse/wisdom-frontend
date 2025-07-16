@@ -47,6 +47,7 @@ import NeqatyVtc from "./pages/NeqatyVtc";
 import NeqatySchoolPermissions from "./pages/NeqatySchoolPermission";
 import NeqatyVtcPermissions from "./pages/NeqatyVtcPermissions";
 import BulkData from "./pages/BulkData";
+import WaitingList from "./pages/WaitingList";
 
 function App() {
   return (
@@ -335,6 +336,12 @@ function App() {
               <ProtectedRoute>
                 <ViewCheckInOut />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/QRCode/waitingList"
+            element={
+              <WaitingList />
             }
           />
         </Routes>
