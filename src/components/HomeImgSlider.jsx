@@ -27,7 +27,7 @@ const HomeImgSlider = () => {
                 ))}
             </div>
             <div className="md:w-[30%] md:h-[90vh] bg-white flex flex-col items-center justify-center">
-                <h1 className='text-4xl font-bold'>EBDA EDU for training and education</h1>
+                <h1 className='text-4xl font-bold'>Ebda Edu for Development and Training</h1>
                 <button className="md:p-4 p-2 bg-wisdomOrange hover:bg-wisdomDarkOrange hover:text-white text-white md:self-start self-center mt-2">Read More</button>
             </div>
         </div>
