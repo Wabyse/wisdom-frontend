@@ -3,14 +3,14 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/auth";
-import wabys from "../assets/wabys.png";
+import wabysLogo from "../assets/wabys.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/watoms/pms";
+  const from = location.state?.from?.pathname || "/watoms";
   const [revealPassword, setRevealPassword] = useState(false);
   const { setUserCode } = useAuth();
   const { setUserInfo } = useAuth();
@@ -27,7 +27,7 @@ const Login = () => {
     };
 
     if (!loginData.code || !loginData.password) {
-      toast.error("Code or Password is invalid Please Try Again!");
+      toast.error("اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى!");
       setStatus(false);
       return;
     }
@@ -43,78 +43,92 @@ const Login = () => {
       setUserCode(response.code);
       setStatus(true);
       localStorage.setItem("token", response.token);
-      toast.success("Login successful!");
+      toast.success("تم تسجيل الدخول بنجاح!");
       setUserInfo(data);
       navigate(from, { replace: true });
     } catch (err) {
       console.error("Error submitting data:", err);
-      toast.error("Code or Password is invalid Please Try Again!");
+      toast.error("اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى!");
       setStatus(false);
     }
   };
 
   return (
-    <div className="bg-formColor flex justify-center items-center h-screen">
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] overflow-hidden">
+      {/* Abstract background shape (optional) */}
+      <div className="absolute inset-0 pointer-events-none">
+        <svg width="100%" height="100%" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="bg-grad" cx="50%" cy="50%" r="80%" fx="50%" fy="50%" gradientTransform="rotate(20)">
+              <stop offset="0%" stopColor="#fff" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="#000" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="600" height="400" fill="url(#bg-grad)" />
+        </svg>
+      </div>
       <Toaster />
-      <form
-        className="w-[90%] md:w-1/3 bg-zinc-500 h-[400px] rounded-xl flex justify-center items-center gap-2 shadow-[10px_10px_20px_gray]"
-        onSubmit={submitLogin}
-      >
-        {/* <img className="w-2/6 md:w-1/5" src={GovLogo} alt="Wabys Logo" /> */}
-        <div className="w-[33%] bg-white h-full  rounded-l-xl flex justify-center items-end">
-          <img className="w-[70%] h-fit max-h-[55px] rounded-l-xl" src={wabys} alt="" />
+      <div className="relative w-[95%] max-w-3xl mx-auto rounded-3xl bg-white/10 backdrop-blur-md shadow-2xl flex flex-col md:flex-row overflow-hidden border border-white/20">
+        {/* Left side: WABYS Logo, Title, Description */}
+        <div className="flex-1 flex flex-col justify-between p-8 min-w-[250px] max-w-[350px] text-white">
+          <div>
+            <img src={wabysLogo} alt="WABYS Logo" className="w-32 h-20 mb-4 rounded-xl shadow-lg bg-white/30 p-2" />
+            <div className="font-extrabold text-2xl mb-2 tracking-wide">WABYS</div>
+            <div className="font-bold text-lg mb-1">نظام وابيز لإدارة المدارس الذكية</div>
+            <p className="text-xs opacity-80 mb-8">
+              منصة متكاملة لإدارة جميع عمليات المدرسة بكفاءة وسهولة، تدعم التحول الرقمي وتوفر أدوات متقدمة للمعلمين والإداريين والطلاب.
+            </p>
+          </div>
+          <div className="text-xs opacity-60 mt-8">جميع الحقوق محفوظة &copy; وابيز للتدريب والتعليم 2024</div>
         </div>
-        <div className="w-[67%] flex h-full flex-col justify-center  gap-6 p-5">
-          <div className="flex flex-col gap-2">
-            <label className="text-white" htmlFor="code">
-              Username
-            </label>
+        {/* Divider */}
+        <div className="w-px bg-white/30 mx-2 my-8 hidden md:block" />
+        {/* Right side: Login Form */}
+        <form
+          className="flex-1 flex flex-col justify-center gap-6 p-8 min-w-[250px] max-w-[350px]"
+          onSubmit={submitLogin}
+        >
+          <div className="font-semibold text-lg text-white mb-2">تسجيل الدخول</div>
+          <div className="flex flex-col gap-4">
             <input
-              className={`w-4/5 md:w-4/5 p-[2px] rounded mb-[5%] ${status ? "border-none" : "border-2 border-red-500"
-                }`}
+              className={`w-full px-4 py-2 rounded-lg bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-[#667eea] border-none ${status ? "" : "ring-2 ring-red-500"}`}
               type="text"
               id="code"
               name="code"
+              placeholder="اسم المستخدم"
               value={code}
               onChange={(e) => setCode(e.target.value)}
+              autoComplete="username"
             />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-white" htmlFor="password">
-              Password
-            </label>
-            <div className="relative w-4/5 md:w-4/5">
+            <div className="relative">
               <input
-                className={`w-full p-[2px] rounded mb-[5%] pr-10 ${status ? "border-none" : "border-2 border-red-500"}`}
+                className={`w-full px-4 py-2 rounded-lg bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-[#667eea] border-none pr-10 ${status ? "" : "ring-2 ring-red-500"}`}
                 type={revealPassword ? "text" : "password"}
                 id="password"
                 name="password"
+                placeholder="كلمة المرور"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
               />
               <button
                 type="button"
-                onClick={() => setRevealPassword(prev => !prev)}
-                className="absolute right-2 top-[15px] transform -translate-y-1/2 text-black focus:outline-none"
+                onClick={() => setRevealPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 focus:outline-none"
+                tabIndex={-1}
               >
                 <FontAwesomeIcon icon={revealPassword ? faEyeSlash : faEye} />
               </button>
             </div>
+            <button
+              className="w-full py-2 rounded-lg bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold shadow-md hover:scale-[1.03] transition-transform border-none"
+              type="submit"
+            >
+              دخول
+            </button>
           </div>
-          <button
-            className="bg-wisdomOrange text-white hover:bg-wisdomDarkOrange w-1/5 min-w-[100px] p-2 border-none rounded cursor-pointer"
-            type="submit"
-          >
-            Login
-          </button>
-          <p className="text-white text-[8px] text-center flex ">
-            All rights are reserved &copy; WABYS FOR TRAINING AND EDUCATION
-          </p>
-        </div>
-      </form>
-      {/* <div className="signup-link">
-          <Link to="/signup">Don't have an account? Sign up as a guest.</Link>
-        </div> */}
+        </form>
+      </div>
     </div>
   );
 };

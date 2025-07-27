@@ -10,6 +10,7 @@ const HomeNabvar = ({ current, setViewValue }) => {
   const [animateIn, setAnimateIn] = useState(false);
   const [showServicesDropdown, setShowServicesDropdown] = useState(false);
   const [showTestDropdown, setShowTestDropdown] = useState(false);
+  const [hoveredLang, setHoveredLang] = useState(null); // 'arabic' or 'english'
   let dropdownTimeout;
   let dropdownTimeout2;
 
@@ -27,6 +28,23 @@ const HomeNabvar = ({ current, setViewValue }) => {
     setAnimateIn(false);
     setViewValue(true);
     setTimeout(() => setMobile(false), 300); // wait for animation to end
+  };
+
+  const items = {
+    arabic: [
+      { text: "اجهزة منزلية", url: "https://docs.google.com/forms/d/e/1FAIpQLSexD9SALHhpeaTaKjlI8tqEpNNBt2ny0Z0bXNs0E0L4HpXnxw/viewform?usp=header" },
+      { text: "اجهزة محمول", url: "https://docs.google.com/forms/d/e/1FAIpQLSfUQdXi1p8m4IC6U0a-TYgydI6-Lg6uyXV3psuok93ngl8xCw/viewform?usp=header" },
+      { text: "طاقة شمسية", url: "https://docs.google.com/forms/d/e/1FAIpQLScX8VXDCefcRcWrAVumUK449fo-Nv4uplgnI3iRSAW7yFBvdg/viewform?usp=header" },
+      { text: "ميكانيكا سيارات", url: "https://docs.google.com/forms/d/e/1FAIpQLSdge2JpdUv8xUVtVPfptA7REr97iPkiK6ktIWgtun2804HXUg/viewform?usp=header" },
+      { text: "تفصيل و خياطة", url: "https://forms.gle/9irwaVmu8ewBkQ2T6" }
+    ],
+    english: [
+      { text: "Home Appliances Maintenance", url: "https://docs.google.com/forms/d/e/1FAIpQLSexD9SALHhpeaTaKjlI8tqEpNNBt2ny0Z0bXNs0E0L4HpXnxw/viewform?usp=header" },
+      { text: "Mobile Electronics", url: "https://docs.google.com/forms/d/e/1FAIpQLSfUQdXi1p8m4IC6U0a-TYgydI6-Lg6uyXV3psuok93ngl8xCw/viewform?usp=header" },
+      { text: "PV and Electricity", url: "https://docs.google.com/forms/d/e/1FAIpQLScX8VXDCefcRcWrAVumUK449fo-Nv4uplgnI3iRSAW7yFBvdg/viewform?usp=header" },
+      { text: "Car Mechanics", url: "https://docs.google.com/forms/d/e/1FAIpQLSdge2JpdUv8xUVtVPfptA7REr97iPkiK6ktIWgtun2804HXUg/viewform?usp=header" },
+      { text: "Tailoring and Sewing", url: "https://forms.gle/9irwaVmu8ewBkQ2T6" }
+    ]
   };
 
   return (
@@ -86,36 +104,48 @@ const HomeNabvar = ({ current, setViewValue }) => {
             onMouseLeave={() => {
               dropdownTimeout2 = setTimeout(() => {
                 setShowTestDropdown(false);
-              }, 200); // 1 second delay
+                setHoveredLang(null);
+              }, 200);
             }}
           >
             <button className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 h-full ${current === 'services' ? "bg-white text-black font-bold" : "text-black"}`}>
               Placement Test
             </button>
+
             {showTestDropdown && (
-              <div className="absolute left-0 mt-1 bg-slate-200 text-black shadow-md rounded-md z-50">
-                <ul className="w-40 py-2">
+              <div className="absolute left-0 mt-1 bg-slate-200 text-black shadow-md rounded-md z-50 flex">
+                {/* Language options (column 1) */}
+                <ul className="w-40 py-2 border-r border-gray-300">
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onMouseEnter={() => setHoveredLang('arabic')}
                   >
-                    <a href='https://docs.google.com/forms/d/e/1FAIpQLSexD9SALHhpeaTaKjlI8tqEpNNBt2ny0Z0bXNs0E0L4HpXnxw/viewform?usp=header'>Home Appliances Maintenance</a>
+                    العربية
                   </li>
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onMouseEnter={() => setHoveredLang('english')}
                   >
-                    <a href='https://docs.google.com/forms/d/e/1FAIpQLSfUQdXi1p8m4IC6U0a-TYgydI6-Lg6uyXV3psuok93ngl8xCw/viewform?usp=header'>Mobile Electronics</a>
-                  </li>
-                  <li
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    <a href='https://docs.google.com/forms/d/e/1FAIpQLScX8VXDCefcRcWrAVumUK449fo-Nv4uplgnI3iRSAW7yFBvdg/viewform?usp=header'>PV and Electricity</a>
-                  </li>
-                  <li
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    <a href='https://docs.google.com/forms/d/e/1FAIpQLSdge2JpdUv8xUVtVPfptA7REr97iPkiK6ktIWgtun2804HXUg/viewform?usp=header'>Car Mechanics</a>
+                    English
                   </li>
                 </ul>
+
+                {/* Submenu options (column 2) */}
+                {hoveredLang && (
+                  <ul className="w-64 py-2">
+                    {items[hoveredLang].map((item, index) => (
+                      <li key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {item.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </div>

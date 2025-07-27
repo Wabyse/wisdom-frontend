@@ -48,6 +48,10 @@ import NeqatySchoolPermissions from "./pages/NeqatySchoolPermission";
 import NeqatyVtcPermissions from "./pages/NeqatyVtcPermissions";
 import BulkData from "./pages/BulkData";
 import WaitingList from "./pages/WaitingList";
+import Watoms from "./pages/Watoms";
+import WatomsUserProfile from "./pages/WatomsUserProfile";
+import WatomsSystemInfo from "./pages/WatomsSystemInfo";
+import WatomsDashboard from "./pages/WatomsDashboard";
 
 function App() {
   return (
@@ -227,6 +231,30 @@ function App() {
             }
           />
           <Route
+            path="/watoms"
+            element={
+              <ProtectedRoute>
+                <Watoms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/user-profile"
+            element={
+              <ProtectedRoute>
+                <WatomsUserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/system-info"
+            element={
+              <ProtectedRoute>
+                <WatomsSystemInfo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/watoms/pms"
             element={
               <ProtectedRoute>
@@ -330,6 +358,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/watoms/dashboard" element={<WatomsDashboard />} />
           <Route
             path="/checkIns"
             element={

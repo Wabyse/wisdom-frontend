@@ -8,11 +8,14 @@ import { fetchUsers } from "../services/data";
 import toast, { Toaster } from "react-hot-toast";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
-import { IMPORTANCE_LEVELS } from "../constants/constants";
 import { createTaskFormData } from "../utils/createTaskFormData";
+import { IMPORTANCE_LEVELS } from "../constants/constants";
+import { useLanguage } from "../context/LanguageContext";
+import Popup from "../components/Popup";
 
 const TomsAssign = () => {
   const location = useLocation();
+  const [submitted, setSubmitted] = useState(false);
   const [file, setFile] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -21,6 +24,7 @@ const TomsAssign = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userInfo } = useAuth();
+  const { language } = useLanguage();
 
   const navigate = useNavigate();
 
@@ -42,58 +46,65 @@ const TomsAssign = () => {
   const submitTask = async (e) => {
     e.preventDefault();
 
+    if (!e.target.user.value || !e.target.task.value || !e.target.description.value || !e.target.startDate.value || !e.target.endDate.value || !e.target.importance.value || !e.target.subCategory.value) {
+      toast.error("Please fill all required fields.");
+      return;
+    }
+
+    console.log(e.target.user.value)
+
     try {
       const formData = createTaskFormData(e.target, file, userInfo);
       await assignTask(formData);
-      navigate(`/watoms/tms`);
+      toast.success(language ? "Task has been assigned" : "تم تكليف المهمة");
+      setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
     }
   };
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetchUsers(userInfo);
-        setFilteredUsers(response);
+        const [users, categories] = await Promise.all([
+          fetchUsers(userInfo),
+          fetchTaskCategories(userInfo),
+        ]);
+        setFilteredUsers(users);
+        setCategories(categories);
       } catch (err) {
-        console.error("Users API Error:", err);
+        console.error("API Error:", err);
         setError(err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    const loadCategories = async () => {
-      try {
-        const response = await fetchTaskCategories(userInfo);
-        setCategories(response);
-      } catch (err) {
-        console.error("Categories API Error:", err);
-        setError(err);
-      }
-    };
-
-    loadUsers();
-    loadCategories();
-    setLoading(false);
+    fetchData();
   }, [userInfo]);
 
-  if (loading) return <LoadingScreen />
+  const closePopup = () => {
+    setSubmitted(false)
+    navigate('/tms');
+  };
+
+  if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
-  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/watoms/pms' />;
+  if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
 
   return (
-    <div className="bg-gray-500 h-[125vh] text-end">
+    <div className="bg-gray-500 m-0 min-h-[130vh] overflow-auto">
       <Toaster />
-      <Navbar showNavigate={false} upload={true}></Navbar>
+      <Navbar upload={true}></Navbar>
       <form onSubmit={submitTask} className="assignForm form2 bg-slate-600">
-        <h1 className="text-2xl font-bold text-white">تعيين مهمة</h1>
+        <h1 className="text-2xl font-bold text-white">{language ? "Assign Task" : "تعيين مهمة"}</h1>
         <div className="select-group">
           <div className="select">
-            <label className="w-full text-white" key="user">:الموظف</label>
-            <select id="user" name="user">
-              <option className="text-end" value="" disabled selected>
-                الرجاء اختيار موظف
+            <label key="user" className={`text-white ${!language && "w-full text-end"}`}>{language ? "Employee:" : ":الموظف"}</label>
+            <select id="user" name="user" className={!language && `text-end`}>
+              <option value="" disabled selected>
+                {language ? "Please Select a Teacher" : "الرجاء اختيار معلم"}
               </option>
               {filteredUsers.map((user) => (
                 <option key={user.employee.employee_id} value={user.employee.employee_id}>
@@ -103,10 +114,10 @@ const TomsAssign = () => {
             </select>
           </div>
           <div className="select">
-            <label className="w-full text-white" key="importance">:الاهمية</label>
-            <select id="importance" name="importance">
-              <option className="text-end" value="" disabled selected>
-                الرجاء اختيار الاهمية
+            <label key="importance" className={`text-white ${!language && "w-full text-end"}`}>{language ? "Importance:" : ":الاهمية"}</label>
+            <select id="importance" name="importance" className={!language && `text-end`}>
+              <option value="" disabled selected>
+                {language ? "Please Select an importance" : "الرجاء اختيار الاهمية"}
               </option>
               {IMPORTANCE_LEVELS.map((state) => (
                 <option key={state} value={state}>
@@ -116,48 +127,48 @@ const TomsAssign = () => {
             </select>
           </div>
         </div>
+        <label className={`w-full text-white ${!language && "text-end"}`}>{language ? "Task:" : ":المهمة"}</label>
+        <input className={`w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out ${!language && "text-end"}`} type="text" name="task" />
 
-        <label className="w-full text-white">:المهمة</label>
-        <input className="w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out text-end" type="text" name="task" />
-
-        <label className="w-full text-white">:الوصف</label>
-        <input className="w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out text-end" type="text" name="description" />
+        <label className={`w-full text-white ${!language && "text-end"}`}>{language ? "Description:" : ":الوصف"}</label>
+        <input className={`w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out ${!language && "text-end"}`} type="text" name="description" />
 
         <div className="date-time-group">
           <div>
-            <label className=" text-white">:تاريخ البدء</label>
-            <input type="date" name="startDate" />
+            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Start Date:" : ":تاريخ بدء المهمة"}</label>
+            <input type="date" name="startDate" className={!language && "text-end"} />
           </div>
           <div>
-            <label className=" text-white">:موعد البدء (اختياري)</label>
-            <input type="time" name="startTime" />
+            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Start Time: (optional)" : "موعد بدء المهمة: (اختياري)"}</label>
+            <input type="time" name="startTime" className={!language && "text-end"} />
           </div>
         </div>
 
         <div className="date-time-group">
           <div>
-            <label className=" text-white">:تاريخ الانتهاء</label>
-            <input type="date" name="endDate" />
+            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "End Date:" : ":تاريخ انتهاء المهمة"}</label>
+            <input type="date" name="endDate" className={!language && "text-end"} />
           </div>
           <div>
-            <label className=" text-white">:موعد الانتهاء (اختياري)</label>
-            <input type="time" name="endTime" />
+            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "End Time: (optional)" : "موعد انتهاء المهمة: (اختياري)"}</label>
+            <input type="time" name="endTime" className={!language && "text-end"} />
           </div>
         </div>
 
-        <label className="w-full text-white">:رفع ملف (اختياري)</label>
-        <input type="file" name="file" className="bg-white" onChange={handleFileChange} />
+        <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Attach File:" : ":رفع ملف"}</label>
+        <input className="bg-white" type="file" name="file" onChange={handleFileChange} />
 
         <div className="select-group">
           <div className="select">
-            <label className="w-full text-white" key="category">:تصنيف</label>
+            <label key="category" className={`text-white ${!language && "w-full text-end"}`}>{language ? "Category:" : ":التصنيف"}</label>
             <select
               id="category"
               name="category"
               onChange={handleCategoryChange}
+              className={!language && "text-end"}
             >
-              <option className="text-end" value="" disabled selected>
-                الرجاء اختيار تصنيف
+              <option value="" disabled selected>
+                {language ? " Please Select a Category" : "الرجاء اختيار تصنيف"}
               </option>
               {categories.map((category, index) => (
                 <option key={index} value={index}>
@@ -168,25 +179,31 @@ const TomsAssign = () => {
           </div>
 
           <div className="select">
-            <label className="w-full text-white">:تصنيف فرعي</label>
+            <label className={`text-white ${!language && "w-full text-end"}`}>{language ? "Sub-Category:" : ":التصنيف الفرعي"}</label>
             <select
               id="subCategory"
               name="subCategory"
               onClick={handleSubCategoryClick}
-            // disabled={!selectedCategory}
+              className={!language && "text-end"}
+            // disabled={!hasSelectedCategory}
             >
-              <option className="text-end" value="" disabled selected>
-                الرجاء اختيار تصنيف فرعي
+              <option value="" disabled selected>
+                {language ? "Please Select a Sub-Category" : "برجاء اختيار تصنيف فرعي"}
               </option>
               {selectedCategories.map((subCategory) => (
-                <option value={subCategory.id}>{subCategory.name}</option>
+                <option key={subCategory.id} value={subCategory.id}>{subCategory.name}</option>
               ))}
             </select>
           </div>
         </div>
 
-        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white p-2 rounded">ارسال</button>
+        <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded p-2">{language ? "Submit" : "ارسال"}</button>
       </form>
+      <Popup
+        isOpen={submitted}
+        onClose={closePopup}
+        message={language ? "Task has been assigned successfully" : "تم تكليف المهمة بنجاح"}
+      />
     </div>
   );
 };

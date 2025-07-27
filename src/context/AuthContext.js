@@ -64,8 +64,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, [userCode, userInfo]);
 
+  const logout = () => {
+    localStorage.removeItem("authData");
+    setUserCode(null);
+    setUserInfo(null);
+    window.location.href = "/login";
+  };
+
   return (
-    <AuthContext.Provider value={{ userCode, setUserCode, userInfo, setUserInfo }}>
+    <AuthContext.Provider value={{ userCode, setUserCode, userInfo, setUserInfo, logout }}>
       {children}
     </AuthContext.Provider>
   );
