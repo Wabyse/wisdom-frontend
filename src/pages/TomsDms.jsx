@@ -14,7 +14,7 @@ import { DMS_DESCRIPTION, DMS_HERO_INFO } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faUpload, faFolder, faFileAlt, faDownload, faEye, faFilter, faCalendarAlt, faBuilding, faGraduationCap, faExpand, faCompress, faTasks } from "@fortawesome/free-solid-svg-icons";
 import { useState as useThemeState } from "react";
-import watomsLogo from '../assets/watoms2.jpg';
+import watomsLogo from '../assets/watoms3.png';
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 

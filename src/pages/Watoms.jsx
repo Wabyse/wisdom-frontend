@@ -14,7 +14,7 @@ import {
   faLink, faBook, faHeadset, faLayerGroup, faRocket, faGem, faCrown,
   faDesktop, faMoneyBill, faChartBar
 } from "@fortawesome/free-solid-svg-icons";
-import watomsLogo from '../assets/watoms2.jpg'
+import watomsLogo from '../assets/watoms3.png'
 
 const Watoms = () => {
     const navigate = useNavigate();

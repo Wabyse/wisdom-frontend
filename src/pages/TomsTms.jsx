@@ -15,7 +15,7 @@ import { STATUS_OPTIONS, TMS_DESCRIPTION, TMS_HERO_INFO, IMPORTANCE_LEVELS } fro
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faTasks, faListAlt, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress } from "@fortawesome/free-solid-svg-icons";
 import { useState as useThemeState } from "react";
-import watomsLogo from '../assets/watoms2.jpg';
+import watomsLogo from '../assets/watoms3.png';
 
 const TomsTms = () => {
   const location = useLocation();

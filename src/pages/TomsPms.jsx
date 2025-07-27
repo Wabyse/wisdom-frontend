@@ -10,6 +10,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { WISDOM_PMS_AR_LIST, PMS_DISCREPTION, WISDOM_PMS_EN_LIST, WISDOM_PMS_FORMS_LOGOS, WISDOM_PMS_HERO_INFO, WISDOM_PMS_ROLE_PERMISSION, WSIDOM_PMS_FORMS_ORDER, WATOMS_PMS_ROLE_PERMISSION, WATOMS_PMS_FORMS_ORDER, WATOMS_PMS_LIST, WATOMS_PMS_HERO_INFO } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import watomsLogo from '../assets/watoms3.png'
 
 // Move modal outside component to prevent recreation
 const SimpleCategoriesModal = ({ data, onClose, language, getCategoryIcon, getCategoryGradient, setFocusedCardId }) => (
@@ -783,7 +784,7 @@ const TomsPms = () => {
         {/* Header Section - now full width */}
         <div className="relative z-10 w-full px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-6">
-            <img className="w-[100px] md:w-[120px] lg:w-[140px]" src={require('../assets/wisdom.png')} alt="Wabys Logo" />
+            <img className="w-[100px] md:w-[120px] lg:w-[140px]" src={watomsLogo} alt="Wabys Logo" />
           </div>
           <div className="flex-1 flex justify-center">
             <div className="relative w-full max-w-md">
