@@ -4,6 +4,7 @@ import { ReactComponent as EgyptMap } from '../assets/Egypt_location_map.svg';
 import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList, CartesianGrid } from "recharts";
 import ReactModal from 'react-modal';
 import wabysLogo from "../assets/wabys.png";
+import { useNavigate } from "react-router-dom";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
 
@@ -71,14 +72,14 @@ const CATEGORY_DETAILS = {
     { label: 'Training regularity', weight: 25, key: 'trainingRegularity' },
     { label: 'Training programs', weight: 25, key: 'trainingPrograms' },
     { label: 'Trainer', weight: 25, key: 'trainer' },
-    { label: 'Digitization and data storage', weight: 15, key: 'digitizationAndDataStorage' },
-    { label: 'Quality and development', weight: 10, key: 'qualityAndDevelopment' },
+    { label: 'Digitization and data storage', weight: 15, key: 'digitization' },
+    { label: 'Quality and development', weight: 10, key: 'quality' },
   ],
   Community: [
-    { label: 'Community participation', weight: 100, key: 'communityParticipation' },
+    { label: 'Community participation', weight: 100, key: 'COMMUNITY' },
   ],
   Institutional: [
-    { label: 'Institutional performance', weight: 100, key: 'institutionalPerformance' },
+    { label: 'Institutional performance', weight: 100, key: 'INSTITUTIONAL' },
   ],
 };
 
@@ -283,6 +284,7 @@ function CircularProgressBar({ value, size = 64, stroke = 8, color = 'url(#circu
 }
 
 const WatomsDashboard = () => {
+  const navigate = useNavigate();
   const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
@@ -306,7 +308,6 @@ const WatomsDashboard = () => {
           fetchCenterEvaluationBreakdown(center.id).catch(() => null)
         )
       );
-      console.log(breakdowns)
       setAllBreakdowns(breakdowns);
       setBreakdownsLoading(false);
     });
@@ -355,7 +356,7 @@ const WatomsDashboard = () => {
     const sum = {
       ODBM: { traineeAttendance: 0, traineeCommitment: 0, trainerCourses: 0 },
       APBM: { project: 0, formative: 0, traineeCommitment: 0 },
-      TQBM: { trainingRegularity: 0, trainingPrograms: 0, trainer: 0, digitizationAndDataStorage: 0, qualityAndDevelopment: 0 },
+      TQBM: { trainingRegularity: 0, trainingPrograms: 0, trainer: 0, digitization: 0, quality: 0 },
       Community: 0,
       Institutional: 0
     };
@@ -374,8 +375,8 @@ const WatomsDashboard = () => {
         sum.TQBM.trainingRegularity += b.TQBM.trainingRegularity || 0;
         sum.TQBM.trainingPrograms += b.TQBM.trainingPrograms || 0;
         sum.TQBM.trainer += b.TQBM.trainer || 0;
-        sum.TQBM.digitizationAndDataStorage += b.TQBM.digitizationAndDataStorage || 0;
-        sum.TQBM.qualityAndDevelopment += b.TQBM.qualityAndDevelopment || 0;
+        sum.TQBM.digitization += b.TQBM.digitization || 0;
+        sum.TQBM.quality += b.TQBM.quality || 0;
       }
       if (b.COMMUNITY !== undefined) sum.Community += b.COMMUNITY || 0;
       if (b.INSTITUTIONAL !== undefined) sum.Institutional += b.INSTITUTIONAL || 0;
@@ -396,8 +397,8 @@ const WatomsDashboard = () => {
         trainingRegularity: sum.TQBM.trainingRegularity / n,
         trainingPrograms: sum.TQBM.trainingPrograms / n,
         trainer: sum.TQBM.trainer / n,
-        digitizationAndDataStorage: sum.TQBM.digitizationAndDataStorage / n,
-        qualityAndDevelopment: sum.TQBM.qualityAndDevelopment / n,
+        digitization: sum.TQBM.digitization / n,
+        quality: sum.TQBM.quality / n,
       },
       Community: sum.Community / n,
       Institutional: sum.Institutional / n,
@@ -422,8 +423,8 @@ const WatomsDashboard = () => {
       overallEvaluation?.TQBM?.trainingRegularity * 0.25 +
       overallEvaluation?.TQBM?.trainingPrograms * 0.25 +
       overallEvaluation?.TQBM?.trainer * 0.25 +
-      overallEvaluation?.TQBM?.digitizationAndDataStorage * 0.15 +
-      overallEvaluation?.TQBM?.qualityAndDevelopment * 0.10
+      overallEvaluation?.TQBM?.digitization * 0.15 +
+      overallEvaluation?.TQBM?.quality * 0.10
     ) * 100) || 0 },
     { name: 'Community', value: Math.round((overallEvaluation?.Community || 0) * 100) },
     { name: 'Institutional', value: Math.round((overallEvaluation?.Institutional || 0) * 100) },
@@ -458,7 +459,7 @@ const WatomsDashboard = () => {
         {/* Left: WABYS logo only */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 60 }}>
           <div style={{ background: 'rgba(255,255,255,0.85)', padding: '8px 18px', borderRadius: 16, boxShadow: '0 2px 8px #0002' }}>
-            <img src={wabysLogo} alt="WABYS Logo" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 2px 8px #000a)' }} />
+            <img src={wabysLogo} alt="WABYS Logo" className="cursor-pointer" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 2px 8px #000a)' }} onClick={() => navigate('/watoms')} />
           </div>
         </div>
         {/* Center: WATOMS title and subtitle */}
@@ -556,11 +557,11 @@ const WatomsDashboard = () => {
             {/* Modern CSS Bar Chart */}
             <div style={{ minHeight: 60, display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 1, marginTop: 4, gap: 14 }}>
               {onlineCenters.slice().sort((a, b) => (b.evaluation || 0) - (a.evaluation || 0)).map((c, i) => (
-                <div key={c.id || i} style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                <div key={c.id || i} style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }} className="justify-between">
                   {/* Center name (on the left) */}
-                  <div style={{ minWidth: 80, maxWidth: 120, fontWeight: 900, fontSize: 15, color: '#fff', marginRight: 8, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                  <div style={{ minWidth: 115, maxWidth: 120, fontWeight: 900, fontSize: 15, color: '#fff', marginRight: 8, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
                   {/* Bar background with fixed width */}
-                  <div style={{ width: '100%', maxWidth: 180, height: 22, background: '#444652', borderRadius: 18, boxShadow: '0 2px 8px #0002', position: 'relative', overflow: 'hidden', marginLeft: 8, marginRight: 8 }}>
+                  <div style={{ maxWidth: 180, height: 22, background: '#444652', borderRadius: 18, boxShadow: '0 2px 8px #0002', position: 'relative', overflow: 'hidden', marginLeft: 8, marginRight: 8 }} className="min-w-[175px]">
                     {/* Bar fill */}
                     <div style={{ height: '100%', width: `${c.evaluation || 0}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 18, transition: 'width 0.7s cubic-bezier(.4,2,.6,1)' }} />
                   </div>
@@ -597,37 +598,37 @@ const WatomsDashboard = () => {
             {/* Content above pattern/overlay */}
             <div style={{ position: 'relative', zIndex: 2 }}>
               <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 10, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
-                نسب عناصر التقييم مركز{selectedCenter ? ` ${selectedCenter.name}` : ''}
+                نسب عناصر التقييم{selectedCenter ? ` ${selectedCenter.name}` : ''}
               </div>
               <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 24, minHeight: 180 }}>
                 {(() => {
                   if (!evaluation) return null;
                   const get = (obj, path, def = 0) => path.reduce((o, k) => (o && o[k] != null ? o[k] : def), obj);
                   const ODBM = (
-                    get(evaluation, ['ODBM', 'traineeAttendance'], 0) * 0.4 +
-                    get(evaluation, ['ODBM', 'traineeCommitment'], 0) * 0.2 +
-                    get(evaluation, ['ODBM', 'trainerCourses'], 0) * 0.4
-                  ) * 0.2;
+                    evaluation["ODBM"]["traineeAttendance"] * 40 +
+                    evaluation["ODBM"]["traineeCommitment"] * 20 +
+                    evaluation["ODBM"]["trainerCourses"] * 40
+                  );
                   const APBM = (
-                    get(evaluation, ['APBM', 'project'], 0) * 0.6 +
-                    get(evaluation, ['APBM', 'formative'], 0) * 0.3 +
-                    get(evaluation, ['APBM', 'traineeCommitment'], 0) * 0.1
-                  ) * 0.2;
+                    evaluation["APBM"]["project"] * 60 +
+                    evaluation["APBM"]["formative"] * 30 +
+                    evaluation["APBM"]["traineeCommitment"] * 10
+                  );
                   const TQBM = (
-                    get(evaluation, ['TQBM', 'trainingRegularity'], 0) * 0.25 +
-                    get(evaluation, ['TQBM', 'trainingPrograms'], 0) * 0.25 +
-                    get(evaluation, ['TQBM', 'trainer'], 0) * 0.25 +
-                    get(evaluation, ['TQBM', 'digitizationAndDataStorage'], 0) * 0.15 +
-                    get(evaluation, ['TQBM', 'qualityAndDevelopment'], 0) * 0.10
-                  ) * 0.4;
-                  const communityParticipation = get(evaluation, ['communityParticipation'], 0) * 0.1;
-                  const institutionalPerformance = get(evaluation, ['institutionalPerformance'], 0) * 0.1;
+                    evaluation["TQBM"]["trainingRegularity"] * 25 +
+                    evaluation["TQBM"]["trainingPrograms"] * 25 +
+                    evaluation["TQBM"]["trainer"] * 25 +
+                    evaluation["TQBM"]["digitization"] * 15 +
+                    evaluation["TQBM"]["quality"] * 10
+                  );
+                  const COMMUNITY = evaluation["COMMUNITY"] * 100;
+                  const INSTITUTIONAL = evaluation["INSTITUTIONAL"] * 100;
                   const data = [
-                    { name: 'ODBM', value: Math.round(ODBM * 100) },
-                    { name: 'APBM', value: Math.round(APBM * 100) },
-                    { name: 'TQBM', value: Math.round(TQBM * 100) },
-                    { name: 'Community', value: Math.round(communityParticipation * 100) },
-                    { name: 'Institutional', value: Math.round(institutionalPerformance * 100) },
+                    { name: 'ODBM', value: Math.round(ODBM) },
+                    { name: 'APBM', value: Math.round(APBM) },
+                    { name: 'TQBM', value: Math.round(TQBM) },
+                    { name: 'Community', value: Math.round(COMMUNITY) },
+                    { name: 'Institutional', value: Math.round(INSTITUTIONAL) },
                   ];
                   return (
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 28, minHeight: 120 }}>
@@ -770,7 +771,7 @@ const WatomsDashboard = () => {
                 {/* Evaluation circle as circular progress bar */}
                 <div style={{
                   position: 'absolute',
-                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x - 106.544) / 1054.979) * 100}% + 30px)`,
+                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 100) / 1054.979) * 100}% + 30px)`,
                   top: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).y + 188.858) / 972.996) * 100}% - 30px)`,
                   width: 64,
                   height: 64,
@@ -787,7 +788,7 @@ const WatomsDashboard = () => {
                 {/* Info box */}
                 <div style={{
                   position: 'absolute',
-                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x - 106.544) / 1054.979) * 100}% + 110px)`,
+                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 75) / 1054.979) * 100}% + 110px)`,
                   top: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).y + 188.858) / 972.996) * 100}% - 40px)`,
                   background: '#c3c8d6',
                   color: '#222',
@@ -935,7 +936,7 @@ const WatomsDashboard = () => {
             padding: '18px 0 10px 0',
             margin: '18px 0',
             minWidth: 220,
-            minHeight: 120,
+            minHeight: 170,
             boxShadow: '0 2px 8px #0002'
           }}>
             <CircularProgressBar value={avgOnlineEval} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
@@ -1062,8 +1063,8 @@ const WatomsDashboard = () => {
                   {selectedCategory === 'ODBM' && evaluation?.ODBM?.[item.key] != null ? `${Math.round(evaluation.ODBM[item.key] * 100)}%` :
                    selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
                    selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
-                   selectedCategory === 'Community' && evaluation?.communityParticipation != null ? `${Math.round(evaluation.communityParticipation * 100)}%` :
-                   selectedCategory === 'Institutional' && evaluation?.institutionalPerformance != null ? `${Math.round(evaluation.institutionalPerformance * 100)}%` :
+                   selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
+                   selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
                    ''}
                 </span>
               </div>
@@ -1111,8 +1112,8 @@ const WatomsDashboard = () => {
                   {selectedCategory === 'ODBM' && evaluation?.ODBM?.[item.key] != null ? `${Math.round(evaluation.ODBM[item.key] * 100)}%` :
                    selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
                    selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
-                   selectedCategory === 'Community' && evaluation?.communityParticipation != null ? `${Math.round(evaluation.communityParticipation * 100)}%` :
-                   selectedCategory === 'Institutional' && evaluation?.institutionalPerformance != null ? `${Math.round(evaluation.institutionalPerformance * 100)}%` :
+                   selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
+                   selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
                    ''}
                 </span>
               </div>

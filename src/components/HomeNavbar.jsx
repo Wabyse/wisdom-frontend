@@ -32,10 +32,10 @@ const HomeNabvar = ({ current, setViewValue }) => {
 
   const items = {
     arabic: [
-      { text: "اجهزة منزلية", url: "https://docs.google.com/forms/d/e/1FAIpQLSexD9SALHhpeaTaKjlI8tqEpNNBt2ny0Z0bXNs0E0L4HpXnxw/viewform?usp=header" },
-      { text: "اجهزة محمول", url: "https://docs.google.com/forms/d/e/1FAIpQLSfUQdXi1p8m4IC6U0a-TYgydI6-Lg6uyXV3psuok93ngl8xCw/viewform?usp=header" },
-      { text: "طاقة شمسية", url: "https://docs.google.com/forms/d/e/1FAIpQLScX8VXDCefcRcWrAVumUK449fo-Nv4uplgnI3iRSAW7yFBvdg/viewform?usp=header" },
-      { text: "ميكانيكا سيارات", url: "https://docs.google.com/forms/d/e/1FAIpQLSdge2JpdUv8xUVtVPfptA7REr97iPkiK6ktIWgtun2804HXUg/viewform?usp=header" },
+      { text: "اجهزة منزلية", url: "https://docs.google.com/forms/d/e/1FAIpQLSc3PeLHTXmx0V_TYZ4N0fTZ83IPT1Zf2H8C4ncfpPYQvkPE7g/viewform" },
+      { text: "صيانة محمول", url: "https://docs.google.com/forms/d/e/1FAIpQLSdKH8JvLUu8lofAktTn975Ix5nWsl4JXUY_G6oZYXbABhixDA/viewform" },
+      { text: "طاقة شمسية", url: "https://docs.google.com/forms/d/e/1FAIpQLSfIMwldsfnfF8HfRl5jNadAx50su3UmeIqEx7swvJTYlPfzxw/viewform" },
+      { text: "ميكانيكا سيارات", url: "https://docs.google.com/forms/d/e/1FAIpQLSfIMrsEcKQ9J1OhHJnDHk1zG9wCNrkpxsmN1f2FPJop-lPpfQ/viewform" },
       { text: "تفصيل و خياطة", url: "https://forms.gle/9irwaVmu8ewBkQ2T6" }
     ],
     english: [

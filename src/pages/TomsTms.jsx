@@ -730,7 +730,7 @@ const TomsTms = () => {
         {/* Logo and Search */}
         <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-5xl mb-12 gap-8">
           <div className="flex items-center gap-6">
-            <img className="w-[100px] md:w-[120px] lg:w-[140px]" src={watomsLogo} alt="Wabys Logo" />
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
           </div>
           <div className="flex-1 flex justify-center">
             <div className="relative w-full max-w-md">

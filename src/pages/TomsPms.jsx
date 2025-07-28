@@ -782,9 +782,9 @@ const TomsPms = () => {
       {/* Modern App Menu (No Navbar) */}
       <div className="flex flex-col items-center justify-center min-h-[80vh] w-full relative z-10">
         {/* Header Section - now full width */}
-        <div className="relative z-10 w-full px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-6">
-            <img className="w-[100px] md:w-[120px] lg:w-[140px]" src={watomsLogo} alt="Wabys Logo" />
+        <div className="relative z-10 w-full px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-2">
+          <div className="flex items-center">
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
           </div>
           <div className="flex-1 flex justify-center">
             <div className="relative w-full max-w-md">
