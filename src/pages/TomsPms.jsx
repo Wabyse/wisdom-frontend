@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import { WISDOM_PMS_AR_LIST, PMS_DISCREPTION, WISDOM_PMS_EN_LIST, WISDOM_PMS_FORMS_LOGOS, WISDOM_PMS_HERO_INFO, WISDOM_PMS_ROLE_PERMISSION, WSIDOM_PMS_FORMS_ORDER, WATOMS_PMS_ROLE_PERMISSION, WATOMS_PMS_FORMS_ORDER, WATOMS_PMS_LIST, WATOMS_PMS_HERO_INFO } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup, faUserGraduate, faUserGear, faDatabase, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import watomsLogo from '../assets/watoms3.png'
 
 // Move modal outside component to prevent recreation
@@ -455,7 +455,11 @@ const TomsPms = () => {
       ...type,
       forms: type.forms.filter(form => {
         const name = language ? form.en_name : form.ar_name;
-        return name.toLowerCase().includes(search.toLowerCase());
+        const test = {
+          name: name.toLowerCase().includes(search.toLowerCase()),
+          permission: form.permission
+        }
+        return test;
       })
     })).filter(type => type.forms.length > 0);
   }, [forms, search, language]);
@@ -498,7 +502,7 @@ const TomsPms = () => {
 
   const handleClick = (id, en_name, ar_name, code, reviewee) => {
     navigate(`/watoms/pms/form/${id}`, {
-      state: { formEnName: en_name, formArName: ar_name, lang: language, code, reviewee },
+      state: { formEnName: en_name, formArName: ar_name, lang: language, code: code, reviewee },
     });
   };
 
@@ -525,16 +529,17 @@ const TomsPms = () => {
   const getCategoryIcon = (categoryCode) => {
     const iconMap = {
       "اداء المدرب": faUserTie,
-      'Academic Principle': faGraduationCap,
+      "الاداء المؤسسي": faGraduationCap,
       "البرامج التدريبية": faBookOpen,
-      'HOD': faShieldAlt,
+      "التخطيط و التشغيل": faUserGear,
       "بيئة التدريب": faSchool,
-      'Executive Manager': faBuilding,
-      'Specialist': faIdCard,
+      "المشاركة المجتمعية": faPeopleGroup,
+      "الرقمنة و تخزين البيانات": faDatabase,
       "بيئة العمل": faAddressCard,
       "الاشراف اليومي": faClock,
       "التنمية المهنية": faChartLine,
-      'Student behavior': faExclamationTriangle
+      "اداء المتدرب": faUserGraduate,
+      "الجودة و التطوير": faStar
     };
     return iconMap[categoryCode] || faClipboard;
   };
@@ -542,16 +547,17 @@ const TomsPms = () => {
   const getCategoryColor = (categoryCode) => {
     const colorMap = {
       "اداء المدرب": 'bg-blue-500',
-      'Academic Principle': 'bg-purple-500',
+      "الاداء المؤسسي": 'bg-purple-500',
       "البرامج التدريبية": 'bg-green-500',
-      'HOD': 'bg-red-500',
+      "التخطيط و التشغيل": 'bg-red-500',
       "بيئة التدريب": 'bg-yellow-500',
-      'Executive Manager': 'bg-indigo-500',
-      'Specialist': 'bg-pink-500',
+      "اداء المتدرب": 'bg-indigo-500',
+      "المشاركة المجتمعية": 'bg-pink-500',
       "بيئة العمل": 'bg-orange-500',
       "الاشراف اليومي": 'bg-teal-500',
       "التنمية المهنية": 'bg-emerald-500',
-      'Student behavior': 'bg-rose-500'
+      "الرقمنة و تخزين البيانات": 'bg-rose-500',
+      "الجودة و التطوير": "from-yellow-400 to-yellow-600"
     };
     return colorMap[categoryCode] || 'bg-gray-500';
   };
@@ -560,15 +566,17 @@ const TomsPms = () => {
   const getCategoryGradient = (code) => {
     const map = {
       "اداء المدرب": "from-blue-400 to-blue-600",
-      "Academic Principle": "from-purple-400 to-purple-600",
+      "الاداء المؤسسي": "from-purple-400 to-purple-600",
       "بيئة التدريب": "from-yellow-300 to-yellow-500",
-      "Executive Manager": "from-indigo-400 to-indigo-600",
-      "HOD": "from-red-400 to-red-600",
+      "اداء المتدرب": "from-indigo-400 to-indigo-600",
+      "التخطيط و التشغيل": "from-red-400 to-red-600",
       "البرامج التدريبية": "from-green-400 to-green-600",
       "بيئة العمل": "from-gray-400 to-gray-600",
       "التنمية المهنية": "from-pink-400 to-pink-600",
       "الاشراف اليومي": "from-teal-400 to-teal-600",
-      "Specialist": "from-orange-400 to-orange-600"
+      "الرقمنة و تخزين البيانات": "from-orange-400 to-orange-600",
+      "الجودة و التطوير": "from-yellow-400 to-yellow-600",
+      "المشاركة المجتمعية": "from-green-600 to-green-800"
     };
     return map[code] || "from-slate-300 to-slate-500";
   };
@@ -607,6 +615,7 @@ const TomsPms = () => {
                 forms: [],
               };
               groupedData.push(existingGroup);
+              console.log(groupedData)
             }
 
             existingGroup.forms.push({

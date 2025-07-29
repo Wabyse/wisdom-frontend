@@ -5,13 +5,13 @@ import { useLanguage } from '../context/LanguageContext';
 import Popup from '../components/Popup';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt,
-    faChartLine, faGraduationCap, faUserTie, faFolder, faExpand,
-    faCompress, faStar, faFileAlt, faDesktop, faMoneyBill, faChartBar
+    faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress
 } from "@fortawesome/free-solid-svg-icons";
 import watomsLogo from '../assets/watoms3.png'
 import fullScreen from '../utils/fullScreen';
-import useFullScreen from '../hooks/useFullScreen'; 
+import useFullScreen from '../hooks/useFullScreen';
+import { userFullName } from '../utils/userFullName';
+import { getWabysSystems } from '../constants/constants';
 
 const Watoms = () => {
     const navigate = useNavigate();
@@ -22,6 +22,7 @@ const Watoms = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [search, setSearch] = useState('');
     const isFullScreen = useFullScreen();
+    const systems = getWabysSystems(language);
 
     // Update time every minute // why?
     useEffect(() => {
@@ -42,153 +43,6 @@ const Watoms = () => {
         if (hour < 17) return language ? 'Good Afternoon' : 'مساء الخير';
         return language ? 'Good Evening' : 'مساء الخير';
     };
-
-    // Helper function to get user display name
-    const getUserDisplayName = () => {
-        if (!userInfo) return language ? 'User' : 'مستخدم';
-        return String(userInfo?.name);
-    };
-
-    // Wabys Systems Data
-    const wabysSystems = [
-        {
-            id: 'pms',
-            title: 'PMS',
-            subtitle: language ? 'Performance Management System' : 'نظام إدارة الأداء',
-            description: language ? 'Performance management and human resources' : 'إدارة الأداء والموارد البشرية',
-            icon: faChartLine,
-            path: '/watoms/pms',
-            color: 'from-blue-500 to-blue-600',
-            available: true
-        },
-        {
-            id: 'dms',
-            title: 'DMS',
-            subtitle: language ? 'Document Management System' : 'نظام إدارة الوثائق',
-            description: language ? 'Document and file management' : 'إدارة الوثائق والملفات',
-            icon: faFolder,
-            path: '/watoms/dms',
-            color: 'from-green-500 to-green-600',
-            available: true
-        },
-        {
-            id: 'tms',
-            title: 'TMS',
-            subtitle: language ? 'Training Management System' : 'نظام إدارة التدريب',
-            description: language ? 'Training and development management' : 'إدارة التدريب والتطوير',
-            icon: faGraduationCap,
-            path: '/watoms/tms',
-            color: 'from-purple-500 to-purple-600',
-            available: true
-        },
-        {
-            id: 'lms',
-            title: 'LMS',
-            subtitle: language ? 'Learning Management System' : 'نظام إدارة التعلم',
-            description: language ? 'E-learning management system' : 'نظام إدارة التعلم الإلكتروني',
-            icon: faDesktop,
-            path: '/lms',
-            color: 'from-indigo-500 to-indigo-600',
-            available: false
-        },
-        {
-            id: 'pdms',
-            title: 'PDMS',
-            subtitle: language ? 'Project Document Management System' : 'نظام إدارة وثائق المشاريع',
-            description: language ? 'Project document management' : 'إدارة وثائق المشاريع',
-            icon: faFileAlt,
-            path: '/pdms',
-            color: 'from-orange-500 to-orange-600',
-            available: false
-        },
-        {
-            id: 'points',
-            title: language ? 'Point System' : 'نظام النقاط',
-            subtitle: language ? 'Points and Rewards System' : 'نظام النقاط والمكافآت',
-            description: language ? 'Points management and incentives' : 'إدارة النقاط والحوافز',
-            icon: faStar,
-            path: '/points',
-            color: 'from-yellow-500 to-yellow-600',
-            available: false
-        },
-        {
-            id: 'finance',
-            title: language ? 'Finance System' : 'نظام المالية',
-            subtitle: language ? 'Financial Management System' : 'نظام إدارة المالية',
-            description: language ? 'Financial and accounting management' : 'إدارة الشؤون المالية والمحاسبية',
-            icon: faMoneyBill,
-            path: '/finance',
-            color: 'from-emerald-500 to-emerald-600',
-            available: false
-        },
-        {
-            id: 'hr',
-            title: 'HR System',
-            subtitle: language ? 'Human Resources System' : 'نظام الموارد البشرية',
-            description: language ? 'Employee affairs management' : 'إدارة شؤون الموظفين',
-            icon: faUserTie,
-            path: '/hr',
-            color: 'from-pink-500 to-pink-600',
-            available: false
-        },
-        {
-            id: 'dashboards',
-            title: language ? 'Dashboards' : 'لوحات التحكم',
-            subtitle: language ? 'Control Panels and Statistics' : 'لوحات التحكم والإحصائيات',
-            description: language ? 'Interactive management dashboards' : 'لوحات تحكم تفاعلية للإدارة',
-            icon: faChartBar,
-            path: '/watoms/dashboard',
-            color: 'from-cyan-500 to-cyan-600',
-            available: true
-        }
-    ];
-
-    // Quick Stats Data
-    const quickStats = [
-        {
-            icon: faChartLine,
-            label: language ? "Completed Tasks" : "المهام المكتملة",
-            value: "24",
-            color: "from-blue-500 to-blue-600",
-            change: "+12%"
-        },
-        {
-            icon: faFolder,
-            label: language ? "Documents" : "الوثائق",
-            value: "156",
-            color: "from-green-500 to-green-600",
-            change: "+8%"
-        },
-        {
-            icon: faGraduationCap,
-            label: language ? "Training Sessions" : "جلسات التدريب",
-            value: "8",
-            color: "from-purple-500 to-purple-600",
-            change: "+15%"
-        }
-    ];
-
-    // Recent Activity Data
-    const recentActivity = [
-        {
-            icon: faChartLine,
-            title: language ? "Performance report completed" : "تم إكمال تقرير الأداء الشهري",
-            time: language ? "2 hours ago" : "منذ ساعتين",
-            color: "bg-blue-500"
-        },
-        {
-            icon: faFolder,
-            title: language ? "New document uploaded to DMS" : "تم رفع وثيقة جديدة في DMS",
-            time: language ? "4 hours ago" : "منذ 4 ساعات",
-            color: "bg-green-500"
-        },
-        {
-            icon: faGraduationCap,
-            title: language ? "Training session attendance recorded" : "تم تسجيل حضور في جلسة تدريبية",
-            time: language ? "1 day ago" : "منذ يوم واحد",
-            color: "bg-purple-500"
-        }
-    ];
 
     const handleSystemClick = (system) => {
         if (system.available) {
@@ -264,7 +118,7 @@ const Watoms = () => {
                         {/* User Info */}
                         <span className="flex items-center gap-2 font-bold text-lg min-w-[120px]">
                             <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
-                            {getUserDisplayName()}
+                            {userFullName(userInfo, language)}
                         </span>
                         {/* Language Toggle Button */}
                         <button
@@ -302,7 +156,7 @@ const Watoms = () => {
                 {/* Welcome Section - Text Only */}
                 <div className="text-center mb-12 px-6">
                     <h1 className="text-4xl md:text-5xl font-bold text-watomsBlue dark:text-watomsLightBlue mb-4">
-                        {getGreeting()}، {getUserDisplayName()}
+                        {getGreeting()}، {userFullName(userInfo, language)}
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-darkTextSecondary mb-6">
                         {language ? "Welcome to the integrated Wabys system" : "مرحباً بك في نظام وابيز المتكامل"}
@@ -324,7 +178,7 @@ const Watoms = () => {
 
                 {/* Wabys Systems Grid - Smaller Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto">
-                    {wabysSystems.map((system, idx) => (
+                    {systems.map((system, idx) => (
                         <div
                             key={system.id}
                             onClick={() => handleSystemClick(system)}

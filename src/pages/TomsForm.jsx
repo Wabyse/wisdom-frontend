@@ -24,18 +24,17 @@ import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import Popup from "../components/Popup";
 import Selector2 from "../components/Selector2";
-import WatomsInstitutionFilters from "../components/WatomsInstitutionFilters";
+import WatomsVtcFilter from "../components/WatomsInstitutionFilters";
 import { INSTITUTION_CURRICULUM_RELATION } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListAlt, faUser, faInfoCircle, faCheckCircle, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import WatomsVtcFilter from "../components/WatomsSchoolFilter";
 
 function TomsForm() {
   const { id } = useParams();
   const location = useLocation();
   const formEnName = location.state?.formArName || "Form";
   const formArName = location.state?.formArName || "استمارة";
-  const reviewee = location.state?.code === "Self" ? location.state?.reviewee : location.state?.code;
+  const reviewee = location.state?.code === "Self" ? location.state?.code : location.state?.reviewee;
   const code = location.state?.code;
   const [submitted, setSubmitted] = useState(false);
   const { language } = useLanguage();
@@ -92,129 +91,94 @@ function TomsForm() {
   const submitIndividualForm = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-    const allAnswers = [];
+    // Build answers from state
+    const questionAnswers = Object.entries(answers).map(([key, score]) => ({
+      question_id: key.replace("question:", ""),
+      result: score,
+    }));
 
-    formData.forEach((value, key) => {
-      const parsedValue = {
-        question_id: key,
-        result: value,
-      };
-      allAnswers.push(parsedValue);
-    });
-
-    let userEntry;
-    let userIdValue;
-    if (code === "Self") {
-      userEntry = { result: userInfo.id };
-    } else {
-      userEntry = allAnswers.find((entry) => entry.question_id === "user");
-    }
-    if (!userEntry || !userEntry.result) {
-      return toast.error("Please fill the required data");
-    } else {
-      userIdValue = userEntry ? userEntry.result : null;
-    }
-
-    const questionAnswers = allAnswers
-      .filter((entry) => entry.question_id.startsWith("question:"))
-      .map((entry) => {
-        const parsed = JSON.parse(entry.result);
-        return {
-          question_id: parsed.questionId,
-          result: parsed.score,
-        };
-      });
+    // Validate all required questions are answered
     if (questionAnswers.length < quesLength) {
       return toast.error("Please answer all questions");
+    }
+
+    // Get assessee
+    let userIdValue;
+    if (code === "Self") {
+      userIdValue = userInfo.id;
+    } else if (selectedUser) {
+      userIdValue = selectedUser;
+    } else {
+      return toast.error("Please select a user");
     }
 
     try {
       const submittedData = {
         assessor: userInfo.id,
-        assessee: code === "Self" ? userInfo.id : userIdValue,
+        assessee: userIdValue,
         questionsResult: questionAnswers,
       };
+
+      console.log("📤 Submitting:", submittedData); // Final check
       await IndividualForm(submittedData);
+      localStorage.removeItem(`form-draft-${id}`)
       toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
       setSubmitted(true);
     } catch (err) {
       console.error("Error submitting data:", err);
+      toast.error("Submission failed.");
     }
   };
 
   const submitCurriculumForm = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-    const allAnswers = [];
-
-    formData.forEach((value, key) => {
-      const parsedValue = {
-        question_id: key,
-        result: value,
-      };
-      allAnswers.push(parsedValue);
-    });
-
-    const curriculumEntry = allAnswers.find(
-      (entry) => entry.question_id === "curriculum"
-    );
-    const curriculum = curriculumEntry ? curriculumEntry.result : null;
-
-    const questionAnswers = allAnswers
-      .filter((entry) => entry.question_id.startsWith("question:"))
-      .map((entry) => {
-        const parsed = JSON.parse(entry.result);
-        return {
-          question_id: parsed.questionId,
-          result: parsed.score,
-        };
-      });
-    if (questionAnswers.length < quesLength) {
-      return toast.error("Please answer all questions");
+    // 1. Validate curriculum selection
+    if (!selectedCurriculum) {
+      return toast.error(language ? "Please select a curriculum" : "الرجاء اختيار المنهج");
     }
 
+    // 2. Build answers from `answers` state
+    const questionAnswers = Object.entries(answers).map(([key, score]) => ({
+      question_id: key.replace("question:", ""),
+      result: score,
+    }));
+
+    // 3. Validate all questions answered
+    if (questionAnswers.length < quesLength) {
+      return toast.error(language ? "Please answer all questions" : "الرجاء الإجابة على جميع الأسئلة");
+    }
+
+    // 4. Prepare payload
+    const submittedData = {
+      userId: userInfo.id,
+      organization_id:
+        userInfo.user_role === "Operations Excellence Lead"
+          ? Number(selectedVtc)
+          : userInfo.organization_id,
+      curriculumId: Number(selectedCurriculum),
+      questionsResult: questionAnswers,
+    };
+
     try {
-      const submittedData = {
-        userId: userInfo.id,
-        organization_id: userInfo.user_role === "Operations Excellence Lead" ? Number(selectedVtc) : userInfo.organization_id,
-        curriculumId: Number(curriculum),
-        questionsResult: questionAnswers,
-      };
-      console.log(submittedData)
+      console.log("📤 Submitting curriculum form:", submittedData);
       await CurriculumForm(submittedData);
+      localStorage.removeItem(`form-draft-${id}`)
       toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
       setSubmitted(true);
     } catch (err) {
-      console.error("Error submitting data:", err);
+      console.error("Error submitting curriculum form:", err);
+      toast.error(language ? "Submission failed" : "فشل الإرسال");
     }
   };
 
   const submitenvironmentForm = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-    const allAnswers = [];
-
-    formData.forEach((value, key) => {
-      const parsedValue = {
-        question_id: key,
-        result: value,
-      };
-      allAnswers.push(parsedValue);
-    });
-
-    // Filter and parse question answers
-    const questionAnswers = allAnswers
-      .filter((entry) => entry.question_id.startsWith("question:"))
-      .map((entry) => {
-        const parsed = JSON.parse(entry.result);
-        return {
-          question_id: parsed.questionId,
-          result: parsed.score,
-        };
-      });
+    const questionAnswers = Object.entries(answers).map(([key, score]) => ({
+      question_id: key.replace("question:", ""),
+      result: score,
+    }));
 
     if (questionAnswers.length < quesLength) {
       return toast.error("Please answer all questions");
@@ -227,6 +191,7 @@ function TomsForm() {
         questionsResult: questionAnswers,
       };
       await EnvironmentForm(submittedData);
+      localStorage.removeItem(`form-draft-${id}`)
       toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
       setSubmitted(true);
     } catch (err) {
@@ -240,6 +205,7 @@ function TomsForm() {
   };
 
   const handleUserChange = (e) => {
+    console.log(e.target.value)
     setSelectedUser(e.target.value);
   };
 
@@ -426,6 +392,7 @@ function TomsForm() {
 
   const handleRadioChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value)
     const score = Number(value);
     const newAnswers = { ...answers, [name]: score };
     setAnswers(newAnswers);
@@ -544,7 +511,7 @@ function TomsForm() {
           {/* Top Selectors Row (only on first step) */}
           {activeStep === 0 && !showReview && (
             <div className="w-full flex flex-col md:flex-row gap-6 items-center justify-center">
-              {formType[0] === "360 Individual Assessment" && code !== "Self" && (
+              {formType[0] === "ClassRoom Observation" ? code !== "Self" ? reviewee !== "Student" ? (
                 <>
                   <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
                     <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="department">{language ? "Department:" : ":القسم"}</label>
@@ -560,7 +527,7 @@ function TomsForm() {
                     />
                   </div>
                   <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
-                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="user">{language ? "Teacher:" : ":المعلم"}</label>
+                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="user">{language ? "Trainer:" : ":المدرب"}</label>
                     <Selector2
                       label="user"
                       title=""
@@ -573,8 +540,43 @@ function TomsForm() {
                     />
                   </div>
                 </>
-              )}
-              {formType[0] === "360 Curriculum Assessment" && (
+              ) : (
+                <>
+                  <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
+                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="department">{language ? "Course:" : ":الدورة"}</label>
+                    <Selector2
+                      label="class"
+                      title=""
+                      description={language ? "please select a class" : "الرجاء اختيار المهنة"}
+                      data={classes}
+                      value={selectedClass}
+                      onChange={handleClassChange}
+                      name="name"
+                      selectCSS="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
+                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="user">{language ? "Trainee:" : ":المتدرب"}</label>
+                    <select
+                      className="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg"
+                      id="user"
+                      name="user"
+                      onChange={(e) => handleUserChange(e)}
+                    >
+                      <option value="" disabled selected>
+                        {language ? "please select a trainee" : "الرجاء اختيار المتدرب"}
+                      </option>
+                      {filteredStudents.map((student) => (
+                        <option
+                          value={student.id}
+                          key={student.id}
+                        >{`${student.first_name} ${student.middle_name} ${student.last_name}`}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              ) : null : null}
+              {formType[0] === "curriculum" && (
                 <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
                   <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="curriculum">{language ? "Curriculum:" : ":المنهج"}</label>
                   <Selector2
@@ -589,8 +591,8 @@ function TomsForm() {
                   />
                 </div>
               )}
-              {(formType[0] === "normal" || formType[0] === "360 Curriculum Assessment") && userInfo.user_role === "Operations Excellence Lead" && (
-                <WatomsVtcFilter onSchoolChange={handleVtcChange} />
+              {(formType[0] === "normal2" || formType[0] === "curriculum") && userInfo.user_role === "Operations Excellence Lead" && (
+                <WatomsVtcFilter onVtcChange={handleVtcChange} />
               )}
             </div>
           )}
