@@ -52,6 +52,9 @@ import Watoms from "./pages/Watoms";
 import WatomsUserProfile from "./pages/WatomsUserProfile";
 import WatomsSystemInfo from "./pages/WatomsSystemInfo";
 import WatomsDashboard from "./pages/WatomsDashboard";
+import Wisdom from "./pages/Wisdom";
+import WisdomUserProfile from "./pages/WisdomUserProfile";
+import WisdomSystemInfo from "./pages/WisdomSystemInfo";
 
 function App() {
   return (
@@ -99,6 +102,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <BulkData />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wisdom"
+            element={
+              <ProtectedRoute>
+                <Wisdom />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wisdom/user-profile"
+            element={
+              <ProtectedRoute>
+                <WisdomUserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wisdom/system-info"
+            element={
+              <ProtectedRoute>
+                <WisdomSystemInfo />
               </ProtectedRoute>
             }
           />

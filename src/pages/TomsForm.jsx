@@ -161,7 +161,6 @@ function TomsForm() {
     };
 
     try {
-      console.log("📤 Submitting curriculum form:", submittedData);
       await CurriculumForm(submittedData);
       localStorage.removeItem(`form-draft-${id}`)
       toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");

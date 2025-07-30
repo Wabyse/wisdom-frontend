@@ -919,7 +919,7 @@ const TomsPms = () => {
                 </div>
               </div>
             ))}
-            <div
+            {userInfo?.user_role !== "Student" && <div
               key={"التنمية المهنية"}
               className="group relative bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 cursor-pointer hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:scale-105 card-hover-lift"
               onClick={() => setFocusedCardId("التنمية المهنية")}
@@ -951,8 +951,8 @@ const TomsPms = () => {
                   2
                 </div>
               </div>
-            </div>
-            <div
+            </div>}
+            {userInfo?.user_role !== "Student" && <div
               key={"الاشراف اليومي"}
               className="group relative bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 cursor-pointer hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:scale-105 card-hover-lift"
               onClick={() => setFocusedCardId("الاشراف اليومي")}
@@ -984,7 +984,7 @@ const TomsPms = () => {
                   2
                 </div>
               </div>
-            </div>
+            </div>}
           </div>
         </div>
       </div>

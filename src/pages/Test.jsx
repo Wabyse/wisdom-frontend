@@ -67,6 +67,7 @@ function Test() {
     try {
       await sendTeacherEvaluation(updatedTestData);
       toast.success("data added");
+      navigate('/pms');
     } catch (err) {
       toast.error("Please fill the data");
     }
@@ -132,7 +133,7 @@ function Test() {
         ></img>
       </div>
       <div className="w-full">
-        <h1 className="text-2xl font-bold text-center">{language ? "Interview" : "مقابلات شخصية"}</h1>
+        <h1 className="text-2xl font-bold text-center">{language ? "Test" : "اختبار تربوي"}</h1>
       </div>
       <ChangeLanguage className="h-[5vh]" />
       <div className="w-full text-center">

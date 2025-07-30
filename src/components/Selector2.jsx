@@ -17,7 +17,7 @@ function Selector2({ label, title, description, data, value, onChange, onClick=n
         </option>
         {All  && <option value="0">All</option>}
         {data.map((option, index) => (
-          <option key={keyType ? index : optionValue === "user" ? option.employee.teacher?.id : option.id} value={keyType ? index : optionValue === "user" ? option.employee.teacher?.id : option.id}>
+          <option key={keyType ? index : optionValue === "user" ? option.employee.teacher?.id : option.id} value={keyType ? index : optionValue === "user" ? option.employee.teacher?.id : optionValue === "student" ? option.user_id : option.id}>
             {name === "" ? option : name === "user" ? `${option.employee?.first_name} ${option.employee?.middle_name} ${option.employee?.last_name}` : name === "userEmp" ? `${option.employee?.employee_first_name} ${option.employee?.employee_middle_name} ${option.employee?.employee_last_name}` : name === "userStd" ? `${option.first_name} ${option.middle_name} ${option.last_name}`: option[name]}
           </option>
         ))}

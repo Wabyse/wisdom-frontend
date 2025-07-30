@@ -13,15 +13,18 @@ import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { STATUS_OPTIONS, TMS_DESCRIPTION, TMS_HERO_INFO, IMPORTANCE_LEVELS } from "../constants/constants";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faTasks, faListAlt, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress } from "@fortawesome/free-solid-svg-icons";
+import { useState as useThemeState } from "react";
 
 const Tms = () => {
   const location = useLocation();
   const navigate = useNavigate(); //for navigate to another page (component)
-  const { userInfo } = useAuth();
+  const { userInfo, logout } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
@@ -39,6 +42,19 @@ const Tms = () => {
   const [filteredAssigneeUsers, setFilteredAssigneeUsers] = useState([]);
   // const [users, setUsers] = useState([]);
   const [test, setTest] = useState(0);
+  // THEME STATE
+  const [darkMode, setDarkMode] = useThemeState(false);
+  // MODAL STATE
+  const [activeModal, setActiveModal] = useState(null);
+  const [modalData, setModalData] = useState(null);
+  // SEARCH STATE
+  const [search, setSearch] = useState("");
+  // FOCUS MODE STATE
+  const [focusedSection, setFocusedSection] = useState(null);
+  // MENU STATE
+  const [menuOpen, setMenuOpen] = useState(false);
+  // FULLSCREEN STATE
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const handleClick = (id) => {
     navigate(`/tms/view/${id}`);
@@ -328,195 +344,443 @@ const Tms = () => {
     </div>
   );
 
+  // Fullscreen toggle function
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullScreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
+
+  // Fullscreen change event listener
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      setIsFullScreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullScreenChange);
+  }, []);
+
+  // Main Menu Configuration
+  const mainMenu = [
+    {
+      icon: faTasks,
+      label: language ? "View Tasks" : "عرض المهام",
+      color: "from-watomsBlue to-wisdomOrange",
+      onClick: () => {
+        setModalData({ type: 'tasks', data: tasks });
+        setActiveModal('tasks');
+      },
+    },
+    {
+      icon: faFilter,
+      label: language ? "Advanced Filters" : "فلاتر متقدمة",
+      color: "from-wisdomOrange to-watomsBlue",
+      onClick: () => {
+        setModalData({ 
+          type: 'filters', 
+          data: { 
+            categories, 
+            subCategories,
+            filteredAssignedUsers,
+            filteredAssigneeUsers,
+            selectedCategory,
+            selectedSubCategory,
+            selectedAssignedUser,
+            selectedAssigneeUser,
+            selectedStatus,
+            selectedImportance,
+            dateFrom,
+            dateTo,
+            deadlineFrom,
+            deadlineTo
+          } 
+        });
+        setActiveModal('filters');
+      },
+    },
+    {
+      icon: faPlus,
+      label: language ? "Create Task" : "إنشاء مهمة",
+      color: "from-watomsBlue to-wisdomLightOrange",
+      onClick: () => navigate('/tms/assign'),
+    },
+  ];
+
+  // Close modal function
+  const closeModal = () => {
+    setActiveModal(null);
+    setModalData(null);
+  };
+
+  // Escape key support for modals
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && activeModal) {
+        closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeModal]);
+
+  // Modal Components
+  const TasksModal = ({ data, onClose }) => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-3xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden animate-modal-in">
+        <div className="bg-gradient-to-r from-watomsBlue to-wisdomOrange p-6 text-white">
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-extrabold">{language ? "Task Management" : "إدارة المهام"}</h2>
+            <button onClick={onClose} className="text-white hover:text-gray-200 text-2xl">
+              ×
+            </button>
+          </div>
+        </div>
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+          {data?.length > 0 ? (
+            <div className="space-y-4">
+              {data.map((task, idx) => (
+                <div key={task.id} className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => handleClick(task.id)}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon icon={faTasks} className="text-watomsBlue" />
+                        <span className="font-bold text-gray-900">{task.task}</span>
+                      </div>
+                      <p className="text-sm text-gray-600 truncate">{task.description}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon icon={faCalendarAlt} className="text-wisdomOrange" />
+                        <span className="text-sm font-medium">{formatDate(task.start_date)} - {formatDate(task.end_date)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon icon={faFlag} className="text-red-500" />
+                        <span className="text-sm font-medium">{task.importance}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon icon={faUserTie} className="text-green-500" />
+                        <span className="text-sm font-medium">{task.assignee.first_name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon icon={faClock} className="text-blue-500" />
+                        <span className="text-sm font-medium">{task.status}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <FontAwesomeIcon icon={faTasks} className="text-6xl text-gray-300 mb-4" />
+              <p className="text-xl text-gray-600">{language ? "No tasks available" : "لا توجد مهام متاحة"}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const FiltersModal = ({ data, onClose }) => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden animate-modal-in">
+        <div className="bg-gradient-to-r from-wisdomOrange to-watomsBlue p-6 text-white">
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-extrabold">{language ? "Advanced Filters" : "فلاتر متقدمة"}</h2>
+            <button onClick={onClose} className="text-white hover:text-gray-200 text-2xl">
+              ×
+            </button>
+          </div>
+        </div>
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <FontAwesomeIcon icon={faClock} className="text-watomsBlue" />
+                {language ? "Status & Importance" : "الحالة والأهمية"}
+              </h3>
+              <select
+                value={selectedStatus || ""}
+                onChange={handleStatusChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+              >
+                <option value="">{language ? "Select Status" : "اختر الحالة"}</option>
+                {STATUS_OPTIONS?.map((status) => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
+              <select
+                value={selectedImportance || ""}
+                onChange={handleImportanceChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+              >
+                <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
+                {IMPORTANCE_LEVELS?.map((level) => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <FontAwesomeIcon icon={faFolder} className="text-watomsBlue" />
+                {language ? "Assessment Tools" : "أدوات التقييم"}
+              </h3>
+              <select
+                value={selectedCategory || ""}
+                onChange={handleCategoryChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+              >
+                <option value="">{language ? "Select Category" : "اختر التصنيف"}</option>
+                {categories?.map((cat, idx) => (
+                  <option key={cat.id} value={idx + 1}>{cat.name}</option>
+                ))}
+              </select>
+              <select
+                value={selectedSubCategory || ""}
+                onChange={handleSubCategoryChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+              >
+                <option value="">{language ? "Select Sub Category" : "اختر التصنيف الفرعي"}</option>
+                {subCategories?.map((subCat) => (
+                  <option key={subCat.id} value={subCat.id}>{subCat.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <FontAwesomeIcon icon={faUserTie} className="text-watomsBlue" />
+                {language ? "Users" : "المستخدمون"}
+              </h3>
+              <select
+                value={selectedAssignedUser || ""}
+                onChange={handleAssignedByChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+              >
+                <option value="">{language ? "Assigned By" : "تم التكليف من"}</option>
+                {filteredAssignedUsers?.map((user) => (
+                  <option key={user.employee?.employee_id} value={user.employee?.employee_id}>{user.employee?.first_name}</option>
+                ))}
+              </select>
+              <select
+                value={selectedAssigneeUser || ""}
+                onChange={handleAssigneeChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+              >
+                <option value="">{language ? "Assignee" : "المكلف إليه"}</option>
+                {filteredAssigneeUsers?.map((user) => (
+                  <option key={user.employee?.employee_id} value={user.employee?.employee_id}>{user.employee?.first_name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <FontAwesomeIcon icon={faCalendarAlt} className="text-watomsBlue" />
+                {language ? "Date Range" : "نطاق التاريخ"}
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{language ? "Start From:" : "البداية من:"}</label>
+                  <input
+                    type="date"
+                    value={dateFrom || ""}
+                    onChange={handleDateFromChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{language ? "Start To:" : "البداية إلى:"}</label>
+                  <input
+                    type="date"
+                    value={dateTo || ""}
+                    onChange={handleDateToChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{language ? "Deadline From:" : "الموعد النهائي من:"}</label>
+                  <input
+                    type="date"
+                    value={deadlineFrom || ""}
+                    onChange={handleDeadlineFromChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{language ? "Deadline To:" : "الموعد النهائي إلى:"}</label>
+                  <input
+                    type="date"
+                    value={deadlineTo || ""}
+                    onChange={handleDeadlineToChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-4 mt-8">
+            <button
+              onClick={resetFilters}
+              className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-bold"
+            >
+              {language ? "Reset Filters" : "مسح الفلاتر"}
+            </button>
+            <button
+              onClick={onClose}
+              className="flex-1 px-6 py-3 bg-watomsBlue text-white rounded-lg hover:bg-blue-700 transition-colors font-bold"
+            >
+              {language ? "Apply Filters" : "تطبيق الفلاتر"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
 
   return (
-    <>
-      <Navbar3
-        showNavigate={true}
-        img={TMS_HERO_INFO}
-        header={header}
-        Page="TMS"
-        description={TMS_DESCRIPTION}
-      >
-        <div className="grid grid-cols-2 gap-2">
-          <Selector
-            label="status"
-            title={language ? "Status:" : ":الحالة"}
-            description={
-              language ? "Please Select a Status" : "برجاء اختيار حالة"
-            }
-            data={STATUS_OPTIONS}
-            value={selectedStatus}
-            onChange={handleStatusChange}
-            name=""
-          />
-          <Selector
-            label="category"
-            title={language ? "Category:" : ":التصنيف"}
-            description={
-              language ? "Please Select a Category" : "برجاء اختيار تصنيف"
-            }
-            data={categories}
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-          />
-          <Selector
-            label="subCategory"
-            title={language ? "Sub Category:" : ":التصنيف الفرعي"}
-            description={
-              language
-                ? "Please Select a Sub Category"
-                : "برجاء اختيار تصنيف فرعي"
-            }
-            data={subCategories}
-            value={selectedSubCategory}
-            onChange={handleSubCategoryChange}
-            onClick={handleSubCategoryClick}
-          />
-          <Selector
-            label="assignedBy"
-            title={language ? "AssignedBy:" : ":تكليف من"}
-            description={
-              language ? "Please Select an Employee" : "برجاء اختيار المعين"
-            }
-            data={filteredAssignedUsers}
-            value={selectedAssignedUser}
-            onChange={handleAssignedByChange}
-            name="user"
-            optionValue="emp"
-          />
-          <Selector
-            label="assignee"
-            title={language ? "Assignee:" : ":تكليف الي"}
-            description={
-              language ? "Please Select an Employee" : "برجاء اختيار المعين له"
-            }
-            data={filteredAssigneeUsers}
-            value={selectedAssigneeUser}
-            onChange={handleAssigneeChange}
-            name="user"
-            optionValue="emp"
-          />
-          <Selector
-            label="importance"
-            title={language ? "importance" : ":الاهمية"}
-            description={
-              language ? "Please Select a level" : "برجاء اخيار الاهمية"
-            }
-            data={IMPORTANCE_LEVELS}
-            value={selectedImportance}
-            onChange={handleImportanceChange}
-            name=""
-            keyType={true}
-          />
-          <div className="flex flex-col items-end justify-center">
-            <label
-              htmlFor="dateFrom"
-              className="mb-[10px] text-center font-bold"
-            >
-              {language ? "From:" : ":من"}
-            </label>
-            <input
-              id="dateFrom"
-              name="dateFrom"
-              type="date"
-              className="p-[10px] border border-[#ccc] box-border w-[150px]"
-              onChange={handleDateFromChange}
-            />
-          </div>
-          <div className="flex flex-col items-end justify-center">
-            <label htmlFor="dateTo" className="mb-[10px] text-center font-bold">
-              {language ? "To:" : ":الي"}
-            </label>
-            <input
-              id="dateTo"
-              name="dateTo"
-              type="date"
-              className="p-[10px] border border-[#ccc] box-border w-[150px]"
-              onChange={handleDateToChange}
-            />
-          </div>
-          <div className="flex flex-col items-end justify-center">
-            <label
-              htmlFor="dateFrom"
-              className="mb-[10px] text-center font-bold"
-            >
-              {language ? "Deadline Date From:" : ":موعد التسليم من"}
-            </label>
-            <input
-              id="dateFrom"
-              name="dateFrom"
-              type="date"
-              className="p-[10px] border border-[#ccc] box-border w-[150px]"
-              onChange={handleDeadlineFromChange}
-            />
-          </div>
-          <div className="flex flex-col items-end justify-center">
-            <label htmlFor="dateTo" className="mb-[10px] text-center font-bold">
-              {language ? "Deadline Date To:" : ":موعد التسليم الي"}
-            </label>
-            <input
-              id="dateTo"
-              name="dateTo"
-              type="date"
-              className="p-[10px] border border-[#ccc] box-border w-[150px]"
-              onChange={handleDeadlineToChange}
-            />
-          </div>
+    <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>
+      {/* Modern Background with Abstract Shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/20 to-pink-100/30 animate-pulse" style={{animationDuration: '8s'}} />
+        
+        {/* Floating Geometric Shapes */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-watomsBlue/10 to-wisdomOrange/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '6s', animationDelay: '0s'}} />
+        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-wisdomOrange/10 to-watomsBlue/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '8s', animationDelay: '2s'}} />
+        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '7s', animationDelay: '1s'}} />
+        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '9s', animationDelay: '3s'}} />
+        
+        {/* Abstract Lines */}
+        <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-watomsBlue/20 to-transparent" />
+        <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-wisdomOrange/20 to-transparent" />
+        <div className="absolute top-1/2 left-0 w-px h-32 bg-gradient-to-b from-transparent via-purple-400/20 to-transparent" />
+        <div className="absolute top-1/2 right-0 w-px h-32 bg-gradient-to-b from-transparent via-blue-400/20 to-transparent" />
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, ${darkMode ? 'white' : 'gray'} 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }} />
         </div>
-        <button
-          className="flex justify-center md:w-full w-[200px] md:mt-[41px] md:m-0 m-auto my-2 items-center bg-wisdomOrange hover:bg-wisdomDarkOrange text-white h-[5vh] px-4 py-2 rounded-md"
-          onClick={resetFilters}
-        >
-          {language ? "Reset" : "مسح"}
-        </button>
-      </Navbar3>
-      <div className="files" ref={targetDivRef}>
-        <div className="tasks">
-          <div className="font-bold w-[10%]">{language ? "Task:" : ":مهمة"}</div>
-          <div className="font-bold w-[10%]">{language ? "Description:" : ":الوصف"}</div>
-          <div className="font-bold w-[10%]">{language ? "Start Date:" : ":من"}</div>
-          <div className="font-bold w-[10%]">{language ? "End Date:" : ":الي"}</div>
-          <div className="font-bold w-[10%]">{language ? "Status:" : ":الحالة"}</div>
-          <div className="font-bold w-[10%]">{language ? "Importance:" : ":الاهمية"}</div>
-          <div className="font-bold w-[10%]">{language ? "Sub Category:" : ":التصنيف الفرعي"}</div>
-          <div className="font-bold w-[10%]">{language ? "Category:" : ":التصنيف"}</div>
-          <div className="font-bold w-[10%]">{language ? "Assignee:" : ":تكليف الي"}</div>
-          <div className="font-bold w-[10%]">{language ? "AssignedBy:" : ":تكليف من"}</div>
-        </div>
-        {tasks.length > 0 ? (
-          tasks.map((file, index) => (
-            <div
-              className="tasks taskColumn"
-              onClick={() => handleClick(file.id)}
-            >
-              <div className="w-[10%]">{file.task}</div>
-              <div className="w-[10%] whitespace-nowrap overflow-hidden text-ellipsis">{file.description}</div>
-              <div className="w-[10%]">{formatDate(file.start_date)}</div>
-              <div className="w-[10%]">{formatDate(file.end_date)}</div>
-              <div className="w-[10%]">{file.status}</div>
-              <div className="w-[10%]">{file.importance}</div>
-              <div className="w-[10%]">{file.taskSubCategory.name}</div>
-              <div className="w-[10%]">
-                {file.taskSubCategory.taskCategory.name}
-              </div>
-              <div className="w-[10%]">{file.assigner.first_name}</div>
-              <div className="w-[10%]">{file.assignee.first_name}</div>
-              {/* <div>
-                <div>Assignee:</div>
-                <div>{file.assignee.first_name}</div>
-              </div> */}
-            </div>
-          ))
-        ) : (
-          <p className="text-center">{language ? "there is no documents available" : "لا يوجد ملفات"}</p>
-        )}
       </div>
-    </>
+      
+      {/* Modern App Menu (No Navbar) */}
+      <div className="flex flex-col items-center justify-center min-h-[80vh] w-full relative z-10">
+        {/* Logo and Search */}
+        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-5xl mb-12 gap-8">
+          <div className="flex items-center gap-6">
+            <img className="w-[100px] md:w-[120px] lg:w-[140px]" src={require('../assets/wisdom.png')} alt="Wabys Logo" />
+          </div>
+          <div className="flex-1 flex justify-center">
+            <div className="relative w-full max-w-md">
+              <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+              <input
+                type="text"
+                className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
+                placeholder={language ? "Search tasks..." : "ابحث في المهام..."}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{fontFamily:'inherit'}}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-4 relative">
+            <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
+              <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
+            </button>
+            {/* Full Screen Toggle Button */}
+            <button 
+              onClick={toggleFullScreen} 
+              className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+              title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
+            >
+              <FontAwesomeIcon 
+                icon={isFullScreen ? faCompress : faExpand} 
+                className="text-xl text-watomsBlue" 
+              />
+            </button>
+            {/* User Info: Show Username only */}
+            <span className="flex items-center gap-2 font-bold text-lg min-w-[120px]">
+              <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
+              {userInfo?.name || 'User'}
+            </span>
+            {/* Language Toggle Button */}
+            <button
+              className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all font-bold text-base"
+              onClick={() => setLanguage(!language)}
+              title={language ? 'العربية' : 'English'}
+            >
+              {language ? 'AR' : 'EN'}
+            </button>
+            {/* App Switcher Dropdown */}
+            <div className="relative">
+              <button
+                className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                onClick={() => setMenuOpen(v => !v)}
+                aria-label="App Switcher"
+              >
+                <FontAwesomeIcon icon={faThLarge} className="svg-inline--fa fa-table-cells-large text-xl text-watomsBlue" />
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 z-50 animate-fadeIn">
+                  <button onClick={() => { setMenuOpen(false); navigate('/pms'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
+                    <FontAwesomeIcon icon={faThLarge} className="text-watomsBlue" /> PMS
+                  </button>
+                  <button onClick={() => { setMenuOpen(false); navigate('/dms'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
+                    <FontAwesomeIcon icon={faFolder} className="text-wisdomOrange" /> DMS
+                  </button>
+                  <button onClick={() => { setMenuOpen(false); navigate('/tms'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
+                    <FontAwesomeIcon icon={faTasks} className="text-blue-500" /> TMS
+                  </button>
+                  <button onClick={() => { setMenuOpen(false); navigate('/dashboard'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
+                    <FontAwesomeIcon icon={faInfoCircle} className="text-purple-500" /> Dashboard
+                  </button>
+                </div>
+              )}
+            </div>
+            <button
+              className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+              onClick={() => { logout(); navigate('/login'); }}
+            >
+              <FontAwesomeIcon icon={faSignOutAlt} className="text-xl text-wisdomOrange" />
+            </button>
+          </div>
+        </div>
+        {/* Main Menu Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 w-full max-w-5xl mt-8">
+          {mainMenu.map((item, idx) => (
+            <div
+              key={item.label}
+              className={`flex flex-col items-center justify-center bg-gradient-to-br ${item.color} rounded-3xl shadow-xl p-10 cursor-pointer hover:scale-105 transition-transform duration-300 group backdrop-blur-sm`}
+              style={{ minHeight: '220px' }}
+              onClick={item.onClick}
+            >
+              <FontAwesomeIcon icon={item.icon} className="text-6xl mb-6 text-white drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
+              <span className="text-2xl font-extrabold text-white text-center drop-shadow-lg group-hover:scale-105 transition-transform duration-300">
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Render Modals */}
+      {activeModal === 'tasks' && <TasksModal data={modalData?.data} onClose={closeModal} />}
+      {activeModal === 'filters' && <FiltersModal data={modalData?.data} onClose={closeModal} />}
+    </div>
   );
 };
 

@@ -115,6 +115,8 @@ const StudentBehavior = () => {
       behavior_date: new Date(date).toISOString(), // ensure ISO format
     };
 
+    console.log(payload)
+
     try {
       await submitBehavior(payload);
       toast.success(language ? "Case has been submitted successfully" : "تم تسجيل البيانات بنجاح");
@@ -249,6 +251,7 @@ const StudentBehavior = () => {
             name="userStd"
             labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
             selectCSS={`${language ? "text-start" : "text-end"}`}
+            optionValue="student"
           />
         </div>
         <label htmlFor="comment" className={`text-white w-full ${language ? "text-start" : "text-end"}`}>{language ? "Comment:" : ":تعليق"}</label>
@@ -283,7 +286,6 @@ const StudentBehavior = () => {
             name="name"
             labelCSS={`text-white w-full ${language ? "text-start" : "text-end"}`}
             selectCSS={`${language ? "text-start" : "text-end"}`}
-            keyType={true}
           />
         </div>
         <div className="select">
