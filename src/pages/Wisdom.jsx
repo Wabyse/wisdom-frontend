@@ -5,13 +5,9 @@ import { useLanguage } from '../context/LanguageContext';
 import Popup from '../components/Popup';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faThLarge, faUser, faInfoCircle, faSearch, faSun, faMoon, 
-  faSignOutAlt, faChartLine, faUsers, faClipboardCheck, faGraduationCap, 
-  faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, 
-  faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, 
-  faClipboard, faFolder, faTasks, faExpand, faCompress, faArrowRight,
-  faHome, faCog, faBell, faStar, faTrophy, faCalendarAlt, faFileAlt,
-  faLink, faBook, faHeadset, faLayerGroup, faRocket, faGem, faCrown,
+  faUser, faInfoCircle, faSearch, faSun, faMoon, 
+  faSignOutAlt, faChartLine, faGraduationCap, 
+  faUserTie, faFolder, faExpand, faCompress, faStar, faFileAlt,
   faDesktop, faMoneyBill, faChartBar
 } from "@fortawesome/free-solid-svg-icons";
 import { userFullName } from '../utils/userFullName';
@@ -27,7 +23,6 @@ const Wisdom = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [search, setSearch] = useState('');
     const isFullScreen = useFullScreen();
-    const [menuOpen, setMenuOpen] = useState(false);
 
     // Update time every minute
     useEffect(() => {
@@ -136,9 +131,9 @@ const Wisdom = () => {
             subtitle: language ? 'Control Panels and Statistics' : 'لوحات التحكم والإحصائيات',
             description: language ? 'Interactive management dashboards' : 'لوحات تحكم تفاعلية للإدارة',
             icon: faChartBar,
-            path: '/dashboards',
+            path: '/wisdom/dashboard',
             color: 'from-cyan-500 to-cyan-600',
-            available: false
+            available: true
         }
     ];
 

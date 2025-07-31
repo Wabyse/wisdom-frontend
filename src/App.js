@@ -55,6 +55,7 @@ import WatomsDashboard from "./pages/WatomsDashboard";
 import Wisdom from "./pages/Wisdom";
 import WisdomUserProfile from "./pages/WisdomUserProfile";
 import WisdomSystemInfo from "./pages/WisdomSystemInfo";
+import WisdomDashboard from "./pages/WisdomDashboard";
 
 function App() {
   return (
@@ -121,6 +122,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/wisdom/dashboard" element={<WisdomDashboard />} />
           <Route
             path="/wisdom/system-info"
             element={

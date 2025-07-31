@@ -745,7 +745,7 @@ const Tms = () => {
                   <button onClick={() => { setMenuOpen(false); navigate('/tms'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
                     <FontAwesomeIcon icon={faTasks} className="text-blue-500" /> TMS
                   </button>
-                  <button onClick={() => { setMenuOpen(false); navigate('/dashboard'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
+                  <button onClick={() => { setMenuOpen(false); navigate('/wisdom/dashboard'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
                     <FontAwesomeIcon icon={faInfoCircle} className="text-purple-500" /> Dashboard
                   </button>
                 </div>
