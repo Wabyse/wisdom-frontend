@@ -507,3 +507,14 @@ export const dummyRecentActivity = (language) => [
         color: "bg-purple-500"
     }
 ];
+
+export const ORGANIZATION_OTHER_LANGUAGE = {
+    "Badr": "بدر",
+    "Damietta": "دمياط",
+    "مركز الاسماعيلية": "ismailia",
+    "مركز السويس": "suez",
+    "مركز الشرابية": "sharabya",
+    "مركز بولاق": "boulaq",
+    "مركز الشرقية": "sharqia",
+    "Ebda (Test)": "ابدا (اختبار)"
+}

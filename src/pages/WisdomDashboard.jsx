@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer,
 import ReactModal from 'react-modal';
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
+import { ORGANIZATION_OTHER_LANGUAGE } from "../constants/constants";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
 
@@ -585,7 +586,7 @@ const WisdomDashboard = () => {
                             {onlineCenters.slice().sort((a, b) => (b.evaluation || 0) - (a.evaluation || 0)).map((c, i) => (
                                 <div key={c.id || i} style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }} className="justify-between">
                                     {/* Center name (on the left) */}
-                                    <div style={{ minWidth: 115, maxWidth: 120, fontWeight: 900, fontSize: 15, color: '#fff', marginRight: 8, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                                    <div style={{ minWidth: 115, maxWidth: 120, fontWeight: 900, fontSize: 15, color: '#fff', marginRight: 8, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ORGANIZATION_OTHER_LANGUAGE[c.name]}</div>
                                     {/* Bar background with fixed width */}
                                     <div style={{ maxWidth: 180, height: 22, background: '#444652', borderRadius: 18, boxShadow: '0 2px 8px #0002', position: 'relative', overflow: 'hidden', marginLeft: 8, marginRight: 8 }} className="min-w-[175px]">
                                         {/* Bar fill */}
@@ -609,6 +610,7 @@ const WisdomDashboard = () => {
                         alignItems: 'stretch',
                         position: 'relative',
                         overflow: 'hidden',
+                        bottom: -90
                     }}>
                         {/* Dotted pattern background */}
                         <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
@@ -624,7 +626,7 @@ const WisdomDashboard = () => {
                         {/* Content above pattern/overlay */}
                         <div style={{ position: 'relative', zIndex: 2 }}>
                             <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 10, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
-                                نسب عناصر التقييم{selectedCenter ? ` ${selectedCenter.name}` : ''}
+                                نسب عناصر التقييم{selectedCenter ? ` ${ORGANIZATION_OTHER_LANGUAGE[selectedCenter.name]}` : ''}
                             </div>
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 24, minHeight: 180 }}>
                                 {(() => {
@@ -831,7 +833,7 @@ const WisdomDashboard = () => {
                                     boxShadow: '0 4px 16px #0004',
                                     zIndex: 16,
                                 }}>
-                                    <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{selectedCenter.name}</div>
+                                    <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{ORGANIZATION_OTHER_LANGUAGE[selectedCenter.name]}</div>
                                     <div style={{ fontSize: 9, marginBottom: 2 }}>{selectedCenter.address || 'No address'}</div>
                                     {selectedCenter.location && (
                                         <a
@@ -889,7 +891,7 @@ const WisdomDashboard = () => {
                             &#8592;
                         </button>
                         <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
-                            {selectedCenter?.name || ''}
+                            {ORGANIZATION_OTHER_LANGUAGE[selectedCenter?.name] || ''}
                         </span>
                         <button
                             onClick={() => {
@@ -944,7 +946,7 @@ const WisdomDashboard = () => {
                         gap: 12
                     }}>
                         <div style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', marginBottom: 8, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px' }}>
-                            <span>{'إجمالي عدد المراكز'}</span>
+                            <span>{'إجمالي عدد المدارس'}</span>
                             <span style={{ fontWeight: 900, fontSize: 17, color: '#3fd8ff', paddingLeft: 6 }}>({String(totalCenters).padStart(2, '0')})</span>
                         </div>
                         <div style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', marginBottom: 8, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px' }}>
@@ -952,11 +954,11 @@ const WisdomDashboard = () => {
                             <span style={{ fontWeight: 900, fontSize: 17, color: '#ef4444', paddingLeft: 6 }}>({String(offlineCenters.length).padStart(2, '0')})</span>
                         </div>
                         <div style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px' }}>
-                            <span>{'إجمالي المراكز المفعلة'}</span>
+                            <span>{'إجمالي المدارس المفعلة'}</span>
                             <span style={{ fontWeight: 900, fontSize: 17, color: '#22c55e', paddingLeft: 6 }}>({String(onlineCenters.length).padStart(2, '0')})</span>
                         </div>
                     </div>
-                    {/* إجمالي نسبة تقييم المراكز المفعلة */}
+                    {/* إجمالي نسبة تقييم المدارس المفعلة */}
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -972,7 +974,7 @@ const WisdomDashboard = () => {
                     }}>
                         <CircularProgressBar value={avgOnlineEval} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                         <div style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c', marginTop: 12 }}>
-                            إجمالي نسبة تقييم المراكز المفعلة
+                            إجمالي نسبة تقييم المدارس المفعلة
                         </div>
                     </div>
                     <div style={{
