@@ -441,15 +441,15 @@ function TomsForm() {
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
-  if (!loading && (!form || form.length === 0)) return <p>No forms found.</p>;
+  if (!loading && (!form || form.length === 0)) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#f7f8fa] to-[#e9eaf3] flex flex-col items-center justify-start">
       <Toaster />
       {/* Sticky Header with Progress Bar and Stepper */}
       <div className="w-full sticky top-0 z-30 bg-white/90 shadow-md flex flex-col items-center px-8 py-3 border-b border-gray-200" style={{ backdropFilter: 'blur(8px)' }}>
-        <div className="flex items-center gap-4 w-full justify-between">
-          <div className="flex items-center gap-4">
+        <div className="md:flex block items-center gap-4 w-full justify-between">
+          <div className="flex items-center gap-4 flex-wrap justify-center">
             <img src={newLogo} alt="company logo" className="h-12 w-auto rounded-lg shadow" />
             <h1 className="text-2xl md:text-3xl font-extrabold" style={{
               background: 'linear-gradient(135deg, #181E41 0%, #F05A1A 100%)',
@@ -460,7 +460,7 @@ function TomsForm() {
               fontFamily: 'Inter,sans-serif',
             }}>{language ? formEnName : formArName}</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 justify-evenly">
             <button
               type="button"
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-br from-[#181E41] to-[#F05A1A] text-white font-bold shadow hover:scale-105 transition-all"
@@ -478,29 +478,34 @@ function TomsForm() {
           <span className="absolute right-3 top-0 text-xs font-bold text-gray-700">{progress}%</span>
         </div>
         {/* Animated Stepper */}
-        <div className="flex flex-row items-center justify-center gap-2 mt-4 w-full">
-          {sectionNames.map((name, idx) => (
+        <div className="w-full mt-4">
+          <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-2 sm:overflow-visible sm:whitespace-normal sm:justify-center">
+            {sectionNames.map((name, idx) => (
+              <button
+                key={name}
+                onClick={() => { setActiveStep(idx); setShowReview(false); }}
+                className={`relative px-4 py-2 rounded-full font-bold text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-200 ${activeStep === idx && !showReview ? 'bg-gradient-to-br from-[#181E41] to-[#F05A1A] text-white shadow-lg scale-105' : 'bg-white text-gray-800 hover:bg-orange-50'}`}
+                style={{ fontFamily: 'Inter,sans-serif' }}
+                aria-current={activeStep === idx && !showReview ? 'step' : undefined}
+              >
+                <span className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={stepIcons[idx % stepIcons.length]} className={`text-lg transition-all duration-300 ${activeStep === idx ? 'animate-bounce' : ''}`} />
+                  {name}
+                </span>
+              </button>
+            ))}
             <button
-              key={name}
-              onClick={() => { setActiveStep(idx); setShowReview(false); }}
-              className={`relative px-4 py-2 rounded-full font-bold text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-200 ${activeStep === idx && !showReview ? 'bg-gradient-to-br from-[#181E41] to-[#F05A1A] text-white shadow-lg scale-105' : 'bg-white text-gray-800 hover:bg-orange-50'}`}
+              onClick={() => setShowReview(true)}
+              className={`px-4 py-2 rounded-full font-bold text-base transition-all duration-200 ml-4 ${showReview ? 'bg-gradient-to-br from-[#181E41] to-[#F05A1A] text-white shadow-lg scale-105' : 'bg-white text-gray-800 hover:bg-orange-50'}`}
               style={{ fontFamily: 'Inter,sans-serif' }}
-              aria-current={activeStep === idx && !showReview ? 'step' : undefined}
+              aria-current={showReview ? 'step' : undefined}
             >
               <span className="flex items-center gap-2">
-                <FontAwesomeIcon icon={stepIcons[idx % stepIcons.length]} className={`text-lg transition-all duration-300 ${activeStep === idx ? 'animate-bounce' : ''}`} />
-                {name}
+                <FontAwesomeIcon icon={faCheckCircle} className="text-lg" />
+                {language ? 'Review & Submit' : 'مراجعة وإرسال'}
               </span>
             </button>
-          ))}
-          <button
-            onClick={() => setShowReview(true)}
-            className={`px-4 py-2 rounded-full font-bold text-base transition-all duration-200 ml-4 ${showReview ? 'bg-gradient-to-br from-[#181E41] to-[#F05A1A] text-white shadow-lg scale-105' : 'bg-white text-gray-800 hover:bg-orange-50'}`}
-            style={{ fontFamily: 'Inter,sans-serif' }}
-            aria-current={showReview ? 'step' : undefined}
-          >
-            <span className="flex items-center gap-2"><FontAwesomeIcon icon={faCheckCircle} className="text-lg" />{language ? 'Review & Submit' : 'مراجعة وإرسال'}</span>
-          </button>
+          </div>
         </div>
       </div>
 

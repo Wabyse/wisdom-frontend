@@ -808,7 +808,7 @@ const TomsPms = () => {
               />
             </div>
           </div>
-          <div className="flex items-center gap-4 relative">
+          <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
             <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
               <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
             </button>
@@ -824,7 +824,7 @@ const TomsPms = () => {
               />
             </button>
             {/* User Info: Show Username only */}
-            <span className="flex items-center gap-2 font-bold text-lg min-w-[120px]">
+            <span className="flex items-center gap-2 font-bold text-lg md:min-w-[120px] min-w-[300px] justify-center">
               <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
               {userInfo?.name || 'User'}
             </span>

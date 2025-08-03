@@ -34,7 +34,14 @@ import ebda from '../assets/EBDA.jpeg';
 import wabys from '../assets/wabys.png';
 import GOL from '../assets/Gov.png';
 import wahby from '../assets/wahby_group.png';
-import { useLanguage } from "../context/LanguageContext";
+import wabysWatomsLogo from '../assets/wabysWatomsLogo.png';
+import wabysWisdomLogo from '../assets/wabysWisdomLogo.png';
+import wabysWiseumLogo from '../assets/wabysWiseumLogo.png';
+import wabysWisnmsLogo from '../assets/wabysWisnmsLogo.png';
+import wabysWisecmLogo from '../assets/wabysWisecmLogo.png';
+import wabysWishmsLogo from '../assets/wabysWishmsLogo.png';
+import wabysWisfmsLogo from '../assets/wabysWisfmsLogo.png';
+import wabysWiscmcmLogo from '../assets/wabysWiscmcmLogo.png';
 
 export const IMPORTANCE_LEVELS = ["normal", "important", "urgent"];
 
@@ -458,6 +465,130 @@ export const getWabysSystems = (language) => [
         path: '/watoms/dashboard',
         color: 'from-cyan-500 to-cyan-600',
         available: true
+    }
+];
+
+export const mainWabysSystems = (language, userOrg) => [
+    {
+        id: 'watoms',
+        title: 'Watoms',
+        subtitle: 'WABYS ',
+        redSubtitle: 'Auto Training Operations ',
+        subtitle2: 'Management System',
+        description: '',
+        icon: wabysWatomsLogo,
+        path: '/watoms',
+        color: 'from-blue-500 to-blue-600',
+        available: userOrg === 1 || userOrg === 2 || userOrg === 3
+    },
+    {
+        id: 'wisdom',
+        title: 'Wisdom',
+        subtitle: 'WABYS Integrated Systems for ',
+        redSubtitle: 'Dedactics and Operations',
+        subtitle2: ' Management',
+        description: '',
+        icon: wabysWisdomLogo,
+        path: '/wisdom',
+        color: 'from-green-500 to-green-600',
+        available: userOrg !== 1 && userOrg !== 2
+    },
+    {
+        id: 'wiseum',
+        title: 'Wiseum',
+        subtitle: 'WABYS Integrated Systems for ',
+        redSubtitle: 'Effective University',
+        subtitle2: ' Management',
+        description: '',
+        icon: wabysWiseumLogo,
+        path: '',
+        color: 'from-purple-500 to-purple-600',
+        available: false
+    },
+    {
+        id: 'wisnms',
+        title: 'Wisnms',
+        subtitle: 'WABYS Integrated Systems for ',
+        redSubtitle: 'Nurseries',
+        subtitle2: ' Management System',
+        description: '',
+        icon: wabysWisnmsLogo,
+        path: '',
+        color: 'from-indigo-500 to-indigo-600',
+        available: false
+    },
+    {
+        id: 'wisecm',
+        title: 'Wisecm',
+        subtitle: 'WABYS Integrated Systems for ',
+        redSubtitle: 'Education Centers',
+        subtitle2: ' Managemenet',
+        description: '',
+        icon: wabysWisecmLogo,
+        path: '',
+        color: 'from-orange-500 to-orange-600',
+        available: false
+    },
+    {
+        id: 'wishms',
+        title: 'Wishms',
+        subtitle: 'WABYS Integrated Systems for ',
+        redSubtitle: 'Hospital',
+        subtitle2: ' Management System',
+        description: '',
+        icon: wabysWishmsLogo,
+        path: '',
+        color: 'from-yellow-500 to-yellow-600',
+        available: false
+    },
+    {
+        id: 'wisfms',
+        title: 'Wisfms',
+        subtitle: 'WABYS Integrated Systems for ',
+        redSubtitle: 'Factories',
+        subtitle2: ' Management System',
+        description: '',
+        icon: wabysWisfmsLogo,
+        path: '',
+        color: 'from-emerald-500 to-emerald-600',
+        available: false
+    },
+    {
+        id: 'wiscmcm',
+        title: 'Wiscmcm',
+        subtitle: 'WABYS Integrated Systems for ',
+        redSubtitle: 'Car Maintenance Centers',
+        subtitle2: ' Management System',
+        description: '',
+        icon: wabysWiscmcmLogo,
+        path: '',
+        color: 'from-pink-500 to-pink-600',
+        available: false
+    },
+    {
+        id: 'comingSoon1',
+        title: 'Coming Soon',
+        subtitle: '',
+        redSubtitle: '',
+        subtitle2: '',
+        description: '',
+        icon: '',
+        path: '',
+        color: 'from-cyan-500 to-cyan-600',
+        available: false
+    }
+    ,
+    {
+        id: 'comingSoon2',
+        title: 'Coming Soon',
+        subtitle: '',
+        redSubtitle: '',
+        subtitle2: '',
+        description: '',
+        icon: '',
+        path: '',
+        color: 'from-yellow-400 to-yellow-500',
+        available: false
     }
 ];
 

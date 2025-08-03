@@ -27,12 +27,12 @@ const QRList = () => {
 
     return (
         // <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <div className="flex justify-center">
+        <div className="flex justify-center flex-wrap">
 
-            {/* {employees.map((user) => (
-                <BarcodeGenerator key={user.id} userId={user.id} name={`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`} />
-            ))} */}
-            <BarcodeGenerator key={employees[0].id} userId={employees[0].id} name={`${employees[0].employee?.employee_first_name} ${employees[0].employee?.employee_middle_name} ${employees[0].employee?.employee_last_name}`} />
+            {employees.map((user) => (
+                <QRCodeGenerator key={user.id} userId={user.id} name={`${user.employee?.employee_first_name} ${user.employee?.employee_middle_name} ${user.employee?.employee_last_name}`} />
+            ))}
+            {/* <BarcodeGenerator key={employees[0]?.id} userId={employees[0]?.id} name={`${employees[0].employee?.employee_first_name} ${employees[0].employee?.employee_middle_name} ${employees[0].employee?.employee_last_name}`} /> */}
         </div>
     );
 };

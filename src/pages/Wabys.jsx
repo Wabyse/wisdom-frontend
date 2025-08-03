@@ -7,13 +7,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress
 } from "@fortawesome/free-solid-svg-icons";
-import watomsLogo from '../assets/watoms3.png'
+import wabysLogo from '../assets/wabys.png'
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
 import { userFullName } from '../utils/userFullName';
-import { getWabysSystems } from '../constants/constants';
+import { mainWabysSystems } from '../constants/constants';
+import languageIcon from '../assets/languageIcon.png';
 
-const Watoms = () => {
+const Wabys = () => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language, setLanguage } = useLanguage();
@@ -22,7 +23,7 @@ const Watoms = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [search, setSearch] = useState('');
     const isFullScreen = useFullScreen();
-    const systems = getWabysSystems(language);
+    const systems = mainWabysSystems(language, userInfo.organization_id);
 
     // Update time every minute // why?
     useEffect(() => {
@@ -85,7 +86,7 @@ const Watoms = () => {
                 {/* Logo and Search */}
                 <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 py-8 gap-8">
                     <div className="flex items-center gap-6">
-                        <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
+                        <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
                     </div>
                     <div className="flex-1 flex justify-center">
                         <div className="relative w-full max-w-md">
@@ -121,25 +122,23 @@ const Watoms = () => {
                             {userFullName(userInfo, language)}
                         </span>
                         {/* Language Toggle Button */}
-                        <button
-                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all font-bold text-base"
+                        <img
+                            src={languageIcon}
+                            className="rounded-full w-10 h-10 flex justify-center items-center shadow transition-all font-bold text-base cursor-pointer"
                             onClick={() => setLanguage(!language)}
                             title={language ? 'العربية' : 'English'}
-                        >
-                            {language ? 'AR' : 'EN'}
-                        </button>
+                        />
                         {/* --- أيقونات الملف الشخصي ومعلومات النظام --- */}
-                        <button
+                        {/* <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                             title={language ? 'My Profile' : 'الملف الشخصي'}
                             onClick={() => navigate('/watoms/user-profile')}
                         >
                             <FontAwesomeIcon icon={faUser} className="text-watomsBlue text-lg" />
-                        </button>
+                        </button> */}
                         <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                             title={language ? 'System Info' : 'معلومات النظام'}
-                            onClick={() => navigate('/watoms/system-info')}
                         >
                             <FontAwesomeIcon icon={faInfoCircle} className="text-watomsBlue text-lg" />
                         </button>
@@ -151,16 +150,6 @@ const Watoms = () => {
                             <FontAwesomeIcon icon={faSignOutAlt} className="text-xl text-wisdomOrange" />
                         </button>
                     </div>
-                </div>
-
-                {/* Welcome Section - Text Only */}
-                <div className="text-center mb-12 px-6">
-                    <h1 className="text-4xl md:text-5xl font-bold text-watomsBlue dark:text-watomsLightBlue mb-4">
-                        {getGreeting()}، {userFullName(userInfo, language)}
-                    </h1>
-                    <p className="text-xl text-gray-600 dark:text-darkTextSecondary mb-6">
-                        {language ? "Welcome to the integrated Wabys system" : "مرحباً بك في نظام وابيز المتكامل"}
-                    </p>
                 </div>
             </div>
 
@@ -185,31 +174,31 @@ const Watoms = () => {
                             className={`group cursor-pointer transform transition-all duration-300 hover:scale-105 ${!system.available ? 'opacity-60' : ''
                                 }`}
                         >
-                            <div className={`bg-gradient-to-br ${system.color} text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 relative overflow-hidden`}>
-                                {/* Coming Soon Badge */}
-                                {!system.available && (
-                                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
-                                        {language ? 'Coming Soon' : 'قريباً'}
-                                    </div>
-                                )}
+                            <div className={`bg-gradient-to-br ${system.color} min-h-48 flex justify-center items-center text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 relative overflow-hidden`}>
+                                <div>
+                                    {/* Coming Soon Badge */}
+                                    {!system.available && (
+                                        <div className="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
+                                            {language ? 'Not Available' : 'غير متاح'}
+                                        </div>
+                                    )}
 
-                                {/* Background Pattern */}
-                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    {/* Background Pattern */}
+                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                <div className="relative z-10">
-                                    <div className="text-2xl mb-3 text-center">
-                                        <FontAwesomeIcon icon={system.icon} />
-                                    </div>
-                                    <h3 className="text-lg font-bold mb-1 text-center">{system.title}</h3>
-                                    <p className="text-xs opacity-90 mb-2 text-center">{system.subtitle}</p>
-                                    <p className="text-xs opacity-75 leading-relaxed text-center">{system.description}</p>
+                                    <div className="relative z-10">
+                                        <img src={system.icon} alt='' className='w-10 m-auto' />
+                                        <h3 className="text-lg font-bold mb-1 text-center">{system.title}</h3>
+                                        <p className="text-xs opacity-90 mb-2 text-center">{system.subtitle}<p className='text-black inline-block'>{system.redSubtitle}</p>{system.subtitle2}</p>
+                                        <p className="text-xs opacity-75 leading-relaxed text-center">{system.description}</p>
 
-                                    {/* Status Indicator */}
-                                    <div className="mt-3 flex items-center justify-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${system.available ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
-                                        <span className="text-xs opacity-75">
-                                            {system.available ? (language ? 'Available' : 'متاح') : (language ? 'Coming Soon' : 'قريباً')}
-                                        </span>
+                                        {/* Status Indicator */}
+                                        <div className="mt-3 flex items-center justify-center gap-2">
+                                            <div className={`w-2 h-2 rounded-full ${system.available ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
+                                            <span className="text-xs opacity-75">
+                                                {system.available ? (language ? 'Available' : 'متاح') : (language ? 'Not Available' : 'غير متاح')}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -275,4 +264,4 @@ const Watoms = () => {
     );
 };
 
-export default Watoms; 
+export default Wabys;
