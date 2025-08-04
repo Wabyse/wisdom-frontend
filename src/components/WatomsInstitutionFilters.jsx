@@ -48,12 +48,12 @@ const WatomsInstitutionFilters = ({ onVtcChange }) => {
             <Selector2
                 label="institution"
                 title=""
-                description={"الرجاء اختيار مركز"}
+                description={language ? "please select a vtc" : "الرجاء اختيار مركز"}
                 data={vtcs}
                 value={selectedVtc}
                 onChange={handleVtcChange}
                 name="name"
-                selectCSS="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg"
+                selectCSS="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg text-center"
             />
         </div>
     )

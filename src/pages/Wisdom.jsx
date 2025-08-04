@@ -232,7 +232,7 @@ const Wisdom = () => {
                             <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
                             <input
                                 type="text"
-                                className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
+                                className="w-full pl-12 pr-4 py-1 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
                                 placeholder={language ? "Search..." : "ابحث..."}
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}

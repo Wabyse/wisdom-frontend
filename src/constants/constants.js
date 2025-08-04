@@ -91,10 +91,10 @@ export const WISDOM_PMS_EN_LIST = {
 };
 
 export const WISDOM_PMS_AR_LIST = {
-    T: "مدرس",
+    T: "المدرس",
     AC: "المدير الاكاديمي",
     C: "المناهج",
-    H: "مدير القطاع",
+    H: "رئيس القسم",
     EDU: "البيئة التعليمية",
     EX: "المدير التنفيذي",
     SPEC: "المتخصص",
@@ -375,7 +375,7 @@ export const ASSESSOR_TYPE = [
     "Student / Trainee"
 ]
 
-export const getWabysSystems = (language) => [
+export const getWatomsSystems = (language) => [
     {
         id: 'pms',
         title: 'PMS',
@@ -468,7 +468,7 @@ export const getWabysSystems = (language) => [
     }
 ];
 
-export const mainWabysSystems = (language, userOrg) => [
+export const getWabysSystems = (language, userOrg) => [
     {
         id: 'watoms',
         title: 'Watoms',

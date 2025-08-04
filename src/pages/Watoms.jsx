@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -11,7 +11,8 @@ import watomsLogo from '../assets/watoms3.png'
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
 import { userFullName } from '../utils/userFullName';
-import { getWabysSystems } from '../constants/constants';
+import { getWatomsSystems } from '../constants/constants';
+import { useSearchFilter } from '../hooks/useSearchFilter';
 
 const Watoms = () => {
     const navigate = useNavigate();
@@ -20,9 +21,13 @@ const Watoms = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [notAvailable, setNotAvailable] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
-    const [search, setSearch] = useState('');
     const isFullScreen = useFullScreen();
-    const systems = getWabysSystems(language);
+    const systems = useMemo(
+        () => getWatomsSystems(language),
+        [language]
+    );
+    const getTitle = useCallback(system => system.title, []);
+    const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
 
     // Update time every minute // why?
     useEffect(() => {
@@ -32,9 +37,7 @@ const Watoms = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // why?
-    const openPopup = () => setNotAvailable(true);
-    const closePopup = () => setNotAvailable(false);
+    const togglePopup = (status) => setNotAvailable(status);
 
     // Get greeting based on time
     const getGreeting = () => {
@@ -48,7 +51,7 @@ const Watoms = () => {
         if (system.available) {
             navigate(system.path);
         } else {
-            openPopup();
+            togglePopup(true);
         }
     };
 
@@ -92,7 +95,7 @@ const Watoms = () => {
                             <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
                             <input
                                 type="text"
-                                className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
+                                className="w-full pl-12 pr-4 py-1 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
                                 placeholder={language ? "Search..." : "ابحث..."}
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
@@ -155,10 +158,10 @@ const Watoms = () => {
 
                 {/* Welcome Section - Text Only */}
                 <div className="text-center mb-12 px-6">
-                    <h1 className="text-4xl md:text-5xl font-bold text-watomsBlue dark:text-watomsLightBlue mb-4">
+                    <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>
                         {getGreeting()}، {userFullName(userInfo, language)}
                     </h1>
-                    <p className="text-xl text-gray-600 dark:text-darkTextSecondary mb-6">
+                    <p className={`text-xl mb-6 ${darkMode ? "text-white" : "text-gray-600 dark:text-darkTextSecondary"}`}>
                         {language ? "Welcome to the integrated Wabys system" : "مرحباً بك في نظام وابيز المتكامل"}
                     </p>
                 </div>
@@ -168,17 +171,17 @@ const Watoms = () => {
             <div className="relative z-10 px-6 pb-12">
                 {/* Wabys Systems Sub Header */}
                 <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold text-watomsBlue dark:text-watomsLightBlue mb-2">
+                    <h2 className={`text-3xl font-bold mb-2 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>
                         {language ? "Wabys Systems" : "أنظمة وابيز"}
                     </h2>
-                    <p className="text-lg text-gray-600 dark:text-darkTextSecondary">
+                    <p className={`text-lg ${darkMode ? "text-white" : "text-gray-600 dark:text-darkTextSecondary"}`}>
                         {language ? "Access all integrated systems" : "الوصول لجميع الأنظمة المتكاملة"}
                     </p>
                 </div>
 
                 {/* Wabys Systems Grid - Smaller Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto">
-                    {systems.map((system, idx) => (
+                    {filteredSystems.map((system, idx) => (
                         <div
                             key={system.id}
                             onClick={() => handleSystemClick(system)}
@@ -266,7 +269,7 @@ const Watoms = () => {
 
             <Popup
                 isOpen={notAvailable}
-                onClose={closePopup}
+                onClose={() => togglePopup(false)}
                 message={language ? "This system will be available soon" : "هذا النظام سيتم إطلاقه قريباً"}
                 button={language ? "OK" : "حسناً"}
                 form={false}

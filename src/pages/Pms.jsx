@@ -642,10 +642,25 @@ const Pms = () => {
           (testData) => testData.code === "Daily Operations"
         );
 
+        const formsOrder = [6, 15, 9, 1, 18, 31, 22];
+
         const newForms = WSIDOM_PMS_FORMS_ORDER
           .map((id) => filteredGeneralForms[id])
           .filter((f) => f !== undefined);
-        setForms(newForms);
+
+        // Sort newForms according to formsOrder array
+        const orderedForms = newForms.sort((a, b) => {
+          const indexA = formsOrder.indexOf(a.id);
+          const indexB = formsOrder.indexOf(b.id);
+
+          // Forms not in formsOrder go to the end
+          const safeIndexA = indexA === -1 ? formsOrder.length : indexA;
+          const safeIndexB = indexB === -1 ? formsOrder.length : indexB;
+
+          return safeIndexA - safeIndexB;
+        });
+
+        setForms(orderedForms);
         setPd(filter1);
         setDailyOperations(filter2);
       } catch (err) {
@@ -808,7 +823,7 @@ const Pms = () => {
               <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
               <input
                 type="text"
-                className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
+                className="w-full pl-12 pr-4 py-1 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
                 placeholder={language ? "Search..." : "ابحث..."}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -881,7 +896,7 @@ const Pms = () => {
         {/* Categories Section - centered and constrained */}
         <div className="w-full max-w-6xl mx-auto mt-4">
           <h2 className="text-3xl font-extrabold mb-2 text-center bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            {language ? 'Performance Categories' : 'فئات الأداء'}
+            {language ? 'Performance Categories' : 'الفئات المستهدفة'}
           </h2>
           {/* Centered, subtle line under heading */}
           <div className="mx-auto mb-10 mt-2" style={{ height: '3px', width: '180px', background: 'linear-gradient(90deg,#a259f7 0%,#667eea 100%)', borderRadius: '2px', opacity: 0.18 }} />

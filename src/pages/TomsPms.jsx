@@ -425,13 +425,13 @@ const TomsPms = () => {
       document.documentElement.requestFullscreen().then(() => {
         setIsFullScreen(true);
       }).catch(err => {
-        console.log('Error attempting to enable full screen:', err);
+        console.error('Error attempting to enable full screen:', err);
       });
     } else {
       document.exitFullscreen().then(() => {
         setIsFullScreen(false);
       }).catch(err => {
-        console.log('Error attempting to exit full screen:', err);
+        console.error('Error attempting to exit full screen:', err);
       });
     }
   }, []);
@@ -615,7 +615,6 @@ const TomsPms = () => {
                 forms: [],
               };
               groupedData.push(existingGroup);
-              console.log(groupedData)
             }
 
             existingGroup.forms.push({
@@ -691,19 +690,16 @@ const TomsPms = () => {
 
   // Memoize mainMenu to prevent recreation on every render
   const handleCategoriesClick = useCallback(() => {
-    console.log('Opening categories modal with data:', filteredForms);
     setModalData({ type: 'categories', data: filteredForms });
     setActiveModal('categories');
   }, [filteredForms]);
 
   const handleProfileClick = useCallback(() => {
-    console.log('Opening profile modal with data:', userInfo);
     setModalData({ type: 'profile', data: userInfo });
     setActiveModal('profile');
   }, [userInfo]);
 
   const handleInfoClick = useCallback(() => {
-    console.log('Opening info modal with data:', { heroInfo: WATOMS_PMS_HERO_INFO, currentSlide });
     setModalData({ type: 'info', data: { heroInfo: WATOMS_PMS_HERO_INFO, currentSlide } });
     setActiveModal('info');
   }, [currentSlide]);
@@ -730,17 +726,16 @@ const TomsPms = () => {
   ], [language, handleCategoriesClick, handleProfileClick, handleInfoClick]);
 
   // Debug: Monitor modal state changes
-  useEffect(() => {
-    if (activeModal) {
-      console.log('Modal opened:', activeModal, 'Data:', modalData);
-    } else {
-      console.log('Modal closed');
-    }
-  }, [activeModal, modalData]);
+  // useEffect(() => {
+  //   if (activeModal) {
+  //     console.log('Modal opened:', activeModal, 'Data:', modalData);
+  //   } else {
+  //     console.log('Modal closed');
+  //   }
+  // }, [activeModal, modalData]);
 
   // Close modal function
   const closeModal = useCallback(() => {
-    console.log('Closing modal:', activeModal);
     setActiveModal(null);
     setModalData(null);
   }, [activeModal]);
@@ -800,7 +795,7 @@ const TomsPms = () => {
               <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
               <input
                 type="text"
-                className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
+                className="w-full pl-12 pr-4 py-1 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
                 placeholder={language ? "Search..." : "ابحث..."}
                 value={search}
                 onChange={e => setSearch(e.target.value)}

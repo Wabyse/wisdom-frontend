@@ -5,7 +5,7 @@ function Selector2({ label, title, description, data, value, onChange, onClick=n
         {title}
       </label>
       <select
-        className={`p-[10px] text-[16px] md:w-[250px] w-[320px] rounded-[5px] border border-[#ccc] box-border text-black ${selectCSS}`}
+        className={`${selectCSS}`}
         id={label}
         name={label}
         onChange={onChange}

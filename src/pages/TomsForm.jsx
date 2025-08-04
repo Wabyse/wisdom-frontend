@@ -119,7 +119,6 @@ function TomsForm() {
         questionsResult: questionAnswers,
       };
 
-      console.log("📤 Submitting:", submittedData); // Final check
       await IndividualForm(submittedData);
       localStorage.removeItem(`form-draft-${id}`)
       toast.success(language ? "Form has been submitted" : "تم ارسال التقييم");
@@ -204,7 +203,6 @@ function TomsForm() {
   };
 
   const handleUserChange = (e) => {
-    console.log(e.target.value)
     setSelectedUser(e.target.value);
   };
 
@@ -256,7 +254,7 @@ function TomsForm() {
     const loadCurriculums = async () => {
       try {
         const response = await fetchCurriculums();
-        const unWantedCurriculum = [1, 2, 3, 13, 14, 15, 16, 17, 18]
+        const unWantedCurriculum = [1, 2, 3, 13, 14, 15, 16, 17, 18, 48, 49]
         const filteredCurriculums = response.filter(curriculum => !unWantedCurriculum.includes(curriculum.id))
         const curriculumIds = userInfo.user_role === "Operations Excellence Lead" ? new Set(INSTITUTION_CURRICULUM_RELATION[Number(selectedVtc)] || []) : new Set(INSTITUTION_CURRICULUM_RELATION[userInfo.organization_id] || []);
         const selectedOrganization = (selectedVtc !== "" || userInfo.user_role !== "Operations Excellence Lead")
@@ -300,8 +298,14 @@ function TomsForm() {
       try {
         const response = await fetchStudents();
         const filterOrg = userInfo.user_role === "Operations Excellence Lead" ? response : response.filter(org => org.school_id === userInfo.organization_id);
-        setStudnets(filterOrg);
-        setFilteredStudents(filterOrg);
+        let filteredStudenets;
+        if (selectedVtc !== "") {
+          filteredStudenets = filterOrg.filter(org => org.school_id === Number(selectedVtc))
+        } else {
+          filteredStudenets = filterOrg;
+        }
+        setStudnets(filteredStudenets);
+        setFilteredStudents(filteredStudenets);
       } catch (err) {
         console.error("API Error:", err);
         setError(err);
@@ -311,6 +315,8 @@ function TomsForm() {
     const loadClasses = async () => {
       try {
         const response = await fetchClasses();
+        const unWantedClasses = [1, 2, 3, 4, 5, 6, 7, 17, 18];
+        const filteredClasses = response.filter(vtcClass => !unWantedClasses.includes(vtcClass.id));
         const response2 = await fetchStudents();
         let response3;
         if (userInfo.user_role !== "Operations Excellence Lead") {
@@ -319,9 +325,16 @@ function TomsForm() {
             .map(test => test.class_id)
           )];
         } else {
-          response3 = response2.map(test => test.class_id);
+          if (selectedVtc === "") {
+            response3 = response2.map(test => test.class_id);
+          } else {
+            response3 = [...new Set(response2
+              .filter(test => test.school_id === Number(selectedVtc))
+              .map(test => test.class_id)
+            )];
+          }
         }
-        const response4 = response.filter(item => response3.includes(item.id));
+        const response4 = filteredClasses.filter(item => response3.includes(item.id));
         setClasses(response4);
       } catch (err) {
         console.error("API Error:", err);
@@ -391,7 +404,6 @@ function TomsForm() {
 
   const handleRadioChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value)
     const score = Number(value);
     const newAnswers = { ...answers, [name]: score };
     setAnswers(newAnswers);
@@ -595,7 +607,7 @@ function TomsForm() {
                   />
                 </div>
               )}
-              {(formType[0] === "normal2" || formType[0] === "curriculum") && userInfo.user_role === "Operations Excellence Lead" && (
+              {userInfo.user_role === "Operations Excellence Lead" && (
                 <WatomsVtcFilter onVtcChange={handleVtcChange} />
               )}
             </div>
