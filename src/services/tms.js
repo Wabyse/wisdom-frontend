@@ -80,3 +80,18 @@ export const fetchTasks = async () => {
     throw error;
   }
 };
+
+export const fetchTasksGeneralInfo = async () => {
+  try {
+    const response = await api.get(`/api/v1/tasks/general-info`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.generalData || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.generalData || error.message
+    );
+    throw error;
+  }
+};

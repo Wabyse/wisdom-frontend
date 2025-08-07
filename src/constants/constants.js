@@ -42,6 +42,8 @@ import wabysWisecmLogo from '../assets/wabysWisecmLogo.png';
 import wabysWishmsLogo from '../assets/wabysWishmsLogo.png';
 import wabysWisfmsLogo from '../assets/wabysWisfmsLogo.png';
 import wabysWiscmcmLogo from '../assets/wabysWiscmcmLogo.png';
+import tech from '../assets/tech.jpg';
+import hemam from '../assets/hemam.jpg';
 
 export const IMPORTANCE_LEVELS = ["normal", "important", "urgent"];
 
@@ -649,3 +651,126 @@ export const ORGANIZATION_OTHER_LANGUAGE = {
     "مركز الشرقية": "sharqia",
     "Ebda (Test)": "ابدا (اختبار)"
 }
+
+export const WATOMS_PROJECTS = [
+    {
+        code: "EIVOTS",
+        english_title: "Vocational training center",
+        arabic_title: "تطوير و تشغيل مراكز التدريب المهني",
+        image: GOL,
+        projects: [
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: hemam
+            },
+            {
+                title: "test",
+                image: tech
+            },
+        ]
+    },
+    {
+        code: "FFGD",
+        english_title: "Vocational training center",
+        arabic_title: "تطوير و تشغيل مراكز التدريب المهني",
+        image: GOL,
+        projects: [
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+        ]
+    },
+    {
+        code: "KAJG",
+        english_title: "Vocational training center",
+        arabic_title: "تطوير و تشغيل مراكز التدريب المهني",
+        image: GOL,
+        projects: [
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+        ]
+    },
+    {
+        code: "DESFG",
+        english_title: "Vocational training center",
+        arabic_title: "تطوير و تشغيل مراكز التدريب المهني",
+        image: GOL,
+        projects: [
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+        ]
+    },
+    {
+        code: "SDGAS",
+        english_title: "Vocational training center",
+        arabic_title: "تطوير و تشغيل مراكز التدريب المهني",
+        image: GOL,
+        projects: [
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+        ]
+    },
+    {
+        code: "SDFS",
+        english_title: "Vocational training center",
+        arabic_title: "تطوير و تشغيل مراكز التدريب المهني",
+        image: GOL,
+        projects: [
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+            {
+                title: "test",
+                image: tech
+            },
+        ]
+    }
+]

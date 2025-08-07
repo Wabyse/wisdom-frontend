@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        wisdomLighterOrange: "#ff9159",
         wisdomLightOrange: "#fd5f1c",
         wisdomOrange: "#d34102",
         wisdomDarkOrange: "#c63b00",

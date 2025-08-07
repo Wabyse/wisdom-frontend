@@ -95,9 +95,9 @@ const Login = () => {
           onSubmit={submitLogin}
         >
           <div className=" mb-2 flex justify-between">
-            {!language && <button className="px-4 py-1 rounded-lg bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold shadow-md hover:scale-[1.03] transition-transform border-none" onClick={() => setLanguage(!language)}>{language ? "ar" : "en"}</button>}
+            {!language && <button className="px-4 py-1 rounded-lg bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold shadow-md hover:scale-[1.03] transition-transform border-none" onClick={() => setLanguage(!language)}>{language ? "AR" : "EN"}</button>}
             <div className="font-semibold text-lg text-white">{language ? "Login" : "تسجيل الدخول"}</div>
-            {language && <button className="px-4 py-1 rounded-lg bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold shadow-md hover:scale-[1.03] transition-transform border-none" onClick={() => setLanguage(!language)}>{language ? "ar" : "en"}</button>}
+            {language && <button className="px-4 py-1 rounded-lg bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold shadow-md hover:scale-[1.03] transition-transform border-none" onClick={() => setLanguage(!language)}>{language ? "AR" : "EN"}</button>}
           </div>
           <div className="flex flex-col gap-4">
             <input

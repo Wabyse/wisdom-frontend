@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Popup from '../components/Popup';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress
+    faUser, faHouse, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress, faChartLine
 } from "@fortawesome/free-solid-svg-icons";
 import watomsLogo from '../assets/watoms3.png'
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
 import { userFullName } from '../utils/userFullName';
-import { getWatomsSystems } from '../constants/constants';
+import { getWatomsSystems, WATOMS_PROJECTS } from '../constants/constants';
 import { useSearchFilter } from '../hooks/useSearchFilter';
+import wabysLogo from '../assets/wabys.png';
 
 const Watoms = () => {
     const navigate = useNavigate();
@@ -28,6 +29,46 @@ const Watoms = () => {
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
+
+    const scrollRef = useRef(null);
+
+    const scroll = (direction) => {
+        const { current } = scrollRef;
+        if (current) {
+            const scrollAmount = 200;
+            current.scrollBy({
+                left: direction === "left" ? -scrollAmount : scrollAmount,
+                behavior: "smooth",
+            });
+        }
+    };
+
+    const parentCardRef = useRef(null);
+    const subCardRefs = useRef([]);
+    const [arrowLines, setArrowLines] = useState([]);
+
+    useEffect(() => {
+        const updateArrows = () => {
+            if (!parentCardRef.current) return;
+
+            const parentRect = parentCardRef.current.getBoundingClientRect();
+            const lines = subCardRefs.current.map((ref) => {
+                if (!ref) return null;
+                const rect = ref.getBoundingClientRect();
+                return {
+                    x1: parentRect.left + parentRect.width / 2,
+                    y1: parentRect.bottom,
+                    x2: rect.left + rect.width / 2,
+                    y2: rect.top,
+                };
+            }).filter(Boolean);
+            setArrowLines(lines);
+        };
+
+        updateArrows();
+        window.addEventListener('resize', updateArrows);
+        return () => window.removeEventListener('resize', updateArrows);
+    }, []);
 
     // Update time every minute // why?
     useEffect(() => {
@@ -57,38 +98,15 @@ const Watoms = () => {
 
     return (
         <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>
-            {/* Modern Background with Abstract Shapes */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {/* Animated Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/20 to-pink-100/30 animate-pulse" style={{ animationDuration: '8s' }} />
-
-                {/* Floating Geometric Shapes */}
-                <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-watomsBlue/10 to-wisdomOrange/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '0s' }} />
-                <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-wisdomOrange/10 to-watomsBlue/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }} />
-                <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '7s', animationDelay: '1s' }} />
-                <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '9s', animationDelay: '3s' }} />
-
-                {/* Abstract Lines */}
-                <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-watomsBlue/20 to-transparent" />
-                <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-wisdomOrange/20 to-transparent" />
-                <div className="absolute top-1/2 left-0 w-px h-32 bg-gradient-to-b from-transparent via-purple-400/20 to-transparent" />
-                <div className="absolute top-1/2 right-0 w-px h-32 bg-gradient-to-b from-transparent via-blue-400/20 to-transparent" />
-
-                {/* Grid Pattern */}
-                <div className="absolute inset-0 opacity-5">
-                    <div className="w-full h-full" style={{
-                        backgroundImage: `radial-gradient(circle at 1px 1px, ${darkMode ? 'white' : 'gray'} 1px, transparent 0)`,
-                        backgroundSize: '40px 40px'
-                    }} />
-                </div>
-            </div>
 
             {/* Header Section */}
             <div className="relative z-10">
                 {/* Logo and Search */}
                 <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 py-8 gap-8">
                     <div className="flex items-center gap-6">
-                        <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
+                        <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+                        <div className='border-l-2 border-black p-1 h-12'/>
+                        <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
                     </div>
                     <div className="flex-1 flex justify-center">
                         <div className="relative w-full max-w-md">
@@ -104,6 +122,7 @@ const Watoms = () => {
                         </div>
                     </div>
                     <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
+                        {/* dark mode / light mode */}
                         <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                             <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
                         </button>
@@ -123,6 +142,17 @@ const Watoms = () => {
                             <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
                             {userFullName(userInfo, language)}
                         </span>
+                        {/* Dashboard */}
+                        <button
+                            onClick={() => navigate('/watoms/dashboard')}
+                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                            title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
+                        >
+                            <FontAwesomeIcon
+                                icon={faChartLine}
+                                className="text-xl text-watomsBlue"
+                            />
+                        </button>
                         {/* Language Toggle Button */}
                         <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all font-bold text-base"
@@ -131,140 +161,99 @@ const Watoms = () => {
                         >
                             {language ? 'AR' : 'EN'}
                         </button>
-                        {/* --- أيقونات الملف الشخصي ومعلومات النظام --- */}
-                        <button
-                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                            title={language ? 'My Profile' : 'الملف الشخصي'}
-                            onClick={() => navigate('/watoms/user-profile')}
-                        >
-                            <FontAwesomeIcon icon={faUser} className="text-watomsBlue text-lg" />
-                        </button>
-                        <button
-                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                            title={language ? 'System Info' : 'معلومات النظام'}
-                            onClick={() => navigate('/watoms/system-info')}
-                        >
-                            <FontAwesomeIcon icon={faInfoCircle} className="text-watomsBlue text-lg" />
-                        </button>
                         {/* --- نهاية الأيقونات --- */}
                         <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                            onClick={() => { logout(); navigate('/login'); }}
+                            onClick={() => navigate('/wabys')}
                         >
-                            <FontAwesomeIcon icon={faSignOutAlt} className="text-xl text-wisdomOrange" />
+                            <FontAwesomeIcon icon={faHouse} className="text-xl" />
                         </button>
                     </div>
-                </div>
-
-                {/* Welcome Section - Text Only */}
-                <div className="text-center mb-12 px-6">
-                    <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>
-                        {getGreeting()}، {userFullName(userInfo, language)}
-                    </h1>
-                    <p className={`text-xl mb-6 ${darkMode ? "text-white" : "text-gray-600 dark:text-darkTextSecondary"}`}>
-                        {language ? "Welcome to the integrated Wabys system" : "مرحباً بك في نظام وابيز المتكامل"}
-                    </p>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="relative z-10 px-6 pb-12">
-                {/* Wabys Systems Sub Header */}
-                <div className="text-center mb-8">
-                    <h2 className={`text-3xl font-bold mb-2 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>
-                        {language ? "Wabys Systems" : "أنظمة وابيز"}
-                    </h2>
-                    <p className={`text-lg ${darkMode ? "text-white" : "text-gray-600 dark:text-darkTextSecondary"}`}>
-                        {language ? "Access all integrated systems" : "الوصول لجميع الأنظمة المتكاملة"}
-                    </p>
+            <div className="relative w-full px-6">
+                {/* Scroll Buttons */}
+                <button
+                    onClick={() => scroll("left")}
+                    className="absolute left-10 top-1/2 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow z-10"
+                >
+                    ←
+                </button>
+
+                <div
+                    ref={scrollRef}
+                    className="flex justify-evenly overflow-x-hidden space-x-4 py-4 px-10 scroll-smooth w-[90%] mx-auto"
+                >
+                    {WATOMS_PROJECTS.map((project, idx) => (
+                        <div className='min-w-[20%] m-0'>
+                            <div
+                                key={idx}
+                                className="flex items-center justify-center bg-white border rounded-2xl shadow-md px-4 py-2 w-[80%]"
+                            >
+                                <span className="text-lg font-semibold mr-4">{project.code}</span>
+                                <img
+                                    src={project.image}
+                                    alt={project.code}
+                                    className="w-12 h-12 rounded-full object-cover"
+                                />
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Wabys Systems Grid - Smaller Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto">
-                    {filteredSystems.map((system, idx) => (
+                <button
+                    onClick={() => scroll("right")}
+                    className="absolute right-10 top-1/2 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded-full shadow z-10"
+                >
+                    →
+                </button>
+            </div>
+            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+                <defs>
+                    <marker
+                        id="arrowhead"
+                        markerWidth="10"
+                        markerHeight="7"
+                        refX="0"
+                        refY="3.5"
+                        orient="auto"
+                        fill="gray"
+                    >
+                        <polygon points="0 0, 10 3.5, 0 7" />
+                    </marker>
+                </defs>
+                {arrowLines.map((line, idx) => (
+                    <line
+                        key={idx}
+                        x1={line.x1}
+                        y1={line.y1}
+                        x2={line.x2}
+                        y2={line.y2}
+                        stroke="gray"
+                        strokeWidth="2"
+                        markerEnd="url(#arrowhead)"
+                    />
+                ))}
+            </svg>
+            <div className="flex flex-col items-center bg-white border rounded-2xl shadow-md px-4 p-2 w-[90%] mx-auto">
+                <div className=" bg-white border rounded-2xl shadow-md px-4 p-2 w-[20%] mx-auto" ref={parentCardRef}>
+                    <img src={WATOMS_PROJECTS[0].image} className='w-28 mx-auto' />
+                    <h1 className="text-lg text-center font-semibold text-gray-500">{WATOMS_PROJECTS[0].code}</h1>
+                    <h1 className="text-lg text-center text-gray-500">{WATOMS_PROJECTS[0].arabic_title}</h1>
+                    <h1 className="text-lg text-center text-gray-500">{WATOMS_PROJECTS[0].english_title}</h1>
+                </div>
+                <div className="flex justify-between w-full px-28 mt-4">
+                    {WATOMS_PROJECTS[0].projects.map((subProject, index) => (
                         <div
-                            key={system.id}
-                            onClick={() => handleSystemClick(system)}
-                            className={`group cursor-pointer transform transition-all duration-300 hover:scale-105 ${!system.available ? 'opacity-60' : ''
-                                }`}
-                        >
-                            <div className={`bg-gradient-to-br ${system.color} text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 relative overflow-hidden`}>
-                                {/* Coming Soon Badge */}
-                                {!system.available && (
-                                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
-                                        {language ? 'Coming Soon' : 'قريباً'}
-                                    </div>
-                                )}
-
-                                {/* Background Pattern */}
-                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                <div className="relative z-10">
-                                    <div className="text-2xl mb-3 text-center">
-                                        <FontAwesomeIcon icon={system.icon} />
-                                    </div>
-                                    <h3 className="text-lg font-bold mb-1 text-center">{system.title}</h3>
-                                    <p className="text-xs opacity-90 mb-2 text-center">{system.subtitle}</p>
-                                    <p className="text-xs opacity-75 leading-relaxed text-center">{system.description}</p>
-
-                                    {/* Status Indicator */}
-                                    <div className="mt-3 flex items-center justify-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${system.available ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
-                                        <span className="text-xs opacity-75">
-                                            {system.available ? (language ? 'Available' : 'متاح') : (language ? 'Coming Soon' : 'قريباً')}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+                            key={index}
+                            ref={el => subCardRefs.current[index] = el}
+                            className="bg-white border rounded-2xl shadow-md px-4 p-2 min-w-fit mx-auto mt-4">
+                            <img src={subProject.image} className='w-44 mx-auto' />
                         </div>
                     ))}
                 </div>
-
-                {/* Quick Stats */}
-                {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-6xl mx-auto">
-                    {quickStats.map((stat, idx) => (
-                        <div key={idx} className="bg-white/90 dark:bg-darkCard/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20 hover:scale-105 transition-transform duration-300">
-                            <div className="flex items-center gap-4">
-                                <div className={`w-16 h-16 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center shadow-lg`}>
-                                    <FontAwesomeIcon icon={stat.icon} className="text-2xl text-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm text-gray-600 dark:text-darkTextSecondary mb-1">{stat.label}</p>
-                                    <p className="text-3xl font-bold text-watomsBlue dark:text-watomsLightBlue">{stat.value}</p>
-                                    <p className="text-xs text-green-600 font-semibold">{stat.change}</p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div> */}
-
-                {/* Recent Activity */}
-                {/* <div className="bg-white/90 dark:bg-darkCard/90 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8 max-w-6xl mx-auto">
-                    <div className="flex items-center gap-3 mb-6">
-                        <FontAwesomeIcon icon={faClock} className="text-2xl text-watomsBlue" />
-                        <h3 className="text-2xl font-bold text-watomsBlue dark:text-watomsLightBlue">
-                            {language ? "Recent Activity" : "النشاط الأخير"}
-                        </h3>
-                    </div>
-                    <div className="space-y-4">
-                        {recentActivity.map((activity, idx) => (
-                            <div key={idx} className="flex items-center gap-4 p-4 bg-gray-50/50 dark:bg-darkBorder/50 rounded-2xl hover:bg-gray-100/50 dark:hover:bg-darkBorder transition-colors duration-200">
-                                <div className={`w-12 h-12 ${activity.color} rounded-xl flex items-center justify-center text-white`}>
-                                    <FontAwesomeIcon icon={activity.icon} className="text-lg" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-semibold text-gray-800 dark:text-darkText">
-                                        {activity.title}
-                                    </p>
-                                    <p className="text-sm text-gray-500 dark:text-darkTextSecondary">
-                                        {activity.time}
-                                    </p>
-                                </div>
-                                <FontAwesomeIcon icon={faArrowRight} className="text-gray-400" />
-                            </div>
-                        ))}
-                    </div>
-                </div> */}
             </div>
 
             <Popup

@@ -1,5 +1,6 @@
 import api from "./api";
 
+// All Curriculums
 export const fetchCurriculums = async () => {
   try {
     const response = await api.get(`/api/v1/forms/AllCurriculums`, {
@@ -15,6 +16,7 @@ export const fetchCurriculums = async () => {
   }
 };
 
+// All Departments
 export const fetchDepartments = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/forms/AllDepartments`, {
@@ -33,6 +35,7 @@ export const fetchDepartments = async (userInfo) => {
   }
 };
 
+// All DMS Categories
 export const fetchDmsCategories = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/files/categories`, {
@@ -51,6 +54,7 @@ export const fetchDmsCategories = async (userInfo) => {
   }
 };
 
+// All Users
 export const fetchUsers = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/forms/AllUsers`, {
@@ -69,6 +73,7 @@ export const fetchUsers = async (userInfo) => {
   }
 };
 
+// All Students
 export const fetchStudents = async () => {
   try {
     const response = await api.get(`/api/v1/users/students`, {
@@ -84,6 +89,7 @@ export const fetchStudents = async () => {
   }
 };
 
+// All Classes
 export const fetchClasses = async () => {
   try {
     const response = await api.get(`/api/v1/users/classes`, {
@@ -99,6 +105,7 @@ export const fetchClasses = async () => {
   }
 };
 
+// All Stages
 export const fetchStages = async () => {
   try {
     const response = await api.get(`/api/v1/users/stages`, {
@@ -114,6 +121,7 @@ export const fetchStages = async () => {
   }
 };
 
+// All Schools
 export const fetchSchools = async () => {
   try {
     const response = await api.get(`/api/v1/users/schools`, {
@@ -129,6 +137,7 @@ export const fetchSchools = async () => {
   }
 };
 
+// All Incidents Categories
 export const fetchIncidentCategories = async () => {
   try {
     const response = await api.get(`/api/v1/users/schools/incidents/categories`, {
@@ -144,6 +153,7 @@ export const fetchIncidentCategories = async () => {
   }
 };
 
+// All Student Behavior Categories
 export const fetchBehaviorCategories = async () => {
   try {
     const response = await api.get(`/api/v1/users/students/behavior/categories`, {
@@ -159,6 +169,7 @@ export const fetchBehaviorCategories = async () => {
   }
 };
 
+// Send Employee's Check in or out
 export const sendCheckInOut = async (data) => {
   try {
     await api.post(`/api/v1/users/checkinout`, data); // DO NOT manually set headers
@@ -168,6 +179,7 @@ export const sendCheckInOut = async (data) => {
   }
 };
 
+// All Employees Check Ins and Outs
 export const getCheckInOut = async (data) => {
   try {
     const response = await api.get('/api/v1/users/checkinout/view', {
@@ -180,6 +192,7 @@ export const getCheckInOut = async (data) => {
   }
 };
 
+// All School's Employees
 export const fetchSchoolEmployees = async () => {
   try {
     const response = await api.get(`/api/v1/users/school/employees`, {
@@ -192,6 +205,7 @@ export const fetchSchoolEmployees = async () => {
   }
 }
 
+// All Vtc's Employees
 export const fetchVtcEmployees = async () => {
   try {
     const response = await api.get(`/api/v1/users/vtc/employees`, {
@@ -204,6 +218,7 @@ export const fetchVtcEmployees = async () => {
   }
 }
 
+// All Specializations
 export const fetchSpecializations = async () => {
   try {
     const response = await api.get(`/api/v1/data/students/specializations`, {

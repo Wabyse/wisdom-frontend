@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 // import { useAuth } from "../context/AuthContext";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import "../styles/Tms.css";
-import { fetchTaskCategories, fetchTasks } from "../services/tms";
+import { fetchTaskCategories, fetchTasks, fetchTasksGeneralInfo } from "../services/tms";
 import { fetchUsers } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
@@ -13,9 +13,14 @@ import DenyAccessPage from "../components/DenyAccessPage";
 import { fetchingOrgs } from "../services/dms";
 import { STATUS_OPTIONS, TMS_DESCRIPTION, TMS_HERO_INFO, IMPORTANCE_LEVELS } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faTasks, faListAlt, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUser, faShareNodes, faSun, faMoon, faInfoCircle, faTasks, faListAlt, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress, faHouse } from "@fortawesome/free-solid-svg-icons";
 import { useState as useThemeState } from "react";
 import watomsLogo from '../assets/watoms3.png';
+import wabysLogo from '../assets/wabys.png';
+import TmsSingleDataTemplate from "../components/TmsSingleDataTemplate";
+import TmsSingleTaskDetails from "../components/TmsSingleTaskDetails";
+import AddTaskForm from "../components/AddTaskForm";
+import { cairoDate } from "../utils/cairoDate";
 
 const TomsTms = () => {
   const location = useLocation();
@@ -59,6 +64,24 @@ const TomsTms = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   // FULLSCREEN STATE
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [generalInfo, setGeneralInfo] = useState(null);
+
+  useEffect(() => {
+    const loadTasksGeneralInfo = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchTasksGeneralInfo();
+        setGeneralInfo(response);
+      } catch (err) {
+        console.error("API Error:", err);
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadTasksGeneralInfo();
+  }, [])
 
   const handleClick = (id) => {
     navigate(`/watoms/tms/view/${id}`);
@@ -180,14 +203,6 @@ const TomsTms = () => {
         hour12: true,
       })
       .replace(",", ""); // Remove comma
-  };
-
-  const assignTasks = () => {
-    navigate(`/watoms/tms/assign`);
-  };
-
-  const myTasks = () => {
-    navigate(`/watoms/tms/my-tasks`);
   };
 
   useEffect(() => {
@@ -475,6 +490,10 @@ const TomsTms = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeModal]);
 
+  const testconsole = (data) => {
+    console.log(data)
+  }
+
   // Modal Components
   const TasksModal = ({ data, onClose }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -711,8 +730,6 @@ const TomsTms = () => {
         <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '9s', animationDelay: '3s' }} />
 
         {/* Abstract Lines */}
-        <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-watomsBlue/20 to-transparent" />
-        <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-wisdomOrange/20 to-transparent" />
         <div className="absolute top-1/2 left-0 w-px h-32 bg-gradient-to-b from-transparent via-purple-400/20 to-transparent" />
         <div className="absolute top-1/2 right-0 w-px h-32 bg-gradient-to-b from-transparent via-blue-400/20 to-transparent" />
 
@@ -728,10 +745,14 @@ const TomsTms = () => {
       {/* Modern App Menu (No Navbar) */}
       <div className="flex flex-col items-center justify-center min-h-[80vh] w-full relative z-10">
         {/* Logo and Search */}
-        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-5xl mb-12 gap-8">
+        <div className="flex flex-col md:flex-row items-center justify-between w-full mb-12 px-4">
+          {/* Logo */}
           <div className="flex items-center gap-6">
-            <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+            <div className='border-l-2 border-gray-500 p-1 h-8' />
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
           </div>
+          {/* Search */}
           <div className="flex-1 flex justify-center">
             <div className="relative w-full max-w-md">
               <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
@@ -746,6 +767,7 @@ const TomsTms = () => {
             </div>
           </div>
           <div className="flex items-center gap-4 relative">
+            {/* Dark Mode Button */}
             <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
               <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
             </button>
@@ -773,62 +795,117 @@ const TomsTms = () => {
             >
               {language ? 'AR' : 'EN'}
             </button>
-            {/* App Switcher Dropdown */}
-            <div className="relative">
-              <button
-                className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                onClick={() => setMenuOpen(v => !v)}
-                aria-label="App Switcher"
-              >
-                <FontAwesomeIcon icon={faThLarge} className="svg-inline--fa fa-table-cells-large text-xl text-watomsBlue" />
-              </button>
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 z-50 animate-fadeIn">
-                  <button onClick={() => { setMenuOpen(false); navigate('/watoms/pms'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faThLarge} className="text-watomsBlue" /> PMS
-                  </button>
-                  <button onClick={() => { setMenuOpen(false); navigate('/watoms/dms'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faFolder} className="text-wisdomOrange" /> DMS
-                  </button>
-                  <button onClick={() => { setMenuOpen(false); navigate('/watoms/tms'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faTasks} className="text-blue-500" /> TMS
-                  </button>
-                  <button onClick={() => { setMenuOpen(false); navigate('/watoms/dashboard'); }} className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faInfoCircle} className="text-purple-500" /> Dashboard
-                  </button>
-                </div>
-              )}
-            </div>
+            {/* Share Button */}
             <button
               className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-              onClick={() => { logout(); navigate('/login'); }}
             >
-              <FontAwesomeIcon icon={faSignOutAlt} className="text-xl text-wisdomOrange" />
+              <FontAwesomeIcon icon={faShareNodes} className="text-xl text-gray-500" />
+            </button>
+            {/* My Tasks Button */}
+            {/* <button
+              className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+            >
+              <FontAwesomeIcon icon={faFilter} className="text-xl text-wisdomOrange" />
+            </button> */}
+            {/* Filter Button */}
+            <button
+              className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+              onClick={() => {
+                setModalData({
+                  type: 'filters',
+                  data: {
+                    categories,
+                    subCategories,
+                    filteredAssignedUsers,
+                    filteredAssigneeUsers,
+                    selectedCategory,
+                    selectedSubCategory,
+                    selectedAssignedUser,
+                    selectedAssigneeUser,
+                    selectedStatus,
+                    selectedImportance,
+                    dateFrom,
+                    dateTo,
+                    deadlineFrom,
+                    deadlineTo
+                  }
+                });
+                setActiveModal('filters');
+              }}
+            >
+              <FontAwesomeIcon icon={faFilter} className="text-xl text-wisdomOrange" />
+            </button>
+            {/* Add Task Button */}
+            <button
+              className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+              onClick={() => {
+                setModalData({ type: 'tasks', data: tasks });
+                setActiveModal('add');
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} className="text-xl text-blue-800" />
+            </button>
+            {/* Home Button */}
+            <button
+              className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+              onClick={() => navigate('/watoms')}
+            >
+              <FontAwesomeIcon icon={faHouse} className="text-xl text-green-700" />
             </button>
           </div>
         </div>
         {/* Main Menu Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 w-full max-w-5xl mt-8">
-          {mainMenu.map((item, idx) => (
-            <div
-              key={item.label}
-              className={`flex flex-col items-center justify-center bg-gradient-to-br ${item.color} rounded-3xl shadow-xl p-10 cursor-pointer hover:scale-105 transition-transform duration-300 group backdrop-blur-sm`}
-              style={{ minHeight: '220px' }}
-              onClick={item.onClick}
-            >
-              <FontAwesomeIcon icon={item.icon} className="text-6xl mb-6 text-white drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
-              <span className="text-2xl font-extrabold text-white text-center drop-shadow-lg group-hover:scale-105 transition-transform duration-300">
-                {item.label}
-              </span>
-            </div>
-          ))}
+        {/* Total tasks info */}
+        <div className="flex justify-center gap-4 items-center">
+          <TmsSingleDataTemplate
+            title="اجمالي تقييم المهام"
+            value="0%"
+            valueAdditionalCSS="text-red-600"
+          />
+          <div className='border-l-2 border-gray-500 p-1 h-8' />
+          <div className="flex gap-2">
+            <TmsSingleDataTemplate
+              title="مهمة صغيرة"
+              value={generalInfo?.totalNormalTasks}
+            />
+            <TmsSingleDataTemplate
+              title="مهمة متوسطة"
+              value={generalInfo?.totalImportantTasks}
+            />
+            <TmsSingleDataTemplate
+              title="مهمة كبيرة"
+              value={generalInfo?.totalUrgentTasks}
+            />
+          </div>
+          <div className='border-l-2 border-gray-500 p-1 h-8' />
+          <TmsSingleDataTemplate
+            title="اجمالي عدد المهام"
+            value={generalInfo?.totalTasks}
+          />
         </div>
+        {/* separater */}
+        <div className="w-[80%] border-gray-400 rounded-full border-2 my-4" />
+        {/* Detailed Tasks info */}
+        {tasks.length > 0 ? tasks.map(task => (
+          <TmsSingleTaskDetails
+            value6={task.status}
+            value8={cairoDate(task.start_date)}
+            value9={cairoDate(task.end_date)}
+            value10={cairoDate(task.updatedAt)}
+            value11={task.taskSubCategory.name}
+            value12={task.taskSubCategory.taskCategory.name}
+            value14={task.importance}
+            value15={task.file_path ? task.file_path : "------"}
+            value16={task.description}
+          />
+        )) : <TmsSingleTaskDetails />}
       </div>
 
       {/* Render Modals */}
       {activeModal === 'tasks' && <TasksModal data={modalData?.data} onClose={closeModal} />}
+      {activeModal === 'add' && <AddTaskForm data={modalData?.data} onClose={closeModal} language={language} />}
       {activeModal === 'filters' && <FiltersModal data={modalData?.data} onClose={closeModal} />}
-    </div>
+    </div >
   );
 };
 

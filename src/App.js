@@ -56,6 +56,7 @@ import Wisdom from "./pages/Wisdom";
 import WisdomUserProfile from "./pages/WisdomUserProfile";
 import WisdomSystemInfo from "./pages/WisdomSystemInfo";
 import WisdomDashboard from "./pages/WisdomDashboard";
+import Eivots from "./pages/Eivots";
 import Wabys from "./pages/Wabys";
 
 function App() {
@@ -272,7 +273,7 @@ function App() {
             path="/watoms"
             element={
               <ProtectedRoute>
-                <Watoms />
+                <Eivots />
               </ProtectedRoute>
             }
           />
