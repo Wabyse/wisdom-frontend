@@ -1,3 +1,4 @@
+import TmsDoubleDataTemplate from "./TmsDoubleDataTemplate";
 import TmsSingleDataTemplate from "./TmsSingleDataTemplate";
 
 const TmsSingleTaskDetails = ({ value1="------", value2="------", value3="------", value4="------", value5="------", value6="------", value7="------", value8="------", value9="------", value10="------", value11="------", value12="------", value13="------", value14="------", value15="------", value16="------" }) => {
@@ -9,7 +10,7 @@ const TmsSingleTaskDetails = ({ value1="------", value2="------", value3="------
                 </div>
                 <div className="flex gap-2 mt-2">
                     <TmsSingleDataTemplate
-                        title="تقييم المدير الاعلي"
+                        title="تقييم المدير"
                         value={value1}
                         cardAdditionalCSS="w-[50%] min-w-fit"
                     />
@@ -26,7 +27,7 @@ const TmsSingleTaskDetails = ({ value1="------", value2="------", value3="------
                         cardAdditionalCSS="w-[50%] min-w-fit"
                     />
                     <TmsSingleDataTemplate
-                        title="تقييم المدير المباشر"
+                        title="تقييم المسؤل"
                         value={value4}
                         cardAdditionalCSS="w-[50%] min-w-fit"
                     />
@@ -115,7 +116,7 @@ const TmsSingleTaskDetails = ({ value1="------", value2="------", value3="------
                     />
                 </div>
                 <div className="flex gap-2 mt-2">
-                    <TmsSingleDataTemplate
+                    <TmsDoubleDataTemplate
                         title="المرفقات"
                         value={value15}
                         cardAdditionalCSS="min-w-[20%] w-[50%] max-w-[50%] overflow-y-auto"

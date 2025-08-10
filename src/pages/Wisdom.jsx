@@ -292,16 +292,6 @@ const Wisdom = () => {
                         </button>
                     </div>
                 </div>
-
-                {/* Welcome Section - Text Only */}
-                <div className="text-center mb-12 px-6">
-                    <h1 className="text-4xl md:text-5xl font-bold text-watomsBlue dark:text-watomsLightBlue mb-4">
-                        {getGreeting()}، {userFullName(userInfo, language)}
-                    </h1>
-                    <p className="text-xl text-gray-600 dark:text-darkTextSecondary mb-6">
-                        {language ? "Welcome to the integrated Wabys system" : "مرحباً بك في نظام وابيز المتكامل"}
-                    </p>
-                </div>
             </div>
 
             {/* Main Content */}

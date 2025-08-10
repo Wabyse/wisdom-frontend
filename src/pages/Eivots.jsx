@@ -13,6 +13,7 @@ import useFullScreen from '../hooks/useFullScreen';
 import { userFullName } from '../utils/userFullName';
 import { getWatomsSystems } from '../constants/constants';
 import { useSearchFilter } from '../hooks/useSearchFilter';
+import wabysLogo from '../assets/wabys.png';
 
 const Eivots = () => {
     const navigate = useNavigate();
@@ -88,7 +89,9 @@ const Eivots = () => {
                 {/* Logo and Search */}
                 <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 py-8 gap-8">
                     <div className="flex items-center gap-6">
-                        <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
+                        <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+                        <div className='border-l-2 border-gray-500 p-1 h-8' />
+                        <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
                     </div>
                     <div className="flex-1 flex justify-center">
                         <div className="relative w-full max-w-md">
@@ -155,20 +158,10 @@ const Eivots = () => {
                         </button>
                     </div>
                 </div>
-
-                {/* Welcome Section - Text Only */}
-                <div className="text-center mb-12 px-6">
-                    <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>
-                        {getGreeting()}، {userFullName(userInfo, language)}
-                    </h1>
-                    <p className={`text-xl mb-6 ${darkMode ? "text-white" : "text-gray-600 dark:text-darkTextSecondary"}`}>
-                        {language ? "Welcome to the integrated Wabys system" : "مرحباً بك في نظام وابيز المتكامل"}
-                    </p>
-                </div>
             </div>
 
             {/* Main Content */}
-            <div className="relative z-10 px-6 pb-12">
+            <div className="relative z-10 px-6 pb-10">
                 {/* Wabys Systems Sub Header */}
                 <div className="text-center mb-8">
                     <h2 className={`text-3xl font-bold mb-2 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>

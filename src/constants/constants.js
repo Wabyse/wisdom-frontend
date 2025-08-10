@@ -481,7 +481,7 @@ export const getWabysSystems = (language, userOrg) => [
         icon: wabysWatomsLogo,
         path: '/watoms',
         color: 'from-blue-500 to-blue-600',
-        available: userOrg === 1 || userOrg === 2 || userOrg === 3
+        available: userOrg !== 1 && userOrg !== 2
     },
     {
         id: 'wisdom',
@@ -493,7 +493,7 @@ export const getWabysSystems = (language, userOrg) => [
         icon: wabysWisdomLogo,
         path: '/wisdom',
         color: 'from-green-500 to-green-600',
-        available: userOrg !== 1 && userOrg !== 2
+        available: userOrg === 1 || userOrg === 2 || userOrg === 3 || userOrg === 6
     },
     {
         id: 'wiseum',
