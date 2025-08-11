@@ -282,3 +282,35 @@ export const fetchWaitingUserNumber = async () => {
     throw error;
   }
 };
+
+// Authorities
+export const fetchAuthorities = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/authorities`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Authorities || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.Authorities || error.message
+    );
+    throw error;
+  }
+};
+
+// All Projects
+export const fetchProjects = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/projects`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.projects || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.projects || error.message
+    );
+    throw error;
+  }
+};

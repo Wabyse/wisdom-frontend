@@ -13,7 +13,7 @@ import DenyAccessPage from "../components/DenyAccessPage";
 import { fetchingOrgs } from "../services/dms";
 import { STATUS_OPTIONS, TMS_DESCRIPTION, TMS_HERO_INFO, IMPORTANCE_LEVELS } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faUser, faShareNodes, faSun, faMoon, faInfoCircle, faTasks, faListAlt, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress, faHouse } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUser, faShareNodes, faSun, faMoon, faInfoCircle, faTasks, faListAlt, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress, faHouse, faBuilding } from "@fortawesome/free-solid-svg-icons";
 import { useState as useThemeState } from "react";
 import watomsLogo from '../assets/watoms3.png';
 import wabysLogo from '../assets/wabys.png';
@@ -46,6 +46,10 @@ const TomsTms = () => {
   const [error, setError] = useState(null);
   const { language, setLanguage } = useLanguage();
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [selected1, setSelected1] = useState("");
+  const [selected2, setSelected2] = useState("");
+  const [selected3, setSelected3] = useState("");
+  const [selectedVtc, setSelectedVtc] = useState("");
   const [selectedAssigneeOrganization, setSelectedAssigneeOrganization] = useState("");
   const [selectedAssignerOrganization, setSelectedAssignerOrganization] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -80,6 +84,11 @@ const TomsTms = () => {
   // FULLSCREEN STATE
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [generalInfo, setGeneralInfo] = useState(null);
+  const [openTaskId, setOpenTaskId] = useState(null);
+
+  const handleToggle = (taskId) => {
+    setOpenTaskId(prev => (prev === taskId ? null : taskId));
+  };
 
   useEffect(() => {
     const loadTasksGeneralInfo = async () => {
@@ -163,6 +172,26 @@ const TomsTms = () => {
 
   const handleImportanceChange = (event) => {
     setSelectedImportance(event.target.value);
+    scrollDown(targetDivRef);
+  };
+
+  const handle1Change = (e) => {
+    setSelected1(e.target.value);
+    scrollDown(targetDivRef);
+  };
+
+  const handle2Change = (e) => {
+    setSelected2(e.target.value);
+    scrollDown(targetDivRef);
+  };
+
+  const handle3Change = (e) => {
+    setSelected3(e.target.value);
+    scrollDown(targetDivRef);
+  };
+
+  const handleVtcChange = (e) => {
+    setSelectedVtc(e.target.value);
     scrollDown(targetDivRef);
   };
 
@@ -576,23 +605,70 @@ const TomsTms = () => {
       <div className="relative bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden animate-modal-in">
         <div className="bg-gradient-to-r from-wisdomOrange to-watomsBlue p-6 text-white">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-extrabold">{language ? "Advanced Filters" : "فلاتر متقدمة"}</h2>
+            {language && <h2 className="text-3xl font-extrabold">Advanced Filters</h2>}
             <button onClick={onClose} className="text-white hover:text-gray-200 text-2xl">
               ×
             </button>
+            {!language && <h2 className="text-3xl font-extrabold">فلاتر متقدمة</h2>}
           </div>
         </div>
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <h3 className={`text-xl font-bold text-gray-900 flex items-center gap-2 ${language ? "justify-start" : "justify-end"}`}>
+                <FontAwesomeIcon icon={faBuilding} className="text-watomsBlue" />
+                {language ? "الجهة" : "الجهة"}
+              </h3>
+              <select
+                value={selected1 || ""}
+                onChange={handle1Change}
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
+              >
+                <option value="">{language ? "Select Status" : "اختر الحالة"}</option>
+                {STATUS_OPTIONS?.map((status) => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
+              <select
+                value={selected2 || ""}
+                onChange={handle2Change}
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
+              >
+                <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
+                {IMPORTANCE_LEVELS?.map((level) => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
+              <select
+                value={selected3 || ""}
+                onChange={handle3Change}
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
+              >
+                <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
+                {IMPORTANCE_LEVELS?.map((level) => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
+              <select
+                value={selectedVtc || ""}
+                onChange={handleVtcChange}
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
+              >
+                <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
+                {IMPORTANCE_LEVELS?.map((level) => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-4">
+              <h3 className={`text-xl font-bold text-gray-900 flex items-center gap-2 ${language ? "justify-start" : "justify-end"}`}>
                 <FontAwesomeIcon icon={faClock} className="text-watomsBlue" />
                 {language ? "Status & Importance" : "الحالة والأهمية"}
               </h3>
               <select
                 value={selectedStatus || ""}
                 onChange={handleStatusChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
                 <option value="">{language ? "Select Status" : "اختر الحالة"}</option>
                 {STATUS_OPTIONS?.map((status) => (
@@ -602,7 +678,7 @@ const TomsTms = () => {
               <select
                 value={selectedImportance || ""}
                 onChange={handleImportanceChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
                 <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
                 {IMPORTANCE_LEVELS?.map((level) => (
@@ -611,14 +687,14 @@ const TomsTms = () => {
               </select>
             </div>
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <h3 className={`text-xl font-bold text-gray-900 flex items-center gap-2 ${language ? "justify-start" : "justify-end"}`}>
                 <FontAwesomeIcon icon={faFolder} className="text-watomsBlue" />
                 {language ? "Assessment Tools" : "أدوات التقييم"}
               </h3>
               <select
                 value={selectedCategory || ""}
                 onChange={handleCategoryChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
                 <option value="">{language ? "Select Category" : "اختر التصنيف"}</option>
                 {categories?.map((cat, idx) => (
@@ -628,7 +704,7 @@ const TomsTms = () => {
               <select
                 value={selectedSubCategory || ""}
                 onChange={handleSubCategoryChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
                 <option value="">{language ? "Select Sub Category" : "اختر التصنيف الفرعي"}</option>
                 {subCategories?.map((subCat) => (
@@ -637,37 +713,37 @@ const TomsTms = () => {
               </select>
             </div>
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <h3 className={`text-xl font-bold text-gray-900 flex items-center gap-2 ${language ? "justify-start" : "justify-end"}`}>
                 <FontAwesomeIcon icon={faUserTie} className="text-watomsBlue" />
                 {language ? "Users" : "المستخدمون"}
               </h3>
               <select
                 value={selectedAssignedUser || ""}
                 onChange={handleAssignedByChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
                 <option value="">{language ? "Assigned By" : "تم التكليف من"}</option>
                 {data?.filteredAssignedUsers?.map((user) => (
                   <option key={user.employee?.employee_id} value={user.employee?.employee_id}>{user.employee?.employee_first_name} {user.employee?.employee_middle_name} {user.employee?.employee_last_name}</option>
                 ))}
               </select>
-              <select
+              {userInfo.code === 3 && <select
                 value={selectedAssigneeUser || ""}
                 onChange={handleAssigneeChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
                 <option value="">{language ? "Assignee" : "المكلف إليه"}</option>
                 {data?.filteredAssigneeUsers?.map((user) => (
                   <option key={user.employee?.employee_id} value={user.employee?.employee_id}>{user.employee?.employee_first_name} {user.employee?.employee_middle_name} {user.employee?.employee_last_name}</option>
                 ))}
-              </select>
+              </select>}
             </div>
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <h3 className={`text-xl font-bold text-gray-900 flex items-center gap-2 ${language ? "justify-start" : "justify-end"}`}>
                 <FontAwesomeIcon icon={faCalendarAlt} className="text-watomsBlue" />
                 {language ? "Date Range" : "نطاق التاريخ"}
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className={`grid grid-cols-2 gap-4 ${language ? "text-start" : "text-end"}`}>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">{language ? "Start From:" : "البداية من:"}</label>
                   <input
@@ -903,9 +979,14 @@ const TomsTms = () => {
         {/* Detailed Tasks info */}
         {tasks.length > 0 ? tasks.map(task => (
           <TmsSingleTaskDetails
+            key={task.id}
+            onAddClick={() => handleToggle(task.id)}
+            onCloseClick={() => setOpenTaskId(null)}
+            isOpen={openTaskId === task.id}
+            taskId={openTaskId === task.id && openTaskId}
             value1={`${task.manager_evaluation !== null ? task.manager_evaluation : 0}%`}
             value2={`${statusPercentage[task.status]}%`}
-            value3={`${(task.manager_evaluation !== null ? Number(task.manager_evaluation)*0.3 : 0*0.3) + (task.assigned_by_evaluation !== null ? Number(task.assigned_by_evaluation)*0.5 : 0*0.5) + (Number(statusPercentage[task.status])*0.2)}%`}
+            value3={`${(task.manager_evaluation !== null ? Number(task.manager_evaluation) * 0.3 : 0 * 0.3) + (task.assigned_by_evaluation !== null ? Number(task.assigned_by_evaluation) * 0.5 : 0 * 0.5) + (Number(statusPercentage[task.status]) * 0.2)}%`}
             value4={`${task.assigned_by_evaluation !== null ? task.assigned_by_evaluation : 0}%`}
             value6={task.status}
             value7={tmsDevliverSituation(task.start_date, task.end_date, task.status, task.updatedAt)}
@@ -916,11 +997,9 @@ const TomsTms = () => {
             value12={task.taskSubCategory.taskCategory.name}
             value13={task.task_size}
             value14={task.importance}
-            value15={task.file_path || task.submit_file_path ? {
-              sender: task.file_path,
-              reciever: task.submit_file_path
-            } : "------"}
+            value15={task.file_path || task.submit_file_path ? { sender: task.file_path, reciever: task.submit_file_path } : "------"}
             value16={task.description}
+            value17={`${task.assigner.first_name} ${task.assigner.middle_name} ${task.assigner.last_name}`}
           />
         )) : <TmsSingleTaskDetails />}
       </div>

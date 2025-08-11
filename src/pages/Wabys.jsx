@@ -23,8 +23,8 @@ const Wabys = () => {
     const [darkMode, setDarkMode] = useState(false);
     const isFullScreen = useFullScreen();
     const systems = useMemo(
-        () => getWabysSystems(language, userInfo.organization_id),
-        [language, userInfo.organization_id]
+        () => getWabysSystems(language, userInfo?.organization_id),
+        [language, userInfo?.organization_id]
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);

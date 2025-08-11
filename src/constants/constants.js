@@ -47,6 +47,8 @@ import hemam from '../assets/hemam.jpg';
 
 export const IMPORTANCE_LEVELS = ["normal", "important", "urgent"];
 
+export const TASK_SIZES = ["small", "medium", "large"];
+
 export const WISDOM_INTERVIEW_EN_TITLES = [
     "Planning for Teaching/Learning Process",
     "Integrating Technology into Teaching",

@@ -2,19 +2,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faEye } from "@fortawesome/free-solid-svg-icons";
 import { downloadFileDms } from "../services/dms";
 import { filterFileName } from "../utils/filterFileName";
+import toast, { Toaster } from "react-hot-toast";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
 const TmsDoubleDataTemplate = ({ title, value, cardAdditionalCSS = "", valueAdditionalCSS = "" }) => {
     const openPDF = (fileName) => {
-        const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName.filteredPath}`;
-        window.open(pdfUrl, "_blank"); // Opens PDF in new tab
+        if (fileName && fileName.toLowerCase().endsWith('.pdf')) {
+            const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName}`;
+            window.open(pdfUrl, "_blank"); // Opens PDF in new tab
+        } else {
+            toast.error('You can only open PDF files');
+        }
     };
     const handleDownload2 = (path) => {
         try {
             // Ensure correct filename extraction for both windows and ubuntu
-            const fileName = encodeURIComponent(path.filteredPath.replace(/\\/g, "/"));
-            downloadFileDms(fileName);
+            const fileName = encodeURIComponent(path.replace(/\\/g, "/"));
+            downloadFileDms(fileName, path);
         } catch (error) {
             console.error("Download error", error);
             alert("File download failed");
@@ -22,6 +27,7 @@ const TmsDoubleDataTemplate = ({ title, value, cardAdditionalCSS = "", valueAddi
     };
     return (
         <div className={cardAdditionalCSS}>
+            <Toaster />
             <div className="bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange text-white text-center rounded p-2">
                 {title}
             </div>

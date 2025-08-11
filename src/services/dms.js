@@ -1,6 +1,7 @@
+import { filterFileName } from "../utils/filterFileName";
 import api from "./api";
 
-export const downloadFileDms = async (fileName) => {
+export const downloadFileDms = async (fileName, path) => {
   try {
     const response = await api.get(`/api/v1/files/download/${fileName}`, {
       responseType: "blob",
@@ -9,7 +10,8 @@ export const downloadFileDms = async (fileName) => {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
 
-    const cleanName = fileName.split("/").pop();
+    
+    const cleanName = filterFileName(path);
     link.href = url;
     link.setAttribute("download", cleanName);
     document.body.appendChild(link);

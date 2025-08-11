@@ -2,7 +2,11 @@ import api from "./api";
 
 export const assignTask = async (formData) => {
   try {
-    await api.post("/api/v1/tasks/assign", formData);
+    await api.post("/api/v1/tasks/assign", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // 👈 Required
+      },
+    });
   } catch (error) {
     console.error(
       "Error creating form:",

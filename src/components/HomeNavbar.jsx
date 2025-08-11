@@ -157,7 +157,7 @@ const HomeNabvar = ({ current, setViewValue }) => {
         <button onClick={() => navigateTo('/careers')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'careers' ? "bg-white text-black font-bold" : "text-black"}`}>Careers</button>
         <button onClick={() => navigateTo('/aboutus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'aboutus' ? "bg-white text-black font-bold" : "text-black"}`}>About Us</button>
         <button onClick={() => navigateTo('/contactus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'contactus' ? "bg-white text-black font-bold" : "text-black"}`}>Contact Us</button> */}
-          <button onClick={openPopup} className="bg-wisdomOrange hover:bg-wisdomDarkOrange p-4 text-white">Call Now!</button>
+          <button onClick={() => navigateTo('/wabys')} className="bg-wisdomOrange hover:bg-wisdomDarkOrange p-4 text-white">ًWabys</button>
         </div>
         <button onClick={mobile ? closeMobile : toggleMobile} className='mb-2 md:hidden'>
           <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
