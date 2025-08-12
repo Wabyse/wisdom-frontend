@@ -11,7 +11,7 @@ export const downloadFileDms = async (fileName, path) => {
     const link = document.createElement("a");
 
     
-    const cleanName = filterFileName(path);
+    const cleanName = filterFileName(path.filteredPath);
     link.href = url;
     link.setAttribute("download", cleanName);
     document.body.appendChild(link);
@@ -64,12 +64,10 @@ export const fetchingOrgs = async (userInfo) => {
 
 export const uploadDmsDocument = async (formData) => {
   try {
-    await api.post(`/api/v1/files/upload`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    await api.post(`/api/v1/files/upload`, formData);
   } catch (error) {
     console.error(
-      "Error downloading file:",
+      "Error uploading file:",
       error.response?.data || error.message
     );
     throw error;

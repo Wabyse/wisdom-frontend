@@ -3,10 +3,12 @@ import toast, { Toaster } from "react-hot-toast";
 import { createTaskFormData } from "../utils/createTaskFormData";
 import { useAuth } from "../context/AuthContext";
 import { assignTask, fetchTaskCategories } from "../services/tms";
-import { IMPORTANCE_LEVELS } from "../constants/constants";
+import { IMPORTANCE_LEVELS, TASK_SIZES } from "../constants/constants";
 import { fetchSchools, fetchUsers } from "../services/data";
+import { useLanguage } from "../context/LanguageContext";
 
-const AddTaskForm = ({ data, onClose, language }) => {
+const AddTaskForm = ({ data, onClose }) => {
+    const { language } = useLanguage();
     const { userInfo } = useAuth();
     const [file, setFile] = useState(null);
     const [submitted, setSubmitted] = useState(false);
@@ -18,7 +20,6 @@ const AddTaskForm = ({ data, onClose, language }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [vtcs, setVtcs] = useState([]);
-    const [selectedVtc, setSelectedVtc] = useState("");
     const [selectedTask, setSelectedTask] = useState("");
     const [selectedDescription, setSelectedDescription] = useState("");
     const [selectedStartDate, setSelectedStartDate] = useState("");
@@ -28,30 +29,41 @@ const AddTaskForm = ({ data, onClose, language }) => {
     const [selectedImportance, setSelectedImportance] = useState("");
     const [selectedSubCategory, setSelectedSubCategory] = useState("");
 
+    const [auth, setAuth] = useState([]);
+    const [filteredvtcs, setFilteredVtcs] = useState([]);
+    const [selectedAuth, setSelectedAuth] = useState("");
+    const [selectedProject, setSelectedProject] = useState("");
+    const [selectedProgram, setSelectedProgram] = useState("");
+    const [selectedSize, setSelectedSize] = useState("");
+
     const submitTask = async (e) => {
         e.preventDefault();
 
-        if (!selectedUser || !selectedTask || !selectedDescription || !selectedStartDate || !selectedEndDate || !selectedImportance || !selectedSubCategory) {
+        if (!selectedProject || !selectedSize || !selectedUser || !selectedTask || !selectedDescription || !selectedStartDate || !selectedEndDate || !selectedImportance || !selectedSubCategory) {
             toast.error("Please fill all required fields.");
             return;
         }
 
         try {
-            const taskData = {
-                "importance": selectedImportance,
-                "task": selectedTask,
-                "description": selectedDescription,
-                "start_date": new Date(`${selectedStartDate}T${selectedStartTime || "00:00"}`).toISOString(),
-                "end_date": new Date(`${selectedEndDate}T${selectedEndTime || "00:00"}`).toISOString(),
-                "file": file,
-                "sub_category": Number(selectedSubCategory),
-                "assignedBy_id": userInfo?.employee_id,
-                "assignee_id": Number(selectedUser)
+            const taskData = new FormData();
+            taskData.append("task", selectedTask);
+            taskData.append("description", selectedDescription);
+            taskData.append("start_date", new Date(`${selectedStartDate}T${selectedStartTime || "00:00"}`).toISOString());
+            taskData.append("end_date", new Date(`${selectedEndDate}T${selectedEndTime || "00:00"}`).toISOString());
+            taskData.append("importance", selectedImportance);
+            taskData.append("task_size", selectedSize);
+            taskData.append("sub_category", Number(selectedSubCategory));
+            taskData.append("assignedBy_id", userInfo?.employee_id);
+            taskData.append("assignee_id", Number(selectedUser));
+            taskData.append("sub_task_id", null);
+            taskData.append("organization_id", Number(selectedProject));
+
+            if (file) {
+                taskData.append("file", file); // 👈 Important!
             }
             await assignTask(taskData);
             toast.success(language ? "Task has been assigned" : "تم تكليف المهمة");
             setSubmitted(true);
-            onClose();
         } catch (err) {
             console.error("Error submitting data:", err);
         }
@@ -84,8 +96,8 @@ const AddTaskForm = ({ data, onClose, language }) => {
                 const filteredVtcs = schools.filter(vtc => vtc.id !== 1 && vtc.id != 2 && vtc.id != 12);
                 setVtcs(filteredVtcs);
                 let users;
-                if (selectedVtc !== "") {
-                    users = employees.filter(employee => employee?.employee.organization_id === Number(selectedVtc));
+                if (selectedProject !== "") {
+                    users = employees.filter(employee => employee?.employee.organization_id === Number(selectedProject));
                 } else {
                     users = employees;
                 }
@@ -100,7 +112,7 @@ const AddTaskForm = ({ data, onClose, language }) => {
         };
 
         fetchData();
-    }, [userInfo, selectedVtc]);
+    }, [userInfo, selectedProject]);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -118,22 +130,36 @@ const AddTaskForm = ({ data, onClose, language }) => {
                 </div>
                 <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
                     <form onSubmit={submitTask}>
-                        {/* Organization Filter */}
+                        {/* Authority and Project Filter */}
                         <div className="select-group">
                             <div className="select">
-                                <label key="user" className={`${!language && "w-full text-end"}`}>{language ? "Vtc:" : ":المركز"}</label>
-                                <select id="user" name="user" className={!language && `text-end`} onChange={(e) => setSelectedVtc(e.target.value)}>
+                                <label key="project" className={`${!language && "w-full text-end"}`}>{language ? "Project:" : ":المشروع"}</label>
+                                <select id="project" name="project" className={!language && `text-end`} onChange={(e) => setSelectedProject(e.target.value)}>
                                     <option value="" disabled selected>
-                                        {language ? "Please Select a vtc" : "الرجاء اختيار مركز"}
+                                        {language ? "Please Select a project" : "الرجاء اختيار مشروع"}
                                     </option>
-                                    {vtcs.map((vtc) => (
-                                        <option key={vtc.id} value={vtc.id}>
-                                            {vtc.name}
+                                    {filteredvtcs.map((project) => (
+                                        <option key={project.id} value={project.id}>
+                                            {project.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="select">
+                                <label key="authority" className={`${!language && "w-full text-end"}`}>{language ? "the authority:" : ":الجهة"}</label>
+                                <select id="authority" name="authority" className={!language && `text-end`} onChange={(e) => setSelectedAuth(e.target.value)}>
+                                    <option value="" disabled selected>
+                                        {language ? "Please Select an authority" : "الرجاء اختيار جهة"}
+                                    </option>
+                                    {auth.map((authority) => (
+                                        <option key={authority.id} value={authority.id}>
+                                            {authority.name}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                         </div>
+                        {/* Program and Employee Filter */}
                         <div className="select-group">
                             <div className="select">
                                 <label key="user" className={`${!language && "w-full text-end"}`}>{language ? "Employee:" : ":الموظف"}</label>
@@ -149,50 +175,20 @@ const AddTaskForm = ({ data, onClose, language }) => {
                                 </select>
                             </div>
                             <div className="select">
-                                <label key="importance" className={`${!language && "w-full text-end"}`}>{language ? "Importance:" : ":الاهمية"}</label>
-                                <select id="importance" name="importance" className={!language && `text-end`} onChange={(e) => setSelectedImportance(e.target.value)}>
+                                <label key="program" className={`${!language && "w-full text-end"}`}>{language ? "The Program:" : ":البرنامج"}</label>
+                                <select id="program" name="program" className={!language && `text-end`} onChange={(e) => setSelectedProgram(e.target.value)}>
                                     <option value="" disabled selected>
-                                        {language ? "Please Select an importance" : "الرجاء اختيار الاهمية"}
+                                        {language ? "Please Select a program" : "الرجاء اختيار برنامج"}
                                     </option>
-                                    {IMPORTANCE_LEVELS.map((state) => (
-                                        <option key={state} value={state}>
-                                            {state}
+                                    {vtcs.map((program) => (
+                                        <option key={program.id} value={program.id}>
+                                            {program.name}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                         </div>
-                        <label className={`w-full font-bold ${!language && "text-end flex justify-end"}`}>{language ? "Task:" : ":المهمة"}</label>
-                        <input className={`w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out ${!language && "text-end"}`} type="text" name="task"  onChange={(e) => setSelectedTask(e.target.value)} />
-
-                        <label className={`w-full font-bold ${!language && "text-end flex justify-end "}`}>{language ? "Description:" : ":الوصف"}</label>
-                        <input className={`w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out ${!language && "text-end"}`} type="text" name="description" onChange={(e) => setSelectedDescription(e.target.value)} />
-
-                        <div className="date-time-group">
-                            <div>
-                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "Start Date:" : ":تاريخ بدء المهمة"}</label>
-                                <input type="date" name="startDate" className={!language && "text-end"} onChange={(e) => setSelectedStartDate(e.target.value)} />
-                            </div>
-                            <div>
-                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "Start Time: (optional)" : "موعد بدء المهمة: (اختياري)"}</label>
-                                <input type="time" name="startTime" className={!language && "text-end"} onChange={(e) => setSelectedStartTime(e.target.value)} />
-                            </div>
-                        </div>
-
-                        <div className="date-time-group">
-                            <div>
-                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "End Date:" : ":تاريخ انتهاء المهمة"}</label>
-                                <input type="date" name="endDate" className={!language && "text-end"} onChange={(e) => setSelectedEndDate(e.target.value)} />
-                            </div>
-                            <div>
-                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "End Time: (optional)" : "موعد انتهاء المهمة: (اختياري)"}</label>
-                                <input type="time" name="endTime" className={!language && "text-end"} onChange={(e) => setSelectedEndTime(e.target.value)} />
-                            </div>
-                        </div>
-
-                        <label className={`block font-bold ${!language && "w-full text-end"}`}>{language ? "Attach File:" : ":رفع ملف"}</label>
-                        <input className="border-[#ccc] border-2 p-2 rounded w-full" type="file" name="file" onChange={handleFileChange} />
-
+                        {/* Category and Sub Category Filter */}
                         <div className="select-group">
                             <div className="select">
                                 <label key="category" className={` ${!language && "w-full text-end"}`}>{language ? "Category:" : ":التصنيف"}</label>
@@ -232,6 +228,65 @@ const AddTaskForm = ({ data, onClose, language }) => {
                                 </select>
                             </div>
                         </div>
+                        {/* Size and Importance Filter */}
+                        <div className="select-group">
+                            <div className="select">
+                                <label key="size" className={`${!language && "w-full text-end"}`}>{language ? "Task Size:" : ":حجم المهمة"}</label>
+                                <select id="size" name="size" className={!language && `text-end`} onChange={(e) => setSelectedSize(e.target.value)}>
+                                    <option value="" disabled selected>
+                                        {language ? "Please Select an size" : "الرجاء اختيار حجم المهمة"}
+                                    </option>
+                                    {TASK_SIZES.map((size) => (
+                                        <option key={size} value={size}>
+                                            {size}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="select">
+                                <label key="importance" className={`${!language && "w-full text-end"}`}>{language ? "Importance:" : ":الاهمية"}</label>
+                                <select id="importance" name="importance" className={!language && `text-end`} onChange={(e) => setSelectedImportance(e.target.value)}>
+                                    <option value="" disabled selected>
+                                        {language ? "Please Select an importance" : "الرجاء اختيار الاهمية"}
+                                    </option>
+                                    {IMPORTANCE_LEVELS.map((state) => (
+                                        <option key={state} value={state}>
+                                            {state}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <label className={`w-full font-bold ${!language && "text-end flex justify-end"}`}>{language ? "Task:" : ":المهمة"}</label>
+                        <input className={`w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out ${!language && "text-end"}`} type="text" name="task" onChange={(e) => setSelectedTask(e.target.value)} />
+
+                        <label className={`w-full font-bold ${!language && "text-end flex justify-end "}`}>{language ? "Description:" : ":الوصف"}</label>
+                        <input className={`w-full p-2.5 my-[6px] mb-3 border border-gray-300 rounded-[6px] text-sm box-border transition-colors duration-300 ease-in-out ${!language && "text-end"}`} type="text" name="description" onChange={(e) => setSelectedDescription(e.target.value)} />
+
+                        <div className="date-time-group">
+                            <div>
+                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "Start Date:" : ":تاريخ بدء المهمة"}</label>
+                                <input type="date" name="startDate" className={!language && "text-end"} onChange={(e) => setSelectedStartDate(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "Start Time: (optional)" : "موعد بدء المهمة: (اختياري)"}</label>
+                                <input type="time" name="startTime" className={!language && "text-end"} onChange={(e) => setSelectedStartTime(e.target.value)} />
+                            </div>
+                        </div>
+
+                        <div className="date-time-group">
+                            <div>
+                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "End Date:" : ":تاريخ انتهاء المهمة"}</label>
+                                <input type="date" name="endDate" className={!language && "text-end"} onChange={(e) => setSelectedEndDate(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className={`font-bold ${!language && "w-full text-end"}`}>{language ? "End Time: (optional)" : "موعد انتهاء المهمة: (اختياري)"}</label>
+                                <input type="time" name="endTime" className={!language && "text-end"} onChange={(e) => setSelectedEndTime(e.target.value)} />
+                            </div>
+                        </div>
+
+                        <label className={`block font-bold ${!language && "w-full text-end"}`}>{language ? "Attach File (optional):" : ":رفع ملف (اختياري)"}</label>
+                        <input className="border-[#ccc] border-2 p-2 rounded w-full" type="file" name="file" onChange={handleFileChange} />
                         <div className="w-full flex justify-center mt-2">
                             <button className="bg-wisdomOrange hover:bg-wisdomDarkOrange text-white rounded py-2 px-4">{language ? "Submit" : "ارسال"}</button>
                         </div>

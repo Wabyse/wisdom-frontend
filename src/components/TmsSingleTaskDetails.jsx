@@ -10,11 +10,29 @@ import toast, { Toaster } from "react-hot-toast";
 import { assignTask, fetchTaskCategories } from "../services/tms";
 import { fetchAuthorities, fetchProjects, fetchSchools, fetchUsers } from "../services/data";
 import { IMPORTANCE_LEVELS, TASK_SIZES } from "../constants/constants";
+import TmsSubTaskDetails from "./TmsSubTaskDetails";
+import { cairoDate } from "../utils/cairoDate";
+import { tmsDevliverSituation } from "../utils/tmsDeliverSituation";
+
+const statusPercentage = {
+  "0": "0",
+  "25": "25",
+  "50": "50",
+  "75": "75",
+  "finished": "100",
+  "on hold": "0",
+  "in progress": "0",
+  "past the due date": "0",
+  "submitted": "100",
+  "under review": "100",
+  "not started yet": "0"
+}
 
 const TmsSingleTaskDetails = ({
     taskId,
     onCloseClick,
     onAddClick,
+    subTasks,
     isOpen = false,
     value1 = "------", value2 = "------", value3 = "------", value4 = "------",
     value5 = "------", value6 = "------", value7 = "------", value8 = "------",
@@ -230,7 +248,7 @@ const TmsSingleTaskDetails = ({
                         البيانات الاساسية للمهمة
                     </div>
                     <div className="flex gap-2 mt-2">
-                        <TmsSingleDataTemplate title="المرفقات" value={value17} cardAdditionalCSS="w-[75%] overflow-y-auto" valueAdditionalCSS="flex items-center justify-center" />
+                        <TmsSingleDataTemplate title="اسم المنفذ" value={value17} cardAdditionalCSS="w-[75%] overflow-y-auto" valueAdditionalCSS="flex items-center justify-center" />
                         <TmsSingleDataTemplate title="الجهة" value={value18} cardAdditionalCSS="w-[25%] overflow-y-auto" valueAdditionalCSS="flex items-center justify-center" />
                     </div>
                     <div className="flex gap-2 mt-2">
@@ -427,6 +445,30 @@ const TmsSingleTaskDetails = ({
                     </div>
                 </div>
             )}
+
+            {subTasks?.length !== 0 &&
+                subTasks?.map(task => (
+                    <TmsSubTaskDetails
+                        key={task.id}
+                        value1={`${task.manager_evaluation !== null ? task.manager_evaluation : 0}%`}
+                        value2={`${statusPercentage[task.status]}%`}
+                        value3={`${(task.manager_evaluation !== null ? Number(task.manager_evaluation) * 0.3 : 0 * 0.3) + (task.assigned_by_evaluation !== null ? Number(task.assigned_by_evaluation) * 0.5 : 0 * 0.5) + (Number(statusPercentage[task.status]) * 0.2)}%`}
+                        value4={`${task.assigned_by_evaluation !== null ? task.assigned_by_evaluation : 0}%`}
+                        value6={task.status}
+                        value7={tmsDevliverSituation(task.start_date, task.end_date, task.status, task.updatedAt)}
+                        value8={cairoDate(task.start_date)}
+                        value9={cairoDate(task.end_date)}
+                        value10={cairoDate(task.updatedAt)}
+                        value11={task.taskSubCategory.name}
+                        value12={task.taskSubCategory.taskCategory.name}
+                        value13={task.task_size}
+                        value14={task.importance}
+                        value15={task.file_path || task.submit_file_path ? { sender: task.file_path, reciever: task.submit_file_path } : "------"}
+                        value16={task.description}
+                        value17={`${task.assignee.first_name} ${task.assignee.middle_name} ${task.assignee.last_name}`}
+                        subTasks={task.subTasks}
+                    />
+                ))}
         </div>
     );
 };

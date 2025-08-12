@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import "../styles/Tms.css";
 import { fetchTaskCategories, fetchTasks, fetchTasksGeneralInfo } from "../services/tms";
-import { fetchUsers } from "../services/data";
+import { fetchAuthorities, fetchProjects, fetchUsers } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
@@ -46,8 +46,6 @@ const TomsTms = () => {
   const [error, setError] = useState(null);
   const { language, setLanguage } = useLanguage();
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selected1, setSelected1] = useState("");
-  const [selected2, setSelected2] = useState("");
   const [selected3, setSelected3] = useState("");
   const [selectedVtc, setSelectedVtc] = useState("");
   const [selectedAssigneeOrganization, setSelectedAssigneeOrganization] = useState("");
@@ -77,14 +75,16 @@ const TomsTms = () => {
   const [modalData, setModalData] = useState(null);
   // SEARCH STATE
   const [search, setSearch] = useState("");
-  // FOCUS MODE STATE
-  const [focusedSection, setFocusedSection] = useState(null);
-  // MENU STATE
-  const [menuOpen, setMenuOpen] = useState(false);
   // FULLSCREEN STATE
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [generalInfo, setGeneralInfo] = useState(null);
   const [openTaskId, setOpenTaskId] = useState(null);
+  // Authority's state variable
+  const [auth, setAuth] = useState([]);
+  const [selectedAuthority, setSelectedAuthority] = useState("");
+  // Project's state variable
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState("");
 
   const handleToggle = (taskId) => {
     setOpenTaskId(prev => (prev === taskId ? null : taskId));
@@ -104,7 +104,21 @@ const TomsTms = () => {
       }
     }
 
+    const loadAuthority = async () => {
+      const response = await fetchAuthorities();
+      const watomsAuth = response.filter(authority => authority.id !== 3)
+      setAuth(watomsAuth);
+    }
+
+    const loadProjects = async () => {
+      const response = await fetchProjects();
+      const watomsProjects = response.filter(project => project.authority_id === 1 || project.authority_id === 2);
+      setProjects(watomsProjects);
+    }
+
     loadTasksGeneralInfo();
+    loadAuthority();
+    loadProjects();
   }, [])
 
   const handleClick = (id) => {
@@ -175,13 +189,13 @@ const TomsTms = () => {
     scrollDown(targetDivRef);
   };
 
-  const handle1Change = (e) => {
-    setSelected1(e.target.value);
+  const handleAuthorityChange = (e) => {
+    setSelectedAuthority(e.target.value);
     scrollDown(targetDivRef);
   };
 
   const handle2Change = (e) => {
-    setSelected2(e.target.value);
+    setSelectedProject(e.target.value);
     scrollDown(targetDivRef);
   };
 
@@ -471,52 +485,6 @@ const TomsTms = () => {
     return () => document.removeEventListener('fullscreenchange', handleFullScreenChange);
   }, []);
 
-  // Main Menu Configuration
-  const mainMenu = [
-    {
-      icon: faTasks,
-      label: language ? "View Tasks" : "عرض المهام",
-      color: "from-watomsBlue to-wisdomOrange",
-      onClick: () => {
-        setModalData({ type: 'tasks', data: tasks });
-        setActiveModal('tasks');
-      },
-    },
-    {
-      icon: faFilter,
-      label: language ? "Advanced Filters" : "فلاتر متقدمة",
-      color: "from-wisdomOrange to-watomsBlue",
-      onClick: () => {
-        setModalData({
-          type: 'filters',
-          data: {
-            categories,
-            subCategories,
-            filteredAssignedUsers,
-            filteredAssigneeUsers,
-            selectedCategory,
-            selectedSubCategory,
-            selectedAssignedUser,
-            selectedAssigneeUser,
-            selectedStatus,
-            selectedImportance,
-            dateFrom,
-            dateTo,
-            deadlineFrom,
-            deadlineTo
-          }
-        });
-        setActiveModal('filters');
-      },
-    },
-    {
-      icon: faPlus,
-      label: language ? "Create Task" : "إنشاء مهمة",
-      color: "from-watomsBlue to-wisdomLightOrange",
-      onClick: () => navigate('/watoms/tms/assign'),
-    },
-  ];
-
   // Close modal function
   const closeModal = () => {
     setActiveModal(null);
@@ -620,43 +588,23 @@ const TomsTms = () => {
                 {language ? "الجهة" : "الجهة"}
               </h3>
               <select
-                value={selected1 || ""}
-                onChange={handle1Change}
+                value={selectedAuthority || ""}
+                onChange={handleAuthorityChange}
                 className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
-                <option value="">{language ? "Select Status" : "اختر الحالة"}</option>
-                {STATUS_OPTIONS?.map((status) => (
-                  <option key={status} value={status}>{status}</option>
+                <option value="">{language ? "Select an authority" : "اختر جهة"}</option>
+                {auth?.map((authority) => (
+                  <option key={authority.id} value={authority.id}>{authority.name}</option>
                 ))}
               </select>
               <select
-                value={selected2 || ""}
+                value={selectedProject || ""}
                 onChange={handle2Change}
                 className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
               >
-                <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
-                {IMPORTANCE_LEVELS?.map((level) => (
-                  <option key={level} value={level}>{level}</option>
-                ))}
-              </select>
-              <select
-                value={selected3 || ""}
-                onChange={handle3Change}
-                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
-              >
-                <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
-                {IMPORTANCE_LEVELS?.map((level) => (
-                  <option key={level} value={level}>{level}</option>
-                ))}
-              </select>
-              <select
-                value={selectedVtc || ""}
-                onChange={handleVtcChange}
-                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent ${language ? "text-start" : "text-end"}`}
-              >
-                <option value="">{language ? "Select Importance" : "اختر الأهمية"}</option>
-                {IMPORTANCE_LEVELS?.map((level) => (
-                  <option key={level} value={level}>{level}</option>
+                <option value="">{language ? "Select project" : "اختر المشروع"}</option>
+                {projects?.map((project) => (
+                  <option key={project.id} value={project.id}>{project.name}</option>
                 ))}
               </select>
             </div>
@@ -1000,6 +948,7 @@ const TomsTms = () => {
             value15={task.file_path || task.submit_file_path ? { sender: task.file_path, reciever: task.submit_file_path } : "------"}
             value16={task.description}
             value17={`${task.assigner.first_name} ${task.assigner.middle_name} ${task.assigner.last_name}`}
+            subTasks={task.subTasks}
           />
         )) : <TmsSingleTaskDetails />}
       </div>

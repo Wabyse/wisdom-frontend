@@ -1,7 +1,7 @@
 import { useState } from "react";
 import TmsChatPage from "./TmsChatPage";
 
-const TmsChatAccess = ({ title, value, cardAdditionalCSS = "", valueAdditionalCSS = "" }) => {
+const TmsChatAccess = ({ title, value, cardAdditionalCSS = "", valueAdditionalCSS = "", titleAdditionalCSS = "bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange" }) => {
     const [chat, setChat] = useState(false)
 
     const closeModal = () => {
@@ -10,7 +10,7 @@ const TmsChatAccess = ({ title, value, cardAdditionalCSS = "", valueAdditionalCS
 
     return (
         <div className={cardAdditionalCSS}>
-            <div className="bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange text-white text-center rounded p-2">
+            <div className={`text-white text-center rounded p-2 ${titleAdditionalCSS}`}>
                 {title}
             </div>
             <button onClick={() => setChat(true)} className={`border-black p-2 border-2 rounded text-center font-bold mt-2 w-full hover:bg-wisdomDarkOrange hover:border-wisdomDarkOrange hover:text-white ${valueAdditionalCSS}`}>Click to Open Chat</button>

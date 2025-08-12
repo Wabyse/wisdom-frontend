@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faUpload, faFolder, faFileAlt, faDownload, faEye, faFilter, faCalendarAlt, faBuilding, faGraduationCap, faExpand, faCompress, faTasks } from "@fortawesome/free-solid-svg-icons";
 import { useState as useThemeState } from "react";
 import watomsLogo from '../assets/watoms3.png';
+import { filterFileName } from "../utils/filterFileName";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -154,7 +155,7 @@ const TomsDms = () => {
     try {
       // Ensure correct filename extraction for both windows and ubuntu
       const fileName = encodeURIComponent(path.filteredPath.replace(/\\/g, "/"));
-      downloadFileDms(fileName);
+      downloadFileDms(fileName, path);
     } catch (error) {
       console.error("Download error", error);
       alert("File download failed");
@@ -241,7 +242,7 @@ const TomsDms = () => {
                   <div className="flex items-center gap-3 mb-3">
                     <FontAwesomeIcon icon={faFileAlt} className="text-2xl text-watomsBlue" />
                     <div className="flex-1">
-                      <h4 className="font-bold text-gray-900 truncate">{file.filteredPath.replace(/^\d+-/, "")}</h4>
+                      <h4 className="font-bold text-gray-900 truncate">{filterFileName(file.filteredPath)}</h4>
                       <p className="text-sm text-gray-600">{formatDate(file.date)}</p>
                     </div>
                   </div>

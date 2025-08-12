@@ -6,7 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
-const TmsDoubleDataTemplate = ({ title, value, cardAdditionalCSS = "", valueAdditionalCSS = "" }) => {
+const TmsDoubleDataTemplate = ({ title, value, cardAdditionalCSS = "", valueAdditionalCSS = "", titleAdditionalCSS = "bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange" }) => {
     const openPDF = (fileName) => {
         if (fileName && fileName.toLowerCase().endsWith('.pdf')) {
             const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName}`;
@@ -28,7 +28,7 @@ const TmsDoubleDataTemplate = ({ title, value, cardAdditionalCSS = "", valueAddi
     return (
         <div className={cardAdditionalCSS}>
             <Toaster />
-            <div className="bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange text-white text-center rounded p-2">
+            <div className={`text-white text-center rounded p-2 ${titleAdditionalCSS}`}>
                 {title}
             </div>
             {value === "------" ?

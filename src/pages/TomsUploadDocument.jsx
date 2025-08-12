@@ -42,15 +42,25 @@ const TomsUploadDocument = () => {
 
   const upload = async (e) => {
     e.preventDefault();
-    if (!file || !subCategory || (userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? (!departmentId || !organizationId) : false)) {
+
+    const needsDeptOrg = ["Operations Excellence Lead", "Academic Principle", "Executive Manager"].includes(userInfo.user_role);
+    if (
+      !file ||
+      !subCategory ||
+      (needsDeptOrg && (!departmentId || !organizationId))
+    ) {
       return toast.error("Please fill all fields and select a file");
     }
 
+    // Sanity checks (optional but helpful when debugging)
+    console.log("file.name", file?.name, "file.size", file?.size);
+
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("department_id", userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? departmentId : userInfo.department_id);
+    // Include the filename explicitly
+    formData.append("file", file, file.name);
+    formData.append("department_id", needsDeptOrg ? departmentId : userInfo.department_id);
     formData.append("sub_category", subCategory);
-    formData.append("organization_id", userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ? organizationId : userInfo.organization_id);
+    formData.append("organization_id", needsDeptOrg ? organizationId : userInfo.organization_id);
     formData.append("user_id", userInfo.id);
 
     try {
@@ -59,10 +69,10 @@ const TomsUploadDocument = () => {
       setDepartmentId("");
       setSubCategory("");
       setOrganizationId("");
-      toast.success("Login successful!");
+      toast.success("File uploaded successfully!"); // <-- this was saying "Login successful!"
       navigate(`/watoms/dms`);
     } catch (error) {
-      console.error("Upload error", error);
+      console.error("Upload error", error?.response?.data || error.message);
       alert("File upload failed");
     }
   };

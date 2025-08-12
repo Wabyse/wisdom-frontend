@@ -11,6 +11,7 @@ import { WISDOM_PMS_AR_LIST, PMS_DISCREPTION, WISDOM_PMS_EN_LIST, WISDOM_PMS_FOR
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup, faUserGraduate, faUserGear, faDatabase, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import watomsLogo from '../assets/watoms3.png'
+import wabysLogo from '../assets/wabys.png';
 
 // Move modal outside component to prevent recreation
 const SimpleCategoriesModal = ({ data, onClose, language, getCategoryIcon, getCategoryGradient, setFocusedCardId }) => (
@@ -626,6 +627,8 @@ const TomsPms = () => {
           }
         });
 
+        console.log(groupedData)
+
         const generalForms = groupedData.filter(
           (filteredData) => filteredData.code !== "التنمية المهنية"
         );
@@ -787,8 +790,10 @@ const TomsPms = () => {
       <div className="flex flex-col items-center justify-center min-h-[80vh] w-full relative z-10">
         {/* Header Section - now full width */}
         <div className="relative z-10 w-full px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-2">
-          <div className="flex items-center">
-            <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
+          <div className="flex items-center gap-6">
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+            <div className='border-l-2 border-black p-1 h-12' />
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={watomsLogo} alt="watoms Logo" onClick={() => navigate('/watoms')} />
           </div>
           <div className="flex-1 flex justify-center">
             <div className="relative w-full max-w-md">
