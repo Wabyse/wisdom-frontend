@@ -314,3 +314,12 @@ export const fetchProjects = async () => {
     throw error;
   }
 };
+
+export const insertTraineeForm = async (formData) => {
+  try {
+    await api.post("/api/v1/forms/trainees/registration", formData);
+  } catch (error) {
+    console.error("Error creating form:", error.response?.data || error.message);
+    throw error;
+  }
+};

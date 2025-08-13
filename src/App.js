@@ -48,7 +48,7 @@ import NeqatySchoolPermissions from "./pages/NeqatySchoolPermission";
 import NeqatyVtcPermissions from "./pages/NeqatyVtcPermissions";
 import BulkData from "./pages/BulkData";
 import WaitingList from "./pages/WaitingList";
-import Watoms from "./pages/Watoms";
+// import Watoms from "./pages/Watoms";
 import WatomsUserProfile from "./pages/WatomsUserProfile";
 import WatomsSystemInfo from "./pages/WatomsSystemInfo";
 import WatomsDashboard from "./pages/WatomsDashboard";
@@ -58,6 +58,7 @@ import WisdomSystemInfo from "./pages/WisdomSystemInfo";
 import WisdomDashboard from "./pages/WisdomDashboard";
 import Eivots from "./pages/Eivots";
 import Wabys from "./pages/Wabys";
+import WatomsTraineesRegistration from "./pages/WatomsTraineesRegistration";
 
 function App() {
   return (
@@ -70,6 +71,7 @@ function App() {
           <Route path="/aboutus" element={<HomeAboutUs />} />
           <Route path="/contactus" element={<HomeContactUs />} />
           <Route path="/services/training" element={<HomeServicesTraining />} />
+          <Route path="/vtc-trainees-registration" element={<WatomsTraineesRegistration />} />
           <Route path="/checkin" element={<CheckInOut />} />
           <Route path="/qrcodes" element={<QRList />} />
           <Route path="/login" element={<Login />} />

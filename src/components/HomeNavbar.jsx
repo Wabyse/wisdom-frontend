@@ -50,17 +50,17 @@ const HomeNabvar = ({ current, setViewValue }) => {
   return (
     <div>
       <div className="flex py-5 px-10 justify-between w-full">
-        <div className="w-[30%]">
+        <div className="w-[25%]">
           <img
             src={ebda}
             alt=""
-            className='md:w-[20%] w-[50%] cursor-pointer'
+            className='md:w-24 w-[50%] h-20 cursor-pointer'
             onClick={() => navigateTo('/')}
           />
         </div>
 
         {/* Desktop Menu */}
-        <div className="md:flex hidden max-w-[70%] justify-between border-wisdomOrange border-2">
+        <div className="md:flex hidden max-w-[75%] justify-between border-wisdomOrange border-2">
           <div
             className="relative"
             onMouseEnter={() => {
@@ -153,6 +153,7 @@ const HomeNabvar = ({ current, setViewValue }) => {
           <button onClick={openPopup} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'careers' ? "bg-white text-black font-bold" : "text-black"}`}>Careers</button>
           <button onClick={() => navigateTo('/aboutus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'aboutus' ? "bg-white text-black font-bold" : "text-black"}`}>About Us</button>
           <button onClick={() => navigateTo('/contactus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'contactus' ? "bg-white text-black font-bold" : "text-black"}`}>Contact Us</button>
+          <button onClick={() => navigateTo('/vtc-trainees-registration')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'trainee' ? "bg-white text-black font-bold" : "text-black"}`}>نسجيل متدربين</button>
           {/* <button onClick={() => navigateTo('/evots')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'evots' ? "bg-white text-black font-bold" : "text-black"}`}>EVOTS</button>
         <button onClick={() => navigateTo('/careers')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'careers' ? "bg-white text-black font-bold" : "text-black"}`}>Careers</button>
         <button onClick={() => navigateTo('/aboutus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'aboutus' ? "bg-white text-black font-bold" : "text-black"}`}>About Us</button>

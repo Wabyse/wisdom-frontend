@@ -51,7 +51,6 @@ const Assign = () => {
       return;
     }
 
-    console.log(e.target.user.value)
 
     try {
       const formData = createTaskFormData(e.target, file, userInfo);
