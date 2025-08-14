@@ -184,7 +184,7 @@ const TmsSingleTaskDetails = ({
 
     return (
         // make the card a column so we can add an expandable area below
-        <div className="border-black border-2 rounded flex flex-col w-[95%] mt-2 pt-2">
+        <div className="border-black border-2 rounded-xl flex flex-col w-[95%] mt-2 pt-2">
             {/* header row: just the + button on the left/right */}
             {!allEmpty && !isOpen && (
                 <div className="p-3 flex justify-end">
@@ -199,24 +199,24 @@ const TmsSingleTaskDetails = ({
 
             {/* main content (your three columns) */}
             <div className="px-3 pb-3 flex justify-between">
-                <div className="w-[25%]">
+                <div className="w-[25%] border-black border-2 p-2 rounded-xl">
                     <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center">
                         التقييمات
                     </div>
                     <div className="flex gap-2 mt-2">
-                        <TmsSingleDataTemplate title="تقييم المدير" value={value1} cardAdditionalCSS="w-[50%] min-w-fit" />
-                        <TmsSingleDataTemplate title="تقييم الموقف التنفيذي" value={value2} cardAdditionalCSS="w-[50%] min-w-fit" />
+                        <TmsSingleDataTemplate title="تقييم المدير" value={value1} cardAdditionalCSS="w-[50%] min-w-fit" valueAdditionalCSS="min-h-20 flex justify-center items-center" />
+                        <TmsSingleDataTemplate title="تقييم الموقف التنفيذي" value={value2} cardAdditionalCSS="w-[50%] min-w-fit" valueAdditionalCSS="min-h-20 flex justify-center items-center" />
                     </div>
                     <div className="flex gap-2 mt-2">
-                        <TmsSingleDataTemplate title="اجمالي التقييم" value={value3} cardAdditionalCSS="w-[50%] min-w-fit" />
-                        <TmsSingleDataTemplate title="تقييم المسؤل" value={value4} cardAdditionalCSS="w-[50%] min-w-fit" />
+                        <TmsSingleDataTemplate title="اجمالي التقييم" value={value3} cardAdditionalCSS="w-[50%] min-w-fit" valueAdditionalCSS="min-h-20 flex justify-center items-center" />
+                        <TmsSingleDataTemplate title="تقييم المسؤل" value={value4} cardAdditionalCSS="w-[50%] min-w-fit" valueAdditionalCSS="min-h-20 flex justify-center items-center" />
                     </div>
                     <div className="flex gap-2 mt-2">
                         <TmsChatAccess title="المحادثة" value={value5} cardAdditionalCSS="w-full" />
                     </div>
                 </div>
 
-                <div className="w-[12%]">
+                <div className="w-[13%] border-black border-2 p-2 rounded-xl">
                     <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center">
                         الموقف التنفيذي
                     </div>
@@ -224,26 +224,26 @@ const TmsSingleTaskDetails = ({
                         <TmsSingleDataTemplate title="نسبة اكتمال المهمة" value={value6} cardAdditionalCSS="w-full" />
                     </div>
                     <div className="flex gap-2 mt-2">
-                        <TmsSingleDataTemplate title="موقف التسليم" value={value7} cardAdditionalCSS="w-full" valueAdditionalCSS=" h-36 flex items-center justify-center" />
+                        <TmsSingleDataTemplate title="موقف التسليم" value={value7} cardAdditionalCSS="w-full" valueAdditionalCSS=" h-56 flex items-center justify-center" />
                     </div>
                 </div>
 
-                <div className="w-[12%]">
+                <div className="w-[13%] border-black border-2 p-2 rounded-xl">
                     <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center">
                         التواريخ و التوقيت
                     </div>
                     <div className="flex gap-2 mt-2">
-                        <TmsSingleDataTemplate title="تاريخ و توقيت البدء" value={value8} cardAdditionalCSS="w-full" valueAdditionalCSS="text-[15px]" />
+                        <TmsSingleDataTemplate title="تاريخ و توقيت البدء" value={value8} cardAdditionalCSS="w-full" valueAdditionalCSS="text-[15px] min-h-[10vh] flex justify-center items-center" />
                     </div>
                     <div className="flex gap-2 mt-2">
-                        <TmsSingleDataTemplate title="تاريخ و توقيت الانتهاء" value={value9} cardAdditionalCSS="w-full" valueAdditionalCSS="text-[15px]" />
+                        <TmsSingleDataTemplate title="تاريخ و توقيت الانتهاء" value={value9} cardAdditionalCSS="w-full" valueAdditionalCSS="text-[15px] min-h-[10vh] flex justify-center items-center" />
                     </div>
                     <div className="flex gap-2 mt-2">
-                        <TmsSingleDataTemplate title="تاريخ و توقيت التسليم" value={value10} cardAdditionalCSS="w-full" valueAdditionalCSS="text-[15px]" />
+                        <TmsSingleDataTemplate title="تاريخ و توقيت التسليم" value={value10} cardAdditionalCSS="w-full" valueAdditionalCSS="text-[15px] min-h-[10vh] flex justify-center items-center" />
                     </div>
                 </div>
 
-                <div className="w-[45%]">
+                <div className="w-[45%] border-black border-2 p-2 rounded-xl">
                     <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center">
                         البيانات الاساسية للمهمة
                     </div>

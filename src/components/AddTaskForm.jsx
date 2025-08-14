@@ -4,7 +4,7 @@ import { createTaskFormData } from "../utils/createTaskFormData";
 import { useAuth } from "../context/AuthContext";
 import { assignTask, fetchTaskCategories } from "../services/tms";
 import { IMPORTANCE_LEVELS, TASK_SIZES } from "../constants/constants";
-import { fetchSchools, fetchUsers } from "../services/data";
+import { fetchAuthorities, fetchProjects, fetchSchools, fetchUsers } from "../services/data";
 import { useLanguage } from "../context/LanguageContext";
 
 const AddTaskForm = ({ data, onClose }) => {
@@ -32,14 +32,20 @@ const AddTaskForm = ({ data, onClose }) => {
     const [auth, setAuth] = useState([]);
     const [filteredvtcs, setFilteredVtcs] = useState([]);
     const [selectedAuth, setSelectedAuth] = useState("");
-    const [selectedProject, setSelectedProject] = useState("");
     const [selectedProgram, setSelectedProgram] = useState("");
     const [selectedSize, setSelectedSize] = useState("");
+    const [projects, setProjects] = useState([]);
+    const [selectedProject, setSelectedProject] = useState("");
 
     const submitTask = async (e) => {
         e.preventDefault();
 
-        if (!selectedProject || !selectedSize || !selectedUser || !selectedTask || !selectedDescription || !selectedStartDate || !selectedEndDate || !selectedImportance || !selectedSubCategory) {
+        if (!selectedSize || !selectedUser || !selectedTask || !selectedDescription || !selectedStartDate || !selectedEndDate || !selectedImportance || !selectedSubCategory) {
+            toast.error("Please fill all required fields.");
+            return;
+        }
+
+        if (userInfo?.organization_id === 3 && !selectedProject) {
             toast.error("Please fill all required fields.");
             return;
         }
@@ -56,7 +62,7 @@ const AddTaskForm = ({ data, onClose }) => {
             taskData.append("assignedBy_id", userInfo?.employee_id);
             taskData.append("assignee_id", Number(selectedUser));
             taskData.append("sub_task_id", null);
-            taskData.append("organization_id", Number(selectedProject));
+            taskData.append("organization_id", userInfo?.organization_id === 3 ? Number(selectedProject) : userInfo?.organization_id);
 
             if (file) {
                 taskData.append("file", file); // 👈 Important!
@@ -98,6 +104,8 @@ const AddTaskForm = ({ data, onClose }) => {
                 let users;
                 if (selectedProject !== "") {
                     users = employees.filter(employee => employee?.employee.organization_id === Number(selectedProject));
+                } else if (userInfo?.organization_id !== 3) {
+                    users = employees.filter(employee => employee?.employee.organization_id === Number(userInfo?.organization_id))
                 } else {
                     users = employees;
                 }
@@ -111,7 +119,22 @@ const AddTaskForm = ({ data, onClose }) => {
             }
         };
 
+        const loadAuthority = async () => {
+            const response = await fetchAuthorities();
+            const watomsAuth = response.filter(authority => authority.id !== 3)
+            console.log(response)
+            setAuth(watomsAuth);
+        }
+
+        const loadProjects = async () => {
+            const response = await fetchProjects();
+            const watomsProjects = response.filter(project => project.authority_id === 1 || project.authority_id === 2);
+            setProjects(watomsProjects);
+        }
+
         fetchData();
+        loadAuthority();
+        loadProjects();
     }, [userInfo, selectedProject]);
 
     return (
@@ -132,20 +155,20 @@ const AddTaskForm = ({ data, onClose }) => {
                     <form onSubmit={submitTask}>
                         {/* Authority and Project Filter */}
                         <div className="select-group">
-                            <div className="select">
+                            {userInfo?.organization_id === 3 && <div className="select">
                                 <label key="project" className={`${!language && "w-full text-end"}`}>{language ? "Project:" : ":المشروع"}</label>
                                 <select id="project" name="project" className={!language && `text-end`} onChange={(e) => setSelectedProject(e.target.value)}>
                                     <option value="" disabled selected>
                                         {language ? "Please Select a project" : "الرجاء اختيار مشروع"}
                                     </option>
-                                    {filteredvtcs.map((project) => (
+                                    {projects.map((project) => (
                                         <option key={project.id} value={project.id}>
                                             {project.name}
                                         </option>
                                     ))}
                                 </select>
-                            </div>
-                            <div className="select">
+                            </div>}
+                            {userInfo?.organization_id === 3 && <div className="select">
                                 <label key="authority" className={`${!language && "w-full text-end"}`}>{language ? "the authority:" : ":الجهة"}</label>
                                 <select id="authority" name="authority" className={!language && `text-end`} onChange={(e) => setSelectedAuth(e.target.value)}>
                                     <option value="" disabled selected>
@@ -157,7 +180,7 @@ const AddTaskForm = ({ data, onClose }) => {
                                         </option>
                                     ))}
                                 </select>
-                            </div>
+                            </div>}
                         </div>
                         {/* Program and Employee Filter */}
                         <div className="select-group">
@@ -174,7 +197,7 @@ const AddTaskForm = ({ data, onClose }) => {
                                     ))}
                                 </select>
                             </div>
-                            <div className="select">
+                            {userInfo?.organization_id === 3 && <div className="select">
                                 <label key="program" className={`${!language && "w-full text-end"}`}>{language ? "The Program:" : ":البرنامج"}</label>
                                 <select id="program" name="program" className={!language && `text-end`} onChange={(e) => setSelectedProgram(e.target.value)}>
                                     <option value="" disabled selected>
@@ -186,7 +209,7 @@ const AddTaskForm = ({ data, onClose }) => {
                                         </option>
                                     ))}
                                 </select>
-                            </div>
+                            </div>}
                         </div>
                         {/* Category and Sub Category Filter */}
                         <div className="select-group">
