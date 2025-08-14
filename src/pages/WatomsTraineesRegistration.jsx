@@ -169,21 +169,27 @@ const WatomsTraineesRegistration = () => {
                                 ))}
                             </select>
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">ملاحظات</label>
-                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center" placeholder="ملاحظات" onChange={(e) => setSelectedNotes(e.target.value)} />
+                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="ملاحظات" onChange={(e) => setSelectedNotes(e.target.value)} />
                         </div>
                         <div className="md:w-2/5 w-[90%] flex flex-col items-start mx-auto gap-2 p-2 min-h-fit">
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">تاريخ ميلادك</label>
                             <input type="date" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="تاريخ ميلادك" onChange={(e) => setSelectedAge(e.target.value)} />
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">المحافظة</label>
-                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center" placeholder="المحافظة" onChange={(e) => setSelectedGov(e.target.value)} />
+                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="المحافظة" onChange={(e) => setSelectedGov(e.target.value)} />
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">البريد الالكتروني</label>
-                            <input type="email" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center" placeholder="البريد الالكتروني" onChange={(e) => setSelectedMail(e.target.value)} />
+                            <input type="email" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="البريد الالكتروني" onChange={(e) => setSelectedMail(e.target.value)} />
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">{selectedCertificate ? selectedCertificate === "حاصل علي شهادة الاعدادية" || selectedCertificate === "حاصل علي شهادة الثانوية" ? "اسم المدرسة" : selectedCertificate === "طالب جامعي" || selectedCertificate === "حاصل علي شهادة جامعية" ? "اسم الجامعة" : "اسم الدبلوم" : "اسم المدرسة / الجامعة"}</label>
-                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center" placeholder="اسم المدرسة / الجامعة" onChange={(e) => setSelectedSchool(e.target.value)} />
+                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="اسم المدرسة / الجامعة" onChange={(e) => setSelectedSchool(e.target.value)} />
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">رقم للتواصل تلفونيا</label>
-                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center" placeholder="رقم للتواصل الكترونيا" onChange={(e) => setSelectedNumber(e.target.value)} />
+                            <input type="tel" value={selectedNumber} pattern="[0-9]*" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="رقم للتواصل الكترونيا" onChange={(e) => {
+                                const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 11);
+                                setSelectedNumber(digitsOnly)
+                            }} />
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">الواتساب</label>
-                            <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center" placeholder="الواتساب" onChange={(e) => setSelectedWhatsapp(e.target.value)} />
+                            <input type="tel" value={selectedWhatsapp} pattern="[0-9]*" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="الواتساب" onChange={(e) => {
+                                const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 11);
+                                setSelectedWhatsapp(digitsOnly)
+                            }} />
                         </div>
                     </div>
                     <button type="submit" className="text-white bg-gradient-to-l from-purple-900 to-purple-500 hover:from-purple-500 hover:to-purple-900 rounded w-fit p-2 self-center mb-2">تسجيل</button>

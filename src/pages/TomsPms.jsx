@@ -627,8 +627,6 @@ const TomsPms = () => {
           }
         });
 
-        console.log(groupedData)
-
         const generalForms = groupedData.filter(
           (filteredData) => filteredData.code !== "التنمية المهنية"
         );

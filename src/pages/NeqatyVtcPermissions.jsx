@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NeqatyNavbar from "../components/NeqatyNavbar";
 import { useAdminAuth } from "../context/AdminAuthContext";
-import { fetchPointsRequests } from "../services/neqaty";
+import { fetchPointsRequests, grantUserPoints } from "../services/neqaty";
 import LoadingScreen from "../components/LoadingScreen";
 import { Navigate, useLocation } from "react-router-dom";
 import { NEQATY_PERMISSION_STATUS } from "../constants/constants";
@@ -19,12 +19,28 @@ const NeqatyVtcPermissions = () => {
         status: ""
     });
 
+    const handleSelectChange = (event, id) => {
+        setSelectedStatus({ id, status: event.target.value });
+    };
+
     const handleCheck = (id) => {
         setUpdateStatus((prev) => ({ ...prev, [id]: true }));
     };
 
-    const handleConfirm = (id) => {
-        setUpdateStatus((prev) => ({ ...prev, [id]: false }));
+    const handleConfirm = async (id) => {
+        try {
+            const request = {
+                id: selectedStatus?.id,
+                status: selectedStatus?.status,
+                adminId: adminInfo.id
+            }
+            console.log(request)
+            const response = await grantUserPoints(request)
+            console.log(response)
+            setUpdateStatus((prev) => ({ ...prev, [id]: false }));
+        } catch (err) {
+
+        }
     };
 
     useEffect(() => {
@@ -54,7 +70,7 @@ const NeqatyVtcPermissions = () => {
             <NeqatyNavbar />
             <div className="w-full flex flex-col items-center">
                 <div className="w-[90%] bg-slate-100 rounded shadow-md shadow-black mt-5">
-                    {pointsRequests.map((request) => {
+                    {pointsRequests.length > 0 ? pointsRequests.map((request) => {
                         const id = request.id;
                         const isChecked = updateStatus[id];
 
@@ -66,7 +82,11 @@ const NeqatyVtcPermissions = () => {
                                 <div>{request.point.name}</div>
                                 <div>{request.point.points}</div>
                                 <div>{request.point.type}</div>
-                                {isChecked ? <select className="w-[8%]">
+                                {isChecked ? <select className="w-[8%]" value={selectedStatus.status}
+                                    onChange={(e) => handleSelectChange(e, id)}>
+                                    <option key="option" value="" disabled>
+                                        please select a status
+                                    </option>
                                     {NEQATY_PERMISSION_STATUS.map((option) => (
                                         <option key={option} value={option}>
                                             {option}
@@ -91,7 +111,7 @@ const NeqatyVtcPermissions = () => {
                                 )}
                             </div>
                         );
-                    })}
+                    }) : <div className="text-center p-2 font-bold">there is no requests available</div>}
                 </div>
             </div>
         </>

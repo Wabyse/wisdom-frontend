@@ -33,7 +33,15 @@ const NeqatyNavbar = () => {
                             className={`min-w-fit relative inline-block px-4 py-2 font-bold text-white rounded-full overflow-hidden bg-watomsBlue hover:bg-wisdomOrange`}
                         >
                             <span className="relative z-10 transition-colors duration-400">
-                                Permissions
+                                School Permissions
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => navigate('/neqaty/vtc-permissions')}
+                            className={`min-w-fit relative inline-block px-4 py-2 font-bold text-white rounded-full overflow-hidden bg-watomsBlue hover:bg-wisdomOrange`}
+                        >
+                            <span className="relative z-10 transition-colors duration-400">
+                                Vtc Permissions
                             </span>
                         </button>
                         {/* <button
