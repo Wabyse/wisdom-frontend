@@ -17,15 +17,15 @@ import wabysLogo from '../assets/wabys.png';
 
 const Watoms = () => {
     const navigate = useNavigate();
-    const { logout, userInfo } = useAuth();
+    const { userInfo } = useAuth();
     const { language, setLanguage } = useLanguage();
     const [currentTime, setCurrentTime] = useState(new Date());
     const [notAvailable, setNotAvailable] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const isFullScreen = useFullScreen();
     const systems = useMemo(
-        () => getWatomsSystems(language),
-        [language]
+        () => getWatomsSystems(language, userInfo?.organization_id),
+        [language, userInfo?.organization_id]
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);

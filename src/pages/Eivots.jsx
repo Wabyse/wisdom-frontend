@@ -24,8 +24,8 @@ const Eivots = () => {
     const [darkMode, setDarkMode] = useState(false);
     const isFullScreen = useFullScreen();
     const systems = useMemo(
-        () => getWatomsSystems(language),
-        [language]
+        () => getWatomsSystems(language, userInfo?.organization_id),
+        [language, userInfo?.organization_id]
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);

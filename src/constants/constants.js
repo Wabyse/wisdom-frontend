@@ -387,7 +387,7 @@ export const ASSESSOR_TYPE = [
     "Student / Trainee"
 ]
 
-export const getWatomsSystems = (language) => [
+export const getWatomsSystems = (language, userOrg) => [
     {
         id: 'pms',
         title: 'PMS',
@@ -444,9 +444,9 @@ export const getWatomsSystems = (language) => [
         subtitle: language ? 'Points and Rewards System' : 'نظام النقاط والمكافآت',
         description: language ? 'Points management and incentives' : 'إدارة النقاط والحوافز',
         icon: faStar,
-        path: '/points',
+        path: '/neqaty',
         color: 'from-yellow-500 to-yellow-600',
-        available: false
+        available: userOrg === 3
     },
     {
         id: 'finance',

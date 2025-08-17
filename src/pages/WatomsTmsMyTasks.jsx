@@ -37,7 +37,7 @@ const statusPercentage = {
   "not started yet": "0"
 }
 
-const TomsTms = () => {
+const WatomsTmsMyTasks = () => {
   const location = useLocation();
   const navigate = useNavigate(); //for navigate to another page (component)
   const { userInfo, logout } = useAuth();
@@ -736,33 +736,10 @@ const TomsTms = () => {
 
   return (
     <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>
-      {/* Modern Background with Abstract Shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/20 to-pink-100/30 animate-pulse" style={{ animationDuration: '8s' }} />
 
-        {/* Floating Geometric Shapes */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-watomsBlue/10 to-wisdomOrange/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '0s' }} />
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-wisdomOrange/10 to-watomsBlue/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }} />
-        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '7s', animationDelay: '1s' }} />
-        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '9s', animationDelay: '3s' }} />
-
-        {/* Abstract Lines */}
-        <div className="absolute top-1/2 left-0 w-px h-32 bg-gradient-to-b from-transparent via-purple-400/20 to-transparent" />
-        <div className="absolute top-1/2 right-0 w-px h-32 bg-gradient-to-b from-transparent via-blue-400/20 to-transparent" />
-
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="w-full h-full" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, ${darkMode ? 'white' : 'gray'} 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
-          }} />
-        </div>
-      </div>
-
-      {/* Modern App Menu (No Navbar) */}
+      {/* Navbar */}
       <div className="flex flex-col items-center justify-center min-h-[80vh] w-full relative z-10">
-        {/* Logo and Search */}
+        {/* Navbar's content */}
         <div className="flex flex-col md:flex-row items-center justify-between w-full mb-12 px-4">
           {/* Logo */}
           <div className="flex items-center gap-6">
@@ -941,4 +918,4 @@ const TomsTms = () => {
   );
 };
 
-export default TomsTms;
+export default WatomsTmsMyTasks;

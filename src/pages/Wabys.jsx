@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -22,21 +22,20 @@ const Wabys = () => {
     const [notAvailable, setNotAvailable] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const isFullScreen = useFullScreen();
+    // get all wabys system and turn only the systems that the user has access to available
     const systems = useMemo(
         () => getWabysSystems(language, userInfo?.organization_id),
         [language, userInfo?.organization_id]
     );
+    // getTitle to use it in the search
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
-
-
-    const togglePopup = (status) => setNotAvailable(status);
 
     const handleSystemClick = (system) => {
         if (system.available) {
             navigate(system.path);
         } else {
-            togglePopup(true);
+            setNotAvailable(true);
         }
     };
 
@@ -68,13 +67,15 @@ const Wabys = () => {
                 </div>
             </div> */}
 
-            {/* Header Section */}
+            {/* Navbar */}
             <div className="relative z-10">
-                {/* Logo and Search */}
+                {/* Navbar's Content */}
                 <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 py-8 gap-8">
+                    {/* Logo */}
                     <div className="flex items-center gap-6">
                         <img className={`w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer ${darkMode && "bg-white rounded-full px-2"}`} src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
                     </div>
+                    {/* Search */}
                     <div className="flex-1 flex justify-center">
                         <div className="relative w-full max-w-md">
                             <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
@@ -89,10 +90,11 @@ const Wabys = () => {
                         </div>
                     </div>
                     <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
+                        {/* Dark Mode */}
                         <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                             <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
                         </button>
-                        {/* Full Screen Toggle Button */}
+                        {/* Full Screen */}
                         <button
                             onClick={fullScreen}
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
@@ -103,12 +105,12 @@ const Wabys = () => {
                                 className="text-xl text-watomsBlue"
                             />
                         </button>
-                        {/* User Info */}
+                        {/* User Name */}
                         <span className="flex items-center gap-2 font-bold text-lg md:min-w-[120px] min-w-[300px] justify-center">
                             <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
                             {userFullName(userInfo, language)}
                         </span>
-                        {/* Language Toggle Button */}
+                        {/* Language Button */}
                         <img
                             src={languageIcon}
                             className="rounded-full w-10 h-10 flex justify-center items-center shadow transition-all font-bold text-base cursor-pointer"
@@ -116,13 +118,15 @@ const Wabys = () => {
                             title={language ? 'العربية' : 'English'}
                             alt=''
                         />
+                        {/* System Info */}
                         <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                             title={language ? 'System Info' : 'معلومات النظام'}
+                            onClick={() => setNotAvailable(true)}
                         >
                             <FontAwesomeIcon icon={faInfoCircle} className="text-watomsBlue text-lg" />
                         </button>
-                        {/* --- نهاية الأيقونات --- */}
+                        {/* Log out */}
                         <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                             onClick={() => { logout(); navigate('/login'); }}
@@ -135,7 +139,7 @@ const Wabys = () => {
 
             {/* Main Content */}
             <div className="relative z-10 px-6 pb-4">
-                {/* Wabys Systems Sub Header */}
+                {/* Wabys Systems Header */}
                 <div className="text-center mb-8">
                     <h2 className={`text-3xl font-bold mb-2 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>
                         {language ? "Wabys Systems" : "أنظمة وابيز"}
@@ -145,7 +149,8 @@ const Wabys = () => {
                     </p>
                 </div>
 
-                {/* Wabys Systems Grid - Smaller Cards */}
+{/* stoppped here */}
+                {/* Wabys Systems */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto">
                     {filteredSystems.map((system, idx) => (
                         <div
@@ -193,7 +198,7 @@ const Wabys = () => {
 
             <Popup
                 isOpen={notAvailable}
-                onClose={() => togglePopup(false)}
+                onClose={() => setNotAvailable(false)}
                 message={language ? "This system will be available soon" : "هذا النظام سيتم إطلاقه قريباً"}
                 button={language ? "OK" : "حسناً"}
                 form={false}

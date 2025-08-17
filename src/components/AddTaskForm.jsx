@@ -7,7 +7,7 @@ import { IMPORTANCE_LEVELS, TASK_SIZES } from "../constants/constants";
 import { fetchAuthorities, fetchProjects, fetchSchools, fetchUsers } from "../services/data";
 import { useLanguage } from "../context/LanguageContext";
 
-const AddTaskForm = ({ data, onClose }) => {
+const AddTaskForm = ({ taskId, onClose, mainTask = true }) => {
     const { language } = useLanguage();
     const { userInfo } = useAuth();
     const [file, setFile] = useState(null);
@@ -30,11 +30,11 @@ const AddTaskForm = ({ data, onClose }) => {
     const [selectedSubCategory, setSelectedSubCategory] = useState("");
 
     const [auth, setAuth] = useState([]);
-    const [filteredvtcs, setFilteredVtcs] = useState([]);
     const [selectedAuth, setSelectedAuth] = useState("");
     const [selectedProgram, setSelectedProgram] = useState("");
     const [selectedSize, setSelectedSize] = useState("");
     const [projects, setProjects] = useState([]);
+    const [filteredProjects, setFilteredProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
 
     const submitTask = async (e) => {
@@ -61,7 +61,7 @@ const AddTaskForm = ({ data, onClose }) => {
             taskData.append("sub_category", Number(selectedSubCategory));
             taskData.append("assignedBy_id", userInfo?.employee_id);
             taskData.append("assignee_id", Number(selectedUser));
-            taskData.append("sub_task_id", null);
+            taskData.append("sub_task_id", mainTask ? null : Number(taskId));
             taskData.append("organization_id", userInfo?.organization_id === 3 ? Number(selectedProject) : userInfo?.organization_id);
 
             if (file) {
@@ -74,6 +74,17 @@ const AddTaskForm = ({ data, onClose }) => {
             console.error("Error submitting data:", err);
         }
     };
+
+    useEffect(() => {
+        const closeSubTask = async () => {
+            if (submitted) {
+                await onClose();
+                setSubmitted(false);
+            };
+        }
+
+        closeSubTask();
+    }, [submitted])
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -91,6 +102,21 @@ const AddTaskForm = ({ data, onClose }) => {
     };
 
     useEffect(() => {
+        const filterProjects = () => {
+            let filteredProjects;
+            if (selectedAuth === "") {
+                console.log(projects)
+                filteredProjects = projects;
+            } else {
+                filteredProjects = projects.filter(project => project.authority_id === Number(selectedAuth));
+            }
+            setFilteredProjects(filteredProjects);
+        }
+
+        filterProjects();
+    }, [selectedAuth, projects])
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
@@ -99,7 +125,7 @@ const AddTaskForm = ({ data, onClose }) => {
                     fetchTaskCategories(userInfo),
                     fetchSchools(),
                 ]);
-                const filteredVtcs = schools.filter(vtc => vtc.id !== 1 && vtc.id != 2 && vtc.id != 12);
+                const filteredVtcs = schools.filter(vtc => vtc.id !== 1 && vtc.id !== 2 && vtc.id !== 12);
                 setVtcs(filteredVtcs);
                 let users;
                 if (selectedProject !== "") {
@@ -138,37 +164,36 @@ const AddTaskForm = ({ data, onClose }) => {
     }, [userInfo, selectedProject]);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="px-3 rounded pb-2 w-full">
             <Toaster />
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white rounded-3xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden animate-modal-in">
-                <div className="bg-gradient-to-r from-watomsBlue to-wisdomOrange p-6 text-white">
+            <div className="bg-white w-full">
+                <div className="bg-gradient-to-b from-blue-900 to-blue-950 p-6 text-white rounded-t">
                     <div className="flex items-center justify-between">
-                        {language && <h2 className="text-3xl font-extrabold">Add Task</h2>}
-                        <button onClick={onClose} className="text-white hover:text-gray-200 text-2xl">
+                        {language && <h2 className="text-3xl font-extrabold">Add Sub Task</h2>}
+                        <button className="text-white hover:text-gray-200 text-2xl" onClick={onClose}>
                             ×
                         </button>
-                        {!language && <h2 className="text-3xl font-extrabold">اضافة مهمة</h2>}
+                        {!language && <h2 className="text-3xl font-extrabold">{mainTask ? "اضافة مهمة" : "اضافة مهمة فرعية"}</h2>}
                     </div>
                 </div>
-                <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div className="p-6">
                     <form onSubmit={submitTask}>
                         {/* Authority and Project Filter */}
                         <div className="select-group">
-                            {userInfo?.organization_id === 3 && <div className="select">
+                            <div className="select">
                                 <label key="project" className={`${!language && "w-full text-end"}`}>{language ? "Project:" : ":المشروع"}</label>
                                 <select id="project" name="project" className={!language && `text-end`} onChange={(e) => setSelectedProject(e.target.value)}>
                                     <option value="" disabled selected>
                                         {language ? "Please Select a project" : "الرجاء اختيار مشروع"}
                                     </option>
-                                    {projects.map((project) => (
+                                    {filteredProjects.map((project) => (
                                         <option key={project.id} value={project.id}>
                                             {project.name}
                                         </option>
                                     ))}
                                 </select>
-                            </div>}
-                            {userInfo?.organization_id === 3 && <div className="select">
+                            </div>
+                            <div className="select">
                                 <label key="authority" className={`${!language && "w-full text-end"}`}>{language ? "the authority:" : ":الجهة"}</label>
                                 <select id="authority" name="authority" className={!language && `text-end`} onChange={(e) => setSelectedAuth(e.target.value)}>
                                     <option value="" disabled selected>
@@ -180,7 +205,7 @@ const AddTaskForm = ({ data, onClose }) => {
                                         </option>
                                     ))}
                                 </select>
-                            </div>}
+                            </div>
                         </div>
                         {/* Program and Employee Filter */}
                         <div className="select-group">
@@ -197,7 +222,7 @@ const AddTaskForm = ({ data, onClose }) => {
                                     ))}
                                 </select>
                             </div>
-                            {userInfo?.organization_id === 3 && <div className="select">
+                            <div className="select">
                                 <label key="program" className={`${!language && "w-full text-end"}`}>{language ? "The Program:" : ":البرنامج"}</label>
                                 <select id="program" name="program" className={!language && `text-end`} onChange={(e) => setSelectedProgram(e.target.value)}>
                                     <option value="" disabled selected>
@@ -209,7 +234,7 @@ const AddTaskForm = ({ data, onClose }) => {
                                         </option>
                                     ))}
                                 </select>
-                            </div>}
+                            </div>
                         </div>
                         {/* Category and Sub Category Filter */}
                         <div className="select-group">

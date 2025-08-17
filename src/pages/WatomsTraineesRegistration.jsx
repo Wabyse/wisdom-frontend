@@ -26,27 +26,29 @@ const WatomsTraineesRegistration = () => {
     const [selectedNumber, setSelectedNumber] = useState("");
     const [selectedNotes, setSelectedNotes] = useState("");
     const [selectedWhatsapp, setSelectedWhatsapp] = useState("");
+    const [selectedIDNumber, setSelectedIDNumber] = useState("");
 
     const submitForm = async (e) => {
         e.preventDefault();
-        if (!selectedFirstName || !selectedSecondName || !selectedThirdName || !selectedFourthName || !selectedVtc || !selectedAge || !selectedCourse || !selectedGov || !selectedCertificate || !selectedSchool || !selectedKnown || !selectedNumber || !selectedWhatsapp) {
+        if (!selectedFirstName || !selectedSecondName || !selectedThirdName || !selectedVtc || !selectedAge || !selectedCourse || !selectedGov || !selectedCertificate || !selectedSchool || !selectedKnown || !selectedNumber || !selectedWhatsapp || !selectedIDNumber) {
             toast.error("الرجاء ملئ كل البيانات");
         }
         const formData = {
             first_name: selectedFirstName,
             second_name: selectedSecondName,
             third_name: selectedThirdName,
-            fourth_name: selectedFourthName,
+            fourth_name: selectedFourthName ? selectedFourthName : null,
             birth_date: selectedAge,
             vtc: selectedVtc,
             gov: selectedGov,
             course: selectedCourse,
-            email: selectedMail,
+            email: selectedMail ? selectedMail : null,
             certification: selectedCertificate,
             school: selectedSchool,
             known_us: selectedKnown,
             phone: selectedNumber,
             whatsapp: selectedWhatsapp,
+            id_number: selectedIDNumber,
             notes: selectedNotes ? selectedNotes : null
         }
         try {
@@ -168,6 +170,11 @@ const WatomsTraineesRegistration = () => {
                                     </option>
                                 ))}
                             </select>
+                            <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">الرقم القومي</label>
+                            <input type="tel" value={selectedIDNumber} pattern="[0-9]*" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="الرقم القومي" onChange={(e) => {
+                                const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 14);
+                                setSelectedIDNumber(digitsOnly)
+                            }} />
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">ملاحظات</label>
                             <input type="text" className="bg-transparent py-2 border-purple-400 border-2 rounded-xl w-full text-sm text-center text-white" placeholder="ملاحظات" onChange={(e) => setSelectedNotes(e.target.value)} />
                         </div>

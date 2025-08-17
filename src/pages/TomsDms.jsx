@@ -6,8 +6,6 @@ import { downloadFileDms, fetchingFiles, fetchingOrgs } from "../services/dms";
 import { fetchDepartments, fetchDmsCategories } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
-import Selector from "../components/Selector";
-import Navbar3 from "../components/Navbar3";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { DMS_DESCRIPTION, DMS_HERO_INFO } from "../constants/constants";
@@ -16,6 +14,7 @@ import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle,
 import { useState as useThemeState } from "react";
 import watomsLogo from '../assets/watoms3.png';
 import { filterFileName } from "../utils/filterFileName";
+import wabysLogo from '../assets/wabys.png';
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -588,9 +587,11 @@ const TomsDms = () => {
       {/* Modern App Menu (No Navbar) */}
       <div className="flex flex-col items-center justify-center min-h-[80vh] w-full relative z-10">
         {/* Logo and Search */}
-        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-5xl mb-12 gap-8">
+        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl mb-12 gap-8">
           <div className="flex items-center gap-6">
-            <img className="w-[100px] md:w-[120px] lg:w-[140px] bg-blue-400 rounded-full cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+            <div className='border-l-2 border-gray-500 p-1 h-8' />
+            <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
           </div>
           <div className="flex-1 flex justify-center">
             <div className="relative w-full max-w-md">

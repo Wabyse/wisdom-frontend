@@ -30,7 +30,6 @@ import TomsViewDocument from "./pages/TomsViewDocument";
 import TomsTms from "./pages/TomsTms";
 import TomsViewTask from "./pages/TomsViewTask";
 import TomsAssign from "./pages/TomsAssign";
-import TomsMyTasks from "./pages/TomsMyTask";
 import HomeEVOTS from "./pages/HomeEVOTS";
 import HomeCareers from "./pages/HomeCareers";
 import HomeAboutUs from "./pages/HomeAboutUs";
@@ -59,6 +58,7 @@ import WisdomDashboard from "./pages/WisdomDashboard";
 import Eivots from "./pages/Eivots";
 import Wabys from "./pages/Wabys";
 import WatomsTraineesRegistration from "./pages/WatomsTraineesRegistration";
+import WatomsTmsMyTasks from "./pages/WatomsTmsMyTasks";
 
 function App() {
   return (
@@ -387,7 +387,7 @@ function App() {
             path="/watoms/tms/my-tasks"
             element={
               <ProtectedRoute>
-                <TomsMyTasks />
+                <WatomsTmsMyTasks />
               </ProtectedRoute>
             }
           />

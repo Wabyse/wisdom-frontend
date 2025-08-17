@@ -7,6 +7,7 @@ import { fetchingOrgs, uploadDmsDocument } from "../services/dms";
 import { fetchDepartments, fetchDmsCategories } from "../services/data";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
+import Uploading from "./Uploading";
 
 const TomsUploadDocument = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const TomsUploadDocument = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userInfo } = useAuth();
+  const [uploading, setUploading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -64,11 +66,13 @@ const TomsUploadDocument = () => {
     formData.append("user_id", userInfo.id);
 
     try {
+      setUploading(true);
       await uploadDmsDocument(formData);
       setFile(null);
       setDepartmentId("");
       setSubCategory("");
       setOrganizationId("");
+      setUploading(false);
       toast.success("File uploaded successfully!"); // <-- this was saying "Login successful!"
       navigate(`/watoms/dms`);
     } catch (error) {
@@ -189,6 +193,7 @@ const TomsUploadDocument = () => {
           ارسال
         </button>
       </form>
+      {uploading && <Uploading/>}
     </div>
   );
 };
