@@ -3,14 +3,13 @@ import "../styles/Dms.css";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { downloadFileDms, fetchingFiles, fetchingOrgs } from "../services/dms";
-import { fetchDepartments, fetchDmsCategories } from "../services/data";
+import { fetchDmsCategories } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
-import { DMS_DESCRIPTION, DMS_HERO_INFO } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faUpload, faFolder, faFileAlt, faDownload, faEye, faFilter, faCalendarAlt, faBuilding, faGraduationCap, faExpand, faCompress, faTasks } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faUpload, faFolder, faFileAlt, faDownload, faEye, faFilter, faCalendarAlt, faBuilding, faExpand, faCompress, faTasks } from "@fortawesome/free-solid-svg-icons";
 import { useState as useThemeState } from "react";
 import watomsLogo from '../assets/watoms3.png';
 import { filterFileName } from "../utils/filterFileName";
@@ -22,8 +21,6 @@ const TomsDms = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { userInfo, logout } = useAuth();
-  const [departments, setDepartments] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedSchool, setSelectedSchool] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
@@ -91,7 +88,6 @@ const TomsDms = () => {
     setDateTo();
     setDateFrom();
     setSelectedSchool("");
-    setSelectedDepartment("");
     setSelectedCategory("");
     setSelectedSubCategory("");
   };
@@ -140,11 +136,6 @@ const TomsDms = () => {
     window.open(pdfUrl, "_blank"); // Opens PDF in new tab
   };
 
-  const handleDepartmentChange = (e) => {
-    setSelectedDepartment(e.target.value);
-    scrollDown(targetDivRef);
-  };
-
   const handleSchoolChange = (e) => {
     setSelectedSchool(e.target.value);
     scrollDown(targetDivRef);
@@ -186,11 +177,9 @@ const TomsDms = () => {
         setModalData({
           type: 'filters',
           data: {
-            departments,
             schools,
             categories,
             subCategories,
-            selectedDepartment,
             selectedSchool,
             selectedCategory,
             selectedSubCategory,
@@ -284,7 +273,6 @@ const TomsDms = () => {
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {userInfo.user_role === "Operations Excellence Lead" && (
-              <>
                 <div className="space-y-4">
                   <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                     <FontAwesomeIcon icon={faBuilding} className="text-watomsBlue" />
@@ -301,23 +289,6 @@ const TomsDms = () => {
                     ))}
                   </select>
                 </div>
-                <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faGraduationCap} className="text-watomsBlue" />
-                    {language ? "Department Selection" : "اختيار القسم"}
-                  </h3>
-                  <select
-                    value={selectedDepartment || ""}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
-                  >
-                    <option value="">{language ? "Select Department" : "اختر القسم"}</option>
-                    {data?.departments?.map((dept) => (
-                      <option key={dept.id} value={dept.id}>{dept.Name}</option>
-                    ))}
-                  </select>
-                </div>
-              </>
             )}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -403,9 +374,6 @@ const TomsDms = () => {
         const response = await fetchingFiles(userInfo);
         let newFiltered = [];
         const paths = response.data.files;
-        let departmentId = selectedDepartment && (userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Manager")
-          ? Number(selectedDepartment)
-          : userInfo.user_role !== "Operations Excellence Lead" || userInfo.user_role !== "Manager" ? userInfo.department_id : null;
         let organizationId = selectedSchool && userInfo.user_role === "Operations Excellence Lead" ? Number(selectedSchool) : userInfo.user_role !== "Operations Excellence Lead" ? userInfo.organization_id : null;
         let fromDate = dateFrom ? new Date(dateFrom) : null;
         let toDate = dateTo ? new Date(dateTo) : null;
@@ -420,7 +388,6 @@ const TomsDms = () => {
             : null;
 
         const hasFilter =
-          (selectedDepartment !== 0 && selectedDepartment !== "") ||
           (selectedSchool !== 0 && selectedSchool !== "") ||
           (selectedCategory !== 0 && selectedCategory !== "") ||
           (selectedSubCategory !== 0 && selectedSubCategory !== "") ||
@@ -432,8 +399,6 @@ const TomsDms = () => {
             const isDateMatch =
               (!fromDate || formatDate(fileDate) >= formatDate(fromDate)) &&
               (!toDate || formatDate(fileDate) <= formatDate(toDate));
-            const isDepartmentMatch =
-              !departmentId || departmentId === filter.department.id;
             const isOrganizationMatch =
               !organizationId || organizationId === filter.organization.id;
             const isCategoryMatch =
@@ -445,7 +410,6 @@ const TomsDms = () => {
 
             if (
               isDateMatch &&
-              isDepartmentMatch &&
               isOrganizationMatch &&
               isCategoryMatch &&
               isSubCategoryMatch
@@ -459,7 +423,6 @@ const TomsDms = () => {
             }
           });
         } else if (
-          selectedDepartment === "" &&
           selectedSchool === "" &&
           selectedCategory === "" &&
           selectedSubCategory === ""
@@ -481,7 +444,6 @@ const TomsDms = () => {
     loadingFiles();
   }, [
     userInfo,
-    selectedDepartment,
     dateFrom,
     dateTo,
     selectedSchool,
@@ -500,17 +462,6 @@ const TomsDms = () => {
       }
     };
 
-    const loadDepartments = async () => {
-      try {
-        const response = await fetchDepartments(userInfo);
-        setDepartments(response);
-      } catch (err) {
-        console.error("API Error:", err);
-        setError(err);
-      }
-    };
-
-    loadDepartments();
     fetchingOrg();
     setLoading(false);
   }, [userInfo]);

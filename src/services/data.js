@@ -315,6 +315,7 @@ export const fetchProjects = async () => {
   }
 };
 
+// Trainees Registration Form
 export const insertTraineeForm = async (formData) => {
   try {
     await api.post("/api/v1/forms/trainees/registration", formData);

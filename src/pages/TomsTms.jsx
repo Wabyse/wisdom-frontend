@@ -40,11 +40,11 @@ const statusPercentage = {
 const TomsTms = () => {
   const location = useLocation();
   const navigate = useNavigate(); //for navigate to another page (component)
-  const { userInfo, logout } = useAuth();
+  const { language, setLanguage } = useLanguage();
+  const { userInfo } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { language, setLanguage } = useLanguage();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selected3, setSelected3] = useState("");
   const [selectedVtc, setSelectedVtc] = useState("");

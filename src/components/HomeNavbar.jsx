@@ -153,7 +153,7 @@ const HomeNabvar = ({ current, setViewValue }) => {
           <button onClick={openPopup} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'careers' ? "bg-white text-black font-bold" : "text-black"}`}>Careers</button>
           <button onClick={() => navigateTo('/aboutus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'aboutus' ? "bg-white text-black font-bold" : "text-black"}`}>About Us</button>
           <button onClick={() => navigateTo('/contactus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'contactus' ? "bg-white text-black font-bold" : "text-black"}`}>Contact Us</button>
-          <button onClick={() => navigateTo('/vtc-trainees-registration')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'trainee' ? "bg-white text-black font-bold" : "text-black"}`}>نسجيل متدربين</button>
+          <button onClick={() => navigateTo('/vtc-trainees-registration')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'trainee' ? "bg-white text-black font-bold" : "text-black"}`}>تسجيل متدربين</button>
           {/* <button onClick={() => navigateTo('/evots')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'evots' ? "bg-white text-black font-bold" : "text-black"}`}>EVOTS</button>
         <button onClick={() => navigateTo('/careers')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'careers' ? "bg-white text-black font-bold" : "text-black"}`}>Careers</button>
         <button onClick={() => navigateTo('/aboutus')} className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 ${current === 'aboutus' ? "bg-white text-black font-bold" : "text-black"}`}>About Us</button>

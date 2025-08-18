@@ -27,9 +27,6 @@ import pms3 from "../assets/pms3.jpg";
 import tms1 from "../assets/tms1.jpg";
 import tms2 from "../assets/tms2.jpg";
 import tms3 from "../assets/tms3.jpg";
-import dms1 from "../assets/dms1.jpg";
-import dms2 from "../assets/dms2.jpg";
-import dms3 from "../assets/dms3.jpg";
 import ebda from '../assets/EBDA.jpeg';
 import wabys from '../assets/wabys.png';
 import GOL from '../assets/Gov.png';
@@ -199,28 +196,6 @@ export const TMS_HERO_INFO = [
         img: tms3,
         title: "Streamlined Workflow",
         description: "Eliminate wasted effort. Work smarter, not harder.",
-    },
-];
-
-export const DMS_DESCRIPTION = "This module ensures operational efficiency and compliance by providing a secure, organized repository for critical documents. It streamlines access, version control, collaboration, and reduces risks from lost or mismanaged information."
-
-export const DMS_HERO_INFO = [
-    {
-        img: dms1,
-        title: "Effortless Access",
-        description:
-            "Find and utilize crucial information right at your fingertips.",
-    },
-    {
-        img: dms2,
-        title: "Information Hub",
-        description:
-            "Your secure, centralized source for all essential knowledge and data.",
-    },
-    {
-        img: dms3,
-        title: "Centralized Control",
-        description: "Manage all documents and data with ease and security.",
     },
 ];
 
