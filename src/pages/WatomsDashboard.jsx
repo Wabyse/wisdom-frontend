@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { fetchCenters, fetchCenterEvaluationBreakdown } from "../services/dashboard";
+import { fetchCenters, fetchCenterEvaluationBreakdown, fetchAnnualPerformanceData, fetchProjectUnitsRanking } from "../services/dashboard";
 import { ReactComponent as EgyptMap } from '../assets/Egypt_location_map.svg';
 import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList, CartesianGrid } from "recharts";
 import ReactModal from 'react-modal';
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
+import AnnualPerformanceChart from "../components/AnnualPerformanceChart";
+import ProjectUnitsRankingModal from '../components/ProjectUnitsRankingModal';
+import watomsLogo from '../assets/watoms3.png';
+import fullScreen from '../utils/fullScreen';
+import useFullScreen from "../hooks/useFullScreen";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExpand, faCompress, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../context/LanguageContext";
+import { userFullName } from "../utils/userFullName";
+import { useAuth } from "../context/AuthContext";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
 
@@ -284,6 +294,7 @@ function CircularProgressBar({ value, size = 64, stroke = 8, color = 'url(#circu
 }
 
 const WatomsDashboard = () => {
+  const { userInfo } = useAuth();
   const navigate = useNavigate();
   const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
@@ -296,6 +307,13 @@ const WatomsDashboard = () => {
   const [allBreakdowns, setAllBreakdowns] = useState([]);
   const [breakdownsLoading, setBreakdownsLoading] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [annualPerformanceData, setAnnualPerformanceData] = useState([]);
+  const [annualDataLoading, setAnnualDataLoading] = useState(false);
+  const [projectUnitsRanking, setProjectUnitsRanking] = useState(null);
+  const [projectUnitsRankingLoading, setProjectUnitsRankingLoading] = useState(false);
+  const [isProjectUnitsModalOpen, setIsProjectUnitsModalOpen] = useState(false);
+  const isFullScreen = useFullScreen();
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     fetchCenters().then(async data => {
@@ -313,12 +331,60 @@ const WatomsDashboard = () => {
     });
   }, []);
 
+  // Fetch annual performance data only once when component loads
+  useEffect(() => {
+    const fetchAnnualData = async () => {
+      setAnnualDataLoading(true);
+      try {
+        // Use a default organization ID since the backend now calculates for ALL centers
+        const response = await fetchAnnualPerformanceData('1');
+        console.log('🎯 Dashboard received response:', response);
+        if (response.success) {
+          console.log('✅ Setting annual performance data:', response.data);
+          console.log('✅ Data length:', response.data?.length);
+          setAnnualPerformanceData(response.data);
+        } else {
+          console.error('❌ Annual performance API returned success: false');
+          // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
+        }
+      } catch (error) {
+        console.error('❌ Error fetching annual performance data:', error);
+        // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
+      } finally {
+        setAnnualDataLoading(false);
+      }
+    };
+
+    // Fetch data only once when component mounts
+    fetchAnnualData();
+  }, []); // Empty dependency array - only run once
+
   useEffect(() => {
     if (selectedCenter) {
       setLoading(true);
       fetchCenterEvaluationBreakdown(selectedCenter.id)
         .then(setEvaluation)
         .finally(() => setLoading(false));
+
+      // Fetch annual performance data
+      // setAnnualDataLoading(true); // This is now handled by the useEffect above
+      // fetchAnnualPerformanceData(selectedCenter.id) // This is now handled by the useEffect above
+      //   .then(response => {
+      //     console.log('Annual performance response:', response);
+      //     if (response.success) {
+      //       setAnnualPerformanceData(response.data);
+      //     } else {
+      //       console.error('Annual performance API returned success: false');
+      //       // Use generated fallback data based on activated centers evaluation
+      //       // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
+      //     }
+      //   })
+      //   .catch(error => {
+      //     console.error('Error fetching annual performance data:', error);
+      //     // Use generated fallback data based on activated centers evaluation
+      //     // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
+      //   })
+      //   .finally(() => setAnnualDataLoading(false)); // This is now handled by the useEffect above
     }
   }, [selectedCenter]);
 
@@ -409,26 +475,102 @@ const WatomsDashboard = () => {
 
   // بعد حساب overallEvaluation وقبل return مباشرة:
   const overallData = overallEvaluation ? [
-    { name: 'ODBM', value: Math.round((
-      overallEvaluation?.ODBM?.traineeAttendance * 0.4 +
-      overallEvaluation?.ODBM?.traineeCommitment * 0.2 +
-      overallEvaluation?.ODBM?.trainerCourses * 0.4
-    ) * 100) || 0 },
-    { name: 'APBM', value: Math.round((
-      overallEvaluation?.APBM?.project * 0.6 +
-      overallEvaluation?.APBM?.formative * 0.3 +
-      overallEvaluation?.APBM?.traineeCommitment * 0.1
-    ) * 100) || 0 },
-    { name: 'TQBM', value: Math.round((
-      overallEvaluation?.TQBM?.trainingRegularity * 0.25 +
-      overallEvaluation?.TQBM?.trainingPrograms * 0.25 +
-      overallEvaluation?.TQBM?.trainer * 0.25 +
-      overallEvaluation?.TQBM?.digitization * 0.15 +
-      overallEvaluation?.TQBM?.quality * 0.10
-    ) * 100) || 0 },
+    {
+      name: 'ODBM', value: Math.round((
+        overallEvaluation?.ODBM?.traineeAttendance * 0.4 +
+        overallEvaluation?.ODBM?.traineeCommitment * 0.2 +
+        overallEvaluation?.ODBM?.trainerCourses * 0.4
+      ) * 100) || 0
+    },
+    {
+      name: 'APBM', value: Math.round((
+        overallEvaluation?.APBM?.project * 0.6 +
+        overallEvaluation?.APBM?.formative * 0.3 +
+        overallEvaluation?.APBM?.traineeCommitment * 0.1
+      ) * 100) || 0
+    },
+    {
+      name: 'TQBM', value: Math.round((
+        overallEvaluation?.TQBM?.trainingRegularity * 0.25 +
+        overallEvaluation?.TQBM?.trainingPrograms * 0.25 +
+        overallEvaluation?.TQBM?.trainer * 0.25 +
+        overallEvaluation?.TQBM?.digitization * 0.15 +
+        overallEvaluation?.TQBM?.quality * 0.10
+      ) * 100) || 0
+    },
     { name: 'Community', value: Math.round((overallEvaluation?.Community || 0) * 100) },
     { name: 'Institutional', value: Math.round((overallEvaluation?.Institutional || 0) * 100) },
   ] : [];
+
+  const handleProjectUnitsRankingClick = async () => {
+    console.log('Project units ranking clicked');
+    console.log('Selected center:', selectedCenter);
+
+    setProjectUnitsRankingLoading(true);
+    setIsProjectUnitsModalOpen(true);
+
+    try {
+      // Use a default organization ID if no center is selected
+      const organizationId = selectedCenter?.id || '1'; // Default to organization ID 1
+      console.log('Using organization ID:', organizationId);
+
+      const response = await fetchProjectUnitsRanking(organizationId);
+      console.log('API response:', response);
+
+      if (response.success) {
+        setProjectUnitsRanking(response.data);
+        console.log('Project units ranking data set:', response.data);
+      } else {
+        console.error('Project units ranking API returned success: false');
+        setProjectUnitsRanking(null);
+      }
+    } catch (error) {
+      console.error('Error fetching project units ranking data:', error);
+      setProjectUnitsRanking(null);
+    } finally {
+      setProjectUnitsRankingLoading(false);
+    }
+  };
+
+  // New function to handle center-specific ranking click
+  const handleCenterRankingClick = async (center) => {
+    console.log('=== CENTER RANKING CLICK ===');
+    console.log('Center clicked:', center);
+    console.log('Center ID:', center?.id);
+    console.log('Center name:', center?.name);
+
+    setProjectUnitsRankingLoading(true);
+    setIsProjectUnitsModalOpen(true);
+    setSelectedCenter(center); // Set the selected center to display its name in modal
+
+    try {
+      const organizationId = center?.id || '1';
+      console.log('Making API call for organization ID:', organizationId);
+
+      const response = await fetchProjectUnitsRanking(organizationId);
+      console.log('=== API RESPONSE ===');
+      console.log('Full response:', response);
+      console.log('Response data:', response.data);
+
+      if (response.success) {
+        setProjectUnitsRanking(response.data);
+        console.log('✅ Center ranking data successfully set for center:', center?.name);
+      } else {
+        console.error('❌ Center ranking API returned success: false');
+        setProjectUnitsRanking(null);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching center ranking data:', error);
+      setProjectUnitsRanking(null);
+    } finally {
+      setProjectUnitsRankingLoading(false);
+      console.log('=== RANKING CLICK COMPLETE ===');
+    }
+  };
+
+  // Remove the fallback data generation since we want real data from database
+  // const generateAnnualPerformanceData = () => { ... };
+  // const fallbackAnnualData = generateAnnualPerformanceData();
 
   return (
     <div style={{
@@ -443,10 +585,9 @@ const WatomsDashboard = () => {
       boxSizing: 'border-box',
     }}>
       {/* Header - matches screenshot structure */}
-      <div style={{
+      <div className="bg-white" style={{
         width: '100vw',
         minHeight: 60,
-        background: 'rgba(22, 33, 58, 0.96)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -456,19 +597,29 @@ const WatomsDashboard = () => {
         zIndex: 100,
         borderBottom: '1px solid #222',
       }}>
-        {/* Left: WABYS logo only */}
-        <div style={{ display: 'flex', alignItems: 'center', minWidth: 60 }}>
-          <div style={{ background: 'rgba(255,255,255,0.85)', padding: '8px 18px', borderRadius: 16, boxShadow: '0 2px 8px #0002' }}>
-            <img src={wabysLogo} alt="WABYS Logo" className="cursor-pointer" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 2px 8px #000a)' }} onClick={() => navigate('/watoms')} />
-          </div>
+        {/* Left: WABYS and Watoms logo */}
+        <div className="flex items-center gap-6 my-2">
+          <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+          <div className='border-l-2 border-black p-1 h-12' />
+          <img className="w-[100px] md:w-[140px] lg:w-[150px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
         </div>
-        {/* Center: WATOMS title and subtitle */}
-        <div style={{ textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontWeight: 900, fontSize: 28, color: '#e0c77c', letterSpacing: 1, fontFamily: 'serif', textShadow: '0 2px 8px #000a' }}>WATOMS</span>
-          <span style={{ fontWeight: 700, fontSize: 16, color: '#e0c77c', marginTop: 2, letterSpacing: 0.5, textShadow: '0 2px 8px #000a' }}>منظومة تقييم جودة الأداء العام</span>
-        </div>
-        {/* Right: Filter bar and bell icon only (remove circular progress) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 220, justifyContent: 'flex-end' }}>
+        <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
+          {/* Full Screen */}
+          <button
+            onClick={fullScreen}
+            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+            title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
+          >
+            <FontAwesomeIcon
+              icon={isFullScreen ? faCompress : faExpand}
+              className="text-xl text-watomsBlue"
+            />
+          </button>
+          {/* User Name */}
+          <span className="flex items-center gap-2 font-bold text-lg md:min-w-[120px] min-w-[300px] justify-center text-watomsBlue">
+            <FontAwesomeIcon icon={faUser} />
+            {userFullName(userInfo, language)}
+          </span>
           {/* Filter bar */}
           <div style={{ display: 'flex', alignItems: 'center', background: '#bdbdbd', borderRadius: 6, padding: '2px 10px', minWidth: 120, height: 28, boxShadow: '0 1px 2px #0002', border: '1px solid #888' }}>
             {/* Filter icon */}
@@ -480,7 +631,7 @@ const WatomsDashboard = () => {
             <input type="text" placeholder="" style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: 15, color: '#222', width: 70 }} />
           </div>
           {/* Bell icon */}
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginLeft: 8 }}>
+          <svg className="text-black" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginLeft: 8 }}>
             <path d="M18 16v-5a6 6 0 1 0-12 0v5l-1.5 2v1h15v-1l-1.5-2z" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
@@ -492,7 +643,7 @@ const WatomsDashboard = () => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'stretch',
-        height: `calc(100vh - ${HEADER_HEIGHT}px)`,
+        maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
         width: '100vw',
         position: 'relative',
         gap: 0,
@@ -503,7 +654,8 @@ const WatomsDashboard = () => {
           flex: '0 1 28%',
           minWidth: 320,
           maxWidth: 420,
-          padding: '2vw 1vw 2vw 1vw',
+          maxHeight: "85vh",
+          padding: '1vw 1vw 1vw 1vw',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
@@ -512,18 +664,16 @@ const WatomsDashboard = () => {
           boxSizing: 'border-box',
         }}>
           {/* General Ranking Chart */}
-          <div style={{
-            background: '#36393f',
-            borderRadius: 16,
-            boxShadow: '0 2px 12px #0004',
-            padding: 18,
-            marginBottom: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
+          <div className="rounded-2xl flex flex-col h-fit flex-1 p-5"
+            style={{
+              background: '#36393f',
+              boxShadow: '0 2px 12px #0004',
+              marginBottom: 0,
+              alignItems: 'stretch',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
             <svg width="0" height="0" style={{ position: 'absolute' }}>
               <defs>
                 <linearGradient id="blueBarGradient" x1="0" y1="0" x2="1" y2="0">
@@ -553,136 +703,121 @@ const WatomsDashboard = () => {
               </defs>
               <rect width="100%" height="100%" fill="url(#dots)" />
             </svg>
-            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 18, color: '#facc15', textAlign: 'center', letterSpacing: 0.5, zIndex: 1, textShadow: '0 2px 8px #000a, 0 0 4px #222' }}>الترتيب العام لوحدات المشروع</div>
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: 15,
+                marginBottom: 18,
+                color: '#facc15',
+                textAlign: 'center',
+                letterSpacing: 0.5,
+                zIndex: 1,
+                textShadow: '0 2px 8px #000a, 0 0 4px #222',
+                cursor: 'pointer',
+                transition: 'color 0.2s ease, text-shadow 0.2s ease',
+                position: 'relative'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = '#fbbf24';
+                e.target.style.textShadow = '0 2px 12px #000a, 0 0 8px #facc15';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#facc15';
+                e.target.style.textShadow = '0 2px 8px #000a, 0 0 4px #222';
+              }}
+              onClick={handleProjectUnitsRankingClick}
+            >
+              الترتيب العام لوحدات المشروع
+            </div>
             {/* Modern CSS Bar Chart */}
             <div style={{ minHeight: 60, display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 1, marginTop: 4, gap: 14 }}>
               {onlineCenters.slice().sort((a, b) => (b.evaluation || 0) - (a.evaluation || 0)).map((c, i) => (
-                <div key={c.id || i} style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }} className="justify-between">
+                <div
+                  key={c.id || i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: 0,
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease, opacity 0.2s ease',
+                    borderRadius: 8,
+                    padding: '4px'
+                  }}
+                  className="justify-between hover:bg-gray-600 hover:bg-opacity-20"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                    e.currentTarget.style.opacity = '0.9';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                  onClick={() => handleCenterRankingClick(c)}
+                >
                   {/* Center name (on the left) */}
-                  <div style={{ minWidth: 115, maxWidth: 120, fontWeight: 900, fontSize: 15, color: '#fff', marginRight: 8, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                  <div style={{
+                    minWidth: 115,
+                    maxWidth: 120,
+                    fontWeight: 900,
+                    fontSize: 15,
+                    color: '#fff',
+                    marginRight: 8,
+                    textAlign: 'right',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    transition: 'color 0.2s ease'
+                  }}>
+                    {c.name}
+                  </div>
                   {/* Bar background with fixed width */}
-                  <div style={{ maxWidth: 180, height: 22, background: '#444652', borderRadius: 18, boxShadow: '0 2px 8px #0002', position: 'relative', overflow: 'hidden', marginLeft: 8, marginRight: 8 }} className="min-w-[175px]">
+                  <div style={{
+                    maxWidth: 180,
+                    height: 22,
+                    background: '#444652',
+                    borderRadius: 18,
+                    boxShadow: '0 2px 8px #0002',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    marginLeft: 8,
+                    marginRight: 8,
+                    transition: 'box-shadow 0.2s ease'
+                  }}
+                    className="min-w-[175px]"
+                  >
                     {/* Bar fill */}
-                    <div style={{ height: '100%', width: `${c.evaluation || 0}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 18, transition: 'width 0.7s cubic-bezier(.4,2,.6,1)' }} />
+                    <div style={{
+                      height: '100%',
+                      width: `${c.evaluation || 0}%`,
+                      background: modernBarGradients[i % modernBarGradients.length],
+                      borderRadius: 18,
+                      transition: 'width 0.7s cubic-bezier(.4,2,.6,1)'
+                    }} />
                   </div>
                   {/* Percentage (on the right) */}
-                  <div style={{ minWidth: 38, fontWeight: 900, fontSize: 17, color: '#444652', textShadow: '0 1px 4px #fff, 0 0 2px #fff', textAlign: 'left', marginLeft: 0, marginRight: 0 }}>{c.evaluation !== undefined ? c.evaluation : 0}%</div>
+                  <div style={{
+                    minWidth: 38,
+                    fontWeight: 900,
+                    fontSize: 17,
+                    color: '#444652',
+                    textShadow: '0 1px 4px #fff, 0 0 2px #fff',
+                    textAlign: 'left',
+                    marginLeft: 0,
+                    marginRight: 0,
+                    transition: 'color 0.2s ease'
+                  }}>
+                    {c.evaluation !== undefined ? c.evaluation : 0}%
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-          {/* Evaluation Breakdown Chart */}
-          <div style={{
-            background: '#202a3a',
-            borderRadius: 14,
-            boxShadow: '0 2px 12px #0004',
-            padding: 18,
-            marginTop: 24,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            {/* Dotted pattern background */}
-            <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-              <defs>
-                <pattern id="dots-breakdown" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
-                  <circle cx="2" cy="2" r="2" fill="#555" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#dots-breakdown)" />
-            </svg>
-            {/* Overlay to darken pattern under content */}
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(32,42,58,0.15)', zIndex: 1, pointerEvents: 'none' }} />
-            {/* Content above pattern/overlay */}
-            <div style={{ position: 'relative', zIndex: 2 }}>
-              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 10, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
-                نسب عناصر التقييم{selectedCenter ? ` ${selectedCenter.name}` : ''}
-              </div>
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 24, minHeight: 180 }}>
-                {(() => {
-                  if (!evaluation) return null;
-                  const get = (obj, path, def = 0) => path.reduce((o, k) => (o && o[k] != null ? o[k] : def), obj);
-                  const ODBM = (
-                    evaluation["ODBM"]["traineeAttendance"] * 40 +
-                    evaluation["ODBM"]["traineeCommitment"] * 20 +
-                    evaluation["ODBM"]["trainerCourses"] * 40
-                  );
-                  const APBM = (
-                    evaluation["APBM"]["project"] * 60 +
-                    evaluation["APBM"]["formative"] * 30 +
-                    evaluation["APBM"]["traineeCommitment"] * 10
-                  );
-                  const TQBM = (
-                    evaluation["TQBM"]["trainingRegularity"] * 25 +
-                    evaluation["TQBM"]["trainingPrograms"] * 25 +
-                    evaluation["TQBM"]["trainer"] * 25 +
-                    evaluation["TQBM"]["digitization"] * 15 +
-                    evaluation["TQBM"]["quality"] * 10
-                  );
-                  const COMMUNITY = evaluation["COMMUNITY"] * 100;
-                  const INSTITUTIONAL = evaluation["INSTITUTIONAL"] * 100;
-                  const data = [
-                    { name: 'ODBM', value: Math.round(ODBM) },
-                    { name: 'APBM', value: Math.round(APBM) },
-                    { name: 'TQBM', value: Math.round(TQBM) },
-                    { name: 'Community', value: Math.round(COMMUNITY) },
-                    { name: 'Institutional', value: Math.round(INSTITUTIONAL) },
-                  ];
-                  return (
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 28, minHeight: 120 }}>
-                      {data.map((item, i) => (
-                        <div
-                          key={item.name || `cat${i}`}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            flex: 1,
-                            minWidth: 40,
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => {
-                            setSelectedCategory(item.name);
-                            setModalOpen(true);
-                          }}
-                        >
-                          {/* Percentage above bar */}
-                          <div style={{ fontWeight: 900, fontSize: 15, color: '#fff', marginBottom: 6 }}>{item.value}%</div>
-                          {/* Vertical bar */}
-                          <div style={{ width: 28, height: 90, background: '#444652', borderRadius: 12, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                            <div style={{ width: '100%', height: `${item.value}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 12, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0 }} />
-                          </div>
-                          {/* Category name below bar */}
-                          <div style={{
-                            height: 28,
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            justifyContent: 'center',
-                            width: '100%',
-                            marginTop: 5,
-                          }}>
-                            <span style={{
-                              fontWeight: 700,
-                              fontSize: 10,
-                              color: '#fff',
-                              textAlign: 'center',
-                              maxWidth: 70,
-                              wordBreak: 'break-word',
-                              textShadow: '0 2px 8px #000',
-                              lineHeight: 1.1,
-                              display: 'block',
-                            }} title={item.name || 'تصنيف'}>{item.name || 'تصنيف'}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
+          {/* Annual Performance Chart */}
+          <AnnualPerformanceChart
+            data={annualPerformanceData}
+            title="التقييم السنوي للمشروع"
+            loading={annualDataLoading}
+          />
         </div>
         {/* وسط: الخريطة والدائرة */}
         <div style={{
@@ -745,8 +880,8 @@ const WatomsDashboard = () => {
                     key={center.id}
                     style={{
                       position: 'absolute',
-                      left: `calc(${((x - 106.544) / 1054.979) * 100}% + ${dx * 0.75}px)` ,
-                      top: `calc(${((y + 188.858) / 972.996) * 100}% + ${dy * 0.75}px)` ,
+                      left: `calc(${((x - 106.544) / 1054.979) * 100}% + ${dx * 0.75}px)`,
+                      top: `calc(${((y + 188.858) / 972.996) * 100}% + ${dy * 0.75}px)`,
                       transform: 'translate(-50%, -50%)',
                       width: 12,
                       height: 12,
@@ -803,12 +938,12 @@ const WatomsDashboard = () => {
                   <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{selectedCenter.name}</div>
                   <div style={{ fontSize: 9, marginBottom: 2 }}>{selectedCenter.address || 'No address'}</div>
                   {selectedCenter.location && (
-                    <a 
+                    <a
                       href={`https://www.google.com/maps?q=${selectedCenter.location}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ 
-                        fontSize: 9, 
+                      style={{
+                        fontSize: 9,
                         color: '#1a237e',
                         textDecoration: 'none',
                         display: 'block',
@@ -890,12 +1025,13 @@ const WatomsDashboard = () => {
           flex: '0 1 28%',
           minWidth: 320,
           maxWidth: 420,
-          padding: '2vw 1vw 2vw 1vw',
+          maxHeight: "85vh",
+          padding: '1vw 1vw 1vw 1vw',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
           alignItems: 'stretch',
-          gap: 28,
+          gap: 10,
           boxSizing: 'border-box',
         }}>
           <div style={{
@@ -948,7 +1084,7 @@ const WatomsDashboard = () => {
             background: '#202a3a',
             borderRadius: 16,
             boxShadow: '0 2px 16px #0005',
-            padding: 22,
+            padding: 10,
             marginTop: 0,
             display: 'flex',
             flexDirection: 'column',
@@ -1043,8 +1179,8 @@ const WatomsDashboard = () => {
         ariaHideApp={false}
       >
         <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 16, textAlign: 'center' }}>
-          {selectedCategory === 'City Ranking' ? 'تفاصيل ترتيب المحافظات' : 
-           selectedCategory ? `تفاصيل ${selectedCategory} - ${selectedCenter?.name || ''}` : ''}
+          {selectedCategory === 'City Ranking' ? 'تفاصيل ترتيب المحافظات' :
+            selectedCategory ? `تفاصيل ${selectedCategory} - ${selectedCenter?.name || ''}` : ''}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {selectedCategory === 'City Ranking' ? (
@@ -1061,11 +1197,11 @@ const WatomsDashboard = () => {
                 <span style={{ color: '#0af', fontWeight: 600 }}>{item.weight}%</span>
                 <span style={{ color: '#0f0', fontWeight: 600 }}>
                   {selectedCategory === 'ODBM' && evaluation?.ODBM?.[item.key] != null ? `${Math.round(evaluation.ODBM[item.key] * 100)}%` :
-                   selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
-                   selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
-                   selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
-                   selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
-                   ''}
+                    selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
+                      selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
+                        selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
+                          selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
+                            ''}
                 </span>
               </div>
             ))
@@ -1110,11 +1246,11 @@ const WatomsDashboard = () => {
                 <span style={{ color: '#0af', fontWeight: 600 }}>{item.weight}%</span>
                 <span style={{ color: '#0f0', fontWeight: 600 }}>
                   {selectedCategory === 'ODBM' && evaluation?.ODBM?.[item.key] != null ? `${Math.round(evaluation.ODBM[item.key] * 100)}%` :
-                   selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
-                   selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
-                   selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
-                   selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
-                   ''}
+                    selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
+                      selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
+                        selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
+                          selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
+                            ''}
                 </span>
               </div>
             ))
@@ -1122,6 +1258,16 @@ const WatomsDashboard = () => {
         </div>
         <button onClick={() => setOverallModalOpen(false)} style={{ margin: '24px auto 0', display: 'block', background: '#0af', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 24px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>إغلاق</button>
       </ReactModal>
+
+      {/* Project Units Ranking Modal */}
+      <ProjectUnitsRankingModal
+        isOpen={isProjectUnitsModalOpen}
+        onClose={() => setIsProjectUnitsModalOpen(false)}
+        data={projectUnitsRanking}
+        loading={projectUnitsRankingLoading}
+        centerInfo={selectedCenter}
+      />
+
       {/* Add warning gradient to chart SVG root */}
       <defs>
         <radialGradient id="warnGradient" cx="50%" cy="50%" r="50%">

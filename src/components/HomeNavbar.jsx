@@ -54,7 +54,7 @@ const HomeNabvar = ({ current, setViewValue }) => {
           <img
             src={ebda}
             alt=""
-            className='md:w-24 w-[50%] h-20 cursor-pointer'
+            className='md:w-24 w-14 md:h-20 h-12 cursor-pointer'
             onClick={() => navigateTo('/')}
           />
         </div>
@@ -183,7 +183,8 @@ const HomeNabvar = ({ current, setViewValue }) => {
             <button onClick={openPopup} className={`hover:bg-wisdomOrange hover:text-white w-[50%] border-gray-700 border-2 py-4 ${current === 'careers' ? "bg-white text-white w-[50%] border-gray-700 border-2 font-bold" : "text-white w-[50%] border-gray-700 border-2"}`}>Careers</button>
             <button onClick={() => navigateTo('/aboutus')} className={`hover:bg-wisdomOrange hover:text-white w-[50%] border-gray-700 border-2 py-4 ${current === 'aboutus' ? "bg-white text-white w-[50%] border-gray-700 border-2 font-bold" : "text-white w-[50%] border-gray-700 border-2"}`}>About Us</button>
             <button onClick={() => navigateTo('/contactus')} className={`hover:bg-wisdomOrange hover:text-white w-[50%] border-gray-700 border-2 py-4 ${current === 'contactus' ? "bg-white text-white w-[50%] border-gray-700 border-2 font-bold" : "text-white w-[50%] border-gray-700 border-2"}`}>Contact Us</button>
-            <button onClick={openPopup} className="bg-wisdomOrange hover:bg-wisdomDarkOrange p-4 text-white w-[50%] border-gray-700 border-2">Call Now!</button>
+            <button onClick={() => navigateTo('/vtc-trainees-registration')} className={`hover:bg-wisdomOrange hover:text-white w-[50%] border-gray-700 border-2 py-4 ${current === 'contactus' ? "bg-white text-white w-[50%] border-gray-700 border-2 font-bold" : "text-white w-[50%] border-gray-700 border-2"}`}>تسجيل متدربين</button>
+            <button onClick={() => navigateTo('/wabys')} className="bg-wisdomOrange hover:bg-wisdomDarkOrange p-4 text-white w-[50%] border-gray-700 border-2">Wabys</button>
           </div>
         )}
       </div>

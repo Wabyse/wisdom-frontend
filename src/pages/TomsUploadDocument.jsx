@@ -3,8 +3,8 @@ import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
-import { fetchingOrgs, uploadDmsDocument } from "../services/dms";
-import { fetchDmsCategories, fetchVtcEmployees } from "../services/data";
+import { fetchWorkshopOrgRelation, uploadDmsDocument } from "../services/dms";
+import { fetchDmsCategories, fetchSchools, fetchVtcEmployees } from "../services/data";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import Uploading from "./Uploading";
@@ -25,6 +25,7 @@ const TomsUploadDocument = () => {
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [employees, setEmployees] = useState([]);
+  const [workshopOrg, setWorkshopOrg] = useState([]);
 
   const navigate = useNavigate();
 
@@ -66,6 +67,20 @@ const TomsUploadDocument = () => {
           );
           setSelectedCategories(testing2);
         }
+      } else if (categories[selectedCategory]?.name === "عهدة") {
+        if (userInfo?.organization_id === 3) {
+          if (organizationId === "") {
+            const subs = categories[selectedCategory]?.subCategory;
+            setSelectedCategories(Array.isArray(subs) ? subs : []);
+          } else {
+            const testing2 = workshopOrg.filter(org => Number(org.id) === Number(organizationId))
+            console.log(testing2)
+            setSelectedCategories(testing2[0]?.subCategories);
+          }
+        } else {
+          const testing2 = workshopOrg.filter(org => Number(org.id) === Number(userInfo?.organization_id))
+          setSelectedCategories(testing2[0]?.subCategories);
+        }
       } else {
         const subs = categories[selectedCategory]?.subCategory;
         setSelectedCategories(Array.isArray(subs) ? subs : []);
@@ -73,7 +88,20 @@ const TomsUploadDocument = () => {
     };
 
     filterSubCategories();
-  }, [selectedCategory, organizationId, employees, categories, userInfo]);
+  }, [selectedCategory, organizationId, employees, categories, userInfo, workshopOrg]);
+
+  useEffect(() => {
+    const loadWorkshopsOrgRelation = async () => {
+      try {
+        const response = await fetchWorkshopOrgRelation(userInfo)
+        setWorkshopOrg(response)
+      } catch (error) {
+        console.error("Upload error", error?.response?.data || error.message);
+      }
+    }
+
+    loadWorkshopsOrgRelation();
+  }, [userInfo])
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -96,8 +124,10 @@ const TomsUploadDocument = () => {
 
     const formData = new FormData();
     // Include the filename explicitly
+    console.log(categories[selectedCategory])
     formData.append("file", file, file.name);
-    formData.append("sub_category", subCategory);
+    formData.append("sub_category", categories[selectedCategory].name === "شئون عاملين" ? 11 : subCategory);
+    formData.append("employee_id", categories[selectedCategory].name === "شئون عاملين" ? subCategory : null)
     formData.append("organization_id", needsDeptOrg ? organizationId : userInfo.organization_id);
     formData.append("user_id", userInfo.id);
 
@@ -120,8 +150,9 @@ const TomsUploadDocument = () => {
   useEffect(() => {
     const loadingOrg = async () => {
       try {
-        const response = await fetchingOrgs(userInfo);
-        setSchools(response);
+        const response = await fetchSchools(userInfo);
+        const filterVtc = response.filter(vtc => vtc.id !== 1 && vtc.id !== 2 && vtc.id !== 12)
+        setSchools(filterVtc);
       } catch (error) {
         console.error("no files", error);
       }

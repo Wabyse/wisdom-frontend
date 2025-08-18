@@ -10,7 +10,7 @@ export const downloadFileDms = async (fileName, path) => {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
 
-    
+
     const cleanName = filterFileName(path.filteredPath);
     link.href = url;
     link.setAttribute("download", cleanName);
@@ -80,6 +80,24 @@ export const fetchingDmsCategories = async () => {
       headers: { "Content-Type": "application/json" },
     });
     return response.data?.categories || [];
+  } catch (error) {
+    console.error(
+      "Error creating form:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const fetchWorkshopOrgRelation = async (userInfo) => {
+  try {
+    const response = await api.get(`/api/v1/files/sub-categories/workshops`, {
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json"
+      },
+    });
+    return response.data?.organizations || [];
   } catch (error) {
     console.error(
       "Error creating form:",

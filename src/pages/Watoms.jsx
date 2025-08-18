@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faUser, faHouse, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress, faChartLine
 } from "@fortawesome/free-solid-svg-icons";
-import watomsLogo from '../assets/watoms3.png'
+import watomsLogo from '../assets/watoms3.png';
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
 import { userFullName } from '../utils/userFullName';
