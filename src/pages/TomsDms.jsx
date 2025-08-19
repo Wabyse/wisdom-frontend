@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "../styles/Dms.css";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
-import { downloadFileDms, fetchingFiles, fetchingOrgs } from "../services/dms";
+import { downloadFileDms, downloadFileDms2, fetchingFiles, fetchingOrgs } from "../services/dms";
 import { fetchDmsCategories } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
@@ -108,8 +108,11 @@ const TomsDms = () => {
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
+    setSubCategories([]);
+    setSelectedSubCategory("");
     if (!(Number(e.target.value) === 0)) {
-      setSubCategories(categories[e.target.value - 1].subCategory);
+      const filterSubCategories = categories.filter(category => Number(category.id) === Number(e.target.value))
+      setSubCategories(filterSubCategories[0].subCategory);
     } else {
       setTest(test + 1);
     }
@@ -132,20 +135,21 @@ const TomsDms = () => {
   };
 
   const openPDF = (fileName) => {
-    const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName.filteredPath}`;
-    window.open(pdfUrl, "_blank"); // Opens PDF in new tab
+      const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName.filteredPath}`;
+      window.open(pdfUrl, "_blank"); // Opens PDF in new tab
   };
 
   const handleSchoolChange = (e) => {
     setSelectedSchool(e.target.value);
     scrollDown(targetDivRef);
   };
-
-  const handleDownload2 = (path) => {
+  const handleDownload2 = async (path) => {
     try {
       // Ensure correct filename extraction for both windows and ubuntu
-      const fileName = encodeURIComponent(path.filteredPath.replace(/\\/g, "/"));
-      downloadFileDms(fileName, path);
+      const safePath = path.filteredPath.replace(/\\/g, "/");
+      const fileName = safePath.split("/").pop(); // "1755607028842-دورة تفصيل ....pdf"
+
+      await downloadFileDms2(encodeURIComponent(fileName), path);
     } catch (error) {
       console.error("Download error", error);
       alert("File download failed");
@@ -224,7 +228,7 @@ const TomsDms = () => {
         </div>
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           {data?.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
               {data.map((file, idx) => (
                 <div key={file.id} className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => handleClick(file.id)}>
                   <div className="flex items-center gap-3 mb-3">
@@ -273,22 +277,22 @@ const TomsDms = () => {
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {userInfo.user_role === "Operations Excellence Lead" && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faBuilding} className="text-watomsBlue" />
-                    {language ? "Institution Selection" : "اختيار المركز"}
-                  </h3>
-                  <select
-                    value={selectedSchool || ""}
-                    onChange={(e) => setSelectedSchool(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
-                  >
-                    <option value="">{language ? "Select Institution" : "اختر المركز"}</option>
-                    {data?.schools?.map((school) => (
-                      <option key={school.id} value={school.id}>{school.name}</option>
-                    ))}
-                  </select>
-                </div>
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <FontAwesomeIcon icon={faBuilding} className="text-watomsBlue" />
+                  {language ? "Institution Selection" : "اختيار المركز"}
+                </h3>
+                <select
+                  value={selectedSchool || ""}
+                  onChange={(e) => setSelectedSchool(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-watomsBlue focus:border-transparent"
+                >
+                  <option value="">{language ? "Select Institution" : "اختر المركز"}</option>
+                  {data?.schools?.map((school) => (
+                    <option key={school.id} value={school.id}>{school.name}</option>
+                  ))}
+                </select>
+              </div>
             )}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -302,7 +306,7 @@ const TomsDms = () => {
               >
                 <option value="">{language ? "Select Category" : "اختر التصنيف"}</option>
                 {categories?.map((cat, idx) => (
-                  <option key={cat.id} value={idx + 1}>{cat.name}</option>
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
               </select>
             </div>

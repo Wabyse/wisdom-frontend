@@ -26,6 +26,31 @@ export const downloadFileDms = async (fileName, path) => {
   }
 };
 
+export const downloadFileDms2 = async (fileName, path) => {
+  try {
+    const response = await api.get(`/api/v1/files/download2/${fileName}`, {
+      responseType: "blob",
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+
+
+    const cleanName = filterFileName(path.filteredPath);
+    link.href = url;
+    link.setAttribute("download", cleanName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error(
+      "Error downloading file:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
 export const fetchingFiles = async (userInfo) => {
   try {
     const response = await api.get(`/api/v1/files/view`, {

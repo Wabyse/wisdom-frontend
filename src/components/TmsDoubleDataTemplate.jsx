@@ -15,6 +15,7 @@ const TmsDoubleDataTemplate = ({ title, value, cardAdditionalCSS = "", valueAddi
             toast.error('You can only open PDF files');
         }
     };
+    console.log(value.sender)
     const handleDownload2 = (path) => {
         try {
             // Ensure correct filename extraction for both windows and ubuntu
