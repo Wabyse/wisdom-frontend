@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchCenters, fetchCenterEvaluationBreakdown, fetchAnnualPerformanceData, fetchProjectUnitsRanking } from "../services/dashboard";
+import { fetchCenters, fetchCenterEvaluationBreakdown, fetchAnnualPerformanceData, fetchProjectUnitsRanking, fetchWatomsDetailsData } from "../services/dashboard";
 import { ReactComponent as EgyptMap } from '../assets/Egypt_location_map.svg';
 import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList, CartesianGrid } from "recharts";
 import ReactModal from 'react-modal';
@@ -315,6 +315,93 @@ const WatomsDashboard = () => {
   const [isProjectUnitsModalOpen, setIsProjectUnitsModalOpen] = useState(false);
   const isFullScreen = useFullScreen();
   const { language, setLanguage } = useLanguage();
+  const [watomsData, setWatomsData] = useState([]);
+
+  const [detailedData, setDetailedData] = useState({
+    TQBM: { TG: 0, TE: 0, T: 0 },
+    GOVBM: { IP: 0, DD: 0, PO: 0, QD: 0, W: 0 },
+    ACBM: { TR: 0, TG: 0 },
+    GEEBBM: {
+      TQBM: { TG: 0, TE: 0, T: 0 },
+      GOVBM: { IP: 0, DD: 0, PO: 0, QD: 0, W: 0 },
+      ACBM: { TR: 0, TG: 0 },
+      TRA: 0,
+      TV: 0,
+      CP: 0
+    }
+  });
+
+  const [semiDetailedData, setSemiDetailed] = useState({
+    TQBM: { TG: 0, TE: 0, T: 0 },
+    GOVBM: { IP: 0, DD: 0, PO: 0, QD: 0, W: 0 },
+    ACBM: { TR: 0, TG: 0 },
+    GEEBBM: {
+      TQBM: 0,
+      GOVBM: 0,
+      ACBM: 0,
+      TRA: 0,
+      TV: 0,
+      CP: 0
+    }
+  });
+
+  const [totalData, setTotlaData] = useState({
+    TQBM: 0,
+    GOVBM: 0,
+    ACBM: 0,
+    GEEBBM: 0
+  });
+
+  const [overall, setOverall] = useState([]);
+  const [overScore, setOverScore] = useState(null);
+  const [individualScores, setIndividualScores] = useState({});
+
+  useEffect(() => {
+    const loadWatomsDetailedData = async () => {
+      const response = await fetchWatomsDetailsData();
+      setWatomsData(response)
+    }
+
+    loadWatomsDetailedData();
+  }, [])
+
+  useEffect(() => {
+    if (!watomsData?.length) return;
+
+    const scores = {};
+
+    watomsData.forEach(org => {
+      const TQBM =
+        (calculateAverage(org.TQBM?.TG) * 40) +
+        (calculateAverage(org.TQBM?.TE) * 35) +
+        (calculateAverage(org.TQBM?.T) * 25);
+
+      const GOVBM =
+        (calculateAverage(org.GOVBM?.IP) * 15) +
+        (calculateAverage(org.GOVBM?.DD) * 30) +
+        (calculateAverage(org.GOVBM?.PO) * 20) +
+        (calculateAverage(org.GOVBM?.QD) * 20) +
+        (calculateAverage(org.GOVBM?.W) * 15);
+
+      const ACBM =
+        (calculateAverage(org.ACBM?.TR) * 40) +
+        (calculateAverage(org.ACBM?.TG) * 60);
+
+      const GEEBBM =
+        ((TQBM / 100) * 30) +
+        ((GOVBM / 100) * 25) +
+        ((ACBM / 100) * 20) +
+        ((org.GEEBBM?.TRA || 0) * 10) +
+        ((calculateAverage(org.GEEBBM?.TV) || 0) * 5) +
+        ((calculateAverage(org.GEEBBM?.CP) || 0) * 10);
+
+      const totalScore = Math.round((TQBM + GOVBM + ACBM + GEEBBM) / 5);
+
+      scores[org.id] = totalScore;
+    });
+
+    setIndividualScores(scores);
+  }, [watomsData]);
 
   useEffect(() => {
     fetchCenters().then(async data => {
@@ -473,6 +560,148 @@ const WatomsDashboard = () => {
   };
 
   const overallEvaluation = calculateOverallEvaluation();
+
+  // calculate overall data for each section
+
+  const calculateAverage = (arr = []) => {
+    if (!Array.isArray(arr) || arr.length === 0) return 0;
+    const sum = arr.reduce((acc, cur) => acc + (cur?.average_score || 0), 0);
+    return sum / arr.length;
+  };
+
+  useEffect(() => {
+    if (!watomsData?.length) return;
+
+    const summedData = structuredClone(detailedData); // deep clone
+    const orgCount = watomsData.length;
+
+    watomsData.forEach(org => {
+      Object.keys(summedData.TQBM).forEach(key => {
+        const section = org.TQBM?.[key];
+        summedData.TQBM[key] += calculateAverage(section);
+      });
+
+      Object.keys(summedData.GOVBM).forEach(key => {
+        const section = org.GOVBM?.[key];
+        summedData.GOVBM[key] += calculateAverage(section);
+      });
+
+      Object.keys(summedData.ACBM).forEach(key => {
+        const section = org.ACBM?.[key];
+        summedData.ACBM[key] += calculateAverage(section);
+      });
+
+      Object.keys(summedData.GEEBBM).forEach(key => {
+        const section = summedData.GEEBBM[key];
+        if (typeof section === 'object') {
+          Object.keys(section).forEach(subKey => {
+            const orgSection = org.GEEBBM?.[key]?.[subKey];
+            section[subKey] += calculateAverage(orgSection);
+          });
+        } else {
+          const value = org.GEEBBM?.[key];
+          if (typeof value === 'number') {
+            summedData.GEEBBM[key] += value;
+          }
+        }
+      });
+    });
+
+    const averageNestedScores = (obj) => {
+      Object.keys(obj).forEach(key => {
+        if (typeof obj[key] === 'object') {
+          averageNestedScores(obj[key]);
+        } else if (typeof obj[key] === 'number') {
+          obj[key] = obj[key] / orgCount;
+        }
+      });
+    };
+
+    averageNestedScores(summedData);
+    setDetailedData(summedData); // ✅ This triggers the second useEffect
+  }, [watomsData]);
+
+  useEffect(() => {
+    const semi = {
+      TQBM: { ...detailedData.TQBM },
+      GOVBM: { ...detailedData.GOVBM },
+      ACBM: { ...detailedData.ACBM },
+      GEEBBM: {
+        TRA: detailedData.GEEBBM.TRA,
+        TV: detailedData.GEEBBM.TV,
+        CP: detailedData.GEEBBM.CP,
+        TQBM: 0,
+        GOVBM: 0,
+        ACBM: 0
+      }
+    };
+
+    semi.GEEBBM.TQBM =
+      (detailedData.GEEBBM.TQBM.TG * 40) +
+      (detailedData.GEEBBM.TQBM.TE * 35) +
+      (detailedData.GEEBBM.TQBM.T * 25);
+
+    semi.GEEBBM.GOVBM =
+      (detailedData.GEEBBM.GOVBM.IP * 15) +
+      (detailedData.GEEBBM.GOVBM.DD * 30) +
+      (detailedData.GEEBBM.GOVBM.PO * 20) +
+      (detailedData.GEEBBM.GOVBM.QD * 20) +
+      (detailedData.GEEBBM.GOVBM.W * 15);
+
+    semi.GEEBBM.ACBM =
+      (detailedData.GEEBBM.ACBM.TR * 40) +
+      (detailedData.GEEBBM.ACBM.TG * 60);
+
+    setSemiDetailed(semi);
+
+    const summed = {
+      TQBM:
+        (detailedData.TQBM.TG * 40) +
+        (detailedData.TQBM.TE * 35) +
+        (detailedData.TQBM.T * 25),
+
+      GOVBM:
+        (detailedData.GOVBM.IP * 15) +
+        (detailedData.GOVBM.DD * 30) +
+        (detailedData.GOVBM.PO * 20) +
+        (detailedData.GOVBM.QD * 20) +
+        (detailedData.GOVBM.W * 15),
+
+      ACBM:
+        (detailedData.ACBM.TR * 40) +
+        (detailedData.ACBM.TG * 60),
+
+      GEEBBM:
+        ((semi.GEEBBM.TQBM / 100) * 30) +
+        ((semi.GEEBBM.GOVBM / 100) * 25) +
+        ((semi.GEEBBM.ACBM / 100) * 20) +
+        (semi.GEEBBM.TRA * 10) +
+        (semi.GEEBBM.TV * 5) +
+        (semi.GEEBBM.CP * 10)
+    };
+
+    setTotlaData(summed);
+    setOverall([
+      {
+        name: "TQBM",
+        value: Math.round(summed.TQBM)
+      },
+      {
+        name: "GOVBM",
+        value: Math.round(summed.GOVBM)
+      },
+      {
+        name: "ACBM",
+        value: Math.round(summed.ACBM)
+      },
+      {
+        name: "GEEBBM",
+        value: Math.round(summed.GEEBBM)
+      }
+    ])
+    setOverScore((summed.TQBM + summed.GOVBM + summed.ACBM + summed.GEEBBM) / 4)
+  }, [detailedData]); // ✅ re-run when detailedData changes
+
 
   // بعد حساب overallEvaluation وقبل return مباشرة:
   const overallData = overallEvaluation ? [
@@ -921,7 +1150,7 @@ const WatomsDashboard = () => {
                   background: 'none',
                   boxShadow: '0 0 15px #0af8',
                 }}>
-                  <CircularProgressBar value={selectedCenter.evaluation || 0} />
+                  <CircularProgressBar value={individualScores[selectedCenter.id] || 0} />
                 </div>
                 {/* Info box */}
                 <div style={{
@@ -1078,10 +1307,10 @@ const WatomsDashboard = () => {
             minHeight: 170,
             boxShadow: '0 2px 8px #0002'
           }}>
-            <CircularProgressBar value={avgOnlineEval} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
-            <div style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c', marginTop: 12 }}>
-              إجمالي نسبة تقييم المراكز المفعلة
+            <div className="mb-2" style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c', marginTop: 12 }}>
+              المتوسط العام لتقييم المشروع
             </div>
+            <CircularProgressBar value={overScore} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
           </div>
           <div style={{
             background: '#202a3a',
@@ -1109,9 +1338,9 @@ const WatomsDashboard = () => {
             {/* Content above pattern/overlay */}
             <div style={{ position: 'relative', zIndex: 2 }}>
               <div style={{ fontWeight: 700, fontSize: 13, color: '#facc15', marginBottom: 8, textAlign: 'center' }}>اجمالي نسب معايير التقييم</div>
-              {overallEvaluation && (
+              {overall && (
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 20, minHeight: 90 }}>
-                  {overallData.map((item, i) => (
+                  {overall.map((item, i) => (
                     <div
                       key={item.name || `cat${i}`}
                       style={{
@@ -1201,7 +1430,7 @@ const WatomsDashboard = () => {
                 <span style={{ color: '#0f0', fontWeight: 600 }}>
                   {selectedCategory === 'ODBM' && evaluation?.ODBM?.[item.key] != null ? `${Math.round(evaluation.ODBM[item.key] * 100)}%` :
                     selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
-                    selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
+                      selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
                         selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
                           selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
                             ''}
