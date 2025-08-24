@@ -317,6 +317,10 @@ const WatomsDashboard = () => {
   const { language, setLanguage } = useLanguage();
   const [watomsData, setWatomsData] = useState([]);
 
+  function fullNumber(value) {
+    return Math.round(Number(value));
+  }
+
   const [detailedData, setDetailedData] = useState({
     TQBM: { TG: 0, TE: 0, T: 0 },
     GOVBM: { IP: 0, DD: 0, PO: 0, QD: 0, W: 0 },
@@ -359,6 +363,7 @@ const WatomsDashboard = () => {
   useEffect(() => {
     const loadWatomsDetailedData = async () => {
       const response = await fetchWatomsDetailsData();
+      console.log(response)
       setWatomsData(response)
     }
 
@@ -684,19 +689,19 @@ const WatomsDashboard = () => {
     setOverall([
       {
         name: "TQBM",
-        value: Math.round(summed.TQBM)
+        value: fullNumber((watomsData?.organizations?.["4"].TQBM.totalTQBM + watomsData?.organizations?.["5"].TQBM.totalTQBM + watomsData?.organizations?.["7"].TQBM.totalTQBM + watomsData?.organizations?.["8"].TQBM.totalTQBM + watomsData?.organizations?.["9"].TQBM.totalTQBM) / 5) || 0
       },
       {
         name: "GOVBM",
-        value: Math.round(summed.GOVBM)
+        value: fullNumber((watomsData?.organizations?.["4"].GOVBM.totalGOVBM + watomsData?.organizations?.["5"].GOVBM.totalGOVBM + watomsData?.organizations?.["7"].GOVBM.totalGOVBM + watomsData?.organizations?.["8"].GOVBM.totalGOVBM + watomsData?.organizations?.["9"].GOVBM.totalGOVBM) / 5) || 0
       },
       {
         name: "ACBM",
-        value: Math.round(summed.ACBM)
+        value: fullNumber((watomsData?.organizations?.["4"].ACBM.totalACBM + watomsData?.organizations?.["5"].ACBM.totalACBM + watomsData?.organizations?.["7"].ACBM.totalACBM + watomsData?.organizations?.["8"].ACBM.totalACBM + watomsData?.organizations?.["9"].ACBM.totalACBM) / 5) || 0
       },
       {
-        name: "GEEBBM",
-        value: Math.round(summed.GEEBBM)
+        name: "GEEBM",
+        value: fullNumber((watomsData?.organizations?.["4"].GEEBM.totalGEEBM + watomsData?.organizations?.["5"].GEEBM.totalGEEBM + watomsData?.organizations?.["7"].GEEBM.totalGEEBM + watomsData?.organizations?.["8"].GEEBM.totalGEEBM + watomsData?.organizations?.["9"].GEEBM.totalGEEBM) / 5) || 0
       }
     ])
     setOverScore((summed.TQBM + summed.GOVBM + summed.ACBM + summed.GEEBBM) / 4)
@@ -883,14 +888,14 @@ const WatomsDashboard = () => {
           maxWidth: 420,
           maxHeight: "85vh",
           padding: '1vw 1vw 1vw 1vw',
-          gap: 28,
+          gap: 14,
           boxSizing: 'border-box',
         }}>
           {/* General Ranking Chart */}
           <div
             className="rounded-2xl flex flex-col h-fit flex-1 p-5"
             style={{
-              background: '#36393f',
+              background: "#2d3347",
               boxShadow: '0 2px 12px #0004',
               marginBottom: 0,
               alignItems: 'stretch',
@@ -898,28 +903,6 @@ const WatomsDashboard = () => {
               overflow: 'hidden',         // already hides both axes; fine to keep
             }}
           >
-            <svg width="0" height="0" style={{ position: 'absolute' }}>
-              <defs>
-                <linearGradient id="blueBarGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#00bfff" />
-                  <stop offset="100%" stopColor="#0099ff" />
-                </linearGradient>
-                <linearGradient id="pinkBarGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#ff5ebc" />
-                  <stop offset="100%" stopColor="#ff3c8e" />
-                </linearGradient>
-                <linearGradient id="orangeBarGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#ffa600" />
-                  <stop offset="100%" stopColor="#ff7c00" />
-                </linearGradient>
-                <linearGradient id="grayBarGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#bdbdbd" />
-                  <stop offset="100%" stopColor="#757575" />
-                </linearGradient>
-              </defs>
-            </svg>
-            {/* Dotted pattern background */}
-            <DotPatternBackground id="dots" />
             <div
               style={{
                 fontWeight: 700,
@@ -961,99 +944,105 @@ const WatomsDashboard = () => {
                 overflowX: 'hidden',            // ✅ prevent x scroll
               }}
             >
-              {onlineCenters.slice().sort((a, b) => (b.evaluation || 0) - (a.evaluation || 0)).map((c, i) => (
-                <div
-                  key={c.id || i}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: 0,
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s ease, opacity 0.2s ease',
-                    borderRadius: 8,
-                    padding: '4px',
-                    minWidth: 0,                // ✅ allow children to shrink
-                    transformOrigin: 'center',  // ✅ scale from center
-                  }}
-                  className="justify-between hover:bg-gray-600 hover:bg-opacity-20"
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                    e.currentTarget.style.opacity = '0.9';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.opacity = '1';
-                  }}
-                  onClick={() => handleCenterRankingClick(c)}
-                >
-                  {/* Center name (on the left) */}
-                  <div className="text-start" style={{
-                    minWidth: 115,
-                    maxWidth: 120,
-                    fontWeight: 900,
-                    fontSize: 15,
-                    color: '#fff',
-                    marginRight: 8,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    transition: 'color 0.2s ease'
-                  }}>
-                    {c.name}
-                  </div>
-                  {/* Bar background with fixed width */}
-                  <div style={{
-                    flex: 1,                   // ✅ take remaining space
-                    minWidth: 0,               // ✅ allow shrink
-                    height: 22,
-                    background: '#444652',
-                    borderRadius: 18,
-                    boxShadow: '0 2px 8px #0002',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    marginLeft: 8,
-                    marginRight: 8,
-                    transition: 'box-shadow 0.2s ease',
-                  }}
+              {onlineCenters.slice().sort(
+                (a, b) =>
+                  (watomsData?.organizations?.[b.id]?.overall ?? 0) -
+                  (watomsData?.organizations?.[a.id]?.overall ?? 0)
+              )
+                .map((c, i) => (
+                  <div
+                    key={c.id || i}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginBottom: 0,
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s ease, opacity 0.2s ease',
+                      borderRadius: 8,
+                      padding: '4px',
+                      minWidth: 0,                // ✅ allow children to shrink
+                      transformOrigin: 'center',  // ✅ scale from center
+                    }}
+                    className="justify-between hover:bg-gray-600 hover:bg-opacity-20"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.02)';
+                      e.currentTarget.style.opacity = '0.9';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.opacity = '1';
+                    }}
+                    onClick={() => handleCenterRankingClick(c)}
                   >
-                    {/* Bar fill */}
-                    <div
-                      style={{
-                        height: '100%',
-                        width: `${Math.min(100, Math.max(0, c.evaluation || 0))}%`,
-                        background: modernBarGradients[i % modernBarGradients.length],
-                        borderRadius: 18,
-                        transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
-                      }}
-                    />
+                    {/* Center name (on the left) */}
+                    <div className="text-start" style={{
+                      minWidth: 115,
+                      maxWidth: 120,
+                      fontWeight: 900,
+                      fontSize: 15,
+                      color: '#fff',
+                      marginRight: 8,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      transition: 'color 0.2s ease'
+                    }}>
+                      {c.name}
+                    </div>
+                    {/* Bar background with fixed width */}
+                    <div style={{
+                      flex: 1,                   // ✅ take remaining space
+                      minWidth: 0,               // ✅ allow shrink
+                      height: 22,
+                      background: '#444652',
+                      borderRadius: 18,
+                      boxShadow: '0 2px 8px #0002',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      marginLeft: 8,
+                      marginRight: 8,
+                      transition: 'box-shadow 0.2s ease',
+                    }}
+                    >
+                      {/* Bar fill */}
+                      <div
+                        style={{
+                          height: '100%',
+                          width: `${Math.min(100, Math.max(0, fullNumber(watomsData?.organizations[c.id].overall) || 0))}%`,
+                          background: modernBarGradients[i % modernBarGradients.length],
+                          borderRadius: 18,
+                          transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
+                        }}
+                      />
+                    </div>
+                    {/* Percentage (on the right) */}
+                    <div className="text-white" style={{
+                      minWidth: 38,
+                      fontWeight: 900,
+                      fontSize: 17,
+                      textAlign: 'left',
+                      marginLeft: 0,
+                      marginRight: 0,
+                      transition: 'color 0.2s ease'
+                    }}>
+                      {fullNumber(watomsData?.organizations[c.id].overall) !== undefined ? fullNumber(watomsData?.organizations[c.id].overall) : 0}%
+                    </div>
                   </div>
-                  {/* Percentage (on the right) */}
-                  <div className="text-white" style={{
-                    minWidth: 38,
-                    fontWeight: 900,
-                    fontSize: 17,
-                    textAlign: 'left',
-                    marginLeft: 0,
-                    marginRight: 0,
-                    transition: 'color 0.2s ease'
-                  }}>
-                    {c.evaluation !== undefined ? c.evaluation : 0}%
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
           {/* Annual Performance Chart */}
           <AnnualPerformanceChart
-            data={annualPerformanceData}
+            data={watomsData.months}
             title="تحليل معدل تغيير الاداء للمشروع"
             loading={annualDataLoading}
           />
         </div>
         {/* وسط: الخريطة والدائرة */}
-        <div style={{
+        <div className="rounded-xl mt-4" style={{
           flex: '1 1 36%',
           minWidth: 260,
+          background: "#2d3347",
           minHeight: 260,
           display: 'flex',
           flexDirection: 'column',
@@ -1061,7 +1050,7 @@ const WatomsDashboard = () => {
           justifyContent: 'center',
           position: 'relative',
         }}>
-          <div className="text-3xl mb-5 text-amber-400">المؤشرات الإجمالية للمشروع</div>
+          <div className="text-2xl font-bold mb-5 text-amber-400">المؤشرات الإجمالية للمشروع</div>
           <div className="flex" style={{
             position: 'relative',
             width: mapWidth,
@@ -1150,19 +1139,19 @@ const WatomsDashboard = () => {
                   background: 'none',
                   boxShadow: '0 0 15px #0af8',
                 }}>
-                  <CircularProgressBar value={individualScores[selectedCenter.id] || 0} />
+                  <CircularProgressBar value={fullNumber(watomsData?.organizations[selectedCenter.id].overall) || 0} />
                 </div>
                 {/* Info box */}
                 <div style={{
                   position: 'absolute',
-                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 75) / 1054.979) * 100}% + 110px)`,
+                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 75) / 1054.979) * 100}% + 120px)`,
                   top: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).y + 188.858) / 972.996) * 100}% - 40px)`,
                   background: '#c3c8d6',
                   color: '#222',
                   padding: '10px 18px',
                   borderRadius: 16,
                   fontSize: 12,
-                  width: 160,
+                  width: 130,
                   maxWidth: 160,
                   boxShadow: '0 4px 16px #0004',
                   zIndex: 16,
@@ -1185,7 +1174,7 @@ const WatomsDashboard = () => {
                       📍 فتح في جوجل ماب
                     </a>
                   )}
-                  <div style={{ fontSize: 9, color: '#006400' }}>
+                  <div style={{ fontSize: 8, color: '#006400' }}>
                     تاريخ بدء المشروع: {selectedCenter.startDate || 'غير محدد'}
                   </div>
                 </div>
@@ -1253,7 +1242,7 @@ const WatomsDashboard = () => {
           </div>
         </div>
         {/* يمين: الإحصائيات */}
-        <div style={{
+        <div className="gap-4" style={{
           flex: '0 1 28%',
           minWidth: 320,
           maxWidth: 420,
@@ -1263,130 +1252,128 @@ const WatomsDashboard = () => {
           flexDirection: 'column',
           justifyContent: 'flex-start',
           alignItems: 'stretch',
-          gap: 10,
           boxSizing: 'border-box',
         }}>
           <div style={{
-            background: '#181c2a',
+            background: "#2d3347",
             borderRadius: 16,
             padding: '18px 24px 18px 24px',
-            margin: '18px 0',
             minWidth: 220,
             minHeight: 120,
             boxShadow: '0 2px 8px #0002',
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 12
           }}>
-            <div style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', marginBottom: 8, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'إجمالي عدد المراكز'}</span>
-              <span style={{ fontWeight: 900, fontSize: 17, color: '#3fd8ff', paddingLeft: 6 }}>({String(totalCenters).padStart(2, '0')})</span>
+            <div className="flex flex-col items-center gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+              <span>{'المفعل'}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#22c55e' }}>{String(onlineCenters.length).padStart(2, '0')}</span>
             </div>
-            <div style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', marginBottom: 8, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'إجمالي الغير مفعّل'}</span>
-              <span style={{ fontWeight: 900, fontSize: 17, color: '#ef4444', paddingLeft: 6 }}>({String(offlineCenters.length).padStart(2, '0')})</span>
+            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+              <span>{'الغير مفعّل'}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#ef4444' }}>{String(offlineCenters.length).padStart(2, '0')}</span>
             </div>
-            <div style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'إجمالي المراكز المفعلة'}</span>
-              <span style={{ fontWeight: 900, fontSize: 17, color: '#22c55e', paddingLeft: 6 }}>({String(onlineCenters.length).padStart(2, '0')})</span>
+            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+              <span>{'إجمالي'}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(totalCenters).padStart(2, '0')}</span>
             </div>
           </div>
           {/* إجمالي نسبة تقييم المراكز المفعلة */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#181c2a',
-            borderRadius: 16,
-            padding: '18px 0 10px 0',
-            margin: '18px 0',
-            minWidth: 220,
-            minHeight: 170,
-            boxShadow: '0 2px 8px #0002'
+          <div className="flex flex-col rounded-xl" style={{
+            backgroundColor: "#2d3347"
           }}>
-            <div className="mb-2" style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c', marginTop: 12 }}>
-              المتوسط العام لتقييم المشروع
-            </div>
-            <CircularProgressBar value={overScore} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
-          </div>
-          <div style={{
-            background: '#202a3a',
-            borderRadius: 16,
-            boxShadow: '0 2px 16px #0005',
-            padding: 10,
-            marginTop: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            {/* Dotted pattern background */}
-            <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-              <defs>
-                <pattern id="dots-overall" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
-                  <circle cx="2" cy="2" r="2" fill="#555" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#dots-overall)" />
-            </svg>
-            {/* Overlay to darken pattern under content */}
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(32,42,58,0.15)', zIndex: 1, pointerEvents: 'none' }} />
-            {/* Content above pattern/overlay */}
-            <div style={{ position: 'relative', zIndex: 2 }}>
-              <div style={{ fontWeight: 700, fontSize: 13, color: '#facc15', marginBottom: 8, textAlign: 'center' }}>اجمالي نسب معايير التقييم</div>
-              {overall && (
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 20, minHeight: 90 }}>
-                  {overall.map((item, i) => (
-                    <div
-                      key={item.name || `cat${i}`}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        flex: 1,
-                        minWidth: 44,
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => {
-                        setSelectedCategory(item.name);
-                        setOverallModalOpen(true);
-                      }}
-                    >
-                      {/* Percentage above bar */}
-                      <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{item.value}%</div>
-                      {/* Vertical bar */}
-                      <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
-                        <div style={{ width: '100%', height: `${item.value}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
-                      </div>
-                      {/* Category name below bar */}
-                      <div style={{
-                        height: 28,
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        justifyContent: 'center',
-                        width: '100%',
-                        marginTop: 5,
-                      }}>
-                        <span style={{
-                          fontWeight: 700,
-                          fontSize: 10,
-                          color: '#fff',
-                          textAlign: 'center',
-                          maxWidth: 70,
-                          wordBreak: 'break-word',
-                          textShadow: '0 2px 8px #000',
-                          lineHeight: 1.1,
-                          display: 'block',
-                        }} title={item.name || 'تصنيف'}>{item.name || 'تصنيف'}</span>
-                      </div>
-                    </div>
-                  ))}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 16,
+              margin: '18px 0',
+              minWidth: 220,
+              minHeight: 240,
+              gap: 14,
+            }}>
+              <div className="mb-2" style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c' }}>
+                المتوسط العام لتقييم المشروع
+              </div>
+              <div className="flex flex-row gap-8 justify-between">
+                <div className="flex flex-col items-start gap-1">
+                  <p className="text-sm">معايير رئيسية (4)</p>
+                  <p className="text-sm">(11) مجال</p>
+                  <p className="text-sm">(49) معيار فرعي</p>
+                  <p className="text-sm">(143) مؤشر اداء</p>
+                  <p className="text-sm">(233) ممارسة و دليل</p>
+                  <p className="text-sm">(54) اداة جمع بيانات</p>
                 </div>
-              )}
+                <CircularProgressBar value={fullNumber(watomsData?.totalScore)} size={150} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
+              </div>
+            </div>
+            <div style={{
+              borderRadius: 16,
+              padding: 10,
+              marginTop: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'stretch',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* Overlay to darken pattern under content */}
+              <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none' }} />
+              {/* Content above pattern/overlay */}
+              <div style={{ position: 'relative', zIndex: 2 }}>
+                {overall && (
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 20, minHeight: 90 }}>
+                    {overall.map((item, i) => (
+                      <div
+                        key={item.name || `cat${i}`}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          flex: 1,
+                          minWidth: 44,
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          setSelectedCategory(item.name);
+                          setOverallModalOpen(true);
+                        }}
+                      >
+                        {/* Percentage above bar */}
+                        <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{item.value}%</div>
+                        {/* Vertical bar */}
+                        <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
+                          <div style={{ width: '100%', height: `${item.value}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
+                        </div>
+                        {/* Category name below bar */}
+                        <div style={{
+                          height: 28,
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          justifyContent: 'center',
+                          width: '100%',
+                          marginTop: 5,
+                        }}>
+                          <span style={{
+                            fontWeight: 700,
+                            fontSize: 10,
+                            color: '#fff',
+                            textAlign: 'center',
+                            maxWidth: 70,
+                            wordBreak: 'break-word',
+                            textShadow: '0 2px 8px #000',
+                            lineHeight: 1.1,
+                            display: 'block',
+                          }} title={item.name || 'تصنيف'}>{item.name || 'تصنيف'}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

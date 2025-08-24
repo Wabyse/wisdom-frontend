@@ -6,7 +6,7 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
   if (loading) {
     return (
       <div className="flex-1 rounded-2xl flex flex-col p-5" style={{
-        background: '#202a3a',
+        background: "#2d3347",
         boxShadow: '0 2px 12px #0004',
         alignItems: 'center',
         justifyContent: 'center',
@@ -26,7 +26,7 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
   if (!data || data.length === 0) {
     return (
       <div className="flex-1 rounded-2xl flex flex-col p-5" style={{
-        background: '#202a3a',
+        background: "#2d3347",
         boxShadow: '0 2px 12px #0004',
         alignItems: 'center',
         justifyContent: 'center',
@@ -71,15 +71,13 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
 
   return (
     <div className="flex-1 rounded-2xl flex flex-col p-5" style={{
-      background: '#202a3a',
+      background: "#2d3347",
       boxShadow: '0 2px 12px #0004',
       alignItems: 'stretch',
       position: 'relative',
       overflow: 'hidden',
       animation: 'fadeInUp 0.6s ease-out',
     }}>
-      {/* Dotted pattern background */}
-      <DotPatternBackground id="dots-annual" />
 
       {/* Overlay to darken pattern under content */}
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(32,42,58,0.15)', zIndex: 1, pointerEvents: 'none' }} />
