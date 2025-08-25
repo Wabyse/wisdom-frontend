@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchCenters, fetchCenterEvaluationBreakdown, fetchAnnualPerformanceData, fetchProjectUnitsRanking, fetchWatomsDetailsData } from "../services/dashboard";
 import { ReactComponent as EgyptMap } from '../assets/Egypt_location_map.svg';
-import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList } from "recharts";
 import ReactModal from 'react-modal';
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,9 @@ import { faExpand, faCompress, faUser, faBell } from "@fortawesome/free-solid-sv
 import { useLanguage } from "../context/LanguageContext";
 import { userFullName } from "../utils/userFullName";
 import { useAuth } from "../context/AuthContext";
-import DotPatternBackground from "../components/DotPatternBackground";
+import Uploading from "../components/Uploading";
+import LoadingScreen from "../components/LoadingScreen";
+import { ALL_MONTHS } from "../constants/constants";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
 
@@ -24,22 +26,6 @@ const parseLatLng = (locationStr) => {
   const [lat, lng] = locationStr.split(',').map(Number);
   return [lat, lng];
 };
-
-const renderSectionChart = (title, data) => (
-  <div style={{ margin: "2rem 0" }}>
-    <h3 style={{ textAlign: "center", color: "#222" }}>{title}</h3>
-    <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data}>
-        <XAxis dataKey="label" />
-        <YAxis />
-        <ReTooltip formatter={v => (v * 100).toFixed(0) + '%'} />
-        <Bar dataKey="value" fill="#8884d8">
-          <LabelList dataKey="value" position="top" formatter={v => (v * 100).toFixed(0) + '%'} />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  </div>
-);
 
 // Helper to group centers by location
 const groupCentersByLocation = (centers) => {
@@ -96,143 +82,10 @@ const CATEGORY_DETAILS = {
 
 const HEADER_HEIGHT = 64;
 
-// Add this style for the flashing warning dot
-const warningDotStyle = {
-  display: 'inline-block',
-  marginLeft: 6,
-  width: 12,
-  height: 12,
-  borderRadius: '50%',
-  background: 'radial-gradient(circle, #f00 60%, #a00 100%)',
-  boxShadow: '0 0 8px 2px #f008',
-  animation: 'flashDot 1s infinite',
-  verticalAlign: 'middle',
-};
-
 // Add keyframes for the animation
 const styleSheet = document.createElement('style');
 styleSheet.innerText = `@keyframes flashDot { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }`;
 document.head.appendChild(styleSheet);
-
-// Custom label for chart values with warning below number
-const ChartValueLabel = (props) => {
-  const { x, y, value } = props;
-  return (
-    <g transform={`translate(${x},${y - 8})`}>
-      <text x={0} y={0} textAnchor="middle" fontSize="15" fontWeight="900" fill="#fff" style={{ paintOrder: 'stroke', stroke: '#222c', strokeWidth: 2 }}>{value}%</text>
-      {value < 50 && (
-        <g transform="translate(0, 12)">
-          <circle r="7" fill="url(#warnGradient)" style={{ filter: 'drop-shadow(0 0 6px #f008)' }} />
-          <text x={0} y={4} textAnchor="middle" fontSize="13" fontWeight="bold" fill="#fff">!</text>
-        </g>
-      )}
-    </g>
-  );
-};
-
-// Custom bar shape for warning highlight
-const WarningBarShape = (props) => {
-  const { x, y, width, height, fill, value } = props;
-  const isWarning = value < 50;
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      fill={fill}
-      stroke={isWarning ? '#FFD600' : 'none'}
-      strokeWidth={isWarning ? 4 : 0}
-      rx={6}
-      style={isWarning ? { filter: 'drop-shadow(0 0 8px #FFD600)' } : {}}
-    />
-  );
-};
-
-// Color palette and gradients for bars and bubbles
-const rankingColors = [
-  {
-    solid: '#00bfff',
-    gradient: 'url(#blueBarGradient)',
-    bubble: '#00bfff',
-  },
-  {
-    solid: '#ff5ebc',
-    gradient: 'url(#pinkBarGradient)',
-    bubble: '#ff5ebc',
-  },
-  {
-    solid: '#ffa600',
-    gradient: 'url(#orangeBarGradient)',
-    bubble: '#ffa600',
-  },
-  {
-    solid: '#bdbdbd',
-    gradient: 'url(#grayBarGradient)',
-    bubble: '#bdbdbd',
-  },
-];
-
-// Custom pill-shaped bar with gradient fill
-const PillBar = (props) => {
-  const { x, y, width, height, fill, payload, index } = props;
-  const colorIdx = index % rankingColors.length;
-  return (
-    <g>
-      {/* Bar background */}
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={height / 2}
-        fill="#23242a"
-        style={{ filter: 'drop-shadow(0 2px 8px #0005)' }}
-      />
-      {/* Bar fill (gradient) */}
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={height / 2}
-        fill={rankingColors[colorIdx].gradient}
-        style={{ filter: 'drop-shadow(0 2px 8px #0003)' }}
-        clipPath={`url(#clipBar${index})`}
-      />
-      {/* ClipPath for rounded fill */}
-      <clipPath id={`clipBar${index}`}><rect x={x} y={y} width={width} height={height} rx={height / 2} /></clipPath>
-    </g>
-  );
-};
-
-// Custom label: percentage in a colored bubble at the end of the bar
-const PercentBubble = (props) => {
-  const { x, y, width, height, value, index } = props;
-  const colorIdx = index % rankingColors.length;
-  return (
-    <g>
-      <circle
-        cx={x + width + height / 2 + 4}
-        cy={y + height / 2}
-        r={height / 2 + 4}
-        fill={rankingColors[colorIdx].bubble}
-        style={{ filter: 'drop-shadow(0 2px 8px #0007)' }}
-      />
-      <text
-        x={x + width + height / 2 + 4}
-        y={y + height / 2 + 4}
-        textAnchor="middle"
-        fontWeight="bold"
-        fontSize={14}
-        fill="#fff"
-        style={{ textShadow: '0 1px 4px #222, 0 0 2px #000' }}
-      >
-        {value}%
-      </text>
-    </g>
-  );
-};
 
 // Modern CSS bar colors (gradients)
 const modernBarGradients = [
@@ -300,7 +153,6 @@ const WatomsDashboard = () => {
   const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [hoveredCenterId, setHoveredCenterId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -309,13 +161,14 @@ const WatomsDashboard = () => {
   const [breakdownsLoading, setBreakdownsLoading] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [annualPerformanceData, setAnnualPerformanceData] = useState([]);
-  const [annualDataLoading, setAnnualDataLoading] = useState(false);
   const [projectUnitsRanking, setProjectUnitsRanking] = useState(null);
   const [projectUnitsRankingLoading, setProjectUnitsRankingLoading] = useState(false);
   const [isProjectUnitsModalOpen, setIsProjectUnitsModalOpen] = useState(false);
   const isFullScreen = useFullScreen();
   const { language, setLanguage } = useLanguage();
   const [watomsData, setWatomsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   function fullNumber(value) {
     return Math.round(Number(value));
@@ -356,15 +209,50 @@ const WatomsDashboard = () => {
     GEEBBM: 0
   });
 
-  const [overall, setOverall] = useState([]);
+  const [totalScore, setTotalScore] = useState([]);
+  const [totalScoreDetailed, setTotalScoreDetailed] = useState([]);
   const [overScore, setOverScore] = useState(null);
   const [individualScores, setIndividualScores] = useState({});
+  const [selectedMonth, setSelectedMonth] = useState({});
 
   useEffect(() => {
+    const setDefaultMonth = () => {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      setSelectedMonth(ALL_MONTHS[currentMonth - 3])
+    }
+
+    setDefaultMonth();
+  }, [])
+
+  const nextMonth = (currentMonth) => {
+    if (currentMonth > 3 && currentMonth < 13) {
+      setSelectedMonth(ALL_MONTHS[currentMonth - 3])
+    } else {
+      setSelectedMonth(ALL_MONTHS[currentMonth - 4])
+    }
+  }
+
+  const previousMonth = (currentMonth) => {
+    if (currentMonth > 3 && currentMonth < 13) {
+      setSelectedMonth(ALL_MONTHS[currentMonth - 6])
+    } else {
+      setSelectedMonth(ALL_MONTHS[currentMonth - 4])
+    }
+  }
+
+
+  useEffect(() => {
+    setLoading(true);
     const loadWatomsDetailedData = async () => {
-      const response = await fetchWatomsDetailsData();
-      console.log(response)
-      setWatomsData(response)
+      try {
+        const response = await fetchWatomsDetailsData();
+        setWatomsData(response)
+      } catch (error) {
+        console.error('❌ Error fetching Watoms Data:', error);
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadWatomsDetailedData();
@@ -427,7 +315,6 @@ const WatomsDashboard = () => {
   // Fetch annual performance data only once when component loads
   useEffect(() => {
     const fetchAnnualData = async () => {
-      setAnnualDataLoading(true);
       try {
         // Use a default organization ID since the backend now calculates for ALL centers
         const response = await fetchAnnualPerformanceData('1');
@@ -443,8 +330,6 @@ const WatomsDashboard = () => {
       } catch (error) {
         console.error('❌ Error fetching annual performance data:', error);
         // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
-      } finally {
-        setAnnualDataLoading(false);
       }
     };
 
@@ -454,30 +339,10 @@ const WatomsDashboard = () => {
 
   useEffect(() => {
     if (selectedCenter) {
-      setLoading(true);
+      setUploading(true);
       fetchCenterEvaluationBreakdown(selectedCenter.id)
         .then(setEvaluation)
-        .finally(() => setLoading(false));
-
-      // Fetch annual performance data
-      // setAnnualDataLoading(true); // This is now handled by the useEffect above
-      // fetchAnnualPerformanceData(selectedCenter.id) // This is now handled by the useEffect above
-      //   .then(response => {
-      //     console.log('Annual performance response:', response);
-      //     if (response.success) {
-      //       setAnnualPerformanceData(response.data);
-      //     } else {
-      //       console.error('Annual performance API returned success: false');
-      //       // Use generated fallback data based on activated centers evaluation
-      //       // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
-      //     }
-      //   })
-      //   .catch(error => {
-      //     console.error('Error fetching annual performance data:', error);
-      //     // Use generated fallback data based on activated centers evaluation
-      //     // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
-      //   })
-      //   .finally(() => setAnnualDataLoading(false)); // This is now handled by the useEffect above
+        .finally(() => setUploading(false));
     }
   }, [selectedCenter]);
 
@@ -686,56 +551,28 @@ const WatomsDashboard = () => {
     };
 
     setTotlaData(summed);
-    setOverall([
+    setTotalScore([
       {
-        name: "TQBM",
-        value: fullNumber((watomsData?.organizations?.["4"].TQBM.totalTQBM + watomsData?.organizations?.["5"].TQBM.totalTQBM + watomsData?.organizations?.["7"].TQBM.totalTQBM + watomsData?.organizations?.["8"].TQBM.totalTQBM + watomsData?.organizations?.["9"].TQBM.totalTQBM) / 5) || 0
-      },
-      {
-        name: "GOVBM",
-        value: fullNumber((watomsData?.organizations?.["4"].GOVBM.totalGOVBM + watomsData?.organizations?.["5"].GOVBM.totalGOVBM + watomsData?.organizations?.["7"].GOVBM.totalGOVBM + watomsData?.organizations?.["8"].GOVBM.totalGOVBM + watomsData?.organizations?.["9"].GOVBM.totalGOVBM) / 5) || 0
-      },
-      {
-        name: "ACBM",
-        value: fullNumber((watomsData?.organizations?.["4"].ACBM.totalACBM + watomsData?.organizations?.["5"].ACBM.totalACBM + watomsData?.organizations?.["7"].ACBM.totalACBM + watomsData?.organizations?.["8"].ACBM.totalACBM + watomsData?.organizations?.["9"].ACBM.totalACBM) / 5) || 0
-      },
-      {
-        name: "GEEBM",
+        name: "الكفاءة و الفاعلية",
         value: fullNumber((watomsData?.organizations?.["4"].GEEBM.totalGEEBM + watomsData?.organizations?.["5"].GEEBM.totalGEEBM + watomsData?.organizations?.["7"].GEEBM.totalGEEBM + watomsData?.organizations?.["8"].GEEBM.totalGEEBM + watomsData?.organizations?.["9"].GEEBM.totalGEEBM) / 5) || 0
       }
     ])
+    setTotalScoreDetailed([
+      {
+        name: "جودة التدريب",
+        value: fullNumber((watomsData?.organizations?.["4"].TQBM.totalTQBM + watomsData?.organizations?.["5"].TQBM.totalTQBM + watomsData?.organizations?.["7"].TQBM.totalTQBM + watomsData?.organizations?.["8"].TQBM.totalTQBM + watomsData?.organizations?.["9"].TQBM.totalTQBM) / 5) || 0
+      },
+      {
+        name: "مقياس الحوكمة",
+        value: fullNumber((watomsData?.organizations?.["4"].GOVBM.totalGOVBM + watomsData?.organizations?.["5"].GOVBM.totalGOVBM + watomsData?.organizations?.["7"].GOVBM.totalGOVBM + watomsData?.organizations?.["8"].GOVBM.totalGOVBM + watomsData?.organizations?.["9"].GOVBM.totalGOVBM) / 5) || 0
+      },
+      {
+        name: "المقياس الاكاديمي",
+        value: fullNumber((watomsData?.organizations?.["4"].ACBM.totalACBM + watomsData?.organizations?.["5"].ACBM.totalACBM + watomsData?.organizations?.["7"].ACBM.totalACBM + watomsData?.organizations?.["8"].ACBM.totalACBM + watomsData?.organizations?.["9"].ACBM.totalACBM) / 5) || 0
+      }
+    ])
     setOverScore((summed.TQBM + summed.GOVBM + summed.ACBM + summed.GEEBBM) / 4)
-  }, [detailedData]); // ✅ re-run when detailedData changes
-
-
-  // بعد حساب overallEvaluation وقبل return مباشرة:
-  const overallData = overallEvaluation ? [
-    {
-      name: 'ODBM', value: Math.round((
-        overallEvaluation?.ODBM?.traineeAttendance * 0.4 +
-        overallEvaluation?.ODBM?.traineeCommitment * 0.2 +
-        overallEvaluation?.ODBM?.trainerCourses * 0.4
-      ) * 100) || 0
-    },
-    {
-      name: 'APBM', value: Math.round((
-        overallEvaluation?.APBM?.project * 0.6 +
-        overallEvaluation?.APBM?.formative * 0.3 +
-        overallEvaluation?.APBM?.traineeCommitment * 0.1
-      ) * 100) || 0
-    },
-    {
-      name: 'TQBM', value: Math.round((
-        overallEvaluation?.TQBM?.trainingRegularity * 0.25 +
-        overallEvaluation?.TQBM?.trainingPrograms * 0.25 +
-        overallEvaluation?.TQBM?.trainer * 0.25 +
-        overallEvaluation?.TQBM?.digitization * 0.15 +
-        overallEvaluation?.TQBM?.quality * 0.10
-      ) * 100) || 0
-    },
-    { name: 'Community', value: Math.round((overallEvaluation?.Community || 0) * 100) },
-    { name: 'Institutional', value: Math.round((overallEvaluation?.Institutional || 0) * 100) },
-  ] : [];
+  }, [detailedData, watomsData]); // ✅ re-run when detailedData changes
 
   const handleProjectUnitsRankingClick = async () => {
     console.log('Project units ranking clicked');
@@ -806,6 +643,8 @@ const WatomsDashboard = () => {
   // Remove the fallback data generation since we want real data from database
   // const generateAnnualPerformanceData = () => { ... };
   // const fallbackAnnualData = generateAnnualPerformanceData();
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div style={{
@@ -878,17 +717,16 @@ const WatomsDashboard = () => {
         </div>
       </div>
       {/* Page Body: left - middle - right sections*/}
-      <div className="flex flex-row justify-between gap-0 relative w-[100vw] box-border" style={{
+      <div className="flex flex-row justify-between gap-4 relative w-[100vw] box-border" style={{
         maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
       }}>
         {/* يسار: الرسوم البيانية */}
-        <div className="flex flex-col justify-start" style={{
+        <div className="flex flex-col justify-start gap-4" style={{
           flex: '0 1 28%',
           minWidth: 320,
           maxWidth: 420,
           maxHeight: "85vh",
-          padding: '1vw 1vw 1vw 1vw',
-          gap: 14,
+          padding: '1vw 0vw 0vw 1vw',
           boxSizing: 'border-box',
         }}>
           {/* General Ranking Chart */}
@@ -1035,7 +873,7 @@ const WatomsDashboard = () => {
           <AnnualPerformanceChart
             data={watomsData.months}
             title="تحليل معدل تغيير الاداء للمشروع"
-            loading={annualDataLoading}
+            loading={loading}
           />
         </div>
         {/* وسط: الخريطة والدائرة */}
@@ -1247,7 +1085,7 @@ const WatomsDashboard = () => {
           minWidth: 320,
           maxWidth: 420,
           maxHeight: "85vh",
-          padding: '1vw 1vw 1vw 1vw',
+          padding: '1vw 1vw 0vw 0vw',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
@@ -1292,20 +1130,89 @@ const WatomsDashboard = () => {
               borderRadius: 16,
               margin: '18px 0',
               minWidth: 220,
-              minHeight: 240,
+              minHeight: 280,
               gap: 14,
             }}>
+              <div style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: 18,
+                gap: 18,
+              }}>
+                {selectedMonth.id !== 4 ? <button
+                  onClick={() => previousMonth(selectedMonth?.id)}
+                  style={{
+                    background: '#181f2e',
+                    color: '#0af',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 36,
+                    height: 36,
+                    fontSize: 22,
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px #0006',
+                    transition: 'background 0.2s',
+                  }}
+                  title="الشهر السابق"
+                >
+                  &#8592;
+                </button> : <div className="mb-2"
+                  style={{
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 36,
+                    height: 36,
+                    fontSize: 22,
+                    fontWeight: 900,
+                    display: "hidden",
+                  }}></div>}
+                <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
+                  {selectedMonth?.name}
+                </span>
+                {selectedMonth?.id !== 8 ? <button
+                  onClick={() => nextMonth(selectedMonth?.id)}
+                  className="mb-2"
+                  style={{
+                    background: '#181f2e',
+                    color: '#0af',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 36,
+                    height: 36,
+                    fontSize: 22,
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px #0006',
+                    transition: 'background 0.2s',
+                  }}
+                  title="الشهر التالي"
+                >
+                  &#8594;
+                </button> : <div className="mb-2"
+                  style={{
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 36,
+                    height: 36,
+                    fontSize: 22,
+                    fontWeight: 900,
+                    display: "hidden",
+                  }}></div>}
+              </div>
               <div className="mb-2" style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c' }}>
                 المتوسط العام لتقييم المشروع
               </div>
               <div className="flex flex-row gap-8 justify-between">
                 <div className="flex flex-col items-start gap-1">
-                  <p className="text-sm">معايير رئيسية (4)</p>
-                  <p className="text-sm">(11) مجال</p>
-                  <p className="text-sm">(49) معيار فرعي</p>
-                  <p className="text-sm">(143) مؤشر اداء</p>
                   <p className="text-sm">(233) ممارسة و دليل</p>
-                  <p className="text-sm">(54) اداة جمع بيانات</p>
+                  <p className="text-sm">(143) مؤشر اداء</p>
+                  <p className="text-sm">(49) معيار فرعي</p>
+                  <p className="text-sm">(45) اداة جمع بيانات</p>
+                  <p className="text-sm">(11) مجال</p>
+                  <p className="text-sm">(4) مؤشرات مرجعية (benchmarks)</p>
                 </div>
                 <CircularProgressBar value={fullNumber(watomsData?.totalScore)} size={150} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
               </div>
@@ -1324,53 +1231,88 @@ const WatomsDashboard = () => {
               <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none' }} />
               {/* Content above pattern/overlay */}
               <div style={{ position: 'relative', zIndex: 2 }}>
-                {overall && (
-                  <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 20, minHeight: 90 }}>
-                    {overall.map((item, i) => (
-                      <div
-                        key={item.name || `cat${i}`}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          flex: 1,
-                          minWidth: 44,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          setSelectedCategory(item.name);
-                          setOverallModalOpen(true);
-                        }}
-                      >
-                        {/* Percentage above bar */}
-                        <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{item.value}%</div>
-                        {/* Vertical bar */}
-                        <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
-                          <div style={{ width: '100%', height: `${item.value}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
+                {totalScoreDetailed && totalScore && (
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', minHeight: 90, gap: 30 }}>
+                    <div className="flex justify-center">
+                      {totalScoreDetailed.map((item, i) => (
+                        <div
+                          key={item.name || `cat${i}`}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            minWidth: 40,
+                            width: item.name === "جودة التدريب" ? 40 : 50,
+                          }}
+                        >
+                          {/* Percentage above bar */}
+                          <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{item.value}%</div>
+                          {/* Vertical bar */}
+                          <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
+                            <div style={{ width: '100%', height: `${item.value}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
+                          </div>
+                          {/* Category name below bar */}
+                          <div style={{
+                            height: 28,
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            width: '100%',
+                            marginTop: 5,
+                          }}>
+                            <span style={{
+                              fontWeight: 700,
+                              fontSize: 10,
+                              color: '#fff',
+                              textAlign: 'center',
+                              maxWidth: 70,
+                              wordBreak: 'break-word',
+                              textShadow: '0 2px 8px #000',
+                              lineHeight: 1.1,
+                              display: 'block',
+                            }} title={item.name || 'تصنيف'}>{item.name || 'تصنيف'}</span>
+                          </div>
                         </div>
-                        {/* Category name below bar */}
-                        <div style={{
-                          height: 28,
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          justifyContent: 'center',
-                          width: '100%',
-                          marginTop: 5,
-                        }}>
-                          <span style={{
-                            fontWeight: 700,
-                            fontSize: 10,
-                            color: '#fff',
-                            textAlign: 'center',
-                            maxWidth: 70,
-                            wordBreak: 'break-word',
-                            textShadow: '0 2px 8px #000',
-                            lineHeight: 1.1,
-                            display: 'block',
-                          }} title={item.name || 'تصنيف'}>{item.name || 'تصنيف'}</span>
-                        </div>
+                      ))}
+                    </div>
+                    <div className='border-r-2 border-white p-1 h-8' />
+                    <div
+                      key={totalScore[0].name || `cat 3`}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        minWidth: 44,
+                      }}
+                    >
+                      {/* Percentage above bar */}
+                      <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{totalScore[0].value}%</div>
+                      {/* Vertical bar */}
+                      <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
+                        <div style={{ width: '100%', height: `${totalScore[0].value}%`, background: modernBarGradients[3 % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
                       </div>
-                    ))}
+                      {/* Category name below bar */}
+                      <div style={{
+                        height: 28,
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        justifyContent: 'center',
+                        width: '100%',
+                        marginTop: 5,
+                      }}>
+                        <span style={{
+                          fontWeight: 700,
+                          fontSize: 10,
+                          color: '#fff',
+                          textAlign: 'center',
+                          maxWidth: 70,
+                          wordBreak: 'break-word',
+                          textShadow: '0 2px 8px #000',
+                          lineHeight: 1.1,
+                          display: 'block',
+                        }} title={totalScore[0].name || 'تصنيف'}>{totalScore[0].name || 'تصنيف'}</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

@@ -7,7 +7,7 @@ import { fetchWorkshopOrgRelation, uploadDmsDocument } from "../services/dms";
 import { fetchDmsCategories, fetchSchools, fetchVtcEmployees } from "../services/data";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
-import Uploading from "./Uploading";
+import Uploading from "../components/Uploading";
 import { useLanguage } from "../context/LanguageContext";
 
 const TomsUploadDocument = () => {
