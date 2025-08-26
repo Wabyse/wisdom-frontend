@@ -159,7 +159,6 @@ const WatomsDashboard = () => {
   const [overallModalOpen, setOverallModalOpen] = useState(false);
   const [allBreakdowns, setAllBreakdowns] = useState([]);
   const [breakdownsLoading, setBreakdownsLoading] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
   const [annualPerformanceData, setAnnualPerformanceData] = useState([]);
   const [projectUnitsRanking, setProjectUnitsRanking] = useState(null);
   const [projectUnitsRankingLoading, setProjectUnitsRankingLoading] = useState(false);
@@ -169,6 +168,7 @@ const WatomsDashboard = () => {
   const [watomsData, setWatomsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [datasMonths, setDatasMonths] = useState([]);
 
   function fullNumber(value) {
     return Math.round(Number(value));
@@ -188,66 +188,45 @@ const WatomsDashboard = () => {
     }
   });
 
-  const [semiDetailedData, setSemiDetailed] = useState({
-    TQBM: { TG: 0, TE: 0, T: 0 },
-    GOVBM: { IP: 0, DD: 0, PO: 0, QD: 0, W: 0 },
-    ACBM: { TR: 0, TG: 0 },
-    GEEBBM: {
-      TQBM: 0,
-      GOVBM: 0,
-      ACBM: 0,
-      TRA: 0,
-      TV: 0,
-      CP: 0
-    }
-  });
-
-  const [totalData, setTotlaData] = useState({
-    TQBM: 0,
-    GOVBM: 0,
-    ACBM: 0,
-    GEEBBM: 0
-  });
-
   const [totalScore, setTotalScore] = useState([]);
   const [totalScoreDetailed, setTotalScoreDetailed] = useState([]);
-  const [overScore, setOverScore] = useState(null);
-  const [individualScores, setIndividualScores] = useState({});
   const [selectedMonth, setSelectedMonth] = useState({});
+  const [selectedMonthIdx, setSelectedMonthIdx] = useState({});
 
   useEffect(() => {
     const setDefaultMonth = () => {
       const now = new Date();
       const currentMonth = now.getMonth();
-      setSelectedMonth(ALL_MONTHS[currentMonth - 3])
+      const currentMonthData = datasMonths.find(month => month.monthNumber === (currentMonth + 1));
+      const findMonth = datasMonths.findIndex(month => month.monthNumber === currentMonthData.monthNumber);
+      setSelectedMonthIdx(findMonth)
+      setSelectedMonth(currentMonthData)
     }
 
     setDefaultMonth();
-  }, [])
+  }, [datasMonths])
 
-  const nextMonth = (currentMonth) => {
-    if (currentMonth > 3 && currentMonth < 13) {
-      setSelectedMonth(ALL_MONTHS[currentMonth - 3])
+  const toggleMonth = (status) => {
+    if (status) {
+      if (selectedMonthIdx !== datasMonths.length - 1) {
+        setSelectedMonth(datasMonths[selectedMonthIdx + 1]);
+        setSelectedMonthIdx(prev => prev + 1);
+      }
     } else {
-      setSelectedMonth(ALL_MONTHS[currentMonth - 4])
+      if (selectedMonthIdx !== 0) {
+        setSelectedMonth(datasMonths[selectedMonthIdx - 1]);
+        setSelectedMonthIdx(prev => prev - 1);
+      }
     }
   }
-
-  const previousMonth = (currentMonth) => {
-    if (currentMonth > 3 && currentMonth < 13) {
-      setSelectedMonth(ALL_MONTHS[currentMonth - 6])
-    } else {
-      setSelectedMonth(ALL_MONTHS[currentMonth - 4])
-    }
-  }
-
 
   useEffect(() => {
     setLoading(true);
     const loadWatomsDetailedData = async () => {
       try {
         const response = await fetchWatomsDetailsData();
-        setWatomsData(response)
+        setWatomsData(response);
+        setDatasMonths(response.months);
       } catch (error) {
         console.error('❌ Error fetching Watoms Data:', error);
       } finally {
@@ -257,44 +236,6 @@ const WatomsDashboard = () => {
 
     loadWatomsDetailedData();
   }, [])
-
-  useEffect(() => {
-    if (!watomsData?.length) return;
-
-    const scores = {};
-
-    watomsData.forEach(org => {
-      const TQBM =
-        (calculateAverage(org.TQBM?.TG) * 40) +
-        (calculateAverage(org.TQBM?.TE) * 35) +
-        (calculateAverage(org.TQBM?.T) * 25);
-
-      const GOVBM =
-        (calculateAverage(org.GOVBM?.IP) * 15) +
-        (calculateAverage(org.GOVBM?.DD) * 30) +
-        (calculateAverage(org.GOVBM?.PO) * 20) +
-        (calculateAverage(org.GOVBM?.QD) * 20) +
-        (calculateAverage(org.GOVBM?.W) * 15);
-
-      const ACBM =
-        (calculateAverage(org.ACBM?.TR) * 40) +
-        (calculateAverage(org.ACBM?.TG) * 60);
-
-      const GEEBBM =
-        ((TQBM / 100) * 30) +
-        ((GOVBM / 100) * 25) +
-        ((ACBM / 100) * 20) +
-        ((org.GEEBBM?.TRA || 0) * 10) +
-        ((calculateAverage(org.GEEBBM?.TV) || 0) * 5) +
-        ((calculateAverage(org.GEEBBM?.CP) || 0) * 10);
-
-      const totalScore = Math.round((TQBM + GOVBM + ACBM + GEEBBM) / 5);
-
-      scores[org.id] = totalScore;
-    });
-
-    setIndividualScores(scores);
-  }, [watomsData]);
 
   useEffect(() => {
     fetchCenters().then(async data => {
@@ -429,8 +370,6 @@ const WatomsDashboard = () => {
     };
   };
 
-  const overallEvaluation = calculateOverallEvaluation();
-
   // calculate overall data for each section
 
   const calculateAverage = (arr = []) => {
@@ -492,87 +431,27 @@ const WatomsDashboard = () => {
   }, [watomsData]);
 
   useEffect(() => {
-    const semi = {
-      TQBM: { ...detailedData.TQBM },
-      GOVBM: { ...detailedData.GOVBM },
-      ACBM: { ...detailedData.ACBM },
-      GEEBBM: {
-        TRA: detailedData.GEEBBM.TRA,
-        TV: detailedData.GEEBBM.TV,
-        CP: detailedData.GEEBBM.CP,
-        TQBM: 0,
-        GOVBM: 0,
-        ACBM: 0
-      }
-    };
-
-    semi.GEEBBM.TQBM =
-      (detailedData.GEEBBM.TQBM.TG * 40) +
-      (detailedData.GEEBBM.TQBM.TE * 35) +
-      (detailedData.GEEBBM.TQBM.T * 25);
-
-    semi.GEEBBM.GOVBM =
-      (detailedData.GEEBBM.GOVBM.IP * 15) +
-      (detailedData.GEEBBM.GOVBM.DD * 30) +
-      (detailedData.GEEBBM.GOVBM.PO * 20) +
-      (detailedData.GEEBBM.GOVBM.QD * 20) +
-      (detailedData.GEEBBM.GOVBM.W * 15);
-
-    semi.GEEBBM.ACBM =
-      (detailedData.GEEBBM.ACBM.TR * 40) +
-      (detailedData.GEEBBM.ACBM.TG * 60);
-
-    setSemiDetailed(semi);
-
-    const summed = {
-      TQBM:
-        (detailedData.TQBM.TG * 40) +
-        (detailedData.TQBM.TE * 35) +
-        (detailedData.TQBM.T * 25),
-
-      GOVBM:
-        (detailedData.GOVBM.IP * 15) +
-        (detailedData.GOVBM.DD * 30) +
-        (detailedData.GOVBM.PO * 20) +
-        (detailedData.GOVBM.QD * 20) +
-        (detailedData.GOVBM.W * 15),
-
-      ACBM:
-        (detailedData.ACBM.TR * 40) +
-        (detailedData.ACBM.TG * 60),
-
-      GEEBBM:
-        ((semi.GEEBBM.TQBM / 100) * 30) +
-        ((semi.GEEBBM.GOVBM / 100) * 25) +
-        ((semi.GEEBBM.ACBM / 100) * 20) +
-        (semi.GEEBBM.TRA * 10) +
-        (semi.GEEBBM.TV * 5) +
-        (semi.GEEBBM.CP * 10)
-    };
-
-    setTotlaData(summed);
     setTotalScore([
       {
         name: "الكفاءة و الفاعلية",
-        value: fullNumber((watomsData?.organizations?.["4"].GEEBM.totalGEEBM + watomsData?.organizations?.["5"].GEEBM.totalGEEBM + watomsData?.organizations?.["7"].GEEBM.totalGEEBM + watomsData?.organizations?.["8"].GEEBM.totalGEEBM + watomsData?.organizations?.["9"].GEEBM.totalGEEBM) / 5) || 0
+        value: fullNumber(datasMonths[selectedMonthIdx]?.geebm || 0)
       }
     ])
     setTotalScoreDetailed([
       {
         name: "جودة التدريب",
-        value: fullNumber((watomsData?.organizations?.["4"].TQBM.totalTQBM + watomsData?.organizations?.["5"].TQBM.totalTQBM + watomsData?.organizations?.["7"].TQBM.totalTQBM + watomsData?.organizations?.["8"].TQBM.totalTQBM + watomsData?.organizations?.["9"].TQBM.totalTQBM) / 5) || 0
+        value: fullNumber(datasMonths[selectedMonthIdx]?.tqbm || 0)
       },
       {
         name: "مقياس الحوكمة",
-        value: fullNumber((watomsData?.organizations?.["4"].GOVBM.totalGOVBM + watomsData?.organizations?.["5"].GOVBM.totalGOVBM + watomsData?.organizations?.["7"].GOVBM.totalGOVBM + watomsData?.organizations?.["8"].GOVBM.totalGOVBM + watomsData?.organizations?.["9"].GOVBM.totalGOVBM) / 5) || 0
+        value: fullNumber(datasMonths[selectedMonthIdx]?.govbm || 0)
       },
       {
         name: "المقياس الاكاديمي",
-        value: fullNumber((watomsData?.organizations?.["4"].ACBM.totalACBM + watomsData?.organizations?.["5"].ACBM.totalACBM + watomsData?.organizations?.["7"].ACBM.totalACBM + watomsData?.organizations?.["8"].ACBM.totalACBM + watomsData?.organizations?.["9"].ACBM.totalACBM) / 5) || 0
+        value: fullNumber(datasMonths[selectedMonthIdx]?.acbm || 0)
       }
     ])
-    setOverScore((summed.TQBM + summed.GOVBM + summed.ACBM + summed.GEEBBM) / 4)
-  }, [detailedData, watomsData]); // ✅ re-run when detailedData changes
+  }, [selectedMonthIdx]);
 
   const handleProjectUnitsRankingClick = async () => {
     console.log('Project units ranking clicked');
@@ -606,10 +485,6 @@ const WatomsDashboard = () => {
 
   // New function to handle center-specific ranking click
   const handleCenterRankingClick = async (center) => {
-    console.log('=== CENTER RANKING CLICK ===');
-    console.log('Center clicked:', center);
-    console.log('Center ID:', center?.id);
-    console.log('Center name:', center?.name);
 
     setProjectUnitsRankingLoading(true);
     setIsProjectUnitsModalOpen(true);
@@ -617,16 +492,11 @@ const WatomsDashboard = () => {
 
     try {
       const organizationId = center?.id || '1';
-      console.log('Making API call for organization ID:', organizationId);
 
       const response = await fetchProjectUnitsRanking(organizationId);
-      console.log('=== API RESPONSE ===');
-      console.log('Full response:', response);
-      console.log('Response data:', response.data);
 
       if (response.success) {
         setProjectUnitsRanking(response.data);
-        console.log('✅ Center ranking data successfully set for center:', center?.name);
       } else {
         console.error('❌ Center ranking API returned success: false');
         setProjectUnitsRanking(null);
@@ -636,7 +506,6 @@ const WatomsDashboard = () => {
       setProjectUnitsRanking(null);
     } finally {
       setProjectUnitsRankingLoading(false);
-      console.log('=== RANKING CLICK COMPLETE ===');
     }
   };
 
@@ -1111,11 +980,11 @@ const WatomsDashboard = () => {
             </div>
             <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
               <span>{'الغير مفعّل'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#ef4444' }}>{String(offlineCenters.length).padStart(2, '0')}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#ef4444' }}>{String(33).padStart(2, '0')}</span>
             </div>
             <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
               <span>{'إجمالي'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(totalCenters).padStart(2, '0')}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(38).padStart(2, '0')}</span>
             </div>
           </div>
           {/* إجمالي نسبة تقييم المراكز المفعلة */}
@@ -1141,8 +1010,8 @@ const WatomsDashboard = () => {
                 marginTop: 18,
                 gap: 18,
               }}>
-                {selectedMonth.id !== 4 ? <button
-                  onClick={() => previousMonth(selectedMonth?.id)}
+                {selectedMonthIdx !== 0 ? <button
+                  onClick={() => toggleMonth(false)}
                   style={{
                     background: '#181f2e',
                     color: '#0af',
@@ -1170,10 +1039,10 @@ const WatomsDashboard = () => {
                     display: "hidden",
                   }}></div>}
                 <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
-                  {selectedMonth?.name}
+                  {selectedMonth?.month}
                 </span>
-                {selectedMonth?.id !== 8 ? <button
-                  onClick={() => nextMonth(selectedMonth?.id)}
+                {selectedMonthIdx !== (datasMonths.length - 1) ? <button
+                  onClick={() => toggleMonth(true)}
                   className="mb-2"
                   style={{
                     background: '#181f2e',
@@ -1214,7 +1083,7 @@ const WatomsDashboard = () => {
                   <p className="text-sm">(11) مجال</p>
                   <p className="text-sm">(4) مؤشرات مرجعية (benchmarks)</p>
                 </div>
-                <CircularProgressBar value={fullNumber(watomsData?.totalScore)} size={150} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
+                <CircularProgressBar value={fullNumber(datasMonths[selectedMonthIdx]?.performance || 0)} size={150} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
               </div>
             </div>
             <div style={{
@@ -1236,6 +1105,7 @@ const WatomsDashboard = () => {
                     <div className="flex justify-center">
                       {totalScoreDetailed.map((item, i) => (
                         <div
+                          className="mx-2"
                           key={item.name || `cat${i}`}
                           style={{
                             display: 'flex',
@@ -1427,6 +1297,7 @@ const WatomsDashboard = () => {
         data={projectUnitsRanking}
         loading={projectUnitsRankingLoading}
         centerInfo={selectedCenter}
+        newData={watomsData}
       />
 
       {/* Add warning gradient to chart SVG root */}
