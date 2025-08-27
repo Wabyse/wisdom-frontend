@@ -444,6 +444,16 @@ export const getWatomsSystems = (language, userOrg) => [
         available: false
     },
     {
+        id: 'INFA',
+        title: language ? 'INFA.S' : 'INFA.S',
+        subtitle: language ? 'Infrastructure Management System' : 'نظام ادارة البنية التحتية',
+        description: language ? 'Efficient and effective management and monitoring of infrastructure.' : 'ادارة البنية التحتية بكفاءة و فاعلية',
+        icon: faBuilding,
+        path: '/watoms/dashboard',
+        color: 'from-slate-500 to-slate-600',
+        available: false
+    },
+    {
         id: 'dashboards',
         title: language ? 'Dashboards' : 'لوحات التحكم',
         subtitle: language ? 'Control Panels and Statistics' : 'لوحات التحكم والإحصائيات',
