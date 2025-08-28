@@ -10,27 +10,58 @@ import img from '../assets/ebda-body.jpg';
 import { roundNumber } from '../utils/roundNumber';
 import { useEffect, useState } from 'react';
 
-const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, newData }) => {
+const ProjectUnitsRankingModal = ({ isOpen, onClose, loading, centerInfo, newData, selectedId }) => {
     const { language } = useLanguage();
     const [orgSubStandards, setOrgSubStandards] = useState([]);
     const [orgStandards, setOrgStandards] = useState([]);
+    const [selectedOrg, setSelectedOrg] = useState();
+    const [orgRank, setOrgRank] = useState();
+
+    const arrangedOrg = Object.values(newData?.organizations || {}).sort((a, b) => b.overall - a.overall);
+    const changeOrg = (status) => {
+        const selectedOrgIdx = arrangedOrg.findIndex(org => org.id === selectedOrg)
+        if (status && (selectedOrgIdx + 1) !== arrangedOrg.length) {
+            setSelectedOrg(arrangedOrg[selectedOrgIdx + 1].id)
+        } else if (!status && (selectedOrgIdx) !== 0) {
+            setSelectedOrg(arrangedOrg[selectedOrgIdx - 1].id)
+        } else if (status && (selectedOrgIdx + 1) === arrangedOrg.length) {
+            setSelectedOrg(arrangedOrg[0].id)
+        } else if (!status && (selectedOrgIdx) === 0) {
+            setSelectedOrg(arrangedOrg[arrangedOrg.length - 1].id)
+        }
+    }
+
+    useEffect(() => {
+        const changeRankedOrg = () => {
+            const selectedOrgIdx = arrangedOrg.findIndex(org => org.id === (selectedOrg || selectedId))
+            setOrgRank(selectedOrgIdx + 1);
+        }
+        changeRankedOrg();
+    }, [selectedOrg])
+
+    useEffect(() => {
+        const setOrg = () => {
+            setSelectedOrg(selectedId);
+        }
+        setOrg();
+    }, [selectedId])
 
     useEffect(() => {
         const loadStandards = () => {
             setOrgStandards([
                 {
                     name: "جودة التدريب",
-                    score: roundNumber(newData?.organizations[centerInfo?.id]?.TQBM?.totalTQBM),
+                    score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.TQBM?.totalTQBM),
                     color: "#3b82f6"
                 },
                 {
                     name: "مقياس الحوكمة",
-                    score: roundNumber(newData?.organizations[centerInfo?.id]?.GOVBM?.totalGOVBM),
+                    score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GOVBM?.totalGOVBM),
                     color: "#10b981"
                 },
                 {
                     name: "المقياس الاكاديمي",
-                    score: roundNumber(newData?.organizations[centerInfo?.id]?.ACBM?.totalACBM),
+                    score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.ACBM?.totalACBM),
                     color: "#f59e0b"
                 }
             ])
@@ -43,17 +74,17 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                     subData: [
                         {
                             name: "البرامج التدريبية",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.TQBM?.TG?.avgScore * 40),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.TQBM?.TG?.avgScore * 40),
                             color: "#3b82f6"
                         },
                         {
                             name: "بيئة التدريب",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.TQBM?.TE?.avgScore * 35),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.TQBM?.TE?.avgScore * 35),
                             color: "#16a34a"
                         },
                         {
                             name: "اداء المدرب",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.TQBM?.T?.avgScore * 25),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.TQBM?.T?.avgScore * 25),
                             color: "#a855f7"
                         }
                     ],
@@ -63,27 +94,27 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                     subData: [
                         {
                             name: "الاداء المؤسسي",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GOVBM?.IP?.avgScore * 15),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GOVBM?.IP?.avgScore * 15),
                             color: "#2e6f00"
                         },
                         {
                             name: "الرقمنة",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GOVBM?.DD?.avgScore * 30),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GOVBM?.DD?.avgScore * 30),
                             color: "#e43002"
                         },
                         {
                             name: "التخطيط و التشغيل",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GOVBM?.PO?.avgScore * 20),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GOVBM?.PO?.avgScore * 20),
                             color: "#88a064"
                         },
                         {
                             name: "الجودة و التطوير",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GOVBM?.QD?.avgScore * 20),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GOVBM?.QD?.avgScore * 20),
                             color: "#2e8d52"
                         },
                         {
                             name: "بيئة العمل",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GOVBM?.W?.avgScore * 15),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GOVBM?.W?.avgScore * 15),
                             color: "#00bdbb"
                         }
                     ],
@@ -93,12 +124,12 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                     subData: [
                         {
                             name: "اداء المتدرب",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.ACBM?.TR?.avgScore * 40),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.ACBM?.TR?.avgScore * 40),
                             color: "#aa4642"
                         },
                         {
                             name: "البرامج التدريبية",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.ACBM?.TG?.avgScore * 60),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.ACBM?.TG?.avgScore * 60),
                             color: "#925515"
                         }
                     ],
@@ -108,17 +139,17 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                     subData: [
                         {
                             name: "المشاركة المجتمعية",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GEEBM?.CP?.avgScore * 10),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GEEBM?.CP?.avgScore * 10),
                             color: "#520a9c"
                         },
                         {
                             name: "التنمية المهنية",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GEEBM?.TV?.avgScore * 5),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GEEBM?.TV?.avgScore * 5),
                             color: "#596a95"
                         },
                         {
                             name: "الاشراف اليومي",
-                            score: roundNumber(newData?.organizations[centerInfo?.id]?.GEEBM?.TRA * 10),
+                            score: roundNumber(newData?.organizations[selectedOrg || selectedId]?.GEEBM?.TRA * 10),
                             color: "#4f46f7"
                         }
                     ],
@@ -128,107 +159,7 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
 
         loadStandards();
         loadSubStandards();
-    }, [newData, centerInfo]);
-
-    // Generate fallback data that respects current month limitation
-    const generateFallbackData = () => {
-        const currentMonth = new Date().getMonth(); // 0-11
-        const monthsToShow = currentMonth + 1;
-        const allMonths = [
-            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-        ];
-
-        const performanceValues = [75, 82, 84, 83, 85, 88, 93, 89, 92, 90, 87, 91];
-
-        const annualPerformance = allMonths.slice(0, monthsToShow).map((month, index) => ({
-            month,
-            performance: performanceValues[index] || 75
-        }));
-
-        return {
-            statistics: {
-                students: 50,
-                trainers: 10,
-                supervisors: 7,
-                generalManagers: 5,
-                boardOfTrustees: 3,
-                trainers2: 2,
-                workshops: 5,
-                labs: 3,
-                specializations: 5
-            },
-            globalStandards: {
-                "ODBM": {
-                    value: 65,
-                    color: '#22c55e',
-                    nameEn: "ODBM - Organizational Development & Behavior Management",
-                    nameAr: "ODBM - إدارة التطوير والسلوك",
-                    details: {
-                        attendance: { value: 68, nameEn: "Attendance & Presence", nameAr: "الحضور والغياب" },
-                        commitment: { value: 62, nameEn: "Commitment & Discipline", nameAr: "الالتزام والانضباط" },
-                        behavior: { value: 58, nameEn: "Institutional Behavior", nameAr: "السلوك المؤسسي" },
-                        engagement: { value: 72, nameEn: "Participation & Engagement", nameAr: "المشاركة والتفاعل" }
-                    }
-                },
-                "APBM": {
-                    value: 55,
-                    color: '#f59e0b',
-                    nameEn: "APBM - Academic Performance & Business Management",
-                    nameAr: "APBM - الأداء الأكاديمي والإداري",
-                    details: {
-                        academic: { value: 52, nameEn: "Academic Performance", nameAr: "الأداء الأكاديمي" },
-                        projects: { value: 58, nameEn: "Applied Projects", nameAr: "المشاريع التطبيقية" },
-                        practical: { value: 57, nameEn: "Practical Application", nameAr: "التطبيق العملي" },
-                        management: { value: 53, nameEn: "Executive Management", nameAr: "الإدارة التنفيذية" }
-                    }
-                },
-                "TQBM": {
-                    value: 75,
-                    color: '#22c55e',
-                    nameEn: "TQBM - Training Quality & Business Management",
-                    nameAr: "TQBM - جودة التدريب والأعمال",
-                    details: {
-                        quality: { value: 73, nameEn: "Training Quality", nameAr: "جودة التدريب" },
-                        resources: { value: 82, nameEn: "Resources & Capabilities", nameAr: "الموارد والإمكانيات" },
-                        methodology: { value: 76, nameEn: "Training Methodology", nameAr: "المنهجية التدريبية" },
-                        effectiveness: { value: 74, nameEn: "Effectiveness & Impact", nameAr: "الفعالية والتأثير" }
-                    }
-                },
-                "Community": {
-                    value: 60,
-                    color: '#ef4444',
-                    nameEn: "Community Engagement",
-                    nameAr: "Community - المشاركة المجتمعية",
-                    details: {
-                        interaction: { value: 52, nameEn: "Community Interaction", nameAr: "التفاعل المجتمعي" },
-                        outreach: { value: 68, nameEn: "Community Outreach", nameAr: "الوصول المجتمعي" },
-                        partnerships: { value: 60, nameEn: "Cooperation & Partnerships", nameAr: "التعاون والشراكات" },
-                        impact: { value: 56, nameEn: "Community Impact", nameAr: "التأثير المجتمعي" }
-                    }
-                },
-                "Institutional": {
-                    value: 77,
-                    color: '#3b82f6',
-                    nameEn: "Institutional Excellence",
-                    nameAr: "Institutional - التميز المؤسسي",
-                    details: {
-                        governance: { value: 75, nameEn: "Institutional Governance", nameAr: "الحوكمة المؤسسية" },
-                        infrastructure: { value: 79, nameEn: "Infrastructure", nameAr: "البنية التحتية" },
-                        policies: { value: 77, nameEn: "Policies & Procedures", nameAr: "السياسات والإجراءات" },
-                        compliance: { value: 76, nameEn: "Compliance & Quality", nameAr: "الامتثال والجودة" }
-                    }
-                }
-            },
-            annualPerformance,
-            overallScore: 75
-        };
-    };
-
-    // Use real data or dynamic fallback
-    const modalData = data || generateFallbackData();
-
-    const { statistics, annualPerformance } = modalData;
+    }, [newData, selectedOrg]);
 
     if (!isOpen) return null;
 
@@ -263,22 +194,22 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                                 d="M208.3 64L432.3 64C458.8 64 480.4 85.8 479.4 112.2C479.2 117.5 479 122.8 478.7 128L528.3 128C554.4 128 577.4 149.6 575.4 177.8C567.9 281.5 514.9 338.5 457.4 368.3C441.6 376.5 425.5 382.6 410.2 387.1C390 415.7 369 430.8 352.3 438.9L352.3 512L416.3 512C434 512 448.3 526.3 448.3 544C448.3 561.7 434 576 416.3 576L224.3 576C206.6 576 192.3 561.7 192.3 544C192.3 526.3 206.6 512 224.3 512L288.3 512L288.3 438.9C272.3 431.2 252.4 416.9 233 390.6C214.6 385.8 194.6 378.5 175.1 367.5C121 337.2 72.2 280.1 65.2 177.6C63.3 149.5 86.2 127.9 112.3 127.9L161.9 127.9C161.6 122.7 161.4 117.5 161.2 112.1C160.2 85.6 181.8 63.9 208.3 63.9zM165.5 176L113.1 176C119.3 260.7 158.2 303.1 198.3 325.6C183.9 288.3 172 239.6 165.5 176zM444 320.8C484.5 297 521.1 254.7 527.3 176L475 176C468.8 236.9 457.6 284.2 444 320.8z"
                             />
                         </svg>
-                        <span className="relative text-black text-2xl font-bold -translate-y-2">5</span>
+                        <span className="relative text-black text-2xl font-bold -translate-y-2">{orgRank}</span>
                     </div>
 
                     {/* Title and Institution's Name */}
                     <div className="flex flex-col justify-center items-center">
                         <h1 className="text-xl font-bold text-white mb-2 border-b border-gray-600 pb-2">الترتيب العام لوحدات المشروع</h1>
                         <p className="text-gray-300 border-b text-sm border-gray-600 pb-1 w-fit">
-                            {`${centerInfo?.name}` || 'مركز تدريب مهني الشرقية'}
+                            {`${newData?.organizations[selectedOrg || selectedId]?.name}` || 'مركز تدريب مهني الشرقية'}
                         </p>
                     </div>
                     {/* Navigation Icons */}
                     <div className="flex items-center justify-evenly gap-2 min-w-[15%]">
-                        <button className="hover:bg-gray-700 w-10 h-10 rounded-full flex justify-center items-center text-white">
+                        <button onClick={() => changeOrg(false)} className="hover:bg-gray-700 w-10 h-10 rounded-full flex justify-center items-center text-white">
                             <FontAwesomeIcon icon={faArrowLeft} />
                         </button>
-                        <button className="hover:bg-gray-700 w-10 h-10 rounded-full flex justify-center items-center text-white">
+                        <button onClick={() => changeOrg(true)} className="hover:bg-gray-700 w-10 h-10 rounded-full flex justify-center items-center text-white">
                             <FontAwesomeIcon icon={faArrowRight} />
                         </button>
                         <button onClick={onClose} className="hover:bg-gray-700 w-10 h-10 rounded-full flex justify-center items-center text-white">
@@ -308,12 +239,12 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td className="text-center text-sm font-bold text-gray-800">{newData?.organizations[centerInfo?.id]?.no_of_trainees}</td>
-                                            <td className="text-center text-sm font-bold text-gray-800">{newData?.organizations[centerInfo?.id]?.no_of_trainers}</td>
-                                            <td className="text-center text-sm font-bold text-gray-800">{statistics.supervisors}</td>
-                                            <td className="text-center text-sm font-bold text-gray-800">{statistics.workshops}</td>
-                                            <td className="text-center text-sm font-bold text-gray-800">{statistics.labs}</td>
-                                            <td className="text-center text-sm font-bold text-gray-800">{statistics.specializations}</td>
+                                            <td className="text-center text-sm font-bold text-gray-800">{newData?.organizations[selectedOrg || selectedId]?.no_of_trainees}</td>
+                                            <td className="text-center text-sm font-bold text-gray-800">{newData?.organizations[selectedOrg || selectedId]?.no_of_trainers}</td>
+                                            <td className="text-center text-sm font-bold text-gray-800">{0}</td>
+                                            <td className="text-center text-sm font-bold text-gray-800">{0}</td>
+                                            <td className="text-center text-sm font-bold text-gray-800">{0}</td>
+                                            <td className="text-center text-sm font-bold text-gray-800">{0}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -335,8 +266,8 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                                             <PieChart>
                                                 <Pie
                                                     data={[
-                                                        { name: language ? 'Score' : 'النتيجة', value: roundNumber(newData?.organizations[centerInfo.id]?.overall), fill: '#3b82f6' },
-                                                        { name: language ? 'Remaining' : 'المتبقي', value: 100 - roundNumber(newData?.organizations[centerInfo.id]?.overall), fill: '#e5e7eb' }
+                                                        { name: language ? 'Score' : 'النتيجة', value: roundNumber(newData?.organizations[selectedOrg || selectedId]?.overall), fill: '#3b82f6' },
+                                                        { name: language ? 'Remaining' : 'المتبقي', value: 100 - roundNumber(newData?.organizations[selectedOrg || selectedId]?.overall), fill: '#e5e7eb' }
                                                     ]}
                                                     cx="50%"
                                                     cy="50%"
@@ -349,7 +280,7 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                                             </PieChart>
                                         </ResponsiveContainer>
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-2xl font-bold text-blue-600">%{roundNumber(newData?.organizations[centerInfo.id]?.overall)}</span>
+                                            <span className="text-2xl font-bold text-blue-600">%{roundNumber(newData?.organizations[selectedOrg || selectedId]?.overall)}</span>
                                         </div>
                                     </div>
                                     <span className='text-black'>الكفاءة و الفاعلية</span>
@@ -399,12 +330,12 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                             <div className="flex-1 w-1/2 rounded-xl py-2 px-3 border-white border-2 shadow-white shadow-sm">
                                 {/* Title */}
                                 <h3 className="text-md font-bold text-white mb-2 text-center">
-                                    {language ? 'Total Assessment Rate of Active Centers' : 'إجمالي نسبة تقييم المراكز المفعلة'}
+                                    {language ? 'Total Assessment Rate of Active Centers' : 'تحليل معدل تغيير اداء المركز'}
                                 </h3>
                                 {/* Monthly Chart */}
                                 <div className="bg-white rounded p-2">
                                     <ResponsiveContainer width="100%" height={140}>
-                                        <LineChart data={annualPerformance} margin={{ top: 6, right: 30, left: -25, bottom: -10 }}>
+                                        <LineChart data={newData?.organizations[selectedOrg || selectedId]?.months} margin={{ top: 6, right: 30, left: -25, bottom: -10 }}>
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis
                                                 dataKey="month"
@@ -439,10 +370,20 @@ const ProjectUnitsRankingModal = ({ isOpen, onClose, data, loading, centerInfo, 
                                                     dataKey="performance"
                                                     position="top"
                                                     offset={10}
-                                                    fill="#fbbf24"
                                                     fontSize={12}
                                                     fontWeight="bold"
-                                                    formatter={(value) => `${value}%`}
+                                                    content={({ x, y, value }) => (
+                                                        <text
+                                                            x={x}
+                                                            y={y - 10}              // move label above dot
+                                                            fill={value < 50 ? "red" : "#fbbf24"}
+                                                            fontSize={12}
+                                                            fontWeight="bold"
+                                                            textAnchor="middle"
+                                                        >
+                                                            {`${value}%`}
+                                                        </text>
+                                                    )}
                                                 />
                                             </Line>
                                         </LineChart>

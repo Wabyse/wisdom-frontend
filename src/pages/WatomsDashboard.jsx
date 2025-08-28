@@ -160,7 +160,6 @@ const WatomsDashboard = () => {
   const [allBreakdowns, setAllBreakdowns] = useState([]);
   const [breakdownsLoading, setBreakdownsLoading] = useState(false);
   const [annualPerformanceData, setAnnualPerformanceData] = useState([]);
-  const [projectUnitsRanking, setProjectUnitsRanking] = useState(null);
   const [projectUnitsRankingLoading, setProjectUnitsRankingLoading] = useState(false);
   const [isProjectUnitsModalOpen, setIsProjectUnitsModalOpen] = useState(false);
   const isFullScreen = useFullScreen();
@@ -169,6 +168,7 @@ const WatomsDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [datasMonths, setDatasMonths] = useState([]);
+  const [selectedOrgId, setSelectedOrgId] = useState(null);
 
   function fullNumber(value) {
     return Math.round(Number(value));
@@ -192,6 +192,9 @@ const WatomsDashboard = () => {
   const [totalScoreDetailed, setTotalScoreDetailed] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState({});
   const [selectedMonthIdx, setSelectedMonthIdx] = useState({});
+  const [selectedOrg, setSelectedOrg] = useState(null);
+  const [arrangedOrg, setArrangedOrg] = useState([]);
+  const [arrangedOrgIdx, setArrangedOrgIdx] = useState();
 
   useEffect(() => {
     const setDefaultMonth = () => {
@@ -227,6 +230,10 @@ const WatomsDashboard = () => {
         const response = await fetchWatomsDetailsData();
         setWatomsData(response);
         setDatasMonths(response.months);
+        const arrangingOrg = Object.values(response?.organizations || {}).sort((a, b) => b.overall - a.overall);
+        setArrangedOrg(arrangingOrg);
+        setSelectedOrg(arrangingOrg[0]);
+        setArrangedOrgIdx(0);
       } catch (error) {
         console.error('❌ Error fetching Watoms Data:', error);
       } finally {
@@ -235,7 +242,23 @@ const WatomsDashboard = () => {
     }
 
     loadWatomsDetailedData();
-  }, [])
+  }, []);
+
+  const changeOrg = (status) => {
+    if (status && (arrangedOrgIdx + 1) !== arrangedOrg.length) {
+      setArrangedOrgIdx(prev => prev + 1);
+      setSelectedOrg(arrangedOrg[arrangedOrgIdx + 1])
+    } else if (!status && (arrangedOrgIdx) !== 0) {
+      setArrangedOrgIdx(prev => prev - 1);
+      setSelectedOrg(arrangedOrg[arrangedOrgIdx - 1])
+    } else if (status && (arrangedOrgIdx + 1) === arrangedOrg.length) {
+      setArrangedOrgIdx(0);
+      setSelectedOrg(arrangedOrg[0])
+    } else if (!status && (arrangedOrgIdx) === 0) {
+      setArrangedOrgIdx(arrangedOrg.length - 1);
+      setSelectedOrg(arrangedOrg[arrangedOrg.length - 1])
+    }
+  }
 
   useEffect(() => {
     fetchCenters().then(async data => {
@@ -459,54 +482,13 @@ const WatomsDashboard = () => {
 
     setProjectUnitsRankingLoading(true);
     setIsProjectUnitsModalOpen(true);
-
-    try {
-      // Use a default organization ID if no center is selected
-      const organizationId = selectedCenter?.id || '1'; // Default to organization ID 1
-      console.log('Using organization ID:', organizationId);
-
-      const response = await fetchProjectUnitsRanking(organizationId);
-      console.log('API response:', response);
-
-      if (response.success) {
-        setProjectUnitsRanking(response.data);
-        console.log('Project units ranking data set:', response.data);
-      } else {
-        console.error('Project units ranking API returned success: false');
-        setProjectUnitsRanking(null);
-      }
-    } catch (error) {
-      console.error('Error fetching project units ranking data:', error);
-      setProjectUnitsRanking(null);
-    } finally {
-      setProjectUnitsRankingLoading(false);
-    }
   };
 
   // New function to handle center-specific ranking click
   const handleCenterRankingClick = async (center) => {
-
-    setProjectUnitsRankingLoading(true);
     setIsProjectUnitsModalOpen(true);
     setSelectedCenter(center); // Set the selected center to display its name in modal
-
-    try {
-      const organizationId = center?.id || '1';
-
-      const response = await fetchProjectUnitsRanking(organizationId);
-
-      if (response.success) {
-        setProjectUnitsRanking(response.data);
-      } else {
-        console.error('❌ Center ranking API returned success: false');
-        setProjectUnitsRanking(null);
-      }
-    } catch (error) {
-      console.error('❌ Error fetching center ranking data:', error);
-      setProjectUnitsRanking(null);
-    } finally {
-      setProjectUnitsRankingLoading(false);
-    }
+    setSelectedOrgId(center.id);
   };
 
   // Remove the fallback data generation since we want real data from database
@@ -651,14 +633,11 @@ const WatomsDashboard = () => {
                 overflowX: 'hidden',            // ✅ prevent x scroll
               }}
             >
-              {onlineCenters.slice().sort(
-                (a, b) =>
-                  (watomsData?.organizations?.[b.id]?.overall ?? 0) -
-                  (watomsData?.organizations?.[a.id]?.overall ?? 0)
-              )
-                .map((c, i) => (
+              {Object.entries(watomsData?.organizations || {})
+                .sort(([, a], [, b]) => b.overall - a.overall) // sort high → low
+                .map(([id, c]) => (
                   <div
-                    key={c.id || i}
+                    key={id}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -715,8 +694,8 @@ const WatomsDashboard = () => {
                       <div
                         style={{
                           height: '100%',
-                          width: `${Math.min(100, Math.max(0, fullNumber(watomsData?.organizations[c.id].overall) || 0))}%`,
-                          background: modernBarGradients[i % modernBarGradients.length],
+                          width: `${Math.min(100, Math.max(0, fullNumber(watomsData?.organizations[id].overall) || 0))}%`,
+                          background: modernBarGradients[id % modernBarGradients.length],
                           borderRadius: 18,
                           transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
                         }}
@@ -732,7 +711,7 @@ const WatomsDashboard = () => {
                       marginRight: 0,
                       transition: 'color 0.2s ease'
                     }}>
-                      {fullNumber(watomsData?.organizations[c.id].overall) !== undefined ? fullNumber(watomsData?.organizations[c.id].overall) : 0}%
+                      {fullNumber(watomsData?.organizations[id].overall) !== undefined ? fullNumber(watomsData?.organizations[id].overall) : 0}%
                     </div>
                   </div>
                 ))}
@@ -846,12 +825,12 @@ const WatomsDashboard = () => {
                   background: 'none',
                   boxShadow: '0 0 15px #0af8',
                 }}>
-                  <CircularProgressBar value={fullNumber(watomsData?.organizations[selectedCenter.id].overall) || 0} />
+                  <CircularProgressBar value={fullNumber(selectedOrg?.overall) || 0} />
                 </div>
                 {/* Info box */}
                 <div style={{
                   position: 'absolute',
-                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 75) / 1054.979) * 100}% + 120px)`,
+                  right: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 75) / 1054.979) * 100}% + 90px)`,
                   top: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).y + 188.858) / 972.996) * 100}% - 40px)`,
                   background: '#c3c8d6',
                   color: '#222',
@@ -898,11 +877,7 @@ const WatomsDashboard = () => {
             gap: 18,
           }}>
             <button
-              onClick={() => {
-                if (!centers.length) return;
-                const idx = centers.findIndex(c => c.id === selectedCenter?.id);
-                setSelectedCenter(centers[(idx - 1 + centers.length) % centers.length]);
-              }}
+              onClick={() => changeOrg(false)}
               style={{
                 background: '#181f2e',
                 color: '#0af',
@@ -921,14 +896,10 @@ const WatomsDashboard = () => {
               &#8592;
             </button>
             <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
-              {selectedCenter?.name || ''}
+              {selectedOrg?.name || ''}
             </span>
             <button
-              onClick={() => {
-                if (!centers.length) return;
-                const idx = centers.findIndex(c => c.id === selectedCenter?.id);
-                setSelectedCenter(centers[(idx + 1) % centers.length]);
-              }}
+              onClick={() => changeOrg(true)}
               style={{
                 background: '#181f2e',
                 color: '#0af',
@@ -961,12 +932,13 @@ const WatomsDashboard = () => {
           alignItems: 'stretch',
           boxSizing: 'border-box',
         }}>
+          {/* Total Institutions */}
           <div style={{
             background: "#2d3347",
             borderRadius: 16,
-            padding: '18px 24px 18px 24px',
+            padding: '10px 24px 10px 24px',
             minWidth: 220,
-            minHeight: 120,
+            minHeight: 100,
             boxShadow: '0 2px 8px #0002',
             display: 'flex',
             flexDirection: 'row',
@@ -987,6 +959,28 @@ const WatomsDashboard = () => {
               <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(38).padStart(2, '0')}</span>
             </div>
           </div>
+          <div className="p-2 gap-4 flex justify-evenly items-center" style={{
+            background: "#2d3347",
+            borderRadius: 16,
+            minWidth: 220,
+            minHeight: 60,
+            boxShadow: '0 2px 8px #0002',
+          }}>
+            <div className="flex justify-center items-center">
+              <div className="text-3xl w-fit">{watomsData?.totalTrainees}</div>
+              <div className="text-xs text-end w-fit">عدد المتدربين بالمراكز</div>
+            </div>
+            <div className='border-l-2 border-white h-3/4' />
+            <div className="flex justify-center items-center">
+              <div className="text-3xl w-fit">{watomsData?.totalCurriculums}</div>
+              <div className="text-xs text-end w-1/2">عدد البرامج التدريبية</div>
+            </div>
+            <div className='border-l-2 border-white h-3/4' />
+            <div className="flex justify-center items-center">
+              <div className="text-3xl w-fit">78%</div>
+              <div className="text-xs text-end w-fit">نسبة التشغيل للخريجين</div>
+            </div>
+          </div>
           {/* إجمالي نسبة تقييم المراكز المفعلة */}
           <div className="flex flex-col rounded-xl" style={{
             backgroundColor: "#2d3347"
@@ -997,17 +991,15 @@ const WatomsDashboard = () => {
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 16,
-              margin: '18px 0',
               minWidth: 220,
-              minHeight: 280,
-              gap: 14,
+              minHeight: 250,
+              gap: 10,
             }}>
               <div style={{
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: 18,
                 gap: 18,
               }}>
                 {selectedMonthIdx !== 0 ? <button
@@ -1028,7 +1020,7 @@ const WatomsDashboard = () => {
                   title="الشهر السابق"
                 >
                   &#8592;
-                </button> : <div className="mb-2"
+                </button> : <div
                   style={{
                     border: 'none',
                     borderRadius: '50%',
@@ -1043,7 +1035,6 @@ const WatomsDashboard = () => {
                 </span>
                 {selectedMonthIdx !== (datasMonths.length - 1) ? <button
                   onClick={() => toggleMonth(true)}
-                  className="mb-2"
                   style={{
                     background: '#181f2e',
                     color: '#0af',
@@ -1060,7 +1051,7 @@ const WatomsDashboard = () => {
                   title="الشهر التالي"
                 >
                   &#8594;
-                </button> : <div className="mb-2"
+                </button> : <div
                   style={{
                     border: 'none',
                     borderRadius: '50%',
@@ -1071,7 +1062,7 @@ const WatomsDashboard = () => {
                     display: "hidden",
                   }}></div>}
               </div>
-              <div className="mb-2" style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c' }}>
+              <div style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c' }}>
                 المتوسط العام لتقييم المشروع
               </div>
               <div className="flex flex-row gap-8 justify-between">
@@ -1294,10 +1285,10 @@ const WatomsDashboard = () => {
       <ProjectUnitsRankingModal
         isOpen={isProjectUnitsModalOpen}
         onClose={() => setIsProjectUnitsModalOpen(false)}
-        data={projectUnitsRanking}
         loading={projectUnitsRankingLoading}
         centerInfo={selectedCenter}
         newData={watomsData}
+        selectedId={selectedOrgId}
       />
 
       {/* Add warning gradient to chart SVG root */}
