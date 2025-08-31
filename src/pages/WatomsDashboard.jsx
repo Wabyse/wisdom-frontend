@@ -1214,7 +1214,7 @@ const WatomsDashboard = () => {
           {/* إجمالي نسبة تقييم المراكز المفعلة */}
           {/* <div className="flex flex-col rounded-xl" style={{
             backgroundColor: "#2d3347"
-          }}>
+            }}>
             <div style={{
               display: 'flex',
               flexDirection: 'column',
@@ -1401,7 +1401,7 @@ const WatomsDashboard = () => {
               </div>
             </div>
           </div> */}
-          <div className="flex flex-col rounded-xl w-full gap-7" style={{
+          <div className="flex flex-col rounded-xl w-full gap-7 py-7" style={{
             backgroundColor: "#2d3347"
           }}>
             <div className="mt-2" style={{
