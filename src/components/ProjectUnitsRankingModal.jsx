@@ -2,7 +2,6 @@ import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     LineChart, Line, PieChart, Pie, LabelList
 } from 'recharts';
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight, faHouse } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from '../context/LanguageContext';

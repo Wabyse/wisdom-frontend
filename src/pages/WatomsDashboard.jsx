@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchCenters, fetchCenterEvaluationBreakdown, fetchAnnualPerformanceData, fetchProjectUnitsRanking, fetchWatomsDetailsData } from "../services/dashboard";
 import { ReactComponent as EgyptMap } from '../assets/Egypt_location_map.svg';
-import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList, PieChart, Pie } from "recharts";
 import ReactModal from 'react-modal';
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,7 @@ import { useAuth } from "../context/AuthContext";
 import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
 import { ALL_MONTHS } from "../constants/constants";
+import { roundNumber } from "../utils/roundNumber";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
 
@@ -169,10 +170,8 @@ const WatomsDashboard = () => {
   const [uploading, setUploading] = useState(false);
   const [datasMonths, setDatasMonths] = useState([]);
   const [selectedOrgId, setSelectedOrgId] = useState(null);
-
-  function fullNumber(value) {
-    return Math.round(Number(value));
-  }
+  const [orgStandards, setOrgStandards] = useState([]);
+  const [orgSubStandards, setOrgSubStandards] = useState([]);
 
   const [detailedData, setDetailedData] = useState({
     TQBM: { TG: 0, TE: 0, T: 0 },
@@ -196,6 +195,135 @@ const WatomsDashboard = () => {
   const [arrangedOrg, setArrangedOrg] = useState([]);
   const [arrangedOrgIdx, setArrangedOrgIdx] = useState();
 
+  // fetching watoms' dashboard data
+  useEffect(() => {
+    const loadWatomsDetailedData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchWatomsDetailsData();
+        setWatomsData(response);
+        // remove this later
+        setDatasMonths(response.total.months);
+        setSelectedMonthIdx(response.total.months.length - 1);
+        const arrangingOrg = Object.values(response?.organizations || {}).sort((a, b) => b.overall - a.overall);
+        const watomsDataArray = [response.total, ...arrangingOrg];
+        setArrangedOrg(watomsDataArray);
+        setSelectedOrg(watomsDataArray[0]);
+        setArrangedOrgIdx(0);
+        setOrgStandards([
+          {
+            name: "جودة التدريب",
+            score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.totalTQBM) || 0,
+            color: "#3b82f6"
+          },
+          {
+            name: "مقياس الحوكمة",
+            score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.totalGOVBM) || 0,
+            color: "#10b981"
+          },
+          {
+            name: "المقياس الاكاديمي",
+            score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.totalACBM) || 0,
+            color: "#f59e0b"
+          }
+        ])
+        setOrgSubStandards([
+          {
+            name: "جودة التدريب",
+            subData: [
+              {
+                name: "البرامج التدريبية",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.TG?.avgScore) || 0,
+                color: "#3b82f6"
+              },
+              {
+                name: "بيئة التدريب",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.TE?.avgScore) || 0,
+                color: "#16a34a"
+              },
+              {
+                name: "اداء المدرب",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.T?.avgScore) || 0,
+                color: "#a855f7"
+              }
+            ],
+          },
+          {
+            name: "مقياس الحوكمة",
+            subData: [
+              {
+                name: "الاداء المؤسسي",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.IP?.avgScore) || 0,
+                color: "#2e6f00"
+              },
+              {
+                name: "الرقمنة",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.DD?.avgScore) || 0,
+                color: "#e43002"
+              },
+              {
+                name: "التخطيط و التشغيل",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.PO?.avgScore) || 0,
+                color: "#88a064"
+              },
+              {
+                name: "الجودة و التطوير",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.QD?.avgScore) || 0,
+                color: "#2e8d52"
+              },
+              {
+                name: "بيئة العمل",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.W?.avgScore) || 0,
+                color: "#00bdbb"
+              }
+            ],
+          },
+          {
+            name: "المقياس الاكاديمي",
+            subData: [
+              {
+                name: "اداء المتدرب",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.TR?.avgScore) || 0,
+                color: "#aa4642"
+              },
+              {
+                name: "البرامج التدريبية",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.TG?.avgScore) || 0,
+                color: "#925515"
+              }
+            ],
+          },
+          {
+            name: "الكفاءة و الفاعلية",
+            subData: [
+              {
+                name: "المشاركة المجتمعية",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.CP?.avgScore) || 0,
+                color: "#520a9c"
+              },
+              {
+                name: "التنمية المهنية",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.TV?.avgScore) || 0,
+                color: "#596a95"
+              },
+              {
+                name: "الاشراف اليومي",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.TRA) || 0,
+                color: "#4f46f7"
+              }
+            ],
+          },
+        ])
+      } catch (error) {
+        console.error('❌ Error fetching Watoms Data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadWatomsDetailedData();
+  }, []);
+
   useEffect(() => {
     const setDefaultMonth = () => {
       const now = new Date();
@@ -217,46 +345,149 @@ const WatomsDashboard = () => {
       }
     } else {
       if (selectedMonthIdx !== 0) {
-        setSelectedMonth(datasMonths[selectedMonthIdx - 1]);
+        setSelectedMonth(datasMonths[selectedMonthIdx]);
         setSelectedMonthIdx(prev => prev - 1);
       }
     }
   }
 
   useEffect(() => {
-    setLoading(true);
-    const loadWatomsDetailedData = async () => {
-      try {
-        const response = await fetchWatomsDetailsData();
-        setWatomsData(response);
-        setDatasMonths(response.months);
-        const arrangingOrg = Object.values(response?.organizations || {}).sort((a, b) => b.overall - a.overall);
-        setArrangedOrg(arrangingOrg);
-        setSelectedOrg(arrangingOrg[0]);
-        setArrangedOrgIdx(0);
-      } catch (error) {
-        console.error('❌ Error fetching Watoms Data:', error);
-      } finally {
-        setLoading(false);
+    const loadStandards = () => {
+
+      if (selectedMonthIdx && watomsData.length !== 0) {
+        setOrgStandards([
+          {
+            name: "جودة التدريب",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
+            color: "#3b82f6"
+          },
+          {
+            name: "مقياس الحوكمة",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.totalGOVBM) || 0,
+            color: "#10b981"
+          },
+          {
+            name: "المقياس الاكاديمي",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.totalACBM) || 0,
+            color: "#f59e0b"
+          }
+        ])
       }
     }
 
-    loadWatomsDetailedData();
-  }, []);
+    const loadSubStandards = () => {
+      if (selectedMonthIdx && watomsData.length !== 0) {
+        setOrgSubStandards([
+          {
+            name: "جودة التدريب",
+            subData: [
+              {
+                name: "البرامج التدريبية",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.avgScore) || 0,
+                color: "#3b82f6"
+              },
+              {
+                name: "بيئة التدريب",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.avgScore) || 0,
+                color: "#16a34a"
+              },
+              {
+                name: "اداء المدرب",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.avgScore) || 0,
+                color: "#a855f7"
+              }
+            ],
+          },
+          {
+            name: "مقياس الحوكمة",
+            subData: [
+              {
+                name: "الاداء المؤسسي",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.avgScore) || 0,
+                color: "#2e6f00"
+              },
+              {
+                name: "الرقمنة",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.avgScore) || 0,
+                color: "#e43002"
+              },
+              {
+                name: "التخطيط و التشغيل",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.avgScore) || 0,
+                color: "#88a064"
+              },
+              {
+                name: "الجودة و التطوير",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.avgScore) || 0,
+                color: "#2e8d52"
+              },
+              {
+                name: "بيئة العمل",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.avgScore) || 0,
+                color: "#00bdbb"
+              }
+            ],
+          },
+          {
+            name: "المقياس الاكاديمي",
+            subData: [
+              {
+                name: "اداء المتدرب",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.avgScore) || 0,
+                color: "#aa4642"
+              },
+              {
+                name: "البرامج التدريبية",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.avgScore) || 0,
+                color: "#925515"
+              }
+            ],
+          },
+          {
+            name: "الكفاءة و الفاعلية",
+            subData: [
+              {
+                name: "المشاركة المجتمعية",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.avgScore) || 0,
+                color: "#520a9c"
+              },
+              {
+                name: "التنمية المهنية",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.TV?.avgScore) || 0,
+                color: "#596a95"
+              },
+              {
+                name: "الاشراف اليومي",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.TRA) || 0,
+                color: "#4f46f7"
+              }
+            ],
+          },
+        ])
+      }
+    }
+
+    loadStandards();
+    loadSubStandards();
+  }, [watomsData, selectedOrg, selectedMonthIdx]);
 
   const changeOrg = (status) => {
     if (status && (arrangedOrgIdx + 1) !== arrangedOrg.length) {
       setArrangedOrgIdx(prev => prev + 1);
-      setSelectedOrg(arrangedOrg[arrangedOrgIdx + 1])
+      setSelectedOrg(arrangedOrg[arrangedOrgIdx + 1]);
+      setSelectedOrgId(arrangedOrg[arrangedOrgIdx + 1].id);
     } else if (!status && (arrangedOrgIdx) !== 0) {
       setArrangedOrgIdx(prev => prev - 1);
       setSelectedOrg(arrangedOrg[arrangedOrgIdx - 1])
+      setSelectedOrgId(arrangedOrg[arrangedOrgIdx - 1].id);
     } else if (status && (arrangedOrgIdx + 1) === arrangedOrg.length) {
       setArrangedOrgIdx(0);
       setSelectedOrg(arrangedOrg[0])
+      setSelectedOrgId(arrangedOrg[0].id);
     } else if (!status && (arrangedOrgIdx) === 0) {
       setArrangedOrgIdx(arrangedOrg.length - 1);
-      setSelectedOrg(arrangedOrg[arrangedOrg.length - 1])
+      setSelectedOrg(arrangedOrg[arrangedOrg.length - 1]);
+      setSelectedOrgId(arrangedOrg[arrangedOrg.length - 1].id);
     }
   }
 
@@ -457,21 +688,21 @@ const WatomsDashboard = () => {
     setTotalScore([
       {
         name: "الكفاءة و الفاعلية",
-        value: fullNumber(datasMonths[selectedMonthIdx]?.geebm || 0)
+        value: roundNumber(datasMonths[selectedMonthIdx]?.geebm || 0)
       }
     ])
     setTotalScoreDetailed([
       {
         name: "جودة التدريب",
-        value: fullNumber(datasMonths[selectedMonthIdx]?.tqbm || 0)
+        value: roundNumber(datasMonths[selectedMonthIdx]?.tqbm || 0)
       },
       {
         name: "مقياس الحوكمة",
-        value: fullNumber(datasMonths[selectedMonthIdx]?.govbm || 0)
+        value: roundNumber(datasMonths[selectedMonthIdx]?.govbm || 0)
       },
       {
         name: "المقياس الاكاديمي",
-        value: fullNumber(datasMonths[selectedMonthIdx]?.acbm || 0)
+        value: roundNumber(datasMonths[selectedMonthIdx]?.acbm || 0)
       }
     ])
   }, [selectedMonthIdx]);
@@ -580,14 +811,39 @@ const WatomsDashboard = () => {
           padding: '1vw 0vw 0vw 1vw',
           boxSizing: 'border-box',
         }}>
+          {/* Total Institutions */}
+          <div style={{
+            background: "#2d3347",
+            borderRadius: 16,
+            padding: '10px 24px 10px 24px',
+            minWidth: 220,
+            minHeight: 100,
+            boxShadow: '0 2px 8px #0002',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12
+          }}>
+            <div className="flex flex-col items-center gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+              <span>{'المفعل'}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#22c55e' }}>{String(onlineCenters.length).padStart(2, '0')}</span>
+            </div>
+            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+              <span>{'الغير مفعّل'}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#ef4444' }}>{String(33).padStart(2, '0')}</span>
+            </div>
+            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+              <span>{'إجمالي'}</span>
+              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(38).padStart(2, '0')}</span>
+            </div>
+          </div>
           {/* General Ranking Chart */}
           <div
-            className="rounded-2xl flex flex-col h-fit flex-1 p-5"
+            className="rounded-2xl flex flex-col h-fit flex-1 px-5 py-2 mb-0 items-stretch"
             style={{
               background: "#2d3347",
               boxShadow: '0 2px 12px #0004',
-              marginBottom: 0,
-              alignItems: 'stretch',
               position: 'relative',
               overflow: 'hidden',         // already hides both axes; fine to keep
             }}
@@ -694,7 +950,7 @@ const WatomsDashboard = () => {
                       <div
                         style={{
                           height: '100%',
-                          width: `${Math.min(100, Math.max(0, fullNumber(watomsData?.organizations[id].overall) || 0))}%`,
+                          width: `${Math.min(100, Math.max(0, roundNumber(watomsData?.organizations[id].overall) || 0))}%`,
                           background: modernBarGradients[id % modernBarGradients.length],
                           borderRadius: 18,
                           transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
@@ -711,7 +967,7 @@ const WatomsDashboard = () => {
                       marginRight: 0,
                       transition: 'color 0.2s ease'
                     }}>
-                      {fullNumber(watomsData?.organizations[id].overall) !== undefined ? fullNumber(watomsData?.organizations[id].overall) : 0}%
+                      {roundNumber(watomsData?.organizations[id].overall) !== undefined ? roundNumber(watomsData?.organizations[id].overall) : 0}%
                     </div>
                   </div>
                 ))}
@@ -719,7 +975,7 @@ const WatomsDashboard = () => {
           </div>
           {/* Annual Performance Chart */}
           <AnnualPerformanceChart
-            data={watomsData.months}
+            data={selectedOrg ? selectedOrg.months : watomsData?.total?.months}
             title="تحليل معدل تغيير الاداء للمشروع"
             loading={loading}
           />
@@ -825,7 +1081,7 @@ const WatomsDashboard = () => {
                   background: 'none',
                   boxShadow: '0 0 15px #0af8',
                 }}>
-                  <CircularProgressBar value={fullNumber(selectedOrg?.overall) || 0} />
+                  <CircularProgressBar value={roundNumber(selectedOrg?.performance) || 0} />
                 </div>
                 {/* Info box */}
                 <div style={{
@@ -842,7 +1098,7 @@ const WatomsDashboard = () => {
                   boxShadow: '0 4px 16px #0004',
                   zIndex: 16,
                 }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{selectedCenter.name}</div>
+                  <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{selectedOrg?.id === "All" ? language ? selectedOrg?.en_name : selectedOrg?.ar_name : selectedOrg?.name}</div>
                   <div style={{ fontSize: 9, marginBottom: 2 }}>{selectedCenter.address || 'No address'}</div>
                   {selectedCenter.location && (
                     <a
@@ -895,8 +1151,8 @@ const WatomsDashboard = () => {
             >
               &#8592;
             </button>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
-              {selectedOrg?.name || ''}
+            <span className={`${selectedOrg?.id === "All" ? "font-bold text-2xl" : "text-md"}`} style={{ color: selectedOrg?.id === "All" ? "#fbbf24" : '#fff', fontWeight: 700, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
+              {selectedOrg?.id === "All" ? selectedOrg?.ar_name || '' : selectedOrg?.name || ''}
             </span>
             <button
               onClick={() => changeOrg(true)}
@@ -932,33 +1188,7 @@ const WatomsDashboard = () => {
           alignItems: 'stretch',
           boxSizing: 'border-box',
         }}>
-          {/* Total Institutions */}
-          <div style={{
-            background: "#2d3347",
-            borderRadius: 16,
-            padding: '10px 24px 10px 24px',
-            minWidth: 220,
-            minHeight: 100,
-            boxShadow: '0 2px 8px #0002',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12
-          }}>
-            <div className="flex flex-col items-center gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'المفعل'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#22c55e' }}>{String(onlineCenters.length).padStart(2, '0')}</span>
-            </div>
-            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'الغير مفعّل'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#ef4444' }}>{String(33).padStart(2, '0')}</span>
-            </div>
-            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'إجمالي'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(38).padStart(2, '0')}</span>
-            </div>
-          </div>
+          {/* sum details */}
           <div className="p-2 gap-4 flex justify-evenly items-center" style={{
             background: "#2d3347",
             borderRadius: 16,
@@ -967,7 +1197,7 @@ const WatomsDashboard = () => {
             boxShadow: '0 2px 8px #0002',
           }}>
             <div className="flex justify-center items-center">
-              <div className="text-3xl w-fit">{watomsData?.totalTrainees}</div>
+              <div className="text-3xl w-fit">{watomsData?.total.no_of_trainees}</div>
               <div className="text-xs text-end w-fit">عدد المتدربين بالمراكز</div>
             </div>
             <div className='border-l-2 border-white h-3/4' />
@@ -982,7 +1212,7 @@ const WatomsDashboard = () => {
             </div>
           </div>
           {/* إجمالي نسبة تقييم المراكز المفعلة */}
-          <div className="flex flex-col rounded-xl" style={{
+          {/* <div className="flex flex-col rounded-xl" style={{
             backgroundColor: "#2d3347"
           }}>
             <div style={{
@@ -1087,9 +1317,7 @@ const WatomsDashboard = () => {
               position: 'relative',
               overflow: 'hidden',
             }}>
-              {/* Overlay to darken pattern under content */}
               <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none' }} />
-              {/* Content above pattern/overlay */}
               <div style={{ position: 'relative', zIndex: 2 }}>
                 {totalScoreDetailed && totalScore && (
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', minHeight: 90, gap: 30 }}>
@@ -1106,13 +1334,10 @@ const WatomsDashboard = () => {
                             width: item.name === "جودة التدريب" ? 40 : 50,
                           }}
                         >
-                          {/* Percentage above bar */}
                           <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{item.value}%</div>
-                          {/* Vertical bar */}
                           <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
                             <div style={{ width: '100%', height: `${item.value}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
                           </div>
-                          {/* Category name below bar */}
                           <div style={{
                             height: 28,
                             display: 'flex',
@@ -1146,13 +1371,10 @@ const WatomsDashboard = () => {
                         minWidth: 44,
                       }}
                     >
-                      {/* Percentage above bar */}
                       <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{totalScore[0].value}%</div>
-                      {/* Vertical bar */}
                       <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
                         <div style={{ width: '100%', height: `${totalScore[0].value}%`, background: modernBarGradients[3 % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
                       </div>
-                      {/* Category name below bar */}
                       <div style={{
                         height: 28,
                         display: 'flex',
@@ -1176,6 +1398,203 @@ const WatomsDashboard = () => {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+          </div> */}
+          <div className="flex flex-col rounded-xl w-full gap-7" style={{
+            backgroundColor: "#2d3347"
+          }}>
+            <div className="mt-2" style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 18,
+            }}>
+              {selectedMonthIdx !== 0 ? <button
+                onClick={() => toggleMonth(false)}
+                style={{
+                  background: '#181f2e',
+                  color: '#0af',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  fontSize: 22,
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #0006',
+                  transition: 'background 0.2s',
+                }}
+                title="الشهر السابق"
+              >
+                &#8592;
+              </button> : <div
+                style={{
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  fontSize: 22,
+                  fontWeight: 900,
+                  display: "hidden",
+                }}></div>}
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
+                {selectedMonth?.month}
+              </span>
+              {selectedMonthIdx !== (datasMonths.length - 1) ? <button
+                onClick={() => toggleMonth(true)}
+                style={{
+                  background: '#181f2e',
+                  color: '#0af',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  fontSize: 22,
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #0006',
+                  transition: 'background 0.2s',
+                }}
+                title="الشهر التالي"
+              >
+                &#8594;
+              </button> : <div
+                style={{
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  fontSize: 22,
+                  fontWeight: 900,
+                  display: "hidden",
+                }}></div>}
+            </div>
+            <div className="rounded-xl py-2 px-3">
+              {/* Title */}
+              <h3 className="text-md font-bold text-white mb-2 text-center">
+                {language ? 'Performance Standards Evaluation' : 'تقييم معايير الاداء'}
+              </h3>
+              <div className="flex items-center justify-between gap-2">
+                {/* Overall Score Circle */}
+                <div className="flex flex-col items-center justify-center p-2">
+                  <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
+                  <span className='text-white'>الكفاءة و الفاعلية</span>
+                </div>
+                {/* Performance Bars */}
+                <div className="flex flex-col flex-1 gap-1 my-2">
+                  {orgStandards
+                    ?.slice()
+                    .sort((a, b) => b.score - a.score)
+                    .map((s) => (
+                      <div className='flex justify-between items-center mb-1 gap-2'>
+                        <span className="text-sm font-bold text-white w-1/5">{s.score}%</span>
+                        <div className="w-3/5 bg-white rounded-full h-4 relative">
+                          <div
+                            className="h-4 rounded-full flex items-center justify-center"
+                            style={{
+                              width: `${s.score}%`,
+                              backgroundColor: s.color
+                            }}
+                          >
+                            {s.score > 15 && (
+                              <span className="text-xs font-bold text-white">
+                                {s.score}%
+                              </span>
+                            )}
+                          </div>
+                          {s.score === 0 && (
+                            <span
+                              className="text-xs font-bold absolute right-2 top-0 h-full flex items-center"
+                              style={{ color: s.color }}
+                            >
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-sm font-medium text-white w-1/5">{s.name}</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className='flex'>
+                {orgSubStandards.map((s, i) => (
+                  <div className=' flex w-1/4'>
+                    <div className='flex flex-col w-full gap-1'>
+                      <div className='flex justify-center w-full'>
+                        {s.subData.map((item, i) =>
+                          <div
+                            className="flex-1"
+                            key={item.name || `cat${i}`}
+                            style={{
+                              maxWidth: `20%`,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                            }}
+                          >
+                            {/* Percentage above bar */}
+                            <div style={{ fontWeight: 700, fontSize: 11, marginBottom: 4 }}>{item.score}%</div>
+                            {/* Vertical bar */}
+                            <div
+                              style={{
+                                width: `80%`,
+                                height: 85,
+                                background: "#444652",
+                                borderRadius: 8,
+                                position: "relative",
+                                overflow: "hidden",
+                                display: "flex",
+                                alignItems: "flex-end",
+                                justifyContent: "center",
+                                marginBottom: 0,
+                                paddingBottom: 0,
+                              }}
+                            >
+                              {/* colored bar fill */}
+                              <div
+                                style={{
+                                  width: "100%",
+                                  height: `${item.score}%`,
+                                  background: item.color,
+                                  borderRadius: 8,
+                                  transition: "height 0.7s cubic-bezier(.4,2,.6,1)",
+                                  position: "absolute",
+                                  bottom: 0,
+                                  left: 0,
+                                }}
+                              />
+
+                              {/* vertical text */}
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  inset: 0,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  writingMode: "vertical-rl",    // 👈 vertical text
+                                  textOrientation: "mixed",
+                                  transform: "rotate(180deg)",   // makes text bottom-to-top
+                                  color: "#fff",
+                                  fontSize: "8px",
+                                  fontWeight: "bold",
+                                  pointerEvents: "none",         // so hover still hits the bar
+                                  textAlign: "center",
+                                }}
+                              >
+                                {item.name}
+                              </span>
+                            </div>
+                          </div>)}
+                      </div>
+                      <h1 className='text-white text-center text-xs border-t-2 border-white py-2'>{s.name}</h1>
+                    </div>
+                    {orgSubStandards.length !== i + 1 && <div className='border-l-2 border-white h-[85%]' />}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -1287,7 +1706,7 @@ const WatomsDashboard = () => {
         onClose={() => setIsProjectUnitsModalOpen(false)}
         loading={projectUnitsRankingLoading}
         centerInfo={selectedCenter}
-        newData={watomsData}
+        watomsData={watomsData}
         selectedId={selectedOrgId}
       />
 
