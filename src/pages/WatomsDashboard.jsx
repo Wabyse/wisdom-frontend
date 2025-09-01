@@ -17,7 +17,7 @@ import { userFullName } from "../utils/userFullName";
 import { useAuth } from "../context/AuthContext";
 import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
-import { ALL_MONTHS } from "../constants/constants";
+import { ALL_MONTHS, INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
@@ -172,6 +172,8 @@ const WatomsDashboard = () => {
   const [selectedOrgId, setSelectedOrgId] = useState(null);
   const [orgStandards, setOrgStandards] = useState([]);
   const [orgSubStandards, setOrgSubStandards] = useState([]);
+  const [managerImg, setManagerImg] = useState(null);
+  const [orgImg, setOrgImg] = useState(null);
 
   const [detailedData, setDetailedData] = useState({
     TQBM: { TG: 0, TE: 0, T: 0 },
@@ -194,6 +196,27 @@ const WatomsDashboard = () => {
   const [selectedOrg, setSelectedOrg] = useState(null);
   const [arrangedOrg, setArrangedOrg] = useState([]);
   const [arrangedOrgIdx, setArrangedOrgIdx] = useState();
+  const [orgRank, setOrgRank] = useState();
+
+  // get org's rank due to month
+  useEffect(() => {
+    const changeRankedOrg = () => {
+      const rankingOrgs = Object.entries(watomsData?.organizations || {})
+        .sort(([, a], [, b]) => {
+          if (selectedMonthIdx !== undefined) {
+            // Safely get performance for this month (fallback to 0 if missing)
+            const perfA = a.months?.[selectedMonthIdx]?.performance ?? 0;
+            const perfB = b.months?.[selectedMonthIdx]?.performance ?? 0;
+            return perfB - perfA; // high → low
+          } else {
+            return b.overall - a.overall; // default sort
+          }
+        })
+      const selectedOrgIdx = rankingOrgs.findIndex(org => org[1].id === selectedOrg?.id)
+      setOrgRank(selectedOrgIdx + 1);
+    }
+    changeRankedOrg();
+  }, [selectedOrg, arrangedOrg, selectedMonthIdx])
 
   // fetching watoms' dashboard data
   useEffect(() => {
@@ -345,7 +368,7 @@ const WatomsDashboard = () => {
       }
     } else {
       if (selectedMonthIdx !== 0) {
-        setSelectedMonth(datasMonths[selectedMonthIdx]);
+        setSelectedMonth(datasMonths[selectedMonthIdx - 1]);
         setSelectedMonthIdx(prev => prev - 1);
       }
     }
@@ -470,6 +493,15 @@ const WatomsDashboard = () => {
     loadStandards();
     loadSubStandards();
   }, [watomsData, selectedOrg, selectedMonthIdx]);
+
+  useEffect(() => {
+    const changeManagerImg = () => {
+      setManagerImg(ORG_MANAGER_IMG.filter(mng => mng.id === selectedOrg?.id)[0]?.img);
+      setOrgImg(ORG_MANAGER_IMG.filter(mng => mng.id === selectedOrg?.id)[0]?.org);
+    }
+
+    changeManagerImg();
+  }, [selectedOrg])
 
   const changeOrg = (status) => {
     if (status && (arrangedOrgIdx + 1) !== arrangedOrg.length) {
@@ -803,7 +835,7 @@ const WatomsDashboard = () => {
         maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
       }}>
         {/* يسار: الرسوم البيانية */}
-        <div className="flex flex-col justify-start gap-4" style={{
+        <div className="flex flex-col justify-start gap-4 w-1/3" style={{
           flex: '0 1 28%',
           minWidth: 320,
           maxWidth: 420,
@@ -811,179 +843,218 @@ const WatomsDashboard = () => {
           padding: '1vw 0vw 0vw 1vw',
           boxSizing: 'border-box',
         }}>
-          {/* Total Institutions */}
-          <div style={{
-            background: "#2d3347",
-            borderRadius: 16,
-            padding: '10px 24px 10px 24px',
-            minWidth: 220,
-            minHeight: 100,
-            boxShadow: '0 2px 8px #0002',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12
-          }}>
-            <div className="flex flex-col items-center gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'المفعل'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#22c55e' }}>{String(onlineCenters.length).padStart(2, '0')}</span>
-            </div>
-            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'الغير مفعّل'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#ef4444' }}>{String(33).padStart(2, '0')}</span>
-            </div>
-            <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
-              <span>{'إجمالي'}</span>
-              <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(38).padStart(2, '0')}</span>
-            </div>
-          </div>
-          {/* General Ranking Chart */}
-          <div
-            className="rounded-2xl flex flex-col h-fit flex-1 px-5 py-2 mb-0 items-stretch"
-            style={{
-              background: "#2d3347",
-              boxShadow: '0 2px 12px #0004',
-              position: 'relative',
-              overflow: 'hidden',         // already hides both axes; fine to keep
-            }}
-          >
-            <div
-              style={{
-                fontWeight: 700,
-                fontSize: 15,
-                marginBottom: 18,
-                color: '#facc15',
-                textAlign: 'center',
-                letterSpacing: 0.5,
-                zIndex: 1,
-                textShadow: '0 2px 8px #000a, 0 0 4px #222',
-                cursor: 'pointer',
-                transition: 'color 0.2s ease, text-shadow 0.2s ease',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.color = '#fbbf24';
-                e.target.style.textShadow = '0 2px 12px #000a, 0 0 8px #facc15';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = '#facc15';
-                e.target.style.textShadow = '0 2px 8px #000a, 0 0 4px #222';
-              }}
-              onClick={handleProjectUnitsRankingClick}
-            >
-              الترتيب العام لوحدات المشروع
-            </div>
-            {/* Modern CSS Bar Chart */}
-            <div
-              style={{
-                minHeight: 60,
-                maxHeight: 300,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',   // ✅ start at top
-                zIndex: 1,
-                marginTop: 4,
-                gap: 14,
-                overflowY: 'auto',
-                overflowX: 'hidden',            // ✅ prevent x scroll
-              }}
-            >
-              {Object.entries(watomsData?.organizations || {})
-                .sort(([, a], [, b]) => b.overall - a.overall) // sort high → low
-                .map(([id, c]) => (
-                  <div
-                    key={id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginBottom: 0,
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s ease, opacity 0.2s ease',
-                      borderRadius: 8,
-                      padding: '4px',
-                      minWidth: 0,                // ✅ allow children to shrink
-                      transformOrigin: 'center',  // ✅ scale from center
-                    }}
-                    className="justify-between hover:bg-gray-600 hover:bg-opacity-20"
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.02)';
-                      e.currentTarget.style.opacity = '0.9';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.opacity = '1';
-                    }}
-                    onClick={() => handleCenterRankingClick(c)}
+          {selectedOrg?.id !== "All" ?
+            <div className="flex flex-col min-h-80 max-h-80 rounded-2xl bg-[#2d3347]">
+              <div className="flex py-2 justify-evenly items-center">
+                {/* Org's Rank */}
+                <div className="relative h-16 flex items-center justify-center w-1/4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 640"
+                    className="absolute inset-0 w-full h-full"
+                    aria-hidden="true"
                   >
-                    {/* Center name (on the left) */}
-                    <div className="text-start" style={{
-                      minWidth: 115,
-                      maxWidth: 120,
-                      fontWeight: 900,
-                      fontSize: 15,
-                      color: '#fff',
-                      marginRight: 8,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      transition: 'color 0.2s ease'
-                    }}>
-                      {c.name}
-                    </div>
-                    {/* Bar background with fixed width */}
-                    <div style={{
-                      flex: 1,                   // ✅ take remaining space
-                      minWidth: 0,               // ✅ allow shrink
-                      height: 22,
-                      background: '#444652',
-                      borderRadius: 18,
-                      boxShadow: '0 2px 8px #0002',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      marginLeft: 8,
-                      marginRight: 8,
-                      transition: 'box-shadow 0.2s ease',
-                    }}
-                    >
-                      {/* Bar fill */}
+                    <path
+                      fill="#fff"
+                      d="M208.3 64L432.3 64C458.8 64 480.4 85.8 479.4 112.2C479.2 117.5 479 122.8 478.7 128L528.3 128C554.4 128 577.4 149.6 575.4 177.8C567.9 281.5 514.9 338.5 457.4 368.3C441.6 376.5 425.5 382.6 410.2 387.1C390 415.7 369 430.8 352.3 438.9L352.3 512L416.3 512C434 512 448.3 526.3 448.3 544C448.3 561.7 434 576 416.3 576L224.3 576C206.6 576 192.3 561.7 192.3 544C192.3 526.3 206.6 512 224.3 512L288.3 512L288.3 438.9C272.3 431.2 252.4 416.9 233 390.6C214.6 385.8 194.6 378.5 175.1 367.5C121 337.2 72.2 280.1 65.2 177.6C63.3 149.5 86.2 127.9 112.3 127.9L161.9 127.9C161.6 122.7 161.4 117.5 161.2 112.1C160.2 85.6 181.8 63.9 208.3 63.9zM165.5 176L113.1 176C119.3 260.7 158.2 303.1 198.3 325.6C183.9 288.3 172 239.6 165.5 176zM444 320.8C484.5 297 521.1 254.7 527.3 176L475 176C468.8 236.9 457.6 284.2 444 320.8z"
+                    />
+                  </svg>
+                  <span className="relative text-black text-2xl font-bold -translate-y-2">{orgRank}</span>
+                </div>
+                {/* Org's Manager info */}
+                <div className="flex flex-col justify-center items-center gap-2 w-1/2">
+                  <div className="bg-gray-700 text-white p-2 w-full text-center">{`مدير ${selectedOrg?.name}`}</div>
+                  <div className="bg-gray-700 text-white p-2 w-full text-center">اسم مدير المركز</div>
+                </div>
+                <img className="w-1/4 p-2 rounded-2xl" src={managerImg} alt="" />
+              </div>
+              {/* Org's img */}
+              <img className="w-full px-2 max-h-fit rounded-2xl" src={orgImg} alt="" />
+            </div> :
+            <div className="flex flex-col justify-start gap-4 min-h-80">
+              {/* Total Institutions */}
+              <div
+                className="h-28"
+                style={{
+                  background: "#2d3347",
+                  borderRadius: 16,
+                  padding: '10px 24px 10px 24px',
+                  minWidth: 220,
+                  boxShadow: '0 2px 8px #0002',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 12
+                }}>
+                <div className="flex flex-col items-center gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+                  <span>{'المفعل'}</span>
+                  <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#22c55e' }}>{String(5).padStart(2, '0')}</span>
+                </div>
+                <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+                  <span>{'الغير مفعّل'}</span>
+                  <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#ef4444' }}>{String(33).padStart(2, '0')}</span>
+                </div>
+                <div className="flex flex-col gap-2" style={{ width: '100%', textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#fff', alignItems: 'center', padding: '0 8px' }}>
+                  <span>{'إجمالي'}</span>
+                  <span className="rounded-full w-14 h-14 flex justify-center items-center text-xl" style={{ fontWeight: 900, color: "black", backgroundColor: '#3fd8ff' }}>{String(38).padStart(2, '0')}</span>
+                </div>
+              </div>
+              {/* General Ranking Chart */}
+              <div
+                className="rounded-2xl flex flex-col h-fit max-h-48 px-5 py-2 mb-0 items-stretch"
+                style={{
+                  background: "#2d3347",
+                  boxShadow: '0 2px 12px #0004',
+                  position: 'relative',
+                  overflow: 'hidden',         // already hides both axes; fine to keep
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: 15,
+                    marginBottom: 18,
+                    color: '#facc15',
+                    textAlign: 'center',
+                    letterSpacing: 0.5,
+                    zIndex: 1,
+                    textShadow: '0 2px 8px #000a, 0 0 4px #222',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease, text-shadow 0.2s ease',
+                    position: 'relative'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = '#fbbf24';
+                    e.target.style.textShadow = '0 2px 12px #000a, 0 0 8px #facc15';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = '#facc15';
+                    e.target.style.textShadow = '0 2px 8px #000a, 0 0 4px #222';
+                  }}
+                >
+                  الترتيب العام لوحدات المشروع
+                </div>
+                {/* Modern CSS Bar Chart */}
+                <div
+                  style={{
+                    minHeight: 60,
+                    maxHeight: 300,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',   // ✅ start at top
+                    zIndex: 1,
+                    marginTop: 4,
+                    gap: 14,
+                    overflowY: 'auto',
+                    overflowX: 'hidden',            // ✅ prevent x scroll
+                  }}
+                >
+                  {Object.entries(watomsData?.organizations || {})
+                    .sort(([, a], [, b]) => {
+                      if (selectedMonthIdx !== undefined) {
+                        // Safely get performance for this month (fallback to 0 if missing)
+                        const perfA = a.months?.[selectedMonthIdx]?.performance ?? 0;
+                        const perfB = b.months?.[selectedMonthIdx]?.performance ?? 0;
+                        return perfB - perfA; // high → low
+                      } else {
+                        return b.overall - a.overall; // default sort
+                      }
+                    })
+                    .map(([id, c]) => (
                       <div
+                        key={id}
                         style={{
-                          height: '100%',
-                          width: `${Math.min(100, Math.max(0, roundNumber(watomsData?.organizations[id].overall) || 0))}%`,
-                          background: modernBarGradients[id % modernBarGradients.length],
-                          borderRadius: 18,
-                          transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginBottom: 0,
+                          cursor: 'pointer',
+                          transition: 'transform 0.2s ease, opacity 0.2s ease',
+                          borderRadius: 8,
+                          padding: '4px',
+                          minWidth: 0,                // ✅ allow children to shrink
+                          transformOrigin: 'center',  // ✅ scale from center
                         }}
-                      />
-                    </div>
-                    {/* Percentage (on the right) */}
-                    <div className="text-white" style={{
-                      minWidth: 38,
-                      fontWeight: 900,
-                      fontSize: 17,
-                      textAlign: 'left',
-                      marginLeft: 0,
-                      marginRight: 0,
-                      transition: 'color 0.2s ease'
-                    }}>
-                      {roundNumber(watomsData?.organizations[id].overall) !== undefined ? roundNumber(watomsData?.organizations[id].overall) : 0}%
-                    </div>
-                  </div>
-                ))}
+                        className="justify-between hover:bg-gray-600 hover:bg-opacity-20"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'scale(1.02)';
+                          e.currentTarget.style.opacity = '0.9';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                          e.currentTarget.style.opacity = '1';
+                        }}
+                        onClick={() => handleCenterRankingClick(c)}
+                      >
+                        {/* Center name (on the left) */}
+                        <div className="text-start" style={{
+                          minWidth: 115,
+                          maxWidth: 120,
+                          fontWeight: 900,
+                          fontSize: 15,
+                          color: '#fff',
+                          marginRight: 8,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          transition: 'color 0.2s ease'
+                        }}>
+                          {c.name}
+                        </div>
+                        {/* Bar background with fixed width */}
+                        <div style={{
+                          flex: 1,                   // ✅ take remaining space
+                          minWidth: 0,               // ✅ allow shrink
+                          height: 22,
+                          background: '#444652',
+                          borderRadius: 18,
+                          boxShadow: '0 2px 8px #0002',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          marginLeft: 8,
+                          marginRight: 8,
+                          transition: 'box-shadow 0.2s ease',
+                        }}
+                        >
+                          {/* Bar fill */}
+                          <div
+                            style={{
+                              height: '100%',
+                              width: `${Math.min(100, Math.max(0, roundNumber(watomsData?.organizations[id].months[selectedMonthIdx]?.performance || 0)))}%`,
+                              background: modernBarGradients[id % modernBarGradients.length],
+                              borderRadius: 18,
+                              transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
+                            }}
+                          />
+                        </div>
+                        {/* Percentage (on the right) */}
+                        <div className="text-white" style={{
+                          minWidth: 38,
+                          fontWeight: 900,
+                          fontSize: 17,
+                          textAlign: 'left',
+                          marginLeft: 0,
+                          marginRight: 0,
+                          transition: 'color 0.2s ease'
+                        }}>
+                          {roundNumber(watomsData?.organizations[id].months[selectedMonthIdx]?.performance || 0) !== undefined ? roundNumber(watomsData?.organizations[id].months[selectedMonthIdx]?.performance || 0) : 0}%
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
             </div>
-          </div>
-          {/* Annual Performance Chart */}
+          }
+          {/* Monthly Chart */}
           <AnnualPerformanceChart
             data={selectedOrg ? selectedOrg.months : watomsData?.total?.months}
-            title="تحليل معدل تغيير الاداء للمشروع"
+            title={`تحليل معدل تغيير الاداء ${selectedOrg?.id === "All" ? "للمشروع" : selectedOrg?.name}`}
             loading={loading}
           />
         </div>
         {/* وسط: الخريطة والدائرة */}
-        <div className="rounded-xl mt-4" style={{
+        <div className="rounded-xl mt-4 w-1/3" style={{
           flex: '1 1 36%',
-          minWidth: 260,
           background: "#2d3347",
           minHeight: 260,
           display: 'flex',
@@ -992,7 +1063,7 @@ const WatomsDashboard = () => {
           justifyContent: 'center',
           position: 'relative',
         }}>
-          <div className="text-2xl font-bold mb-5 text-amber-400">المؤشرات الإجمالية للمشروع</div>
+          <div className="text-2xl font-bold mb-5 text-amber-400">المؤشرات الإجمالية {selectedOrg?.id === "All" ? "للمشروع" : selectedOrg?.name}</div>
           <div className="flex" style={{
             position: 'relative',
             width: mapWidth,
@@ -1123,6 +1194,30 @@ const WatomsDashboard = () => {
               </>
             )}
           </div>
+          <div className="px-1">
+            <div className="bg-white rounded">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-center text-sm py-2 text-gray-800">الموظفين</th>
+                    <th className="text-center text-sm py-2 text-gray-800">المدربين</th>
+                    <th className="text-center text-sm py-2 text-gray-800">المشرفين</th>
+                    <th className="text-center text-sm py-2 text-gray-800">الورش</th>
+                    <th className="text-center text-sm py-2 text-gray-800">المعامل</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="text-center text-sm font-bold text-gray-800">{selectedOrg?.no_of_employees || 0}</td>
+                    <td className="text-center text-sm font-bold text-gray-800">{selectedOrg?.no_of_trainers}</td>
+                    <td className="text-center text-sm font-bold text-gray-800">{0}</td>
+                    <td className="text-center text-sm font-bold text-gray-800">{0}</td>
+                    <td className="text-center text-sm font-bold text-gray-800">{0}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
           {/* Carousel navigation below the map, inside the map column */}
           <div style={{
             width: '100%',
@@ -1176,10 +1271,8 @@ const WatomsDashboard = () => {
           </div>
         </div>
         {/* يمين: الإحصائيات */}
-        <div className="gap-4" style={{
+        <div className="gap-4 w-1/3" style={{
           flex: '0 1 28%',
-          minWidth: 320,
-          maxWidth: 420,
           maxHeight: "85vh",
           padding: '1vw 1vw 0vw 0vw',
           display: 'flex',
@@ -1197,13 +1290,13 @@ const WatomsDashboard = () => {
             boxShadow: '0 2px 8px #0002',
           }}>
             <div className="flex justify-center items-center">
-              <div className="text-3xl w-fit">{watomsData?.total.no_of_trainees}</div>
-              <div className="text-xs text-end w-fit">عدد المتدربين بالمراكز</div>
+              <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.total.no_of_trainees : selectedOrg?.no_of_trainees}</div>
+              <div className="text-xs text-end w-fit">عدد المتدربين</div>
             </div>
             <div className='border-l-2 border-white h-3/4' />
             <div className="flex justify-center items-center">
-              <div className="text-3xl w-fit">{watomsData?.totalCurriculums}</div>
-              <div className="text-xs text-end w-1/2">عدد البرامج التدريبية</div>
+              <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.totalCurriculums : INSTITUTION_NO_CURRICULUMS[selectedOrg?.id].length}</div>
+              <div className="text-xs text-end w-1/2">البرامج التدريبية</div>
             </div>
             <div className='border-l-2 border-white h-3/4' />
             <div className="flex justify-center items-center">
@@ -1211,196 +1304,6 @@ const WatomsDashboard = () => {
               <div className="text-xs text-end w-fit">نسبة التشغيل للخريجين</div>
             </div>
           </div>
-          {/* إجمالي نسبة تقييم المراكز المفعلة */}
-          {/* <div className="flex flex-col rounded-xl" style={{
-            backgroundColor: "#2d3347"
-            }}>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 16,
-              minWidth: 220,
-              minHeight: 250,
-              gap: 10,
-            }}>
-              <div style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 18,
-              }}>
-                {selectedMonthIdx !== 0 ? <button
-                  onClick={() => toggleMonth(false)}
-                  style={{
-                    background: '#181f2e',
-                    color: '#0af',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: 36,
-                    height: 36,
-                    fontSize: 22,
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px #0006',
-                    transition: 'background 0.2s',
-                  }}
-                  title="الشهر السابق"
-                >
-                  &#8592;
-                </button> : <div
-                  style={{
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: 36,
-                    height: 36,
-                    fontSize: 22,
-                    fontWeight: 900,
-                    display: "hidden",
-                  }}></div>}
-                <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
-                  {selectedMonth?.month}
-                </span>
-                {selectedMonthIdx !== (datasMonths.length - 1) ? <button
-                  onClick={() => toggleMonth(true)}
-                  style={{
-                    background: '#181f2e',
-                    color: '#0af',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: 36,
-                    height: 36,
-                    fontSize: 22,
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px #0006',
-                    transition: 'background 0.2s',
-                  }}
-                  title="الشهر التالي"
-                >
-                  &#8594;
-                </button> : <div
-                  style={{
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: 36,
-                    height: 36,
-                    fontSize: 22,
-                    fontWeight: 900,
-                    display: "hidden",
-                  }}></div>}
-              </div>
-              <div style={{ fontWeight: 600, fontSize: 15, color: '#e0c77c' }}>
-                المتوسط العام لتقييم المشروع
-              </div>
-              <div className="flex flex-row gap-8 justify-between">
-                <div className="flex flex-col items-start gap-1">
-                  <p className="text-sm">(233) ممارسة و دليل</p>
-                  <p className="text-sm">(143) مؤشر اداء</p>
-                  <p className="text-sm">(49) معيار فرعي</p>
-                  <p className="text-sm">(45) اداة جمع بيانات</p>
-                  <p className="text-sm">(11) مجال</p>
-                  <p className="text-sm">(4) مؤشرات مرجعية (benchmarks)</p>
-                </div>
-                <CircularProgressBar value={fullNumber(datasMonths[selectedMonthIdx]?.performance || 0)} size={150} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
-              </div>
-            </div>
-            <div style={{
-              borderRadius: 16,
-              padding: 10,
-              marginTop: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'stretch',
-              position: 'relative',
-              overflow: 'hidden',
-            }}>
-              <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none' }} />
-              <div style={{ position: 'relative', zIndex: 2 }}>
-                {totalScoreDetailed && totalScore && (
-                  <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', minHeight: 90, gap: 30 }}>
-                    <div className="flex justify-center">
-                      {totalScoreDetailed.map((item, i) => (
-                        <div
-                          className="mx-2"
-                          key={item.name || `cat${i}`}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            minWidth: 40,
-                            width: item.name === "جودة التدريب" ? 40 : 50,
-                          }}
-                        >
-                          <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{item.value}%</div>
-                          <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
-                            <div style={{ width: '100%', height: `${item.value}%`, background: modernBarGradients[i % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
-                          </div>
-                          <div style={{
-                            height: 28,
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            justifyContent: 'center',
-                            width: '100%',
-                            marginTop: 5,
-                          }}>
-                            <span style={{
-                              fontWeight: 700,
-                              fontSize: 10,
-                              color: '#fff',
-                              textAlign: 'center',
-                              maxWidth: 70,
-                              wordBreak: 'break-word',
-                              textShadow: '0 2px 8px #000',
-                              lineHeight: 1.1,
-                              display: 'block',
-                            }} title={item.name || 'تصنيف'}>{item.name || 'تصنيف'}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className='border-r-2 border-white p-1 h-8' />
-                    <div
-                      key={totalScore[0].name || `cat 3`}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        minWidth: 44,
-                      }}
-                    >
-                      <div style={{ fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 4 }}>{totalScore[0].value}%</div>
-                      <div style={{ width: 20, height: 54, background: '#444652', borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: 0, paddingBottom: 0 }}>
-                        <div style={{ width: '100%', height: `${totalScore[0].value}%`, background: modernBarGradients[3 % modernBarGradients.length], borderRadius: 8, transition: 'height 0.7s cubic-bezier(.4,2,.6,1)', position: 'absolute', bottom: 0, left: 0 }} />
-                      </div>
-                      <div style={{
-                        height: 28,
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        justifyContent: 'center',
-                        width: '100%',
-                        marginTop: 5,
-                      }}>
-                        <span style={{
-                          fontWeight: 700,
-                          fontSize: 10,
-                          color: '#fff',
-                          textAlign: 'center',
-                          maxWidth: 70,
-                          wordBreak: 'break-word',
-                          textShadow: '0 2px 8px #000',
-                          lineHeight: 1.1,
-                          display: 'block',
-                        }} title={totalScore[0].name || 'تصنيف'}>{totalScore[0].name || 'تصنيف'}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div> */}
           <div className="flex flex-col rounded-xl w-full gap-7 py-7" style={{
             backgroundColor: "#2d3347"
           }}>
@@ -1480,7 +1383,7 @@ const WatomsDashboard = () => {
                 {/* Overall Score Circle */}
                 <div className="flex flex-col items-center justify-center p-2">
                   <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
-                  <span className='text-white'>الكفاءة و الفاعلية</span>
+                  <span className='text-white mt-2'>الكفاءة و الفاعلية</span>
                 </div>
                 {/* Performance Bars */}
                 <div className="flex flex-col flex-1 gap-1 my-2">
@@ -1488,42 +1391,46 @@ const WatomsDashboard = () => {
                     ?.slice()
                     .sort((a, b) => b.score - a.score)
                     .map((s) => (
-                      <div className='flex justify-between items-center mb-1 gap-2'>
-                        <span className="text-sm font-bold text-white w-1/5">{s.score}%</span>
-                        <div className="w-3/5 bg-white rounded-full h-4 relative">
+                      <div className='flex justify-between items-center mb-1'>
+                        <span className="text-sm font-bold text-white w-fit px-1">{s.score}%</span>
+                        <div
+                          className="min-w-3/5 max-w-3/5 w-3/5"
+                          style={{
+                            height: 22,
+                            background: '#444652',
+                            borderRadius: 18,
+                            boxShadow: '0 2px 8px #0002',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            transition: 'box-shadow 0.2s ease',
+                          }}
+                        >
+                          {/* Bar fill */}
                           <div
-                            className="h-4 rounded-full flex items-center justify-center"
+                            className="h-4 rounded-full"
                             style={{
+                              height: '100%',
                               width: `${s.score}%`,
-                              backgroundColor: s.color
+                              background: s.color,
+                              transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
                             }}
-                          >
-                            {s.score > 15 && (
-                              <span className="text-xs font-bold text-white">
-                                {s.score}%
-                              </span>
-                            )}
-                          </div>
-                          {s.score === 0 && (
-                            <span
-                              className="text-xs font-bold absolute right-2 top-0 h-full flex items-center"
-                              style={{ color: s.color }}
-                            >
-                            </span>
-                          )}
+                          />
                         </div>
-                        <span className="text-sm font-medium text-white w-1/5">{s.name}</span>
+                        <span className="min-w-1/5 max-w-1/5 w-1/5 text-xs font-medium text-white text-center">{s.name}</span>
                       </div>
                     ))}
                 </div>
               </div>
             </div>
+            {/* data's and sub-data's section */}
             <div>
               <div className='flex'>
+                {/* each data's section */}
                 {orgSubStandards.map((s, i) => (
                   <div className=' flex w-1/4'>
                     <div className='flex flex-col w-full gap-1'>
-                      <div className='flex justify-center w-full'>
+                      <div className='flex justify-center w-full px-1'>
+                        {/* percentage bar for each sub data */}
                         {s.subData.map((item, i) =>
                           <div
                             className="flex-1"
@@ -1539,60 +1446,36 @@ const WatomsDashboard = () => {
                             <div style={{ fontWeight: 700, fontSize: 11, marginBottom: 4 }}>{item.score}%</div>
                             {/* Vertical bar */}
                             <div
+                              className="relative flex items-end justify-center w-[80%] bg-[#444652] overflow-hidden mb-0 pb-0"
                               style={{
-                                width: `80%`,
                                 height: 85,
-                                background: "#444652",
                                 borderRadius: 8,
-                                position: "relative",
-                                overflow: "hidden",
-                                display: "flex",
-                                alignItems: "flex-end",
-                                justifyContent: "center",
-                                marginBottom: 0,
-                                paddingBottom: 0,
                               }}
                             >
                               {/* colored bar fill */}
                               <div
+                                className={`w-full bottom-0 left-0 absolute`}
                                 style={{
-                                  width: "100%",
-                                  height: `${item.score}%`,
-                                  background: item.color,
+                                  backgroundColor: item.color,
+                                  height: item.score,
                                   borderRadius: 8,
                                   transition: "height 0.7s cubic-bezier(.4,2,.6,1)",
-                                  position: "absolute",
-                                  bottom: 0,
-                                  left: 0,
                                 }}
                               />
 
-                              {/* vertical text */}
-                              <span
-                                style={{
-                                  position: "absolute",
-                                  inset: 0,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  writingMode: "vertical-rl",    // 👈 vertical text
-                                  textOrientation: "mixed",
-                                  transform: "rotate(180deg)",   // makes text bottom-to-top
-                                  color: "#fff",
-                                  fontSize: "8px",
-                                  fontWeight: "bold",
-                                  pointerEvents: "none",         // so hover still hits the bar
-                                  textAlign: "center",
-                                }}
-                              >
+                              {/* vertical text inside the bar */}
+                              <span className="flex justify-center items-center text-center font-cold text-white absolute pointer-events-none inset-0 [writing-mode:vertical-rl] [text-orientation:mixed] rotate-180 text-[8px]">
                                 {item.name}
                               </span>
                             </div>
                           </div>)}
                       </div>
-                      <h1 className='text-white text-center text-xs border-t-2 border-white py-2'>{s.name}</h1>
+                      {/* the data's title and top separater between it and the sub data's related to it */}
+                      <div className={`border-t-2 border-white h-[85%] ${(i + 1 === orgSubStandards.length) && "w-[90%]"} ${(i === 0) && "w-[90%] self-end"}`} />
+                      <h1 className='text-white text-center text-[10px] py-2'>{s.name}</h1>
                     </div>
-                    {orgSubStandards.length !== i + 1 && <div className='border-l-2 border-white h-[85%]' />}
+                    {/* white line separating the data's title */}
+                    {orgSubStandards.length !== i + 1 && <div className='border-l-2 border-white h-[90%]' />}
                   </div>
                 ))}
               </div>
@@ -1600,105 +1483,6 @@ const WatomsDashboard = () => {
           </div>
         </div>
       </div>
-      {/* Modal for detailed breakdown */}
-      <ReactModal
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-        style={{
-          overlay: { background: 'rgba(0,0,0,0.4)', zIndex: 1000 },
-          content: {
-            maxWidth: 400,
-            margin: 'auto',
-            borderRadius: 16,
-            padding: 24,
-            background: '#181f2e',
-            color: '#fff',
-            border: 'none',
-            boxShadow: '0 4px 32px #000a',
-          },
-        }}
-        ariaHideApp={false}
-      >
-        <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 16, textAlign: 'center' }}>
-          {selectedCategory === 'City Ranking' ? 'تفاصيل ترتيب المحافظات' :
-            selectedCategory ? `تفاصيل ${selectedCategory} - ${selectedCenter?.name || ''}` : ''}
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {selectedCategory === 'City Ranking' ? (
-            centers.map((city, i) => (
-              <div key={city.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#222c', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>
-                <span>{city.name}</span>
-                <span style={{ color: '#0af', fontWeight: 600 }}>{Math.round(city.evaluation || 0)}%</span>
-              </div>
-            ))
-          ) : (
-            selectedCategory && CATEGORY_DETAILS[selectedCategory] && CATEGORY_DETAILS[selectedCategory].map((item, i) => (
-              <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#222c', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>
-                <span>{item.label}</span>
-                <span style={{ color: '#0af', fontWeight: 600 }}>{item.weight}%</span>
-                <span style={{ color: '#0f0', fontWeight: 600 }}>
-                  {selectedCategory === 'ODBM' && evaluation?.ODBM?.[item.key] != null ? `${Math.round(evaluation.ODBM[item.key] * 100)}%` :
-                    selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
-                      selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
-                        selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
-                          selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
-                            ''}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-        <button onClick={() => setModalOpen(false)} style={{ margin: '24px auto 0', display: 'block', background: '#0af', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 24px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>إغلاق</button>
-      </ReactModal>
-      {/* Modal for overall project breakdown */}
-      <ReactModal
-        isOpen={overallModalOpen}
-        onRequestClose={() => setOverallModalOpen(false)}
-        style={{
-          overlay: { background: 'rgba(0,0,0,0.4)', zIndex: 1000 },
-          content: {
-            maxWidth: 700,
-            margin: 'auto',
-            borderRadius: 16,
-            padding: 24,
-            background: '#181f2e',
-            color: '#fff',
-            border: 'none',
-            boxShadow: '0 4px 32px #000a',
-          },
-        }}
-        ariaHideApp={false}
-      >
-        <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 16, textAlign: 'center' }}>
-          {selectedCategory ? `تفاصيل ${selectedCategory} - جميع المراكز` : ''}
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {selectedCategory === 'City Ranking' ? (
-            centers.map((city, i) => (
-              <div key={city.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#222c', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>
-                <span>{city.name}</span>
-                <span style={{ color: '#0af', fontWeight: 600 }}>{Math.round(city.evaluation || 0)}%</span>
-              </div>
-            ))
-          ) : (
-            selectedCategory && CATEGORY_DETAILS[selectedCategory] && CATEGORY_DETAILS[selectedCategory].map((item, i) => (
-              <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#222c', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>
-                <span>{item.label}</span>
-                <span style={{ color: '#0af', fontWeight: 600 }}>{item.weight}%</span>
-                <span style={{ color: '#0f0', fontWeight: 600 }}>
-                  {selectedCategory === 'ODBM' && evaluation?.ODBM?.[item.key] != null ? `${Math.round(evaluation.ODBM[item.key] * 100)}%` :
-                    selectedCategory === 'APBM' && evaluation?.APBM?.[item.key] != null ? `${Math.round(evaluation.APBM[item.key] * 100)}%` :
-                      selectedCategory === 'TQBM' && evaluation?.TQBM?.[item.key] != null ? `${Math.round(evaluation.TQBM[item.key] * 100)}%` :
-                        selectedCategory === 'Community' && evaluation?.COMMUNITY != null ? `${Math.round(evaluation.COMMUNITY * 100)}%` :
-                          selectedCategory === 'Institutional' && evaluation?.INSTITUTIONAL != null ? `${Math.round(evaluation.INSTITUTIONAL * 100)}%` :
-                            ''}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-        <button onClick={() => setOverallModalOpen(false)} style={{ margin: '24px auto 0', display: 'block', background: '#0af', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 24px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>إغلاق</button>
-      </ReactModal>
 
       {/* Project Units Ranking Modal */}
       <ProjectUnitsRankingModal
@@ -1709,14 +1493,6 @@ const WatomsDashboard = () => {
         watomsData={watomsData}
         selectedId={selectedOrgId}
       />
-
-      {/* Add warning gradient to chart SVG root */}
-      <defs>
-        <radialGradient id="warnGradient" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#f00" />
-          <stop offset="100%" stopColor="#a00" />
-        </radialGradient>
-      </defs>
     </div>
   );
 };

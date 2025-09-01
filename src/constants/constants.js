@@ -41,6 +41,12 @@ import wabysWisfmsLogo from '../assets/wabysWisfmsLogo.png';
 import wabysWiscmcmLogo from '../assets/wabysWiscmcmLogo.png';
 import tech from '../assets/tech.jpg';
 import hemam from '../assets/hemam.jpg';
+import ismailiaManager from '../assets/ismailiaManager.jpg';
+import suezManager from '../assets/suezManager.jpg';
+import sharabyaManager from '../assets/sharabyaManager.jpg';
+import sharabyaImg from '../assets/sharabyaImg.jpg';
+import sharqiaManager from '../assets/sharqiaManager.jpg';
+import boulaqManager from '../assets/boulaqManager.jpg';
 
 export const IMPORTANCE_LEVELS = ["normal", "important", "urgent"];
 
@@ -790,4 +796,40 @@ export const KNOWN_US = [
 ]
 
 // export const ALL_MONTHS = [ {id: 1, name: 'يناير'}, {id: 2, name: 'فبراير'}, {id: 3, name: 'مارس'}, {id: 4, name: 'ابريل'}, {id: 5, name: 'مايو'}, {id: 6, name: 'يونيو'}, {id: 7, name: 'يوليو'}, {id: 8, name: 'اغسطس'}, {id: 9, name: 'سبتمبر'}, {id: 10, name: 'اكتوبر'}, {id: 11, name: 'نوفمبر'}, {id: 12, name: 'ديسمبر'}]
-export const ALL_MONTHS = [ {id: 4, name: 'ابريل'}, {id: 5, name: 'مايو'}, {id: 6, name: 'يونيو'}, {id: 7, name: 'يوليو'}, {id: 8, name: 'اغسطس'}, {id: 9, name: 'سبتمبر'}, {id: 10, name: 'اكتوبر'}, {id: 11, name: 'نوفمبر'}, {id: 12, name: 'ديسمبر'}]
+export const ALL_MONTHS = [{ id: 4, name: 'ابريل' }, { id: 5, name: 'مايو' }, { id: 6, name: 'يونيو' }, { id: 7, name: 'يوليو' }, { id: 8, name: 'اغسطس' }, { id: 9, name: 'سبتمبر' }, { id: 10, name: 'اكتوبر' }, { id: 11, name: 'نوفمبر' }, { id: 12, name: 'ديسمبر' }]
+
+export const ORG_MANAGER_IMG = [
+    {
+        id: 4,
+        img: ismailiaManager,
+        org: ""
+    },
+    {
+        id: 5,
+        img: suezManager,
+        org: ""
+    },
+    {
+        id: 7,
+        img: sharabyaManager,
+        org: sharabyaImg
+    },
+    {
+        id: 8,
+        img: boulaqManager,
+        org: ""
+    },
+    {
+        id: 9,
+        img: sharqiaManager,
+        org: ""
+    },
+]
+
+export const INSTITUTION_NO_CURRICULUMS = {
+    4: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    5: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    7: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    8: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+    9: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+}
