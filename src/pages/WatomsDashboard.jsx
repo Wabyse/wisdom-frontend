@@ -19,6 +19,8 @@ import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
 import { ALL_MONTHS, INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
+import map from "../assets/map.png";
+import Egypt from "../components/Egypt";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
 
@@ -188,15 +190,26 @@ const WatomsDashboard = () => {
       CP: 0
     }
   });
-
-  const [totalScore, setTotalScore] = useState([]);
-  const [totalScoreDetailed, setTotalScoreDetailed] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState({});
   const [selectedMonthIdx, setSelectedMonthIdx] = useState({});
   const [selectedOrg, setSelectedOrg] = useState(null);
   const [arrangedOrg, setArrangedOrg] = useState([]);
   const [arrangedOrgIdx, setArrangedOrgIdx] = useState();
   const [orgRank, setOrgRank] = useState();
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState("");
+
+  useEffect(() => {
+    const loadProjects = () => {
+      setProjects(['مشروع وزارة العمل', 'مشروع اختبار'])
+    }
+
+    loadProjects();
+  }, []);
+
+  useEffect(() => {
+
+  }, [selectedProject])
 
   // get org's rank due to month
   useEffect(() => {
@@ -231,6 +244,7 @@ const WatomsDashboard = () => {
         const arrangingOrg = Object.values(response?.organizations || {}).sort((a, b) => b.overall - a.overall);
         const watomsDataArray = [response.total, ...arrangingOrg];
         setArrangedOrg(watomsDataArray);
+        console.log(watomsDataArray)
         setSelectedOrg(watomsDataArray[0]);
         setArrangedOrgIdx(0);
         setOrgStandards([
@@ -716,29 +730,6 @@ const WatomsDashboard = () => {
     setDetailedData(summedData); // ✅ This triggers the second useEffect
   }, [watomsData]);
 
-  useEffect(() => {
-    setTotalScore([
-      {
-        name: "الكفاءة و الفاعلية",
-        value: roundNumber(datasMonths[selectedMonthIdx]?.geebm || 0)
-      }
-    ])
-    setTotalScoreDetailed([
-      {
-        name: "جودة التدريب",
-        value: roundNumber(datasMonths[selectedMonthIdx]?.tqbm || 0)
-      },
-      {
-        name: "مقياس الحوكمة",
-        value: roundNumber(datasMonths[selectedMonthIdx]?.govbm || 0)
-      },
-      {
-        name: "المقياس الاكاديمي",
-        value: roundNumber(datasMonths[selectedMonthIdx]?.acbm || 0)
-      }
-    ])
-  }, [selectedMonthIdx]);
-
   const handleProjectUnitsRankingClick = async () => {
     console.log('Project units ranking clicked');
     console.log('Selected center:', selectedCenter);
@@ -809,14 +800,20 @@ const WatomsDashboard = () => {
             {userFullName(userInfo, language)}
           </span>
           {/* Filter bar */}
-          <div style={{ display: 'flex', alignItems: 'center', background: '#bdbdbd', borderRadius: 6, padding: '2px 10px', minWidth: 120, height: 28, boxShadow: '0 1px 2px #0002', border: '1px solid #888' }}>
-            {/* Filter icon */}
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ marginRight: 6 }}>
-              <rect x="3" y="5" width="14" height="2" rx="1" fill="#222" />
-              <rect x="6" y="9" width="8" height="2" rx="1" fill="#222" />
-              <rect x="9" y="13" width="2" height="2" rx="1" fill="#222" />
-            </svg>
-            <input type="text" placeholder="" style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: 15, color: '#222', width: 70 }} />
+          <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
+            <select
+              value={selectedProject}
+              onChange={(e) => setSelectedProject(e.target.value)}
+              className="text-black bg-[#bdbdbd] max-h-8 h-8 text-xs flex justify-center w-full items-center py-1"
+              dir="rtl"
+            >
+              <option value="" disabled>الرجاء اختيار مشروع</option>
+              {projects.map((project, i) => (
+                <option key={`${project}-${i}`} value={project}>
+                  {project}
+                </option>
+              ))}
+            </select>
           </div>
           {/* Bell icon */}
           <button
@@ -864,12 +861,13 @@ const WatomsDashboard = () => {
                 {/* Org's Manager info */}
                 <div className="flex flex-col justify-center items-center gap-2 w-1/2">
                   <div className="bg-gray-700 text-white p-2 w-full text-center">{`مدير ${selectedOrg?.name}`}</div>
-                  <div className="bg-gray-700 text-white p-2 w-full text-center">اسم مدير المركز</div>
+                  <div className="bg-gray-700 text-white p-2 w-full text-center">{selectedOrg?.managerFirstName} {selectedOrg?.managerMiddleName} {selectedOrg?.managerLastName}</div>
                 </div>
                 <img className="w-1/4 p-2 rounded-2xl" src={managerImg} alt="" />
               </div>
               {/* Org's img */}
-              <img className="w-full px-2 max-h-fit rounded-2xl" src={orgImg} alt="" />
+              {orgImg !== "" ? <img className="w-full px-2 max-h-fit rounded-2xl" src={orgImg} alt="" /> :
+                <div className="p-4 w-full h-full"><div className="rounded-2xl border-2 border-blue-500 shadow-lg shadow-blue-400 w-full h-full" /></div>}
             </div> :
             <div className="flex flex-col justify-start gap-4 min-h-80">
               {/* Total Institutions */}
@@ -1053,7 +1051,7 @@ const WatomsDashboard = () => {
           />
         </div>
         {/* وسط: الخريطة والدائرة */}
-        <div className="rounded-xl mt-4 w-1/3" style={{
+        <div className="rounded-xl mt-4 w-1/3 py-2" style={{
           flex: '1 1 36%',
           background: "#2d3347",
           minHeight: 260,
@@ -1063,87 +1061,38 @@ const WatomsDashboard = () => {
           justifyContent: 'center',
           position: 'relative',
         }}>
-          <div className="text-2xl font-bold mb-5 text-amber-400">المؤشرات الإجمالية {selectedOrg?.id === "All" ? "للمشروع" : selectedOrg?.name}</div>
+          <div className="text-2xl font-bold text-amber-400">المؤشرات الإجمالية {selectedOrg?.id === "All" ? selectedProject === "" ? "لمشروع" : `ل${selectedProject}` : selectedOrg?.name}</div>
           <div className="flex" style={{
             position: 'relative',
             width: mapWidth,
-            height: mapHeight,
+            height: 360,
             maxWidth: mapWidth,
-            maxHeight: mapHeight,
+            maxHeight: 400,
             minWidth: 260,
             minHeight: 260,
             margin: '0 auto',
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-
-            {/* Static SVG Map inside a circle */}
-            <div style={{
-              width: 400,
-              height: 400,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              background: 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 12px #0003',
-            }}>
-              <EgyptMap style={{ width: '80%', height: '80%', display: 'block', background: 'none', margin: 'auto' }} />
-            </div>
-            {/* Overlay center dots */}
-            {Object.entries(locationGroups).flatMap(([location, group], groupIdx) => {
-              // Parse lat/lng for this location
-              let lat = egyptCenter[0], lng = egyptCenter[1];
-              if (location && location.includes(',')) {
-                [lat, lng] = location.split(',').map(Number);
-              }
-              const { x, y } = latLngToSvgXY(lat, lng);
-              const n = group.length;
-              // Offset dots in a circle if more than one at this location
-              const radius = 20; // px offset from center
-              return group.map((center, i) => {
-                let angle = (2 * Math.PI * i) / n;
-                let dx = n > 1 ? Math.cos(angle) * radius : 0;
-                let dy = n > 1 ? Math.sin(angle) * radius : 0;
-                const isOnline = center.status === 'online';
-                const isSelected = selectedCenter && selectedCenter.id === center.id;
-                const isHovered = hoveredCenterId === center.id;
-                return (
-                  <div
-                    key={center.id}
-                    style={{
-                      position: 'absolute',
-                      left: `calc(${((x - 106.544) / 1054.979) * 100}% + ${dx * 0.75}px)`,
-                      top: `calc(${((y + 188.858) / 972.996) * 100}% + ${dy * 0.75}px)`,
-                      transform: 'translate(-50%, -50%)',
-                      width: 12,
-                      height: 12,
-                      background: center.location ? (isOnline ? '#22c55e' : '#ef4444') : '#6b7280',
-                      border: isSelected ? '3px solid #facc15' : isHovered ? '3px solid #38bdf8' : '2px solid #fff',
-                      borderRadius: '50%',
-                      boxShadow: isSelected ? '0 0 8px 2px #facc1588' : (center.location ? (isOnline ? '0 0 4px #22c55e88' : '0 0 4px #ef444488') : '0 0 4px #6b728088'),
-                      zIndex: 10,
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={() => setHoveredCenterId(center.id)}
-                    onMouseLeave={() => setHoveredCenterId(null)}
-                    onClick={() => setSelectedCenter(center)}
-                  >
-                  </div>
-                );
-              });
-            })}
+            {/* <EgyptMap style={{ width: '80%', height: '80%', display: 'block', background: 'none', margin: 'auto' }} /> */}
+            <Egypt
+              width={600}
+              height={340}
+              ids={selectedOrg?.id === "All" ? [4, 5, 7, 8, 9] : selectedOrg?.id || watomsData?.total?.id}
+              markerSrc={require("../assets/marker.png")}  // or import pin from "..."; markerSrc={pin}
+              markerSize={80}
+              showLabels
+            />
             {/* Selected center evaluation circle with arrow and info box */}
             {selectedCenter && (
               <>
                 {/* Evaluation circle as circular progress bar */}
                 <div style={{
                   position: 'absolute',
-                  left: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 100) / 1054.979) * 100}% + 30px)`,
-                  top: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).y + 188.858) / 972.996) * 100}% - 30px)`,
-                  width: 64,
-                  height: 64,
+                  right: `40px`,
+                  top: `30px`,
+                  width: arrangedOrg[arrangedOrgIdx]?.id === "All" ? 100 : 64,
+                  height: arrangedOrg[arrangedOrgIdx]?.id === "All" ? 100 : 64,
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -1152,19 +1101,19 @@ const WatomsDashboard = () => {
                   background: 'none',
                   boxShadow: '0 0 15px #0af8',
                 }}>
-                  <CircularProgressBar value={roundNumber(selectedOrg?.performance) || 0} />
+                  <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0) || 0} size={arrangedOrg[arrangedOrgIdx]?.id === "All" ? 100 : 64} />
                 </div>
                 {/* Info box */}
-                <div style={{
+                {selectedOrg?.id !== "All" && <div style={{
                   position: 'absolute',
-                  right: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).x + 75) / 1054.979) * 100}% + 90px)`,
-                  top: `calc(${((latLngToSvgXY(parseLatLng(selectedCenter.location)[0], parseLatLng(selectedCenter.location)[1]).y + 188.858) / 972.996) * 100}% - 40px)`,
+                  left: `-60px`,
+                  bottom: `40px`,
                   background: '#c3c8d6',
                   color: '#222',
-                  padding: '10px 18px',
+                  padding: '10px 15px',
                   borderRadius: 16,
                   fontSize: 12,
-                  width: 130,
+                  width: 125,
                   maxWidth: 160,
                   boxShadow: '0 4px 16px #0004',
                   zIndex: 16,
@@ -1190,29 +1139,59 @@ const WatomsDashboard = () => {
                   <div style={{ fontSize: 8, color: '#006400' }}>
                     تاريخ بدء المشروع: {selectedCenter.startDate || 'غير محدد'}
                   </div>
-                </div>
+                </div>}
               </>
             )}
           </div>
-          <div className="px-1">
-            <div className="bg-white rounded">
-              <table className="w-full">
+          <div className="px-2 w-4/5">
+            <div className="w-full overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
+              <table className="w-full table-fixed text-sm" dir="rtl">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-center text-sm py-2 text-gray-800">الموظفين</th>
-                    <th className="text-center text-sm py-2 text-gray-800">المدربين</th>
-                    <th className="text-center text-sm py-2 text-gray-800">المشرفين</th>
-                    <th className="text-center text-sm py-2 text-gray-800">الورش</th>
-                    <th className="text-center text-sm py-2 text-gray-800">المعامل</th>
+                  <tr className="bg-[#5268b1] border-b border-blue-200/60 text-white">
+                    <th className="py-2 text-center font-semibold">الموظفين</th>
+                    <th className="py-2 text-center font-semibold">المدربين</th>
+                    <th className="py-2 text-center font-semibold">المشرفين</th>
+                    <th className="py-2 text-center font-semibold">الورش</th>
+                    <th className="py-2 text-center font-semibold">المعامل</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td className="text-center text-sm font-bold text-gray-800">{selectedOrg?.no_of_employees || 0}</td>
-                    <td className="text-center text-sm font-bold text-gray-800">{selectedOrg?.no_of_trainers}</td>
-                    <td className="text-center text-sm font-bold text-gray-800">{0}</td>
-                    <td className="text-center text-sm font-bold text-gray-800">{0}</td>
-                    <td className="text-center text-sm font-bold text-gray-800">{0}</td>
+
+                <tbody className="divide-y divide-slate-100">
+                  <tr className="bg-[#2f417a] hover:bg-slate-50 transition-colors">
+                    <td className="py-2 text-center">
+                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
+            ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
+                        {selectedOrg?.no_of_employees ?? 0}
+                      </span>
+                    </td>
+
+                    <td className="py-2 text-center">
+                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
+            ${(selectedOrg?.no_of_trainers ?? 0) > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-black'}`}>
+                        {selectedOrg?.no_of_trainers ?? 0}
+                      </span>
+                    </td>
+
+                    <td className="py-2 text-center">
+                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
+            ${0 > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-black'}`}>
+                        0
+                      </span>
+                    </td>
+
+                    <td className="py-2 text-center">
+                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
+            ${0 > 0 ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-black'}`}>
+                        0
+                      </span>
+                    </td>
+
+                    <td className="py-2 text-center">
+                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
+            ${0 > 0 ? 'bg-fuchsia-100 text-fuchsia-800' : 'bg-slate-100 text-black'}`}>
+                        0
+                      </span>
+                    </td>
                   </tr>
                 </tbody>
               </table>

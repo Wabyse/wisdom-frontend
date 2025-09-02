@@ -104,6 +104,7 @@ function TomsForm() {
 
     // Get assessee
     let userIdValue;
+    console.log(selectedUser)
     if (code === "Self") {
       userIdValue = userInfo.id;
     } else if (selectedUser) {
@@ -584,8 +585,8 @@ function TomsForm() {
                       </option>
                       {filteredStudents.map((student) => (
                         <option
-                          value={student.id}
-                          key={student.id}
+                          value={student.user_id}
+                          key={student.user_id}
                         >{`${student.first_name} ${student.middle_name} ${student.last_name}`}</option>
                       ))}
                     </select>
