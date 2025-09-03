@@ -59,6 +59,7 @@ import Eivots from "./pages/Eivots";
 import Wabys from "./pages/Wabys";
 import WatomsTraineesRegistration from "./pages/WatomsTraineesRegistration";
 import WatomsTmsMyTasks from "./pages/WatomsTmsMyTasks";
+import WatomsTmsDashboard from "./pages/WatomsTmsDashboard";
 
 function App() {
   return (

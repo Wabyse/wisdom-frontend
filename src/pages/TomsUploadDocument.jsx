@@ -65,6 +65,7 @@ const TomsUploadDocument = () => {
           const testing2 = testing.filter(emp =>
             Number(emp?.organization_id) === Number(userInfo?.organization_id)
           );
+          console.log(testing2)
           setSelectedCategories(testing2);
         }
       } else if (categories[selectedCategory]?.name === "عهدة") {

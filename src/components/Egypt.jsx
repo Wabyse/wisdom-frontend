@@ -25,11 +25,11 @@ function project(lon, lat, renderW = BASE_W, renderH = BASE_H) {
 
 /** ---------- Five static locations (edit/extend as you wish) ---------- */
 const STATIC_LOCATIONS = [
-  { id: 4,  name: "الاسماعيلية",        lon: 31.7187, lat: 31.8001, title: true },
-  { id: 5, name: "السويس",             lon: 31.3357, lat: 31.4444, title: true },
-  { id: 7, name: "الشرابية",             lon: 30.0000, lat: 32.3000, title: false },
-  { id: 9, name: "الشرقية",             lon: 31.2000, lat: 32.1000, title: false },
-  { id: 8, name: "بولاق",                   lon: 29.7000, lat: 31.8000, title: false },
+  { id: 4,  name: "الاسماعيلية",        lon: 33.7187, lat: 30.5001, title: true },
+  { id: 5, name: "السويس",             lon: 33.7357, lat: 29.7200, title: true },
+  { id: 7, name: "الشرابية",             lon: 31.8000, lat: 30.7000, title: false },
+  { id: 9, name: "الشرقية",             lon: 32.9000, lat: 30.7000, title: false },
+  { id: 8, name: "بولاق",                   lon: 32.5000, lat: 30.0000, title: true },
 ];
 // id -> location lookup
 const ID_INDEX = Object.fromEntries(STATIC_LOCATIONS.map(p => [p.id, p]));

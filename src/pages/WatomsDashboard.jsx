@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchCenters, fetchCenterEvaluationBreakdown, fetchAnnualPerformanceData, fetchProjectUnitsRanking, fetchWatomsDetailsData } from "../services/dashboard";
-import { ReactComponent as EgyptMap } from '../assets/Egypt_location_map.svg';
-import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, LabelList, PieChart, Pie } from "recharts";
-import ReactModal from 'react-modal';
+import { fetchCenters, fetchWatomsDetailsData } from "../services/dashboard";
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
 import AnnualPerformanceChart from "../components/AnnualPerformanceChart";
@@ -15,75 +12,13 @@ import { faExpand, faCompress, faUser, faBell } from "@fortawesome/free-solid-sv
 import { useLanguage } from "../context/LanguageContext";
 import { userFullName } from "../utils/userFullName";
 import { useAuth } from "../context/AuthContext";
-import Uploading from "../components/Uploading";
+// import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
-import { ALL_MONTHS, INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
+import { INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
-import map from "../assets/map.png";
 import Egypt from "../components/Egypt";
 
-const egyptCenter = [26.8206, 30.8025]; // Egypt center
-
-const parseLatLng = (locationStr) => {
-  if (!locationStr) return egyptCenter;
-  const [lat, lng] = locationStr.split(',').map(Number);
-  return [lat, lng];
-};
-
-// Helper to group centers by location
-const groupCentersByLocation = (centers) => {
-  const map = {};
-  centers.forEach((c) => {
-    const key = c.location;
-    if (!map[key]) map[key] = [];
-    map[key].push(c);
-  });
-  return map;
-};
-
-const svgAspect = 1054.979 / 972.996; // ≈ 1.084
-const mapWidth = 440;
-const mapHeight = mapWidth / svgAspect; // ≈ 240
-
-// Add this function to convert lat/lng to SVG coordinates
-function latLngToSvgXY(lat, lng) {
-  // SVG viewBox: x=106.544, y=-188.858, width=1054.979, height=972.996
-  // Egypt's approximate bounds: lat 22-32, lng 25-36
-  const svgMinX = 106.544, svgMinY = -188.858, svgWidth = 1054.979, svgHeight = 972.996;
-  const minLat = 22, maxLat = 32, minLng = 25, maxLng = 36;
-  const x = svgMinX + ((lng - minLng) / (maxLng - minLng)) * svgWidth;
-  const y = svgMinY + ((maxLat - lat) / (maxLat - minLat)) * svgHeight;
-  return { x, y };
-}
-
-// Detailed breakdown data for each main category
-const CATEGORY_DETAILS = {
-  ODBM: [
-    { label: 'Trainee attendance', weight: 40, key: 'traineeAttendance' },
-    { label: 'Trainee commitment', weight: 20, key: 'traineeCommitment' },
-    { label: 'Trainer courses', weight: 40, key: 'trainerCourses' },
-  ],
-  APBM: [
-    { label: 'Project', weight: 60, key: 'project' },
-    { label: 'Formative', weight: 30, key: 'formative' },
-    { label: 'Trainee commitment', weight: 10, key: 'traineeCommitment' },
-  ],
-  TQBM: [
-    { label: 'Training regularity', weight: 25, key: 'trainingRegularity' },
-    { label: 'Training programs', weight: 25, key: 'trainingPrograms' },
-    { label: 'Trainer', weight: 25, key: 'trainer' },
-    { label: 'Digitization and data storage', weight: 15, key: 'digitization' },
-    { label: 'Quality and development', weight: 10, key: 'quality' },
-  ],
-  Community: [
-    { label: 'Community participation', weight: 100, key: 'COMMUNITY' },
-  ],
-  Institutional: [
-    { label: 'Institutional performance', weight: 100, key: 'INSTITUTIONAL' },
-  ],
-};
-
-const HEADER_HEIGHT = 64;
+const HEADER_HEIGHT = 60;
 
 // Add keyframes for the animation
 const styleSheet = document.createElement('style');
@@ -151,32 +86,23 @@ function CircularProgressBar({ value, size = 64, stroke = 8, color = 'url(#circu
 }
 
 const WatomsDashboard = () => {
-  const { userInfo } = useAuth();
   const navigate = useNavigate();
+  const { userInfo } = useAuth();
+  const { language } = useLanguage();
+  const isFullScreen = useFullScreen();
+  const [watomsData, setWatomsData] = useState([]);
   const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
-  const [evaluation, setEvaluation] = useState(null);
-  const [hoveredCenterId, setHoveredCenterId] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [overallModalOpen, setOverallModalOpen] = useState(false);
-  const [allBreakdowns, setAllBreakdowns] = useState([]);
-  const [breakdownsLoading, setBreakdownsLoading] = useState(false);
-  const [annualPerformanceData, setAnnualPerformanceData] = useState([]);
   const [projectUnitsRankingLoading, setProjectUnitsRankingLoading] = useState(false);
   const [isProjectUnitsModalOpen, setIsProjectUnitsModalOpen] = useState(false);
-  const isFullScreen = useFullScreen();
-  const { language, setLanguage } = useLanguage();
-  const [watomsData, setWatomsData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
+  // const [uploading, setUploading] = useState(false);
   const [datasMonths, setDatasMonths] = useState([]);
   const [selectedOrgId, setSelectedOrgId] = useState(null);
   const [orgStandards, setOrgStandards] = useState([]);
   const [orgSubStandards, setOrgSubStandards] = useState([]);
   const [managerImg, setManagerImg] = useState(null);
   const [orgImg, setOrgImg] = useState(null);
-
   const [detailedData, setDetailedData] = useState({
     TQBM: { TG: 0, TE: 0, T: 0 },
     GOVBM: { IP: 0, DD: 0, PO: 0, QD: 0, W: 0 },
@@ -229,7 +155,7 @@ const WatomsDashboard = () => {
       setOrgRank(selectedOrgIdx + 1);
     }
     changeRankedOrg();
-  }, [selectedOrg, arrangedOrg, selectedMonthIdx])
+  }, [selectedOrg, arrangedOrg, selectedMonthIdx, watomsData])
 
   // fetching watoms' dashboard data
   useEffect(() => {
@@ -391,7 +317,7 @@ const WatomsDashboard = () => {
   useEffect(() => {
     const loadStandards = () => {
 
-      if (selectedMonthIdx && watomsData.length !== 0) {
+      if ((selectedMonthIdx || selectedMonthIdx === 0) && watomsData.length !== 0) {
         setOrgStandards([
           {
             name: "جودة التدريب",
@@ -413,7 +339,8 @@ const WatomsDashboard = () => {
     }
 
     const loadSubStandards = () => {
-      if (selectedMonthIdx && watomsData.length !== 0) {
+      if ((selectedMonthIdx || selectedMonthIdx === 0) && watomsData.length !== 0) {
+        console.log(selectedMonthIdx)
         setOrgSubStandards([
           {
             name: "جودة التدريب",
@@ -541,59 +468,8 @@ const WatomsDashboard = () => {
     fetchCenters().then(async data => {
       setCenters(data.centers || []);
       if (data.centers && data.centers.length > 0) setSelectedCenter(data.centers[0]);
-      // Fetch all breakdowns in parallel
-      setBreakdownsLoading(true);
-      const breakdowns = await Promise.all(
-        (data.centers || []).map(center =>
-          fetchCenterEvaluationBreakdown(center.id).catch(() => null)
-        )
-      );
-      setAllBreakdowns(breakdowns);
-      setBreakdownsLoading(false);
     });
   }, []);
-
-  // Fetch annual performance data only once when component loads
-  useEffect(() => {
-    const fetchAnnualData = async () => {
-      try {
-        // Use a default organization ID since the backend now calculates for ALL centers
-        const response = await fetchAnnualPerformanceData('1');
-        console.log('🎯 Dashboard received response:', response);
-        if (response.success) {
-          console.log('✅ Setting annual performance data:', response.data);
-          console.log('✅ Data length:', response.data?.length);
-          setAnnualPerformanceData(response.data);
-        } else {
-          console.error('❌ Annual performance API returned success: false');
-          // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
-        }
-      } catch (error) {
-        console.error('❌ Error fetching annual performance data:', error);
-        // setAnnualPerformanceData(fallbackAnnualData); // REMOVED
-      }
-    };
-
-    // Fetch data only once when component mounts
-    fetchAnnualData();
-  }, []); // Empty dependency array - only run once
-
-  useEffect(() => {
-    if (selectedCenter) {
-      setUploading(true);
-      fetchCenterEvaluationBreakdown(selectedCenter.id)
-        .then(setEvaluation)
-        .finally(() => setUploading(false));
-    }
-  }, [selectedCenter]);
-
-  // حساب الإحصائيات
-  const totalCenters = centers.length;
-  const onlineCenters = centers.filter(c => c.status === "online");
-  const offlineCenters = centers.filter(c => c.status === "offline");
-  const avgOnlineEval = onlineCenters.length
-    ? Math.round(onlineCenters.reduce((sum, c) => sum + c.evaluation, 0) / onlineCenters.length)
-    : 0;
 
   // Carousel logic
   const carouselRef = React.useRef();
@@ -609,66 +485,6 @@ const WatomsDashboard = () => {
       if (idx !== -1) scrollToCenter(idx);
     }
   }, [selectedCenter, centers]);
-
-  // Group centers by location for offsetting
-  const locationGroups = groupCentersByLocation(centers);
-
-  // Calculate overall project evaluation breakdown from allBreakdowns
-  const calculateOverallEvaluation = () => {
-    if (!allBreakdowns.length) return null;
-    const validBreakdowns = allBreakdowns.filter(Boolean);
-    if (!validBreakdowns.length) return null;
-    const sum = {
-      ODBM: { traineeAttendance: 0, traineeCommitment: 0, trainerCourses: 0 },
-      APBM: { project: 0, formative: 0, traineeCommitment: 0 },
-      TQBM: { trainingRegularity: 0, trainingPrograms: 0, trainer: 0, digitization: 0, quality: 0 },
-      Community: 0,
-      Institutional: 0
-    };
-    validBreakdowns.forEach(b => {
-      if (b.ODBM) {
-        sum.ODBM.traineeAttendance += b.ODBM.traineeAttendance || 0;
-        sum.ODBM.traineeCommitment += b.ODBM.traineeCommitment || 0;
-        sum.ODBM.trainerCourses += b.ODBM.trainerCourses || 0;
-      }
-      if (b.APBM) {
-        sum.APBM.project += b.APBM.project || 0;
-        sum.APBM.formative += b.APBM.formative || 0;
-        sum.APBM.traineeCommitment += b.APBM.traineeCommitment || 0;
-      }
-      if (b.TQBM) {
-        sum.TQBM.trainingRegularity += b.TQBM.trainingRegularity || 0;
-        sum.TQBM.trainingPrograms += b.TQBM.trainingPrograms || 0;
-        sum.TQBM.trainer += b.TQBM.trainer || 0;
-        sum.TQBM.digitization += b.TQBM.digitization || 0;
-        sum.TQBM.quality += b.TQBM.quality || 0;
-      }
-      if (b.COMMUNITY !== undefined) sum.Community += b.COMMUNITY || 0;
-      if (b.INSTITUTIONAL !== undefined) sum.Institutional += b.INSTITUTIONAL || 0;
-    });
-    const n = validBreakdowns.length;
-    return {
-      ODBM: {
-        traineeAttendance: sum.ODBM.traineeAttendance / n,
-        traineeCommitment: sum.ODBM.traineeCommitment / n,
-        trainerCourses: sum.ODBM.trainerCourses / n,
-      },
-      APBM: {
-        project: sum.APBM.project / n,
-        formative: sum.APBM.formative / n,
-        traineeCommitment: sum.APBM.traineeCommitment / n,
-      },
-      TQBM: {
-        trainingRegularity: sum.TQBM.trainingRegularity / n,
-        trainingPrograms: sum.TQBM.trainingPrograms / n,
-        trainer: sum.TQBM.trainer / n,
-        digitization: sum.TQBM.digitization / n,
-        quality: sum.TQBM.quality / n,
-      },
-      Community: sum.Community / n,
-      Institutional: sum.Institutional / n,
-    };
-  };
 
   // calculate overall data for each section
 
@@ -730,14 +546,6 @@ const WatomsDashboard = () => {
     setDetailedData(summedData); // ✅ This triggers the second useEffect
   }, [watomsData]);
 
-  const handleProjectUnitsRankingClick = async () => {
-    console.log('Project units ranking clicked');
-    console.log('Selected center:', selectedCenter);
-
-    setProjectUnitsRankingLoading(true);
-    setIsProjectUnitsModalOpen(true);
-  };
-
   // New function to handle center-specific ranking click
   const handleCenterRankingClick = async (center) => {
     setIsProjectUnitsModalOpen(true);
@@ -780,7 +588,7 @@ const WatomsDashboard = () => {
         <div className="flex items-center gap-6 my-2">
           <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
           <div className='border-l-2 border-black p-1 h-6' />
-          <img className="w-[100px] md:w-[140px] lg:w-[150px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+          <img className="w-[100px] md:w-[140px] lg:w-[150px] cursor-pointer" src={watomsLogo} alt="Watoms Logo" onClick={() => navigate('/watoms')} />
         </div>
         <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
           {/* Full Screen */}
@@ -828,7 +636,7 @@ const WatomsDashboard = () => {
         </div>
       </div>
       {/* Page Body: left - middle - right sections*/}
-      <div className="flex flex-row justify-between gap-4 relative w-[100vw] box-border" style={{
+      <div className="flex flex-row justify-between gap-4 relative w-full box-border" style={{
         maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
       }}>
         {/* يسار: الرسوم البيانية */}
@@ -1061,28 +869,38 @@ const WatomsDashboard = () => {
           justifyContent: 'center',
           position: 'relative',
         }}>
+          {/* Title */}
           <div className="text-2xl font-bold text-amber-400">المؤشرات الإجمالية {selectedOrg?.id === "All" ? selectedProject === "" ? "لمشروع" : `ل${selectedProject}` : selectedOrg?.name}</div>
           <div className="flex" style={{
             position: 'relative',
-            width: mapWidth,
+            width: "95%",
             height: 360,
-            maxWidth: mapWidth,
+            maxWidth: "95%",
             maxHeight: 400,
             minWidth: 260,
             minHeight: 260,
             margin: '0 auto',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'center'
           }}>
-            {/* <EgyptMap style={{ width: '80%', height: '80%', display: 'block', background: 'none', margin: 'auto' }} /> */}
+            {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute left-28">
+              <p className="flex gap-2"><p>(049)</p><p>معيار فرعي</p></p>
+              <p className="flex gap-2"><p>(143)</p><p>مؤشر اداء</p></p>
+              <p className="flex gap-2"><p>(233)</p><p>ممارسة و دليل</p></p>
+            </div>}
             <Egypt
-              width={600}
+              width={400}
               height={340}
               ids={selectedOrg?.id === "All" ? [4, 5, 7, 8, 9] : selectedOrg?.id || watomsData?.total?.id}
               markerSrc={require("../assets/marker.png")}  // or import pin from "..."; markerSrc={pin}
               markerSize={80}
               showLabels
             />
+            {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute right-28">
+              <p className="flex gap-2 justify-end"><p>مؤشرات مرجعية</p><p>(04)</p></p>
+              <p className="flex gap-2 justify-end"><p>مجال عام</p><p>(11)</p></p>
+              <p className="flex gap-2 justify-end"><p>اداة جمع بيانات</p><p>(45)</p></p>
+            </div>}
             {/* Selected center evaluation circle with arrow and info box */}
             {selectedCenter && (
               <>
@@ -1106,7 +924,7 @@ const WatomsDashboard = () => {
                 {/* Info box */}
                 {selectedOrg?.id !== "All" && <div style={{
                   position: 'absolute',
-                  left: `-60px`,
+                  left: `25px`,
                   bottom: `40px`,
                   background: '#c3c8d6',
                   color: '#222',
