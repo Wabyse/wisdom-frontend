@@ -371,7 +371,7 @@ export const ASSESSOR_TYPE = [
 export const getWatomsSystems = (language, userOrg) => [
     {
         id: 'pms',
-        title: 'PMS',
+        title: 'Performance.MS',
         subtitle: language ? 'Performance Management System' : 'نظام إدارة الأداء',
         description: language ? 'Performance management and human resources' : 'إدارة الأداء والموارد البشرية',
         icon: faChartLine,
