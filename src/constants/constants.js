@@ -479,7 +479,7 @@ export const getWabysSystems = (language, userOrg) => [
         redSubtitle: 'Auto Training Operations ',
         subtitle2: 'Management System',
         description: '',
-        icon: wabysWatomsLogo,
+        icon: wabysWisdomLogo,
         path: '/watoms',
         color: 'from-blue-500 to-blue-600',
         available: userOrg !== 1 && userOrg !== 2
@@ -491,7 +491,7 @@ export const getWabysSystems = (language, userOrg) => [
         redSubtitle: 'Dedactics and Operations',
         subtitle2: ' Management',
         description: '',
-        icon: wabysWisdomLogo,
+        icon: wabysWatomsLogo,
         path: '/wisdom',
         color: 'from-green-500 to-green-600',
         available: userOrg === 1 || userOrg === 2 || userOrg === 3 || userOrg === 6
