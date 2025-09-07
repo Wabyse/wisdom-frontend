@@ -790,7 +790,6 @@ const WatomsDashboard = () => {
                           e.currentTarget.style.transform = 'scale(1)';
                           e.currentTarget.style.opacity = '1';
                         }}
-                        onClick={() => handleCenterRankingClick(c)}
                       >
                         {/* Center name (on the left) */}
                         <div className="text-start" style={{
