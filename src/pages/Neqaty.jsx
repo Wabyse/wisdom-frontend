@@ -4,7 +4,7 @@ import NeqatyNavbar from "../components/NeqatyNavbar";
 const Neqaty = () => {
     return (
         <div className="min-h-screen flex flex-col">
-            <NeqatyNavbar />
+            <NeqatyNavbar homePage={true} />
             <NeqatyHome />
         </div>
     )

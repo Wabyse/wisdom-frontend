@@ -4,15 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Popup from '../components/Popup';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faUser, faInfoCircle, faSearch, faSun, faMoon, 
-  faSignOutAlt, faChartLine, faGraduationCap, 
-  faUserTie, faFolder, faExpand, faCompress, faStar, faFileAlt,
-  faDesktop, faMoneyBill, faChartBar
+import {
+    faUser, faInfoCircle, faSearch, faSun, faMoon,
+    faSignOutAlt, faChartLine, faGraduationCap,
+    faUserTie, faFolder, faExpand, faCompress, faStar, faFileAlt,
+    faDesktop, faMoneyBill, faChartBar
 } from "@fortawesome/free-solid-svg-icons";
 import { userFullName } from '../utils/userFullName';
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
+import SystemCard from '../components/SystemCard';
 
 const Wisdom = () => {
     const navigate = useNavigate();
@@ -197,20 +198,20 @@ const Wisdom = () => {
             {/* Modern Background with Abstract Shapes */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Animated Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/20 to-pink-100/30 animate-pulse" style={{animationDuration: '8s'}} />
-                
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/20 to-pink-100/30 animate-pulse" style={{ animationDuration: '8s' }} />
+
                 {/* Floating Geometric Shapes */}
-                <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-watomsBlue/10 to-wisdomOrange/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '6s', animationDelay: '0s'}} />
-                <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-wisdomOrange/10 to-watomsBlue/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '8s', animationDelay: '2s'}} />
-                <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '7s', animationDelay: '1s'}} />
-                <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '9s', animationDelay: '3s'}} />
-                
+                <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-watomsBlue/10 to-wisdomOrange/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '0s' }} />
+                <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-wisdomOrange/10 to-watomsBlue/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }} />
+                <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '7s', animationDelay: '1s' }} />
+                <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '9s', animationDelay: '3s' }} />
+
                 {/* Abstract Lines */}
                 <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-watomsBlue/20 to-transparent" />
                 <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-wisdomOrange/20 to-transparent" />
                 <div className="absolute top-1/2 left-0 w-px h-32 bg-gradient-to-b from-transparent via-purple-400/20 to-transparent" />
                 <div className="absolute top-1/2 right-0 w-px h-32 bg-gradient-to-b from-transparent via-blue-400/20 to-transparent" />
-                
+
                 {/* Grid Pattern */}
                 <div className="absolute inset-0 opacity-5">
                     <div className="w-full h-full" style={{
@@ -236,7 +237,7 @@ const Wisdom = () => {
                                 placeholder={language ? "Search..." : "ابحث..."}
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
-                                style={{fontFamily:'inherit'}}
+                                style={{ fontFamily: 'inherit' }}
                             />
                         </div>
                     </div>
@@ -245,14 +246,14 @@ const Wisdom = () => {
                             <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
                         </button>
                         {/* Full Screen Toggle Button */}
-                        <button 
-                            onClick={fullScreen} 
+                        <button
+                            onClick={fullScreen}
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                             title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
                         >
-                            <FontAwesomeIcon 
-                                icon={isFullScreen ? faCompress : faExpand} 
-                                className="text-xl text-watomsBlue" 
+                            <FontAwesomeIcon
+                                icon={isFullScreen ? faCompress : faExpand}
+                                className="text-xl text-watomsBlue"
                             />
                         </button>
                         {/* User Info */}
@@ -307,44 +308,18 @@ const Wisdom = () => {
                 </div>
 
                 {/* Wabys Systems Grid - Smaller Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto">
-                    {wabysSystems.map((system, idx) => (
-                        <div
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10 max-w-7xl mx-auto">
+                    {wabysSystems.map(system => (
+                        <SystemCard
                             key={system.id}
-                            onClick={() => handleSystemClick(system)}
-                            className={`group cursor-pointer transform transition-all duration-300 hover:scale-105 ${
-                                !system.available ? 'opacity-60' : ''
-                            }`}
-                        >
-                            <div className={`bg-gradient-to-br ${system.color} text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 relative overflow-hidden`}>
-                                {/* Coming Soon Badge */}
-                                {!system.available && (
-                                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
-                                        {language ? 'Coming Soon' : 'قريباً'}
-                                    </div>
-                                )}
-                                
-                                {/* Background Pattern */}
-                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                
-                                <div className="relative z-10">
-                                    <div className="text-2xl mb-3 text-center">
-                                        <FontAwesomeIcon icon={system.icon} />
-                                    </div>
-                                    <h3 className="text-lg font-bold mb-1 text-center">{system.title}</h3>
-                                    <p className="text-xs opacity-90 mb-2 text-center">{system.subtitle}</p>
-                                    <p className="text-xs opacity-75 leading-relaxed text-center">{system.description}</p>
-                                    
-                                    {/* Status Indicator */}
-                                    <div className="mt-3 flex items-center justify-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${system.available ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
-                                        <span className="text-xs opacity-75">
-                                            {system.available ? (language ? 'Available' : 'متاح') : (language ? 'Coming Soon' : 'قريباً')}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            handleClick={() => handleSystemClick(system)}
+                            available={system.available}
+                            color={system.color}
+                            iconType="awesome"
+                            icon={system.icon}
+                            title={system.title}
+                            subtitle={system.subtitle}
+                        />
                     ))}
                 </div>
 

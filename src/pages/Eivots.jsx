@@ -7,13 +7,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress
 } from "@fortawesome/free-solid-svg-icons";
-import watomsLogo from '../assets/watoms3.png'
+import watomsLogo from '../assets/watoms3.png';
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
 import { userFullName } from '../utils/userFullName';
 import { getWatomsSystems } from '../constants/constants';
 import { useSearchFilter } from '../hooks/useSearchFilter';
 import wabysLogo from '../assets/wabys.png';
+import SystemCard from '../components/SystemCard';
 
 const Eivots = () => {
     const navigate = useNavigate();
@@ -161,7 +162,7 @@ const Eivots = () => {
             </div>
 
             {/* Main Content */}
-            <div className="relative z-10 px-6 pb-10">
+            <div className="relative z-10 px-6 pb-5">
                 {/* Wabys Systems Sub Header */}
                 <div className="text-center mb-8">
                     <h2 className={`text-3xl font-bold mb-2 ${darkMode ? "text-white" : "text-watomsBlue dark:text-watomsLightBlue"}`}>
@@ -174,42 +175,17 @@ const Eivots = () => {
 
                 {/* Wabys Systems Grid - Smaller Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto">
-                    {filteredSystems.map((system, idx) => (
-                        <div
-                            key={system.id}
-                            onClick={() => handleSystemClick(system)}
-                            className={`group cursor-pointer transform transition-all duration-300 hover:scale-105 ${!system.available ? 'opacity-60' : ''
-                                }`}
-                        >
-                            <div className={`bg-gradient-to-br ${system.color} text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 relative overflow-hidden`}>
-                                {/* Coming Soon Badge */}
-                                {!system.available && (
-                                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
-                                        {language ? 'Coming Soon' : 'قريباً'}
-                                    </div>
-                                )}
-
-                                {/* Background Pattern */}
-                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                <div className="relative z-10">
-                                    <div className="text-2xl mb-3 text-center">
-                                        <FontAwesomeIcon icon={system.icon} />
-                                    </div>
-                                    <h3 className="text-lg font-bold mb-1 text-center">{system.title}</h3>
-                                    <p className="text-xs opacity-90 mb-2 text-center">{system.subtitle}</p>
-                                    <p className="text-xs opacity-75 leading-relaxed text-center">{system.description}</p>
-
-                                    {/* Status Indicator */}
-                                    <div className="mt-3 flex items-center justify-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${system.available ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
-                                        <span className="text-xs opacity-75">
-                                            {system.available ? (language ? 'Available' : 'متاح') : (language ? 'Coming Soon' : 'قريباً')}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    {filteredSystems.map(system => (
+                        <SystemCard
+                            key={system.id}  
+                            handleClick={() => handleSystemClick(system)}
+                            available={system.available}
+                            color={system.color}
+                            iconType="awesome"
+                            icon={system.icon}
+                            title={system.title}
+                            subtitle={system.subtitle}
+                        />
                     ))}
                 </div>
 
