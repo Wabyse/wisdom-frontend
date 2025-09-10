@@ -1162,7 +1162,7 @@ const TomsPms = () => {
                     </div>
                   </div>
                   <div
-                    key="اختبار تربوي"
+                    key="ملاحظة جلسة تدريبية"
                     className="group bg-white/80 backdrop-blur rounded-xl shadow-lg border border-white/40 px-4 py-4 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 animate-fadeInUp cursor-pointer hover:border-blue-400/60 flex flex-col"
                     style={{ animationDelay: `${1 * 80}ms` }}
                     onClick={handleTestClick}
@@ -1173,7 +1173,7 @@ const TomsPms = () => {
                         <FontAwesomeIcon icon={faPlus} className="text-white text-base" />
                       </div>
                       <h4 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                        اختبار تربوي
+                        ملاحظة جلسة تدريبية
                       </h4>
                     </div>
                     {/* Action Button */}

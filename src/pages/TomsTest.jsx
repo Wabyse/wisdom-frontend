@@ -125,7 +125,7 @@ function TomsTest() {
         ></img>
       </div>
       <div className="w-full">
-        <h1 className="text-2xl font-bold text-center">إختبار تربوي</h1>
+        <h1 className="text-2xl font-bold text-center">ملاحظة جلسة تدريبية</h1>
       </div>
       <div className="flex flex-col justify-center items-center w-[100%]">
         {userInfo.user_role === "Operations Excellence Lead" && <Selector2
