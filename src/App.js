@@ -60,6 +60,7 @@ import Wabys from "./pages/Wabys";
 import WatomsTraineesRegistration from "./pages/WatomsTraineesRegistration";
 import WatomsTmsMyTasks from "./pages/WatomsTmsMyTasks";
 import WatomsTmsDashboard from "./pages/WatomsTmsDashboard";
+import DemoDashboard from "./pages/DemoDashboard";
 
 function App() {
   return (
@@ -401,6 +402,7 @@ function App() {
             }
           />
           <Route path="/watoms/dashboard" element={<WatomsDashboard />} />
+          <Route path="/demo/dashboard" element={<DemoDashboard/>} />
           <Route
             path="/checkIns"
             element={

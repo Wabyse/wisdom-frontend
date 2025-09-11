@@ -42,11 +42,14 @@ import wabysWiscmcmLogo from '../assets/wabysWiscmcmLogo.png';
 import tech from '../assets/tech.jpg';
 import hemam from '../assets/hemam.jpg';
 import ismailiaManager from '../assets/ismailiaManager.jpg';
+import ismailiaImg from '../assets/ismailiaImg.jpg';
 import suezManager from '../assets/suezManager.jpg';
 import sharabyaManager from '../assets/sharabyaManager.jpg';
 import sharabyaImg from '../assets/sharabyaImg.jpg';
 import sharqiaManager from '../assets/sharqiaManager.jpg';
+import sharqiaImg from '../assets/sharqiaImg.jpg';
 import boulaqManager from '../assets/boulaqManager.jpg';
+import boulaqImg from '../assets/boulaqImg.jpg';
 
 export const IMPORTANCE_LEVELS = ["normal", "important", "urgent"];
 
@@ -332,7 +335,8 @@ export const INSTITUTION_CURRICULUM_RELATION = {
     5: [6, 8, 4, 30, 5, 7, 34, 32],
     7: [5, 20, 9, 34, 24, 4, 7, 30, 6, 8, 37],
     8: [12, 38, 39, 30, 4, 6, 8, 40, 24, 41, 31, 9, 42, 43, 36, 5, 7, 44, 45],
-    9: [6, 8, 4, 30, 35, 7, 31, 9, 36, 37]
+    9: [6, 8, 4, 30, 35, 7, 31, 9, 36, 37],
+    14: [36]
 }
 
 export const INSTITUTION_COURSE_RELATION = {
@@ -465,7 +469,7 @@ export const getWatomsSystems = (language, userOrg) => [
         subtitle: language ? 'Control Panels and Statistics' : 'لوحات التحكم والإحصائيات',
         description: language ? 'Interactive management dashboards' : 'لوحات تحكم تفاعلية للإدارة',
         icon: faChartBar,
-        path: '/watoms/dashboard',
+        path: userOrg === 14 || userOrg === 13 ? '/demo/dashboard' : '/watoms/dashboard',
         color: 'from-cyan-500 to-cyan-600',
         available: true
     }
@@ -792,7 +796,7 @@ export const ORG_MANAGER_IMG = [
     {
         id: 4,
         img: ismailiaManager,
-        org: ""
+        org: ismailiaImg
     },
     {
         id: 5,
@@ -807,12 +811,12 @@ export const ORG_MANAGER_IMG = [
     {
         id: 8,
         img: boulaqManager,
-        org: ""
+        org: boulaqImg
     },
     {
         id: 9,
         img: sharqiaManager,
-        org: ""
+        org: sharqiaImg
     },
 ]
 
@@ -822,4 +826,8 @@ export const INSTITUTION_NO_CURRICULUMS = {
     7: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     8: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
     9: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+}
+
+export const DEMO_NO_CURRICULUMS = {
+    14: [1]
 }

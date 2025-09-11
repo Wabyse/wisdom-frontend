@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchCenters, fetchWatomsDetailsData } from "../services/dashboard";
+import { fetchCenters, fetchDemoDetailsData, fetchWatomsDetailsData } from "../services/dashboard";
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
 import AnnualPerformanceChart from "../components/AnnualPerformanceChart";
@@ -14,7 +14,7 @@ import { userFullName } from "../utils/userFullName";
 import { useAuth } from "../context/AuthContext";
 // import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
-import { INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
+import { DEMO_NO_CURRICULUMS, INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
 import Egypt from "../components/Egypt";
 
@@ -85,7 +85,7 @@ function CircularProgressBar({ value, size = 64, stroke = 8, color = 'url(#circu
   );
 }
 
-const WatomsDashboard = () => {
+const DemoDashboard = () => {
   const navigate = useNavigate();
   const { userInfo } = useAuth();
   const { language } = useLanguage();
@@ -162,7 +162,7 @@ const WatomsDashboard = () => {
     const loadWatomsDetailedData = async () => {
       try {
         setLoading(true);
-        const response = await fetchWatomsDetailsData();
+        const response = await fetchDemoDetailsData();
         setWatomsData(response);
         // remove this later
         setDatasMonths(response.total.months);
@@ -445,7 +445,7 @@ const WatomsDashboard = () => {
   }, [selectedOrg])
 
   const changeOrg = (status) => {
-    if (status && (arrangedOrgIdx + 1) !== arrangedOrg.length) {
+    if (status && (arrangedOrgIdx + 1) !== arrangedOrg?.length) {
       setArrangedOrgIdx(prev => prev + 1);
       setSelectedOrg(arrangedOrg[arrangedOrgIdx + 1]);
       setSelectedOrgId(arrangedOrg[arrangedOrgIdx + 1].id);
@@ -453,7 +453,7 @@ const WatomsDashboard = () => {
       setArrangedOrgIdx(prev => prev - 1);
       setSelectedOrg(arrangedOrg[arrangedOrgIdx - 1])
       setSelectedOrgId(arrangedOrg[arrangedOrgIdx - 1].id);
-    } else if (status && (arrangedOrgIdx + 1) === arrangedOrg.length) {
+    } else if (status && (arrangedOrgIdx + 1) === arrangedOrg?.length) {
       setArrangedOrgIdx(0);
       setSelectedOrg(arrangedOrg[0])
       setSelectedOrgId(arrangedOrg[0].id);
@@ -1091,7 +1091,7 @@ const WatomsDashboard = () => {
             </div>
             <div className='border-l-2 border-white h-3/4' />
             <div className="flex justify-center items-center">
-              <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.totalCurriculums : INSTITUTION_NO_CURRICULUMS[selectedOrg?.id].length}</div>
+              <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.totalCurriculums : DEMO_NO_CURRICULUMS[selectedOrg?.id]?.length}</div>
               <div className="text-xs text-end w-1/2">البرامج التدريبية</div>
             </div>
             <div className='border-l-2 border-white h-3/4' />
@@ -1293,4 +1293,4 @@ const WatomsDashboard = () => {
   );
 };
 
-export default WatomsDashboard;
+export default DemoDashboard;

@@ -48,3 +48,13 @@ export const fetchWatomsDetailsData = async () => {
     throw error;
   }
 }; 
+
+export const fetchDemoDetailsData = async () => {
+  try {
+    const response = await api.get(`/api/v1/dashboard/demo/forms/score`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Watoms Detailed Data:', error);
+    throw error;
+  }
+}; 
