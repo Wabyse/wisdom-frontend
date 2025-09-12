@@ -14,7 +14,7 @@ import { userFullName } from "../utils/userFullName";
 import { useAuth } from "../context/AuthContext";
 // import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
-import { DEMO_NO_CURRICULUMS, INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
+import { DEMO_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
 import Egypt from "../components/Egypt";
 
@@ -340,7 +340,6 @@ const DemoDashboard = () => {
 
     const loadSubStandards = () => {
       if ((selectedMonthIdx || selectedMonthIdx === 0) && watomsData.length !== 0) {
-        console.log(selectedMonthIdx)
         setOrgSubStandards([
           {
             name: "جودة التدريب",
@@ -890,7 +889,7 @@ const DemoDashboard = () => {
             <Egypt
               width={400}
               height={340}
-              ids={selectedOrg?.id === "All" ? [4, 5, 7, 8, 9] : selectedOrg?.id || watomsData?.total?.id}
+              ids={[14]}
               markerSrc={require("../assets/marker.png")}  // or import pin from "..."; markerSrc={pin}
               markerSize={80}
               showLabels
@@ -1096,7 +1095,7 @@ const DemoDashboard = () => {
             </div>
             <div className='border-l-2 border-white h-3/4' />
             <div className="flex justify-center items-center">
-              <div className="text-3xl w-fit">78%</div>
+              <div className="text-3xl w-fit">0%</div>
               <div className="text-xs text-end w-fit">نسبة التشغيل للخريجين</div>
             </div>
           </div>
