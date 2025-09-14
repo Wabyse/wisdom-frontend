@@ -831,3 +831,63 @@ export const INSTITUTION_NO_CURRICULUMS = {
 export const DEMO_NO_CURRICULUMS = {
     14: [1]
 }
+
+export const WATOMS_SUB_SUB_DATA_COLOR = [
+    "#e85006",
+    "#3b82f6",
+    "#cc87f6",
+    "#1418a8",
+    "#ae1ff0",
+    "#dc3f06",
+]
+
+export const WATOMS_UNPREPARED_DATA = {
+    "All": {
+        workShops: 59,
+        labs: 6,
+        employees: 39,
+        trainers: 18,
+        supervisors: 10,
+        admins: 6,
+    },
+    4: {
+        workShops: 18,
+        labs: 2,
+        employees: 12,
+        trainers: 3,
+        supervisors: 7,
+        admins: 1,
+    },
+    5: {
+        workShops: 7,
+        labs: 1,
+        employees: 5,
+        trainers: 1,
+        supervisors: 2,
+        admins: 1,
+    },
+    7: {
+        workShops: 9,
+        labs: 1,
+        employees: 8,
+        trainers: 2,
+        supervisors: 1,
+        admins: 4,
+    },
+    8: {
+        workShops: 17,
+        labs: 1,
+        employees: 8,
+        trainers: 7,
+        supervisors: 0,
+        admins: 0,
+    },
+    9: {
+        workShops: 8,
+        labs: 1,
+        employees: 6,
+        trainers: 5,
+        supervisors: 0,
+        admins: 0,
+    },
+}
