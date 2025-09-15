@@ -839,6 +839,7 @@ export const WATOMS_SUB_SUB_DATA_COLOR = [
     "#1418a8",
     "#ae1ff0",
     "#dc3f06",
+    "#479124",
 ]
 
 export const WATOMS_UNPREPARED_DATA = {

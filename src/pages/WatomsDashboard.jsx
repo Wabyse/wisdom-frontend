@@ -199,86 +199,112 @@ const WatomsDashboard = () => {
         setOrgSubStandards([
           {
             name: "جودة التدريب",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
             subData: [
               {
                 name: "البرامج التدريبية",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.no_of_forms || 0,
                 color: "#3b82f6"
               },
               {
                 name: "بيئة التدريب",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.TE?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.no_of_forms || 0,
                 color: "#16a34a"
               },
               {
                 name: "اداء المدرب",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.T?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.no_of_forms || 0,
                 color: "#a855f7"
               }
             ],
           },
           {
             name: "مقياس الحوكمة",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.totalGOVBM) || 0,
             subData: [
               {
                 name: "الاداء المؤسسي",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.IP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.no_of_forms || 0,
                 color: "#2e6f00"
               },
               {
                 name: "الرقمنة",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.DD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.no_of_forms || 0,
                 color: "#e43002"
               },
               {
                 name: "التخطيط و التشغيل",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.PO?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.no_of_forms || 0,
                 color: "#88a064"
               },
               {
                 name: "الجودة و التطوير",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.QD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.no_of_forms || 0,
                 color: "#2e8d52"
               },
               {
                 name: "بيئة العمل",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.W?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.no_of_forms || 0,
                 color: "#00bdbb"
               }
             ],
           },
           {
             name: "المقياس الاكاديمي",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.totalACBM) || 0,
             subData: [
               {
                 name: "اداء المتدرب",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.TR?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.no_of_forms || 0,
                 color: "#aa4642"
               },
               {
                 name: "البرامج التدريبية",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.no_of_forms || 0,
                 color: "#925515"
               }
             ],
           },
           {
             name: "الكفاءة و الفاعلية",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.totalGEEBM) || 0,
             subData: [
               {
                 name: "المشاركة المجتمعية",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.CP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.no_of_forms || 0,
                 color: "#520a9c"
               },
               {
@@ -360,86 +386,112 @@ const WatomsDashboard = () => {
         setOrgSubStandards([
           {
             name: "جودة التدريب",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
             subData: [
               {
                 name: "البرامج التدريبية",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.no_of_forms || 0,
                 color: "#3b82f6"
               },
               {
                 name: "بيئة التدريب",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.no_of_forms || 0,
                 color: "#16a34a"
               },
               {
                 name: "اداء المدرب",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.no_of_forms || 0,
                 color: "#a855f7"
               }
             ],
           },
           {
             name: "مقياس الحوكمة",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.totalGOVBM) || 0,
             subData: [
               {
                 name: "الاداء المؤسسي",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.no_of_forms || 0,
                 color: "#2e6f00"
               },
               {
                 name: "الرقمنة",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.no_of_forms || 0,
                 color: "#e43002"
               },
               {
                 name: "التخطيط و التشغيل",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.no_of_forms || 0,
                 color: "#88a064"
               },
               {
                 name: "الجودة و التطوير",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.no_of_forms || 0,
                 color: "#2e8d52"
               },
               {
                 name: "بيئة العمل",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.no_of_forms || 0,
                 color: "#00bdbb"
               }
             ],
           },
           {
             name: "المقياس الاكاديمي",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.totalACBM) || 0,
             subData: [
               {
                 name: "اداء المتدرب",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.no_of_forms || 0,
                 color: "#aa4642"
               },
               {
                 name: "البرامج التدريبية",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.no_of_forms || 0,
                 color: "#925515"
               }
             ],
           },
           {
             name: "الكفاءة و الفاعلية",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.totalGEEBM) || 0,
             subData: [
               {
                 name: "المشاركة المجتمعية",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.codeScores || [],
+                scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.scores || [],
+                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.no_of_forms || 0,
                 color: "#520a9c"
               },
               {
@@ -1214,7 +1266,7 @@ const WatomsDashboard = () => {
               </h3>
               <div className="flex items-center justify-between gap-2">
                 {/* Overall Score Circle */}
-                <div className="flex flex-col items-center justify-center p-2 cursor-pointer">
+                <div className="flex flex-col items-center justify-center p-2 cursor-pointer" onClick={() => selectedOrg?.id !== "All" ? setSubDataDetails("الكفاءة و الفاعلية") : null}>
                   <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                   <span className='text-white mt-2'>الكفاءة و الفاعلية</span>
                 </div>
@@ -1237,6 +1289,7 @@ const WatomsDashboard = () => {
                             overflow: 'hidden',
                             transition: 'box-shadow 0.2s ease',
                           }}
+                          onClick={() => selectedOrg?.id !== "All" ? setSubDataDetails(s.name) : null}
                         >
                           {/* Bar fill */}
                           <div
@@ -1338,6 +1391,7 @@ const WatomsDashboard = () => {
         arrangedOrgIdx={arrangedOrgIdx}
         orgStandards={orgStandards}
         orgSubStandards={orgSubStandards.find(sub => sub.name === subDataDetails)}
+        selectedOrg={selectedOrg}
       />
     </div>
   );
