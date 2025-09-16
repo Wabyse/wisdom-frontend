@@ -134,9 +134,11 @@ const TomsDms = () => {
     scrollDown(targetDivRef);
   };
 
-  const openPDF = (fileName) => {
-      const pdfUrl = `${BASE_URL}/api/v1/files/open/${fileName.filteredPath}`;
-      window.open(pdfUrl, "_blank"); // Opens PDF in new tab
+  const openPDF = (path) => {
+    const safePath = path.filteredPath.replace(/\\/g, "/");
+    const fileName = safePath.split("/").pop();
+    const pdfUrl = `${BASE_URL}/api/v1/files/open/${encodeURIComponent(fileName)}`;
+    window.open(pdfUrl, "_blank");
   };
 
   const handleSchoolChange = (e) => {

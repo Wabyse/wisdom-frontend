@@ -170,7 +170,6 @@ const DemoDashboard = () => {
         const arrangingOrg = Object.values(response?.organizations || {}).sort((a, b) => b.overall - a.overall);
         const watomsDataArray = [response.total, ...arrangingOrg];
         setArrangedOrg(watomsDataArray);
-        console.log(watomsDataArray)
         setSelectedOrg(watomsDataArray[0]);
         setArrangedOrgIdx(0);
         setOrgStandards([
