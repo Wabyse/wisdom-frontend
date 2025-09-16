@@ -8,14 +8,15 @@ import useFullScreen from "../hooks/useFullScreen";
 import { userFullName } from "../utils/userFullName";
 import fullScreen from "../utils/fullScreen";
 import wabysLogo from '../assets/wabys.png';
-import watomsLogo from '../assets/watoms3.png';
+import ebdaeduLogo from '../assets/ebad-edu.png';
+import molLogo from "../assets/Gov.png";
 import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 
 const NewNavbar = () => {
     const navigate = useNavigate();
     const { userInfo } = useAuth();
-    const { language, setLanguage } = useLanguage();
+    const { language } = useLanguage();
     const isFullScreen = useFullScreen();
     const [darkMode, setDarkMode] = useState(false);
     const systems = useMemo(
@@ -26,12 +27,14 @@ const NewNavbar = () => {
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
     return (
         <div className="relative z-10">
-            <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 py-8 gap-8">
+            <div className="flex flex-col md:flex-row items-center justify-between w-full px-6 h-[12vh] gap-8">
                 {/* Logos */}
-                <div className="flex items-center gap-6">
-                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
-                    <div className='border-l-2 border-black p-1 h-12' />
-                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+                <div className="flex items-center gap-6 my-2">
+                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
+                    <div className='border-l-2 border-black p-1 h-6' />
+                    <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={ebdaeduLogo} alt="ebda edu Logo" />
+                    <div className='border-l-2 border-black p-1 h-6' />
+                    <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={molLogo} alt="mol Logo" />
                 </div>
                 <div className="flex-1 flex justify-center">
                     {/* Search */}

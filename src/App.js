@@ -61,6 +61,7 @@ import WatomsTraineesRegistration from "./pages/WatomsTraineesRegistration";
 import WatomsTmsMyTasks from "./pages/WatomsTmsMyTasks";
 import WatomsTmsDashboard from "./pages/WatomsTmsDashboard";
 import DemoDashboard from "./pages/DemoDashboard";
+import WatomsNews from "./pages/WatomsNews";
 
 function App() {
   return (
@@ -402,7 +403,15 @@ function App() {
             }
           />
           <Route path="/watoms/dashboard" element={<WatomsDashboard />} />
-          <Route path="/demo/dashboard" element={<DemoDashboard/>} />
+          <Route
+            path="/watoms/news"
+            element={
+              <ProtectedRoute>
+                <WatomsNews />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/demo/dashboard" element={<DemoDashboard />} />
           <Route
             path="/checkIns"
             element={

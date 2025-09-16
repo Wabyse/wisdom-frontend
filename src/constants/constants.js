@@ -892,3 +892,10 @@ export const WATOMS_UNPREPARED_DATA = {
         admins: 0,
     },
 }
+
+export const WATOMS_MODERN_COLORS = [
+    'linear-gradient(90deg, #3fd8ff 0%, #0072ff 100%)',
+    'linear-gradient(90deg, #ffb6ec 0%, #ff3c8e 100%)',
+    'linear-gradient(90deg, #ffb347 0%, #ff7c00 100%)',
+    'linear-gradient(90deg, #bdbdbd 0%, #757575 100%)',
+];
