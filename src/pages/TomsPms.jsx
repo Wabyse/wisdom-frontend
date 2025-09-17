@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup, faUserGraduate, faUserGear, faDatabase, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import watomsLogo from '../assets/watoms3.png'
 import wabysLogo from '../assets/wabys.png';
+import DenyAccessPage from "../components/DenyAccessPage";
 
 // Move modal outside component to prevent recreation
 const SimpleCategoriesModal = ({ data, onClose, language, getCategoryIcon, getCategoryGradient, setFocusedCardId }) => (
@@ -755,6 +756,7 @@ const TomsPms = () => {
   if (loading) return <LoadingScreen />;
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>

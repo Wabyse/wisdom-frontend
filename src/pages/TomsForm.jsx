@@ -455,6 +455,7 @@ function TomsForm() {
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (!loading && (!form || form.length === 0)) return <LoadingScreen />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#f7f8fa] to-[#e9eaf3] flex flex-col items-center justify-start">

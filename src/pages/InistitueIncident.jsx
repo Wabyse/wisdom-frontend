@@ -118,11 +118,12 @@ const InistituteIncident = () => {
   if (error?.status === 403) return <Navigate to="/login" state={{ from: urlLocation }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role !== "Operations Excellence Lead" && userInfo.user_role !== "Supervisor") return <DenyAccessPage homePage='/watoms/pms' />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className="bg-gray-500 h-[115vh]">
       <Toaster />
-      <Navbar showNavigate={false} upload={true}/>
+      <Navbar showNavigate={false} upload={true} />
       <form onSubmit={upload} className="assignForm form2 bg-slate-600">
         <h1 className="text-2xl font-bold text-white">وقائع المركز</h1>
         {userInfo.user_role === "Operations Excellence Lead" && <Selector2

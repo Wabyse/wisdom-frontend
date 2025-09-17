@@ -387,6 +387,7 @@ function Form() {
   if (((reviewee && reviewee !== userInfo.user_role)
     || (userInfo.user_role === "Head of Department (HOD)" && reviewee === "Teacher"))
     && userInfo.user_role !== "Operations Excellence Lead" && (reviewee !== "Employee" && userInfo.user_role === "Student")) return <DenyAccessPage homePage='/pms' />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#f7f8fa] to-[#e9eaf3] flex flex-col items-center justify-start">

@@ -1,6 +1,10 @@
+import DenyAccessPage from "../components/DenyAccessPage";
 import NewNavbar from "../components/NewNavbar";
+import { useAuth } from "../context/AuthContext";
 
 const WatomsTmsDashboard = () => {
+    const { userInfo } = useAuth();
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
     return (
         <>
             <NewNavbar />

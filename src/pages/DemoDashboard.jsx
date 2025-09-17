@@ -17,6 +17,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { DEMO_NO_CURRICULUMS, ORG_MANAGER_IMG } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
 import Egypt from "../components/Egypt";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const HEADER_HEIGHT = 60;
 
@@ -556,6 +557,7 @@ const DemoDashboard = () => {
   // const fallbackAnnualData = generateAnnualPerformanceData();
 
   if (loading) return <LoadingScreen />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div style={{

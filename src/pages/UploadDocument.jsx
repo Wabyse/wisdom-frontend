@@ -109,6 +109,7 @@ const UploadDocument = () => {
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className="bg-gray-500 h-[100vh]">
@@ -118,33 +119,33 @@ const UploadDocument = () => {
         <h1 className="text-2xl font-bold text-white">{language ? "Upload Document" : "رفع الملف"}</h1>
         <div className="select-group">
           {userInfo.user_role === "Operations Excellence Lead" ?
-          <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
-            <label className=" text-white">{language ? "Organization:" : ":الجهة"}</label>
-            <select onChange={(e) => setOrganizationId(e.target.value)}>
-              <option value="" disabled selected className={language ? "text-start" : "text-end"}>
-                {language ? "Please Select an organization" : "الرجاء اختيار جهة"}
-              </option>
-              {schools.map((school) => (
-                <option key={school.id} value={school.id}>
-                  {school.name}
+            <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
+              <label className=" text-white">{language ? "Organization:" : ":الجهة"}</label>
+              <select onChange={(e) => setOrganizationId(e.target.value)}>
+                <option value="" disabled selected className={language ? "text-start" : "text-end"}>
+                  {language ? "Please Select an organization" : "الرجاء اختيار جهة"}
                 </option>
-              ))}
-            </select>
-          </div> : null}
+                {schools.map((school) => (
+                  <option key={school.id} value={school.id}>
+                    {school.name}
+                  </option>
+                ))}
+              </select>
+            </div> : null}
           {userInfo.user_role === "Operations Excellence Lead" || userInfo.user_role === "Academic Principle" || userInfo.user_role === "Executive Manager" ?
-          <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
-            <label className=" text-white">{language ? "Department:" : ":القسم"}</label>
-            <select onChange={(e) => setDepartmentId(e.target.value)}>
-              <option value="" disabled selected className={language ? "text-start" : "text-end"}>
-                {language ? "Please Select a Department" : "الرجاء اختيار القسم"}
-              </option>
-              {departments.map((department) => (
-                <option key={department.id} value={department.id}>
-                  {department.Name}
+            <div className={`flex flex-col justify-center ${language ? "items-start" : "items-end"}`}>
+              <label className=" text-white">{language ? "Department:" : ":القسم"}</label>
+              <select onChange={(e) => setDepartmentId(e.target.value)}>
+                <option value="" disabled selected className={language ? "text-start" : "text-end"}>
+                  {language ? "Please Select a Department" : "الرجاء اختيار القسم"}
                 </option>
-              ))}
-            </select>
-          </div> : null}
+                {departments.map((department) => (
+                  <option key={department.id} value={department.id}>
+                    {department.Name}
+                  </option>
+                ))}
+              </select>
+            </div> : null}
         </div>
         <label className={`w-full flex flex-col  text-white justify-center ${language ? "items-start" : "items-end"}`}>{language ? "Attach File:" : ":رفع ملف"}</label>
         <input type="file" name="file" className="bg-white" onChange={handleFileChange} />

@@ -8,6 +8,7 @@ import {
     faCalendarAlt, faMapMarkerAlt, faEdit, faSave, faTimes,
     faCamera, faShieldAlt, faKey, faBell, faCog, faSignOutAlt, faHome
 } from "@fortawesome/free-solid-svg-icons";
+import DenyAccessPage from '../components/DenyAccessPage';
 
 const WisdomUserProfile = () => {
     const navigate = useNavigate();
@@ -66,6 +67,8 @@ const WisdomUserProfile = () => {
         logout();
         navigate('/login');
     };
+
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 dark:bg-darkBg font-[Cairo,sans-serif]">

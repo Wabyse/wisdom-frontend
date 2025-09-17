@@ -380,10 +380,10 @@ const Tms = () => {
       label: language ? "Advanced Filters" : "فلاتر متقدمة",
       color: "from-wisdomOrange to-watomsBlue",
       onClick: () => {
-        setModalData({ 
-          type: 'filters', 
-          data: { 
-            categories, 
+        setModalData({
+          type: 'filters',
+          data: {
+            categories,
             subCategories,
             filteredAssignedUsers,
             filteredAssigneeUsers,
@@ -397,7 +397,7 @@ const Tms = () => {
             dateTo,
             deadlineFrom,
             deadlineTo
-          } 
+          }
         });
         setActiveModal('filters');
       },
@@ -648,26 +648,27 @@ const Tms = () => {
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>
       {/* Modern Background with Abstract Shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/20 to-pink-100/30 animate-pulse" style={{animationDuration: '8s'}} />
-        
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/20 to-pink-100/30 animate-pulse" style={{ animationDuration: '8s' }} />
+
         {/* Floating Geometric Shapes */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-watomsBlue/10 to-wisdomOrange/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '6s', animationDelay: '0s'}} />
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-wisdomOrange/10 to-watomsBlue/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '8s', animationDelay: '2s'}} />
-        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '7s', animationDelay: '1s'}} />
-        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{animationDuration: '9s', animationDelay: '3s'}} />
-        
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-watomsBlue/10 to-wisdomOrange/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '0s' }} />
+        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-wisdomOrange/10 to-watomsBlue/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }} />
+        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '7s', animationDelay: '1s' }} />
+        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '9s', animationDelay: '3s' }} />
+
         {/* Abstract Lines */}
         <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-watomsBlue/20 to-transparent" />
         <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-wisdomOrange/20 to-transparent" />
         <div className="absolute top-1/2 left-0 w-px h-32 bg-gradient-to-b from-transparent via-purple-400/20 to-transparent" />
         <div className="absolute top-1/2 right-0 w-px h-32 bg-gradient-to-b from-transparent via-blue-400/20 to-transparent" />
-        
+
         {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="w-full h-full" style={{
@@ -676,7 +677,7 @@ const Tms = () => {
           }} />
         </div>
       </div>
-      
+
       {/* Modern App Menu (No Navbar) */}
       <div className="flex flex-col items-center justify-center min-h-[80vh] w-full relative z-10">
         {/* Logo and Search */}
@@ -693,7 +694,7 @@ const Tms = () => {
                 placeholder={language ? "Search tasks..." : "ابحث في المهام..."}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                style={{fontFamily:'inherit'}}
+                style={{ fontFamily: 'inherit' }}
               />
             </div>
           </div>
@@ -702,14 +703,14 @@ const Tms = () => {
               <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
             </button>
             {/* Full Screen Toggle Button */}
-            <button 
-              onClick={toggleFullScreen} 
+            <button
+              onClick={toggleFullScreen}
               className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
               title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
             >
-              <FontAwesomeIcon 
-                icon={isFullScreen ? faCompress : faExpand} 
-                className="text-xl text-watomsBlue" 
+              <FontAwesomeIcon
+                icon={isFullScreen ? faCompress : faExpand}
+                className="text-xl text-watomsBlue"
               />
             </button>
             {/* User Info: Show Username only */}
@@ -776,7 +777,7 @@ const Tms = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Render Modals */}
       {activeModal === 'tasks' && <TasksModal data={modalData?.data} onClose={closeModal} />}
       {activeModal === 'filters' && <FiltersModal data={modalData?.data} onClose={closeModal} />}

@@ -1,17 +1,63 @@
 import NewNavbar from "../components/NewNavbar";
-import backgroundImg from "../assets/newsBackGround.jpeg";
-import watomsLogo from "../assets/watoms3.png";
-import molLogo from "../assets/Gov.png";
-import AnnualPerformanceChart from "../components/AnnualPerformanceChart";
 import { roundNumber } from "../utils/roundNumber";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { WATOMS_MODERN_COLORS } from "../constants/constants";
+import { fetchWatomsDetailsData } from "../services/dashboard";
+import LoadingScreen from "../components/LoadingScreen";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+
 
 const WatomsNews = () => {
     const [selectedOrg, setSelectedOrg] = useState(null);
     const [watomsData, setWatomsData] = useState([]);
     const [selectedMonthIdx, setSelectedMonthIdx] = useState({});
     const [loading, setLoading] = useState(true);
+
+    // fetching watoms' dashboard data
+    useEffect(() => {
+        const loadWatomsDetailedData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetchWatomsDetailsData();
+                setWatomsData(response);
+                setSelectedMonthIdx(response.total.months.length - 1);
+                setSelectedOrg(response.total);
+            } catch (error) {
+                console.error('❌ Error fetching Watoms Data:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadWatomsDetailedData();
+    }, []);
+
+    const CustomTooltip = ({ active, payload, label }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div style={{
+                    background: 'rgba(32, 42, 58, 0.95)',
+                    border: '1px solid #444',
+                    borderRadius: 8,
+                    padding: '12px 16px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    color: '#fff',
+                    fontSize: 14,
+                    backdropFilter: 'blur(10px)',
+                }}>
+                    <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#facc15' }}>
+                        {label}
+                    </p>
+                    <p style={{ margin: 0, color: payload[0].payload.color }}>
+                        الأداء: {payload[0].value}%
+                    </p>
+                </div>
+            );
+        }
+        return null;
+    };
+
+    if (loading) return <LoadingScreen />;
 
     return (
         <>
@@ -59,11 +105,62 @@ const WatomsNews = () => {
                             </div>
                             {/* Monthly Chart */}
                             <div className="w-full">
-                                <AnnualPerformanceChart
-                                    data={selectedOrg ? selectedOrg.months : watomsData?.total?.months}
-                                    title={`تحليل معدل تغيير الاداء ${selectedOrg?.id === "All" ? "للمشروع" : selectedOrg?.name}`}
-                                    loading={loading}
-                                />
+                                <div style={{ fontWeight: 700, fontSize: 16, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
+                                    {`تحليل معدل تغيير الاداء ${selectedOrg?.id === "All" ? "للمشروع" : selectedOrg?.name}`}
+                                </div>
+                                <ResponsiveContainer width="90%" height={100}>
+                                    <LineChart data={selectedOrg ? selectedOrg.months : watomsData?.total?.months}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.3} />
+                                        <XAxis
+                                            dataKey="month"
+                                            stroke="#888"
+                                            fontSize={10}
+                                            tick={{ fill: '#fff' }}
+                                        />
+                                        <YAxis
+                                            stroke="#888"
+                                            fontSize={12}
+                                            tick={{ fill: '#fff' }}
+                                            domain={[0, 100]}
+                                            ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+                                        />
+                                        <Tooltip content={<CustomTooltip />} />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="performance"
+                                            stroke="#facc15"
+                                            strokeWidth={3}
+                                            dot={(props) => (
+                                                <circle
+                                                    cx={props.cx}
+                                                    cy={props.cy}
+                                                    r={6}
+                                                    fill={props.payload.color}
+                                                    stroke="#fff"
+                                                    strokeWidth={2}
+                                                    style={{ transition: 'all 0.3s ease' }}
+                                                />
+                                            )}
+                                            activeDot={{
+                                                r: 8,
+                                                fill: '#facc15',
+                                                stroke: '#fff',
+                                                strokeWidth: 2,
+                                                style: { transition: 'all 0.3s ease' }
+                                            }}
+                                        >
+                                            <LabelList
+                                                dataKey="performance"
+                                                position="top"
+                                                offset={15}
+                                                fill="#facc15"
+                                                fontSize={11}
+                                                fontWeight="bold"
+                                                formatter={(value) => `${value}%`}
+                                            />
+                                        </Line>
+                                    </LineChart>
+                                </ResponsiveContainer>
                             </div>
                             {/* General Ranking Chart */}
                             <div

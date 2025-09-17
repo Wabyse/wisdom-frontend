@@ -2,10 +2,13 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { downloadTaskFile, fetchTasks } from "../services/tms";
+import DenyAccessPage from "../components/DenyAccessPage";
+import { useAuth } from "../context/AuthContext";
 
 const TomsViewTask = () => {
   const { id } = useParams();
   const [task, setTask] = useState(null);
+  const { userInfo } = useAuth();
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -49,6 +52,7 @@ const TomsViewTask = () => {
     };
     loadingTasks();
   }, [id]);
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
   return (
     <div className="bg-gray-500 h-screen">
       <Navbar showNavigate={false} upload={true}></Navbar>
@@ -92,11 +96,10 @@ const TomsViewTask = () => {
               onClick={
                 task?.file_path ? () => downloadFile(task?.file_path) : null
               }
-            >{`${
-              task?.file_path
+            >{`${task?.file_path
                 ? task?.file_path.split("\\").pop().replace(/^\d+-/, "")
                 : "No File"
-            }`}</h1>
+              }`}</h1>
           </div>
           <div className="border-2 border-black m-0.5 flex-1 p-2.5 rounded text-center bg-slate-400">
             <label className="text-slate-600 text-[13px] font-bold block mb-[3px]">:تاريخ انشاء المهمة</label>

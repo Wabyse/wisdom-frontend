@@ -15,6 +15,7 @@ import { getWatomsSystems } from '../constants/constants';
 import { useSearchFilter } from '../hooks/useSearchFilter';
 import wabysLogo from '../assets/wabys.png';
 import SystemCard from '../components/SystemCard';
+import DenyAccessPage from '../components/DenyAccessPage';
 
 const Eivots = () => {
     const navigate = useNavigate();
@@ -56,6 +57,8 @@ const Eivots = () => {
             togglePopup(true);
         }
     };
+
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
     return (
         <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>
@@ -177,7 +180,7 @@ const Eivots = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto">
                     {filteredSystems.map(system => (
                         <SystemCard
-                            key={system.id}  
+                            key={system.id}
                             handleClick={() => handleSystemClick(system)}
                             available={system.available}
                             color={system.color}

@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/auth";
 import wabysLogo from "../assets/wabys.png";
@@ -18,6 +18,19 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState(true);
   const [language, setLanguage] = useState(false);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault(); // prevent form submits or default Enter behavior
+        buttonRef.current?.click(); // simulate a click on the button
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const submitLogin = async (e) => {
     e.preventDefault();
@@ -48,7 +61,8 @@ const Login = () => {
       language ? toast.success("Login Successful!") :
         toast.success("تم تسجيل الدخول بنجاح!");
       setUserInfo(data);
-      navigate(from, { replace: true });
+      console.log(data)
+      if (data.code === 1452) { navigate("/watoms/dashboard") } else { navigate(from, { replace: true }) }
     } catch (err) {
       console.error("Error submitting data:", err);
       language ? toast.error("username or password are incorrect, please try again!") :
@@ -141,6 +155,7 @@ const Login = () => {
             <button
               className="w-full py-2 rounded-lg bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold shadow-md hover:scale-[1.03] transition-transform border-none"
               type="submit"
+              ref={buttonRef}
             >
               {language ? "Login" : "دخول"}
             </button>

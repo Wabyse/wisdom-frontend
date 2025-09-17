@@ -2,7 +2,7 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import DotPatternBackground from './DotPatternBackground';
 
-const AnnualPerformanceChart = ({ data, title = "تقييم الاداء السنوي", loading = false }) => {
+const AnnualPerformanceChart = ({ data, title = "تقييم الاداء السنوي", loading = false, width="90%", height="150", containerWidth="[450px]" }) => {
   if (loading) {
     return (
       <div className="flex-1 rounded-2xl flex flex-col p-5" style={{
@@ -83,12 +83,12 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(32,42,58,0.15)', zIndex: 1, pointerEvents: 'none' }} />
 
       {/* Content above pattern/overlay */}
-      <div className="relative z-20 self-center w-[450px] flex flex-col">
+      <div className={`relative z-20 self-center flex flex-col w-${containerWidth}`}>
         <div style={{ fontWeight: 700, fontSize: 16, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
           {title}
         </div>
 
-        <ResponsiveContainer width="90%" height={150}>
+        <ResponsiveContainer width={width} height={Number(height)}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.3} />
             <XAxis

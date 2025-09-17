@@ -115,8 +115,6 @@ const StudentBehavior = () => {
       behavior_date: new Date(date).toISOString(), // ensure ISO format
     };
 
-    console.log(payload)
-
     try {
       await submitBehavior(payload);
       toast.success(language ? "Case has been submitted successfully" : "تم تسجيل البيانات بنجاح");
@@ -198,6 +196,7 @@ const StudentBehavior = () => {
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role !== "Operations Excellence Lead" && userInfo.user_role !== "Supervisor") return <DenyAccessPage homePage='/pms' />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className="bg-gray-500 h-[100vh]">

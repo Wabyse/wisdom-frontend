@@ -6,6 +6,8 @@ import ReactModal from 'react-modal';
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
 import { ORGANIZATION_OTHER_LANGUAGE } from "../constants/constants";
+import DenyAccessPage from "../components/DenyAccessPage";
+import { useAuth } from "../context/AuthContext";
 
 const egyptCenter = [26.8206, 30.8025]; // Egypt center
 
@@ -287,6 +289,7 @@ function CircularProgressBar({ value, size = 64, stroke = 8, color = 'url(#circu
 
 const WisdomDashboard = () => {
     const navigate = useNavigate();
+    const { userInfo } = useAuth();
     const [centers, setCenters] = useState([]);
     const [selectedCenter, setSelectedCenter] = useState(null);
     const [evaluation, setEvaluation] = useState(null);
@@ -456,6 +459,8 @@ const WisdomDashboard = () => {
             ) * 100) || 0
         }
     ] : [];
+
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
     return (
         <div style={{

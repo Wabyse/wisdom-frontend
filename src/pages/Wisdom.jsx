@@ -14,6 +14,7 @@ import { userFullName } from '../utils/userFullName';
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
 import SystemCard from '../components/SystemCard';
+import DenyAccessPage from '../components/DenyAccessPage';
 
 const Wisdom = () => {
     const navigate = useNavigate();
@@ -192,6 +193,8 @@ const Wisdom = () => {
             openPopup();
         }
     };
+
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
     return (
         <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>

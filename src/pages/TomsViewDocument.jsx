@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { fetchingFiles } from "../services/dms";
 import { useAuth } from "../context/AuthContext";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const TomsViewDocument = () => {
   const { id } = useParams();
@@ -42,6 +43,7 @@ const TomsViewDocument = () => {
     };
     loadingFiles();
   }, [id, userInfo]);
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
   return (
     <div className="bg-gray-500 h-screen">
       <Navbar showNavigate={false} upload={true}></Navbar>

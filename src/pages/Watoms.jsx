@@ -14,6 +14,7 @@ import { userFullName } from '../utils/userFullName';
 import { getWatomsSystems, WATOMS_PROJECTS } from '../constants/constants';
 import { useSearchFilter } from '../hooks/useSearchFilter';
 import wabysLogo from '../assets/wabys.png';
+import DenyAccessPage from '../components/DenyAccessPage';
 
 const Watoms = () => {
     const navigate = useNavigate();
@@ -95,6 +96,8 @@ const Watoms = () => {
             togglePopup(true);
         }
     };
+
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
     return (
         <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>

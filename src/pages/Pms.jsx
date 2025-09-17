@@ -10,6 +10,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { WISDOM_PMS_AR_LIST, PMS_DISCREPTION, WISDOM_PMS_EN_LIST, WISDOM_PMS_FORMS_LOGOS, WISDOM_PMS_HERO_INFO, WISDOM_PMS_ROLE_PERMISSION, WSIDOM_PMS_FORMS_ORDER } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 // Move modal outside component to prevent recreation
 const SimpleCategoriesModal = ({ data, onClose, language, getCategoryIcon, getCategoryGradient, setFocusedCardId }) => (
@@ -782,6 +783,7 @@ const Pms = () => {
   if (!Array.isArray(WISDOM_PMS_HERO_INFO) || WISDOM_PMS_HERO_INFO.length === 0) {
     return <LoadingScreen />;
   }
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>

@@ -107,11 +107,12 @@ const MyTasks = () => {
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role === "Trainee" || userInfo.user_role === "Student") return <DenyAccessPage homePage='/pms' />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <>
       <Toaster />
-      <Navbar upload={true}/>
+      <Navbar upload={true} />
       <h1 className="ml-[3%] text-2xl font-bold">My Tasks:</h1>
       <div className="files">
         <div className="flex text-center m-2.5 p-1.5 justify-between items-center shadow-[3px_3px_5px_gray]">

@@ -66,6 +66,7 @@ const ViewCheckInOut = () => {
     if (loading) return <LoadingScreen />;
     if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
     if (error) return <p>Error: {error.message}</p>;
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
     return (
         <>
             <div className="flex flex-col">

@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faInfoCircle, faServer, faDatabase, faShieldAlt, faClock, 
-  faUsers, faChartLine, faCog, faQuestionCircle, faBook, 
-  faHeadset, faDownload, faExternalLinkAlt, faCheckCircle,
-  faExclamationTriangle, faArrowLeft, faPhone
+import {
+    faInfoCircle, faServer, faDatabase, faShieldAlt, faClock,
+    faUsers, faChartLine, faCog, faQuestionCircle, faBook,
+    faHeadset, faDownload, faExternalLinkAlt, faCheckCircle,
+    faExclamationTriangle, faArrowLeft, faPhone
 } from "@fortawesome/free-solid-svg-icons";
+import DenyAccessPage from '../components/DenyAccessPage';
 
 const WatomsSystemInfo = () => {
     const navigate = useNavigate();
@@ -154,6 +155,8 @@ const WatomsSystemInfo = () => {
         }
     };
 
+    if (userCode === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 dark:bg-darkBg font-[Cairo,sans-serif]">
             {/* Header */}
@@ -262,11 +265,10 @@ const WatomsSystemInfo = () => {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                                        activeTab === tab.id
+                                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
                                             ? 'border-watomsBlue text-watomsBlue'
                                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    }`}
+                                        }`}
                                 >
                                     {tab.label}
                                 </button>
@@ -362,11 +364,11 @@ const WatomsSystemInfo = () => {
                                             </div>
                                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(module.status)}`}>
                                                 <FontAwesomeIcon icon={getStatusIcon(module.status)} className="mr-1" />
-                                                {language ? 
-                                                    (module.status === 'active' ? 'Active' : 
-                                                     module.status === 'development' ? 'Development' : module.status) :
-                                                    (module.status === 'active' ? 'نشط' : 
-                                                     module.status === 'development' ? 'قيد التطوير' : module.status)
+                                                {language ?
+                                                    (module.status === 'active' ? 'Active' :
+                                                        module.status === 'development' ? 'Development' : module.status) :
+                                                    (module.status === 'active' ? 'نشط' :
+                                                        module.status === 'development' ? 'قيد التطوير' : module.status)
                                                 }
                                             </span>
                                         </div>

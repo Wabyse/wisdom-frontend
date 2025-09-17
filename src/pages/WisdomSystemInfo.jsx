@@ -9,6 +9,7 @@ import {
   faHeadset, faDownload, faExternalLinkAlt, faCheckCircle,
   faExclamationTriangle, faArrowLeft, faPhone
 } from "@fortawesome/free-solid-svg-icons";
+import DenyAccessPage from '../components/DenyAccessPage';
 
 const WisdomSystemInfo = () => {
     const navigate = useNavigate();
@@ -153,6 +154,8 @@ const WisdomSystemInfo = () => {
                 return faInfoCircle;
         }
     };
+
+    if (userCode === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 dark:bg-darkBg font-[Cairo,sans-serif]">

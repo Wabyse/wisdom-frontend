@@ -47,6 +47,7 @@ const ViewDocument = () => {
   }, [id, userInfo]);
 
   if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
+  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
   return (
     <div className="bg-gray-500 h-screen">
