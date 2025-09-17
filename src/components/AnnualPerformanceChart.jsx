@@ -146,19 +146,19 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          gap: 20,
-          marginTop: 20,
+          gap: 8,
+          marginTop: 6,
           flexWrap: 'wrap'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className='text-[10px]' style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#22c55e' }}></div>
             <span style={{ color: '#fff', fontSize: 12 }}>أداء عالي (70%+)</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className='text-[10px]' style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#f59e0b' }}></div>
             <span style={{ color: '#fff', fontSize: 12 }}>أداء متوسط (40-69%)</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className='text-[10px]' style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
             <span style={{ color: '#fff', fontSize: 12 }}>أداء منخفض (&lt;40%)</span>
           </div>

@@ -91,7 +91,7 @@ function CircularProgressBar({ value, size = 64, stroke = 8, color = 'url(#circu
 const WatomsDashboard = () => {
   const navigate = useNavigate();
   const { userInfo } = useAuth();
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const isFullScreen = useFullScreen();
   const [watomsData, setWatomsData] = useState([]);
   const [centers, setCenters] = useState([]);
@@ -130,6 +130,9 @@ const WatomsDashboard = () => {
   const [selectedProject, setSelectedProject] = useState("");
   const [subDataDetails, setSubDataDetails] = useState("");
 
+  useEffect(() => {
+    setLanguage(false);
+  }, [])
 
   useEffect(() => {
     const loadProjects = () => {
@@ -1040,30 +1043,56 @@ const WatomsDashboard = () => {
               </>
             )}
           </div>
-          <div className="px-2 w-full">
-            <div className="w-full overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
+          <div className="flex justify-center px-2 w-full gap-6">
+            <div className="w-32 overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
               <table className="w-full table-fixed" dir="rtl">
                 <thead>
                   <tr className="bg-[#5268b1] border-b border-blue-200/60 text-white text-xs">
-                    <th className="py-2 text-center font-semibold">اجمالي الموظفين</th>
-                    <th className="py-2 text-center font-semibold border-r-2 border-white">الاداريين</th>
-                    <th className="py-2 text-center font-semibold">المشرفين</th>
-                    <th className="py-2 text-center font-semibold">المدربين</th>
-                    <th className="py-2 text-center font-semibold border-r-2 border-white">الورش</th>
+                    <th className="py-2 text-center font-semibold">الورش</th>
                     <th className="py-2 text-center font-semibold">المعامل</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-slate-100">
                   <tr className="bg-[#2f417a] hover:bg-slate-50 transition-colors">
+
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].employees ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].workShops ?? 0}
                       </span>
                     </td>
 
-                    <td className="py-2 text-center border-r-2 border-white">
+                    <td className="py-2 text-center">
+                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
+            ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].labs ?? 0}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="w-64 overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
+              <table className="w-full table-fixed" dir="rtl">
+                <thead>
+                  <tr className="bg-[#5268b1] border-b border-blue-200/60 text-white text-xs">
+                    <th className="py-2 text-center font-semibold">مديرين</th>
+                    <th className="py-2 text-center font-semibold">الاداريين</th>
+                    <th className="py-2 text-center font-semibold">المشرفين</th>
+                    <th className="py-2 text-center font-semibold">المدربين</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-100">
+                  <tr className="bg-[#2f417a] hover:bg-slate-50 transition-colors">
+                    <td className="py-2 text-center">
+                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full bg-blue-100 text-blue-800`}>
+                        {selectedOrg?.id === "All" ? 5 : 1}
+                      </span>
+                    </td>
+
+                    <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
                         {WATOMS_UNPREPARED_DATA[selectedOrg.id].admins ?? 0}
@@ -1083,18 +1112,24 @@ const WatomsDashboard = () => {
                         {WATOMS_UNPREPARED_DATA[selectedOrg.id].trainers ?? 0}
                       </span>
                     </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="w-32 overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
+              <table className="w-full table-fixed" dir="rtl">
+                <thead>
+                  <tr className="bg-[#5268b1] border-b border-blue-200/60 text-white text-xs">
+                    <th className="py-2 text-center font-semibold">اجمالي الموظفين</th>
+                  </tr>
+                </thead>
 
-                    <td className="py-2 text-center border-r-2 border-white">
-                      <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
-            ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].workShops ?? 0}
-                      </span>
-                    </td>
-
+                <tbody className="divide-y divide-slate-100">
+                  <tr className="bg-[#2f417a] hover:bg-slate-50 transition-colors">
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].labs ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].employees ?? 0}
                       </span>
                     </td>
                   </tr>
@@ -1155,7 +1190,7 @@ const WatomsDashboard = () => {
           </div>
         </div>
         {/* يمين: الإحصائيات */}
-        <div className="gap-6 w-1/3" style={{
+        <div className="gap-4 w-1/3" style={{
           flex: '0 1 28%',
           maxHeight: "85vh",
           padding: '1vw 1vw 0vw 0vw',
