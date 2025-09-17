@@ -665,7 +665,7 @@ const WatomsDashboard = () => {
       }}>
         {/* WABYS and Watoms logo */}
         <div className="flex items-center gap-6 my-2">
-          <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => userInfo?.code !== 1452 ? navigate('/wabys') : navigate('/login') } />
+          <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => userInfo?.code !== 1452 ? navigate('/wabys') : navigate('/login')} />
           <div className='border-l-2 border-black p-1 h-6' />
           <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={ebdaeduLogo} alt="ebda edu Logo" />
           <div className='border-l-2 border-black p-1 h-6' />
@@ -689,7 +689,7 @@ const WatomsDashboard = () => {
             {userFullName(userInfo, language)}
           </span>
           {/* Filter bar */}
-          <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
+          {userInfo?.code !== 1452 && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
             <select
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
@@ -703,7 +703,7 @@ const WatomsDashboard = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div>}
           {/* Bell icon */}
           <button
             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
@@ -949,7 +949,7 @@ const WatomsDashboard = () => {
           position: 'relative',
         }}>
           {/* Title */}
-          <div className="text-2xl font-bold text-amber-400">المؤشرات الإجمالية {selectedOrg?.id === "All" ? selectedProject === "" ? "لمشروع" : `ل${selectedProject}` : selectedOrg?.name}</div>
+          <div className="text-2xl font-bold text-amber-400">المؤشرات الإجمالية {userInfo?.code === 1452 ? "لمشروع وزارة العمل" : selectedOrg?.id === "All" ? selectedProject === "" ? "لمشروع" : `ل${selectedProject}` : selectedOrg?.name}</div>
           <div className="flex" style={{
             position: 'relative',
             width: "95%",

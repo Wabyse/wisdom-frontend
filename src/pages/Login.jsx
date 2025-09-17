@@ -92,9 +92,9 @@ const Login = () => {
           <div>
             <img src={wabysLogo} alt="WABYS Logo" className="w-32 h-20 mb-4 rounded-xl shadow-lg bg-white/30 p-2" />
             <div className="font-extrabold text-2xl mb-2 tracking-wide">{language ? "WABYS" : "وابيز"}</div>
-            <div className="font-bold text-lg mb-1">{language ? "Wabys System for Smart School Management" : "نظام وابيز لإدارة المدارس الذكية"}</div>
+            <div className="font-bold text-lg mb-1">{language ? "Wabys System for Smart School Management" : "نظام وابيز لإدارة المنشآت التعليمية والتدريبية و الفنية"}</div>
             <p className="text-xs opacity-80 mb-8">
-              {language ? "An integrated platform for efficiently and easily managing all school operations, supporting digital transformation and providing advanced tools for teachers, administrators, and students." : "منصة متكاملة لإدارة جميع عمليات المدرسة بكفاءة وسهولة، تدعم التحول الرقمي وتوفر أدوات متقدمة للمعلمين والإداريين والطلاب"}
+              {language ? "An integrated platform for efficiently and easily managing all school operations, supporting digital transformation and providing advanced tools for teachers, administrators, and students." : "منصة متكاملة لإدارة جميع عمليات المنشآة التعليمية بكفاءة وسهولة، تدعم التحول الرقمي وتوفر أدوات متقدمة لجميع المستويات الإدارية والتعليمية والفنية"}
             </p>
           </div>
           <div className={`text-xs opacity-60 ${language ? "" : "mt-8"}`}>
