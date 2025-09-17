@@ -255,7 +255,7 @@ function TomsForm() {
     const loadCurriculums = async () => {
       try {
         const response = await fetchCurriculums();
-        const unWantedCurriculum = [1, 2, 3, 13, 14, 15, 16, 17, 18, 48, 49]
+        const unWantedCurriculum = [1, 3, 13, 14, 15, 16, 17, 18, 48, 49]
         const filteredCurriculums = response.filter(curriculum => !unWantedCurriculum.includes(curriculum.id))
         const curriculumIds = userInfo.user_role === "Operations Excellence Lead" ? new Set(INSTITUTION_CURRICULUM_RELATION[Number(selectedVtc)] || []) : new Set(INSTITUTION_CURRICULUM_RELATION[userInfo.organization_id] || []);
         const selectedOrganization = (selectedVtc !== "" || userInfo.user_role !== "Operations Excellence Lead")
