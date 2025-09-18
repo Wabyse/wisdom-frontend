@@ -62,6 +62,8 @@ import WatomsTmsMyTasks from "./pages/WatomsTmsMyTasks";
 import WatomsTmsDashboard from "./pages/WatomsTmsDashboard";
 import DemoDashboard from "./pages/DemoDashboard";
 import WatomsNews from "./pages/WatomsNews";
+import WatomsPublishNews from "./pages/WatomsPublishNews";
+import WatomsManagersReports from "./pages/WatomsManagersReports";
 
 function App() {
   return (
@@ -408,6 +410,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <WatomsNews />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/publish-news"
+            element={
+              <ProtectedRoute>
+                <WatomsPublishNews />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/managers"
+            element={
+              <ProtectedRoute>
+                <WatomsManagersReports />
               </ProtectedRoute>
             }
           />

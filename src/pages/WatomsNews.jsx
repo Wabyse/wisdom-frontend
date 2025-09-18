@@ -5,12 +5,18 @@ import { WATOMS_MODERN_COLORS } from "../constants/constants";
 import { fetchWatomsDetailsData } from "../services/dashboard";
 import LoadingScreen from "../components/LoadingScreen";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+import img from "../assets/homeCover2.jpg";
+import DonutChart from "../components/DonutChart";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook, faChartSimple, faPhone, faScroll } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 
 const WatomsNews = () => {
+    const navigate = useNavigate();
     const [selectedOrg, setSelectedOrg] = useState(null);
     const [watomsData, setWatomsData] = useState([]);
-    const [selectedMonthIdx, setSelectedMonthIdx] = useState({});
+    const [selectedMonthIdx, setSelectedMonthIdx] = useState(null);
     const [loading, setLoading] = useState(true);
 
     // fetching watoms' dashboard data
@@ -63,21 +69,13 @@ const WatomsNews = () => {
         <>
             <NewNavbar />
             <div className="w-full h-[88vh] flex flex-col items-center bg-[#0a183d]">
-                <div className="flex justify-center items-center px-12 py-8 w-full">
-                    <div className="flex flex-col justify-center items-center text-xl font-bold text-[#FBBF24] gap-2">
-                        <div className="w-1/4 h-0 border-t-4 border-gray-400 rounded-full" />
-                        <div>EVOITS</div>
-                        <div>مشروع تطوير مراكز التدريب المهني</div>
-                        <div className="w-1/2 h-0 border-t-4 border-gray-400 rounded-full" />
-                    </div>
-                </div>
-                <div className="flex justify-center items-center w-[90%] gap-6">
-                    <fieldset className="flex justify-center items-center border-2 border-gray-400 p-4 rounded-2xl shadow-white shadow-md min-h-[60vh] h-[60vh]">
-                        <legend className="px-2 text-center font-bold text-white">ملخص اداء المشروع</legend>
-                        <div className="flex flex-col items-center justify-center gap-4">
+                <div className="flex justify-center w-[95%] h-full gap-6">
+                    <fieldset className="my-auto flex justify-center items-center border-2 border-gray-400 p-2 rounded-2xl shadow-white shadow-md min-h-[80vh] h-[80vh] min-w-1/3 w-1/3">
+                        <legend className="px-2 text-center font-bold text-white">لوحة تحكم البيانات</legend>
+                        <div className="flex flex-col items-center justify-center gap-2 w-full">
                             {/* Total Institutions */}
                             <div
-                                className="h-28"
+                                className="h-28 w-full"
                                 style={{
                                     background: "#2d3347",
                                     borderRadius: 16,
@@ -104,22 +102,22 @@ const WatomsNews = () => {
                                 </div>
                             </div>
                             {/* Monthly Chart */}
-                            <div className="w-full">
-                                <div style={{ fontWeight: 700, fontSize: 16, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
+                            <div className="w-full bg-[#2d3347] rounded-xl">
+                                <div className="mb-2" style={{ fontWeight: 700, fontSize: 16, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
                                     {`تحليل معدل تغيير الاداء ${selectedOrg?.id === "All" ? "للمشروع" : selectedOrg?.name}`}
                                 </div>
-                                <ResponsiveContainer width="90%" height={100}>
+                                <ResponsiveContainer width="90%" height={150}>
                                     <LineChart data={selectedOrg ? selectedOrg.months : watomsData?.total?.months}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.3} />
                                         <XAxis
                                             dataKey="month"
                                             stroke="#888"
-                                            fontSize={10}
+                                            fontSize={8}
                                             tick={{ fill: '#fff' }}
                                         />
                                         <YAxis
                                             stroke="#888"
-                                            fontSize={12}
+                                            fontSize={8}
                                             tick={{ fill: '#fff' }}
                                             domain={[0, 100]}
                                             ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
@@ -164,7 +162,7 @@ const WatomsNews = () => {
                             </div>
                             {/* General Ranking Chart */}
                             <div
-                                className="rounded-2xl flex flex-col h-fit max-h-48 w-full py-2 mb-0 items-stretch"
+                                className="rounded-2xl flex flex-col h-fit max-h-52 w-full py-2 mb-0 items-stretch"
                                 style={{
                                     background: "#2d3347",
                                     boxShadow: '0 2px 12px #0004',
@@ -176,12 +174,9 @@ const WatomsNews = () => {
                                     style={{
                                         fontWeight: 700,
                                         fontSize: 15,
-                                        marginBottom: 18,
                                         color: '#facc15',
                                         textAlign: 'center',
                                         letterSpacing: 0.5,
-                                        zIndex: 1,
-                                        textShadow: '0 2px 8px #000a, 0 0 4px #222',
                                         cursor: 'pointer',
                                         transition: 'color 0.2s ease, text-shadow 0.2s ease',
                                         position: 'relative'
@@ -306,9 +301,106 @@ const WatomsNews = () => {
                             </div>
                         </div>
                     </fieldset>
-                    <div className="w-0 h-64 border-l-4 border-gray-400 rounded-full" />
-                    <fieldset className=" border-2 border-gray-400 p-4 rounded-2xl shadow-white shadow-md min-h-[60vh] h-[60vh]">
-                        <legend className="px-2 text-center font-bold text-white">اهم الاخداث الجارية</legend>
+                    <div className="my-auto w-0 h-64 border-l-4 border-gray-400 rounded-full" />
+                    <div className="flex flex-col justify-start items-center pt-8  min-w-1/3 w-1/3 gap-10">
+                        <div className="flex flex-col justify-center items-center text-xl font-bold text-[#FBBF24] gap-2">
+                            <div className="w-1/4 h-0 border-t-4 border-gray-400 rounded-full" />
+                            <div>EVOITS</div>
+                            <div>مشروع تطوير مراكز التدريب المهني</div>
+                            <div className="w-1/2 h-0 border-t-4 border-gray-400 rounded-full" />
+                        </div>
+                        <div className="flex flex-col items-center gap-2">
+                            <DonutChart value={roundNumber(selectedOrg?.months[selectedMonthIdx]?.performance || 0)} size={120} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
+                            <h1 className="text-white">المتوسط العام للمشروع</h1>
+                        </div>
+                        <div className="flex justify-evenly items-center text-white w-full flex-wrap gap-2">
+                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80" onClick={() => navigate('/watoms/dashboard')}>
+                                <FontAwesomeIcon icon={faChartSimple} />
+                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
+                                <h1 className="text-base text-end w-[75%] font-bold">صفحة عرض بيانات المشروع</h1>
+                            </div>
+                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80">
+                                <FontAwesomeIcon icon={faPhone} />
+                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
+                                <h1 className="text-base text-end w-[75%] font-bold">الاتصال المباشر بالمراكز</h1>
+                            </div>
+                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80">
+                                <FontAwesomeIcon icon={faBook} />
+                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
+                                <h1 className="text-base text-end w-[75%] font-bold">التقرير السرية الدولية</h1>
+                            </div>
+                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80">
+                                <FontAwesomeIcon icon={faScroll} />
+                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
+                                <h1 className="text-base text-end w-[75%] font-bold">التقارير المصورة ابدا اديو</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="my-auto w-0 h-64 border-l-4 border-gray-400 rounded-full" />
+                    <fieldset className="my-auto border-2 border-gray-400 p-4 rounded-2xl shadow-white shadow-md min-h-[80vh] h-[80vh] min-w-1/3 w-1/3">
+                        <legend className="px-2 text-center font-bold text-white">اهم الاحداث الجارية</legend>
+                        {true ?
+                            <div className="flex flex-col justify-start w-full h-full p-2 gap-2 overflow-y-auto no-scrollbar">
+                                <div className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center cursor-pointer" onClick={() => navigate('/watoms/publish-news')}>
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>
+                                    <img
+                                        src={img}
+                                        alt=""
+                                        className="h-full w-auto object-contain"
+                                    />
+                                    <div className="flex flex-col justify-center items-center">
+                                        <h1 className="text-white text-md text-center">
+                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
+                                        </h1>
+                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
+                                    </div>
+                                </div>
+                                <div className="border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center">
+                                    <img
+                                        src={img}
+                                        alt=""
+                                        className="h-full w-auto object-contain"
+                                    />
+                                    <div className="flex flex-col justify-center items-center">
+                                        <h1 className="text-white text-md text-center">
+                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
+                                        </h1>
+                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
+                                    </div>
+                                </div>
+                                <div className="border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center">
+                                    <img
+                                        src={img}
+                                        alt=""
+                                        className="h-full w-auto object-contain"
+                                    />
+                                    <div className="flex flex-col justify-center items-center">
+                                        <h1 className="text-white text-md text-center">
+                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
+                                        </h1>
+                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
+                                    </div>
+                                </div>
+                                <div className="border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center">
+                                    <img
+                                        src={img}
+                                        alt=""
+                                        className="h-full w-auto object-contain"
+                                    />
+                                    <div className="flex flex-col justify-center items-center">
+                                        <h1 className="text-white text-md text-center">
+                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
+                                        </h1>
+                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
+                                    </div>
+                                </div>
+                            </div> :
+                            <div className="flex justify-center items-center w-full h-full">
+                                <h1 className="text-[#FBBF24] font-bold">
+                                    لا يوجد احداث حاليا
+                                </h1>
+                            </div>
+                        }
                     </fieldset>
                 </div>
             </div>
