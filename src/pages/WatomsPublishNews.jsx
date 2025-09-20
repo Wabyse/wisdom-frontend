@@ -1,22 +1,67 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchSchools } from "../services/data";
+import { insertNews } from "../services/admins";
 
 const WatomsPublishNews = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
     const [image, setImage] = useState(null);
-    const [category, setCategory] = useState(""); // new dropdown state
+    const [imageFile, setImageFile] = useState(null);
+    const [organization, setOrganization] = useState(""); // new dropdown state
+    const [vtcs, setVtcs] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        const loadVtcs = async () => {
+            const response = await fetchSchools();
+            setVtcs(response);
+        }
+        loadVtcs();
+    }, [])
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
-            setImage(URL.createObjectURL(e.target.files[0]));
+            const file = e.target.files[0];
+            setImageFile(file);
+            setImage(URL.createObjectURL(file));
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log({ title, description, date, image, category });
-        alert("Form submitted!");
+        
+        if (!imageFile) {
+            alert("الرجاء اختيار صورة");
+            return;
+        }
+
+        setIsSubmitting(true);
+        
+        try {
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('date', date);
+            formData.append('organization_id', Number(organization));
+            formData.append('image', imageFile);
+            await insertNews(formData);
+            alert("تم نشر الخبر بنجاح!");
+            
+            // Reset form
+            setTitle("");
+            setDescription("");
+            setDate("");
+            setImage(null);
+            setImageFile(null);
+            setOrganization("");
+            
+        } catch (error) {
+            console.error("Error submitting news:", error);
+            alert("حدث خطأ أثناء نشر الخبر");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -71,17 +116,17 @@ const WatomsPublishNews = () => {
                 <div>
                     <label className="block text-gray-300 mb-1 text-end">القسم</label>
                     <select
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
+                        value={organization}
+                        onChange={(e) => setOrganization(e.target.value)}
                         className="w-full p-2 rounded-lg border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 text-end"
                         required
                     >
                         <option value="" disabled>
                             اختر القسم
                         </option>
-                        <option value="1">القسم 1</option>
-                        <option value="2">القسم 2</option>
-                        <option value="3">القسم 3</option>
+                        {vtcs.map(vtc => (
+                            <option value={vtc.id}>{vtc.name}</option>
+                        ))}
                     </select>
                 </div>
 
@@ -109,9 +154,10 @@ const WatomsPublishNews = () => {
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="bg-yellow-400 text-black font-bold py-2 rounded-lg hover:bg-yellow-300 transition"
+                    disabled={isSubmitting}
+                    className="bg-yellow-400 text-black font-bold py-2 rounded-lg hover:bg-yellow-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    نشر
+                    {isSubmitting ? "جاري النشر..." : "نشر"}
                 </button>
             </form>
         </div>

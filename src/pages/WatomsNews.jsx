@@ -10,6 +10,7 @@ import DonutChart from "../components/DonutChart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faChartSimple, faPhone, faScroll } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { viewNews } from "../services/admins";
 
 
 const WatomsNews = () => {
@@ -18,6 +19,7 @@ const WatomsNews = () => {
     const [watomsData, setWatomsData] = useState([]);
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [watomsNewsData, setWatomsNewsData] = useState([]);
 
     // fetching watoms' dashboard data
     useEffect(() => {
@@ -35,7 +37,29 @@ const WatomsNews = () => {
             }
         }
 
+        const loadWatomsNewsData = async () => {
+            try {
+                setLoading(true);
+                const response = await viewNews();
+                console.log('News API Response:', response);
+                console.log('News data with image paths:', response.map(news => ({
+                    id: news.id,
+                    title: news.title,
+                    image_path: news.image_path,
+                    normalized_path: news.image_path ? news.image_path.replace(/\\/g, '/') : 'No image path',
+                    full_image_url: news.image_path ? `${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/uploads/${news.image_path.replace(/\\/g, '/')}` : 'No image path',
+                    base_url: process.env.REACT_APP_API_URL || 'http://localhost:4000'
+                })));
+                setWatomsNewsData(response);
+            } catch (error) {
+                console.error('❌ Error fetching Watoms Data:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
         loadWatomsDetailedData();
+        loadWatomsNewsData();
     }, []);
 
     const CustomTooltip = ({ active, payload, label }) => {
@@ -339,61 +363,28 @@ const WatomsNews = () => {
                     <div className="my-auto w-0 h-64 border-l-4 border-gray-400 rounded-full" />
                     <fieldset className="my-auto border-2 border-gray-400 p-4 rounded-2xl shadow-white shadow-md min-h-[80vh] h-[80vh] min-w-1/3 w-1/3">
                         <legend className="px-2 text-center font-bold text-white">اهم الاحداث الجارية</legend>
-                        {true ?
+                        {watomsNewsData && watomsNewsData.length > 0 ?
                             <div className="flex flex-col justify-start w-full h-full p-2 gap-2 overflow-y-auto no-scrollbar">
-                                <div className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center cursor-pointer" onClick={() => navigate('/watoms/publish-news')}>
-                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>
-                                    <img
-                                        src={img}
-                                        alt=""
-                                        className="h-full w-auto object-contain"
-                                    />
-                                    <div className="flex flex-col justify-center items-center">
-                                        <h1 className="text-white text-md text-center">
-                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
-                                        </h1>
-                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
+                                {watomsNewsData.map((news, index) => (
+                                    <div key={news.id || index} className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center cursor-pointer" onClick={() => navigate('/watoms/publish-news')}>
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>
+                                        <img
+                                            src={news.image_path ? 
+                                                `${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/uploads/${news.image_path.replace(/\\/g, '/')}` : 
+                                                img}
+                                            alt={news.title || "News image"}
+                                            className="h-full w-auto object-contain"
+                                        />
+                                        <div className="flex flex-col justify-center items-center">
+                                            <h1 className="text-white text-md text-center">
+                                                {news.title || "عنوان الخبر"}
+                                            </h1>
+                                            <h1 className="text-gray-400">
+                                                {news.date ? new Date(news.date).toLocaleDateString('ar-EG') : "تاريخ غير محدد"}
+                                            </h1>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center">
-                                    <img
-                                        src={img}
-                                        alt=""
-                                        className="h-full w-auto object-contain"
-                                    />
-                                    <div className="flex flex-col justify-center items-center">
-                                        <h1 className="text-white text-md text-center">
-                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
-                                        </h1>
-                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
-                                    </div>
-                                </div>
-                                <div className="border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center">
-                                    <img
-                                        src={img}
-                                        alt=""
-                                        className="h-full w-auto object-contain"
-                                    />
-                                    <div className="flex flex-col justify-center items-center">
-                                        <h1 className="text-white text-md text-center">
-                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
-                                        </h1>
-                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
-                                    </div>
-                                </div>
-                                <div className="border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center">
-                                    <img
-                                        src={img}
-                                        alt=""
-                                        className="h-full w-auto object-contain"
-                                    />
-                                    <div className="flex flex-col justify-center items-center">
-                                        <h1 className="text-white text-md text-center">
-                                            مركز الشرابية: بدء تنفيذ برنامج بصمات هندسية بعدد 500 متدرب
-                                        </h1>
-                                        <h1 className="text-gray-400">2025 / 7 / 17</h1>
-                                    </div>
-                                </div>
+                                ))}
                             </div> :
                             <div className="flex justify-center items-center w-full h-full">
                                 <h1 className="text-[#FBBF24] font-bold">

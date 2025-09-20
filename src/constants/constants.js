@@ -340,7 +340,7 @@ export const INSTITUTION_CURRICULUM_RELATION = {
 }
 
 export const INSTITUTION_COURSE_RELATION = {
-    4: [4, 9, 31, 7, 20],
+    4: [4, 9, 31, 7, 20, 52],
     5: [6, 8, 4, 30, 5, 7, 34, 32],
     7: [5, 20, 9, 34, 24, 4, 7, 30, 6, 8, 37],
     8: [12, 38, 39, 30, 4, 6, 8, 40, 24, 41, 31, 9, 42, 43, 36, 5, 7, 44, 45],
@@ -396,8 +396,8 @@ export const getWatomsSystems = (language, userOrg) => [
     {
         id: 'tms',
         title: 'TMS',
-        subtitle: language ? 'Training Management System' : 'نظام إدارة التدريب',
-        description: language ? 'Training and development management' : 'إدارة التدريب والتطوير',
+        subtitle: language ? 'Task Management System' : 'نظام إدارة التدريب',
+        description: language ? 'Task and development management' : 'إدارة التدريب والتطوير',
         icon: faGraduationCap,
         path: '/watoms/tms',
         color: 'from-purple-500 to-purple-600',
