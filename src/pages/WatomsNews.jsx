@@ -8,10 +8,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import img from "../assets/homeCover2.jpg";
 import DonutChart from "../components/DonutChart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faChartSimple, faPhone, faScroll } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faChartSimple, faPhone, faScroll, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { viewNews } from "../services/admins";
-
+import { updateNewsNotification, viewNews } from "../services/admins";
+import { fetchSchools } from "../services/data";
+import dashboardIcon from "../assets/dashboardIcon.png";
+import reportIcon from "../assets/reportIcon.png";
+import report2Icon from "../assets/report2Icon.png";
 
 const WatomsNews = () => {
     const navigate = useNavigate();
@@ -20,6 +23,26 @@ const WatomsNews = () => {
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(null);
     const [loading, setLoading] = useState(true);
     const [watomsNewsData, setWatomsNewsData] = useState([]);
+    const [selectedNews, setSelectedNews] = useState(null);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [organizationsData, setOrganizationsData] = useState([]);
+    const [selectedOrganization, setSelectedOrganization] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState({});
+    const [datasMonths, setDatasMonths] = useState([]);
+
+    const toggleMonth = (status) => {
+        if (status) {
+            if (selectedMonthIdx !== datasMonths.length - 1) {
+                setSelectedMonth(datasMonths[selectedMonthIdx + 1]);
+                setSelectedMonthIdx(prev => prev + 1);
+            }
+        } else {
+            if (selectedMonthIdx !== 0) {
+                setSelectedMonth(datasMonths[selectedMonthIdx - 1]);
+                setSelectedMonthIdx(prev => prev - 1);
+            }
+        }
+    }
 
     // fetching watoms' dashboard data
     useEffect(() => {
@@ -28,6 +51,8 @@ const WatomsNews = () => {
                 setLoading(true);
                 const response = await fetchWatomsDetailsData();
                 setWatomsData(response);
+                setDatasMonths(response.total.months);
+                setSelectedMonth(response.total.months[response.total.months.length - 1])
                 setSelectedMonthIdx(response.total.months.length - 1);
                 setSelectedOrg(response.total);
             } catch (error) {
@@ -58,9 +83,36 @@ const WatomsNews = () => {
             }
         }
 
+        const loadOrganizationsData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetchSchools();
+                setOrganizationsData(response);
+            } catch (error) {
+                console.error('❌ Error fetching Organizations Data:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadOrganizationsData();
         loadWatomsDetailedData();
         loadWatomsNewsData();
     }, []);
+
+    const handleNewsClick = async (news) => {
+        const body = { "notification": true };
+        await updateNewsNotification(news.id, body);
+        setSelectedNews(news);
+        setIsPopupOpen(true);
+        const organization = organizationsData.find(org => org.id === news.organization_id);
+        setSelectedOrganization(organization)
+    };
+
+    const closePopup = () => {
+        setIsPopupOpen(false);
+        setSelectedNews(null);
+    };
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -91,11 +143,16 @@ const WatomsNews = () => {
 
     return (
         <>
-            <NewNavbar />
+            <NewNavbar
+                searchStatus={false}
+                darkmodeStatus={false}
+                shareStatus={false}
+                homeStatus={false}
+            />
             <div className="w-full h-[88vh] flex flex-col items-center bg-[#0a183d]">
                 <div className="flex justify-center w-[95%] h-full gap-6">
                     <fieldset className="my-auto flex justify-center items-center border-2 border-gray-400 p-2 rounded-2xl shadow-white shadow-md min-h-[80vh] h-[80vh] min-w-1/3 w-1/3">
-                        <legend className="px-2 text-center font-bold text-white">لوحة تحكم البيانات</legend>
+                        <legend className="px-2 text-center font-bold text-white">ملخص بيانات المشروع</legend>
                         <div className="flex flex-col items-center justify-center gap-2 w-full">
                             {/* Total Institutions */}
                             <div
@@ -186,7 +243,7 @@ const WatomsNews = () => {
                             </div>
                             {/* General Ranking Chart */}
                             <div
-                                className="rounded-2xl flex flex-col h-fit max-h-52 w-full py-2 mb-0 items-stretch"
+                                className="rounded-2xl flex flex-col h-fit max-h-54 w-full py-2 mb-0 items-stretch"
                                 style={{
                                     background: "#2d3347",
                                     boxShadow: '0 2px 12px #0004',
@@ -225,8 +282,7 @@ const WatomsNews = () => {
                                         flexDirection: 'column',
                                         justifyContent: 'flex-start',   // ✅ start at top
                                         zIndex: 1,
-                                        marginTop: 4,
-                                        gap: 14,
+                                        marginTop: 9,
                                         overflowY: 'auto',
                                         overflowX: 'hidden',            // ✅ prevent x scroll
                                     }}
@@ -252,11 +308,10 @@ const WatomsNews = () => {
                                                     cursor: 'pointer',
                                                     transition: 'transform 0.2s ease, opacity 0.2s ease',
                                                     borderRadius: 8,
-                                                    padding: '4px',
                                                     minWidth: 0,                // ✅ allow children to shrink
                                                     transformOrigin: 'center',  // ✅ scale from center
                                                 }}
-                                                className="justify-between hover:bg-gray-600 hover:bg-opacity-20"
+                                                className="justify-between hover:bg-gray-600 hover:bg-opacity-20 py-[4px] px-6"
                                                 onMouseEnter={(e) => {
                                                     e.currentTarget.style.transform = 'scale(1.02)';
                                                     e.currentTarget.style.opacity = '0.9';
@@ -284,8 +339,9 @@ const WatomsNews = () => {
                                                 {/* Bar background with fixed width */}
                                                 <div style={{
                                                     flex: 1,                   // ✅ take remaining space
-                                                    minWidth: 0,               // ✅ allow shrink
-                                                    height: 22,
+                                                    minWidth: 0,
+                                                    maxWidth: 170,              // ✅ allow shrink
+                                                    height: 20,
                                                     background: '#444652',
                                                     borderRadius: 18,
                                                     boxShadow: '0 2px 8px #0002',
@@ -308,11 +364,11 @@ const WatomsNews = () => {
                                                     />
                                                 </div>
                                                 {/* Percentage (on the right) */}
-                                                <div className="text-white" style={{
+                                                <div className="text-white text-end" style={{
                                                     minWidth: 38,
                                                     fontWeight: 900,
                                                     fontSize: 17,
-                                                    textAlign: 'left',
+                                                    textAlign: 'right',
                                                     marginLeft: 0,
                                                     marginRight: 0,
                                                     transition: 'color 0.2s ease'
@@ -326,54 +382,147 @@ const WatomsNews = () => {
                         </div>
                     </fieldset>
                     <div className="my-auto w-0 h-64 border-l-4 border-gray-400 rounded-full" />
-                    <div className="flex flex-col justify-start items-center pt-8  min-w-1/3 w-1/3 gap-10">
+                    <div className="flex flex-col justify-start items-center pt-4 min-w-1/3 w-1/3 gap-8">
                         <div className="flex flex-col justify-center items-center text-xl font-bold text-[#FBBF24] gap-2">
-                            <div className="w-1/4 h-0 border-t-4 border-gray-400 rounded-full" />
                             <div>EVOITS</div>
                             <div>مشروع تطوير مراكز التدريب المهني</div>
-                            <div className="w-1/2 h-0 border-t-4 border-gray-400 rounded-full" />
                         </div>
                         <div className="flex flex-col items-center gap-2">
+
+                            <div className="mt-2" style={{
+                                width: '100%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: 18,
+                            }}>
+                                {selectedMonthIdx !== 0 ? <button
+                                    onClick={() => toggleMonth(false)}
+                                    style={{
+                                        background: '#181f2e',
+                                        color: '#0af',
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: 36,
+                                        height: 36,
+                                        fontSize: 22,
+                                        fontWeight: 900,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 2px 8px #0006',
+                                        transition: 'background 0.2s',
+                                    }}
+                                    title="الشهر السابق"
+                                >
+                                    &#8592;
+                                </button> : <div
+                                    style={{
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: 36,
+                                        height: 36,
+                                        fontSize: 22,
+                                        fontWeight: 900,
+                                        display: "hidden",
+                                    }}></div>}
+                                <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
+                                    {selectedMonth?.month}
+                                </span>
+                                {selectedMonthIdx !== (datasMonths.length - 1) ? <button
+                                    onClick={() => toggleMonth(true)}
+                                    style={{
+                                        background: '#181f2e',
+                                        color: '#0af',
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: 36,
+                                        height: 36,
+                                        fontSize: 22,
+                                        fontWeight: 900,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 2px 8px #0006',
+                                        transition: 'background 0.2s',
+                                    }}
+                                    title="الشهر التالي"
+                                >
+                                    &#8594;
+                                </button> : <div
+                                    style={{
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: 36,
+                                        height: 36,
+                                        fontSize: 22,
+                                        fontWeight: 900,
+                                        display: "hidden",
+                                    }}></div>}
+                            </div>
                             <DonutChart value={roundNumber(selectedOrg?.months[selectedMonthIdx]?.performance || 0)} size={120} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                             <h1 className="text-white">المتوسط العام للمشروع</h1>
                         </div>
-                        <div className="flex justify-evenly items-center text-white w-full flex-wrap gap-2">
-                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80" onClick={() => navigate('/watoms/dashboard')}>
-                                <FontAwesomeIcon icon={faChartSimple} />
-                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
-                                <h1 className="text-base text-end w-[75%] font-bold">صفحة عرض بيانات المشروع</h1>
+                        <div className="flex justify-evenly items-center text-white w-full gap-2">
+                            <div className="flex flex-col">
+                                <div className="flex pb-4 flex-col rounded-2xl bg-opacity-55 bg-white text-[#0a183d] items-center w-52 h-40 cursor-pointer text-5xl gap-2 px-4" onClick={() => navigate('/watoms/dashboard')}>
+                                    <img src={dashboardIcon} className="w-20 h-20" />
+                                    <div className="my-auto w-0 h-8 border-b-2 border-[#0a183d] rounded-full" />
+                                    <h1 className="text-base text-center w-[75%] font-bold">الؤشرات الرئيسية للاداء اللحظي</h1>
+                                </div>
                             </div>
-                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80">
-                                <FontAwesomeIcon icon={faPhone} />
-                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
-                                <h1 className="text-base text-end w-[75%] font-bold">الاتصال المباشر بالمراكز</h1>
-                            </div>
-                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80">
-                                <FontAwesomeIcon icon={faBook} />
-                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
-                                <h1 className="text-base text-end w-[75%] font-bold">التقرير السرية الدولية</h1>
-                            </div>
-                            <div className="flex rounded-2xl bg-white text-[#0a183d] justify-between items-center w-52 h-28 cursor-pointer text-5xl gap-2 px-4 opacity-55 hover:opacity-80">
-                                <FontAwesomeIcon icon={faScroll} />
-                                <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
-                                <h1 className="text-base text-end w-[75%] font-bold">التقارير المصورة ابدا اديو</h1>
+                            <div className="flex flex-col gap-2 bg-opacity-55 items-center bg-white rounded-2xl" onClick={() => navigate('/watoms/managers')}>
+                                <div className="flex text-[#0a183d] justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
+                                    <img src={reportIcon} className="w-6 h-6" />
+                                    <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
+                                    <h1 className="text-xs text-end w-[75%] font-bold border-b-2 border-[#0a183d] py-5">تقارير المرور والمتابعة</h1>
+                                </div>
+                                <div className="flex text-[#0a183d] justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
+                                    <img src={report2Icon} className="w-6 h-6" />
+                                    <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
+                                    <h1 className="text-xs text-end w-[75%] font-bold border-b-2 border-[#0a183d] py-5">التقرير السرية الدورية</h1>
+                                </div>
+
+                                <div className="flex text-[#0a183d] justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
+                                    <FontAwesomeIcon icon={faPhone} />
+                                    <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
+                                    <h1 className="text-xs text-end w-[75%] font-bold">الاتصال المباشر بالمراكز</h1>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div className="my-auto w-0 h-64 border-l-4 border-gray-400 rounded-full" />
-                    <fieldset className="my-auto border-2 border-gray-400 p-4 rounded-2xl shadow-white shadow-md min-h-[80vh] h-[80vh] min-w-1/3 w-1/3">
+                    <fieldset className="relative my-auto border-2 border-gray-400 p-4 rounded-2xl shadow-white shadow-md min-h-[80vh] h-[80vh] min-w-1/3 w-1/3">
                         <legend className="px-2 text-center font-bold text-white">اهم الاحداث الجارية</legend>
+                        <h1 className="absolute text-white -top-6 -right-4 w-7 h-7 text-lg bg-red-600 flex justify-center items-center font-bold text-center rounded-full">{watomsNewsData?.filter(news => news.notification === false).length}</h1>
                         {watomsNewsData && watomsNewsData.length > 0 ?
                             <div className="flex flex-col justify-start w-full h-full p-2 gap-2 overflow-y-auto no-scrollbar">
                                 {watomsNewsData.map((news, index) => (
-                                    <div key={news.id || index} className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center cursor-pointer" onClick={() => navigate('/watoms/publish-news')}>
-                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>
+                                    <div
+                                        key={news.id || index}
+                                        className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center cursor-pointer hover:bg-gray-700 hover:bg-opacity-30 transition-all duration-200"
+                                        onClick={() => handleNewsClick(news)}
+                                    >
+                                        {!news?.notification && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>}
                                         <img
-                                            src={news.image_path ? 
-                                                `${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/uploads/${news.image_path.replace(/\\/g, '/')}` : 
-                                                img}
+                                            src={(() => {
+                                                if (!news.image_path) return img;
+
+                                                const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+                                                const imagePath = news.image_path.startsWith('/') ? news.image_path : '/uploads/' + news.image_path.replace(/\\/g, '/');
+                                                const fullUrl = `${baseUrl}${imagePath}`;
+
+                                                console.log('🔍 Image Debug:', {
+                                                    baseUrl,
+                                                    imagePath,
+                                                    fullUrl,
+                                                    originalPath: news.image_path
+                                                });
+
+                                                return fullUrl;
+                                            })()}
                                             alt={news.title || "News image"}
-                                            className="h-full w-auto object-contain"
+                                            className="h-full w-auto object-contain rounded-xl"
+                                            onError={(e) => {
+                                                console.error('❌ Image failed to load:', e.target.src);
+                                                e.target.src = img;
+                                            }}
                                         />
                                         <div className="flex flex-col justify-center items-center">
                                             <h1 className="text-white text-md text-center">
@@ -393,8 +542,119 @@ const WatomsNews = () => {
                             </div>
                         }
                     </fieldset>
+                </div >
+            </div >
+
+            {/* News Details Popup Modal */}
+            {isPopupOpen && selectedNews && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[#1a1a2e] border-2 border-[#facc15] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] overflow-y-auto no-scrollbar">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-4 border-b border-[#facc15]">
+                            <button
+                                onClick={closePopup}
+                                className="text-white hover:text-[#facc15] transition-colors duration-200"
+                            >
+                                <FontAwesomeIcon icon={faTimes} size="lg" />
+                            </button>
+                            <div className="flex gap-3 justify-center items-center">
+                                <h1 className="text-white">{selectedNews.date ? new Date(selectedNews.date).toLocaleDateString('ar-EG', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                }) : "غير محدد"}</h1>
+                                <div className="w-0 h-6 border-l-2 border-white" />
+                                <h2 className="text-[#facc15] text-xl font-bold">التفاصيل - {selectedOrganization?.name || "غير محدد"}</h2>
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4 m-2 bg-white rounded-2xl">
+                            {/* News Image */}
+                            {selectedNews.image_path && (
+                                <div className="mb-4 flex justify-center items-center gap-2">
+                                    <button
+                                        style={{
+                                            background: '#181f2e',
+                                            color: '#0af',
+                                            border: 'none',
+                                            borderRadius: '50%',
+                                            width: 36,
+                                            height: 36,
+                                            fontSize: 22,
+                                            fontWeight: 900,
+                                            cursor: 'pointer',
+                                            boxShadow: '0 2px 8px #0006',
+                                            transition: 'background 0.2s',
+                                        }}
+                                        title="الصورة السابقة"
+                                    >
+                                        &#8592;
+                                    </button>
+                                    <img
+                                        src={(() => {
+                                            const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+                                            const imagePath = selectedNews.image_path.startsWith('/') ? selectedNews.image_path : '/uploads/' + selectedNews.image_path.replace(/\\/g, '/');
+                                            const fullUrl = `${baseUrl}${imagePath}`;
+
+                                            console.log('🔍 Popup Image Debug:', {
+                                                baseUrl,
+                                                imagePath,
+                                                fullUrl,
+                                                originalPath: selectedNews.image_path
+                                            });
+
+                                            return fullUrl;
+                                        })()}
+                                        alt={selectedNews.title || "News image"}
+                                        className="w-[85%] h-64 object-cover rounded-xl border-2 border-black"
+                                        onError={(e) => {
+                                            console.error('❌ Popup Image failed to load:', e.target.src);
+                                            e.target.src = img;
+                                        }}
+                                    />
+                                    <button
+                                        style={{
+                                            background: '#181f2e',
+                                            color: '#0af',
+                                            border: 'none',
+                                            borderRadius: '50%',
+                                            width: 36,
+                                            height: 36,
+                                            fontSize: 22,
+                                            fontWeight: 900,
+                                            cursor: 'pointer',
+                                            boxShadow: '0 2px 8px #0006',
+                                            transition: 'background 0.2s',
+                                        }}
+                                        title="الصورة التالي"
+                                    >
+                                        &#8594;
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* News Details */}
+                            <div className="space-y-4">
+
+                                {/* Title */}
+                                <div className="p-2">
+                                    <h3 className="text-black font-bold text-lg mb-2 text-end">:العنوان</h3>
+                                    <p className="text-blue-950 text-right">{selectedNews.title || "غير محدد"}</p>
+                                </div>
+
+                                {/* Description */}
+                                {selectedNews.description && (
+                                    <div className="p-2 min-h-fit">
+                                        <h3 className="text-black font-bold text-lg mb-2 text-end">:التفاصيل</h3>
+                                        <p className="text-blue-950 text-right leading-relaxed whitespace-pre-wrap break-words">{selectedNews.description}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </>
     )
 }

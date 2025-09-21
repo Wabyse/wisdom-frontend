@@ -13,7 +13,7 @@ import molLogo from "../assets/Gov.png";
 import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 
-const NewNavbar = () => {
+const NewNavbar = ({searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true}) => {
     const navigate = useNavigate();
     const { userInfo } = useAuth();
     const { language } = useLanguage();
@@ -38,7 +38,7 @@ const NewNavbar = () => {
                 </div>
                 <div className="flex-1 flex justify-center">
                     {/* Search */}
-                    <div className="relative w-full max-w-md">
+                    {searchStatus && <div className="relative w-full max-w-md">
                         <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
                         <input
                             type="text"
@@ -48,13 +48,13 @@ const NewNavbar = () => {
                             onChange={e => setSearch(e.target.value)}
                             style={{ fontFamily: 'inherit' }}
                         />
-                    </div>
+                    </div>}
                 </div>
                 <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
                     {/* dark mode / light mode */}
-                    <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
+                    {darkmodeStatus &&<button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
-                    </button>
+                    </button>}
                     {/* Full Screen Toggle Button */}
                     <button
                         onClick={fullScreen}
@@ -72,18 +72,18 @@ const NewNavbar = () => {
                         {userFullName(userInfo, language)}
                     </span>
                     {/* Share Button */}
-                    <button
+                    {shareStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                     >
                         <FontAwesomeIcon icon={faShareNodes} className="text-xl text-gray-500" />
-                    </button>
+                    </button>}
                     {/* --- نهاية الأيقونات --- */}
-                    <button
+                    {homeStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                         onClick={() => navigate('/watoms')}
                     >
                         <FontAwesomeIcon icon={faHouse} className="text-xl text-green-700" />
-                    </button>
+                    </button>}
                 </div>
             </div>
         </div>

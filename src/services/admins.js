@@ -29,3 +29,17 @@ export const viewNews = async () => {
         throw error;
     }
 };
+
+// update news notification
+export const updateNewsNotification = async (newsId, notificationData) => {
+    try {
+        const response = await api.put(`/api/v1/watoms/news/${newsId}/notification`, notificationData);
+        return response.data?.data || response.data;
+    } catch (error) {
+        console.error(
+            "Error updating news notification:",
+            error.response?.data || error.message
+        );
+        throw error;
+    }
+};

@@ -104,7 +104,6 @@ const WatomsDashboard = () => {
   const [selectedOrgId, setSelectedOrgId] = useState(null);
   const [orgStandards, setOrgStandards] = useState([]);
   const [orgSubStandards, setOrgSubStandards] = useState([]);
-  const [orgSubSubStandards, setOrgSubSubStandards] = useState([]);
   const [managerImg, setManagerImg] = useState(null);
   const [orgImg, setOrgImg] = useState(null);
   const [detailedData, setDetailedData] = useState({
@@ -627,13 +626,6 @@ const WatomsDashboard = () => {
     averageNestedScores(summedData);
     setDetailedData(summedData); // ✅ This triggers the second useEffect
   }, [watomsData]);
-
-  // New function to handle center-specific ranking click
-  const handleCenterRankingClick = async (center) => {
-    setIsProjectUnitsModalOpen(true);
-    setSelectedCenter(center); // Set the selected center to display its name in modal
-    setSelectedOrgId(center.id);
-  };
 
   // Remove the fallback data generation since we want real data from database
   // const generateAnnualPerformanceData = () => { ... };
