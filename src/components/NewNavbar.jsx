@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import useFullScreen from "../hooks/useFullScreen";
@@ -13,7 +13,7 @@ import molLogo from "../assets/Gov.png";
 import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 
-const NewNavbar = ({searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true}) => {
+const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false }) => {
     const navigate = useNavigate();
     const { userInfo } = useAuth();
     const { language } = useLanguage();
@@ -52,7 +52,7 @@ const NewNavbar = ({searchStatus = true, darkmodeStatus = true, shareStatus = tr
                 </div>
                 <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
                     {/* dark mode / light mode */}
-                    {darkmodeStatus &&<button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
+                    {darkmodeStatus && <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
                     </button>}
                     {/* Full Screen Toggle Button */}
@@ -76,6 +76,18 @@ const NewNavbar = ({searchStatus = true, darkmodeStatus = true, shareStatus = tr
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                     >
                         <FontAwesomeIcon icon={faShareNodes} className="text-xl text-gray-500" />
+                    </button>}
+                    {/* dashboard Button */}
+                    {dashboardStatus && <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                    >
+                        <FontAwesomeIcon icon={faChartSimple} className="text-xl text-gray-500" />
+                    </button>}
+                    {/* call Button */}
+                    {callStatus && <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                    >
+                        <FontAwesomeIcon icon={faPhone} className="text-xl text-gray-500" />
                     </button>}
                     {/* --- نهاية الأيقونات --- */}
                     {homeStatus && <button

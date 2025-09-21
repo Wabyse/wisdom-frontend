@@ -8,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import img from "../assets/homeCover2.jpg";
 import DonutChart from "../components/DonutChart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faChartSimple, faPhone, faScroll, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faPhone, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { updateNewsNotification, viewNews } from "../services/admins";
 import { fetchSchools } from "../services/data";
@@ -72,8 +72,12 @@ const WatomsNews = () => {
                     title: news.title,
                     image_path: news.image_path,
                     normalized_path: news.image_path ? news.image_path.replace(/\\/g, '/') : 'No image path',
-                    full_image_url: news.image_path ? `${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/uploads/${news.image_path.replace(/\\/g, '/')}` : 'No image path',
-                    base_url: process.env.REACT_APP_API_URL || 'http://localhost:4000'
+                    full_image_url: news.image_path ? (() => {
+                        const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                        const imagePath = news.image_path.startsWith('/') ? news.image_path : '/uploads/' + news.image_path.replace(/\\/g, '/');
+                        return `${baseUrl}${imagePath}`;
+                    })() : 'No image path',
+                    base_url: process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000'
                 })));
                 setWatomsNewsData(response);
             } catch (error) {
@@ -382,7 +386,7 @@ const WatomsNews = () => {
                         </div>
                     </fieldset>
                     <div className="my-auto w-0 h-64 border-l-4 border-gray-400 rounded-full" />
-                    <div className="flex flex-col justify-start items-center pt-4 min-w-1/3 w-1/3 gap-8">
+                    <div className="flex flex-col justify-start items-center pt-4 min-w-1/3 w-1/3 gap-16">
                         <div className="flex flex-col justify-center items-center text-xl font-bold text-[#FBBF24] gap-2">
                             <div>EVOITS</div>
                             <div>مشروع تطوير مراكز التدريب المهني</div>
@@ -468,18 +472,18 @@ const WatomsNews = () => {
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2 bg-opacity-55 items-center bg-white rounded-2xl" onClick={() => navigate('/watoms/managers')}>
-                                <div className="flex text-[#0a183d] justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
-                                    <img src={reportIcon} className="w-6 h-6" />
+                                <div className="flex text-black justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
+                                    <img src={report2Icon} className="w-6 h-6" />
                                     <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
                                     <h1 className="text-xs text-end w-[75%] font-bold border-b-2 border-[#0a183d] py-5">تقارير المرور والمتابعة</h1>
                                 </div>
-                                <div className="flex text-[#0a183d] justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
-                                    <img src={report2Icon} className="w-6 h-6" />
+                                <div className="flex text-black justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
+                                    <FontAwesomeIcon icon={faBook} className="text-2xl" />
                                     <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
                                     <h1 className="text-xs text-end w-[75%] font-bold border-b-2 border-[#0a183d] py-5">التقرير السرية الدورية</h1>
                                 </div>
 
-                                <div className="flex text-[#0a183d] justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
+                                <div className="flex text-black justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
                                     <FontAwesomeIcon icon={faPhone} />
                                     <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
                                     <h1 className="text-xs text-end w-[75%] font-bold">الاتصال المباشر بالمراكز</h1>
@@ -504,7 +508,7 @@ const WatomsNews = () => {
                                             src={(() => {
                                                 if (!news.image_path) return img;
 
-                                                const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+                                                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
                                                 const imagePath = news.image_path.startsWith('/') ? news.image_path : '/uploads/' + news.image_path.replace(/\\/g, '/');
                                                 const fullUrl = `${baseUrl}${imagePath}`;
 
@@ -512,7 +516,11 @@ const WatomsNews = () => {
                                                     baseUrl,
                                                     imagePath,
                                                     fullUrl,
-                                                    originalPath: news.image_path
+                                                    originalPath: news.image_path,
+                                                    newsId: news.id,
+                                                    newsTitle: news.title,
+                                                    hasImagePath: !!news.image_path,
+                                                    imagePathType: typeof news.image_path
                                                 });
 
                                                 return fullUrl;
@@ -520,8 +528,43 @@ const WatomsNews = () => {
                                             alt={news.title || "News image"}
                                             className="h-full w-auto object-contain rounded-xl"
                                             onError={(e) => {
-                                                console.error('❌ Image failed to load:', e.target.src);
+                                                console.error('❌ Image failed to load:', {
+                                                    failedUrl: e.target.src,
+                                                    newsId: news.id,
+                                                    newsTitle: news.title,
+                                                    originalImagePath: news.image_path,
+                                                    fallbackImage: img,
+                                                    timestamp: new Date().toISOString()
+                                                });
+
+                                                // Test URL accessibility
+                                                fetch(e.target.src, { method: 'HEAD' })
+                                                    .then(response => {
+                                                        console.log('🔍 URL Test Result:', {
+                                                            url: e.target.src,
+                                                            status: response.status,
+                                                            statusText: response.statusText,
+                                                            headers: Object.fromEntries(response.headers.entries()),
+                                                            timestamp: new Date().toISOString()
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.log('🔍 URL Test Error:', {
+                                                            url: e.target.src,
+                                                            error: error.message,
+                                                            timestamp: new Date().toISOString()
+                                                        });
+                                                    });
+
                                                 e.target.src = img;
+                                            }}
+                                            onLoad={() => {
+                                                console.log('✅ Image loaded successfully:', {
+                                                    src: news.image_path,
+                                                    newsId: news.id,
+                                                    newsTitle: news.title,
+                                                    timestamp: new Date().toISOString()
+                                                });
                                             }}
                                         />
                                         <div className="flex flex-col justify-center items-center">
@@ -593,7 +636,7 @@ const WatomsNews = () => {
                                     </button>
                                     <img
                                         src={(() => {
-                                            const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+                                            const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
                                             const imagePath = selectedNews.image_path.startsWith('/') ? selectedNews.image_path : '/uploads/' + selectedNews.image_path.replace(/\\/g, '/');
                                             const fullUrl = `${baseUrl}${imagePath}`;
 
@@ -609,7 +652,13 @@ const WatomsNews = () => {
                                         alt={selectedNews.title || "News image"}
                                         className="w-[85%] h-64 object-cover rounded-xl border-2 border-black"
                                         onError={(e) => {
-                                            console.error('❌ Popup Image failed to load:', e.target.src);
+                                            console.error('❌ Popup Image failed to load:', {
+                                                failedUrl: e.target.src,
+                                                newsId: selectedNews.id,
+                                                newsTitle: selectedNews.title,
+                                                originalImagePath: selectedNews.image_path,
+                                                fallbackImage: img
+                                            });
                                             e.target.src = img;
                                         }}
                                     />
