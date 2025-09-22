@@ -153,6 +153,7 @@ const WatomsNews = () => {
                 shareStatus={false}
                 homeStatus={false}
                 logoutStatus={true}
+                ministerStatus={true}
             />
             <div className="w-full h-[88vh] flex flex-col items-center bg-[#0a183d]">
                 <div className="flex justify-center w-[95%] h-full gap-6">
