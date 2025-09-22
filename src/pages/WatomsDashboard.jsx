@@ -20,6 +20,7 @@ import Egypt from "../components/Egypt";
 import molLogo from '../assets/Gov.png';
 import ebdaeduLogo from '../assets/ebad-edu.png';
 import WatomsDashboardSubDataDetails from "../components/WatomsDashboardSubDataDetails";
+import NewNavbar from "../components/NewNavbar";
 
 const HEADER_HEIGHT = 60;
 
@@ -645,71 +646,16 @@ const WatomsDashboard = () => {
       boxSizing: 'border-box',
     }}>
       {/* Navbar */}
-      <div className="bg-white" style={{
-        width: '100vw',
-        minHeight: 60,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 32px',
-        boxSizing: 'border-box',
-        position: 'relative',
-        zIndex: 100,
-        borderBottom: '1px solid #222',
-      }}>
-        {/* WABYS and Watoms logo */}
-        <div className="flex items-center gap-6 my-2">
-          <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => userInfo?.code !== 1452 ? navigate('/wabys') : navigate('/login')} />
-          <div className='border-l-2 border-black p-1 h-6' />
-          <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={ebdaeduLogo} alt="ebda edu Logo" />
-          <div className='border-l-2 border-black p-1 h-6' />
-          <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={molLogo} alt="mol Logo" />
-        </div>
-        <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
-          {/* Full Screen */}
-          <button
-            onClick={fullScreen}
-            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-            title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
-          >
-            <FontAwesomeIcon
-              icon={isFullScreen ? faCompress : faExpand}
-              className="text-xl text-watomsBlue"
-            />
-          </button>
-          {/* User Name */}
-          <span className="flex items-center gap-2 font-bold text-lg md:min-w-[120px] min-w-[300px] justify-center text-watomsBlue">
-            <FontAwesomeIcon icon={faUser} />
-            {userFullName(userInfo, language)}
-          </span>
-          {/* Filter bar */}
-          {userInfo?.code !== 1452 && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
-            <select
-              value={selectedProject}
-              onChange={(e) => setSelectedProject(e.target.value)}
-              className="text-black bg-[#bdbdbd] max-h-8 h-8 text-xs flex justify-center w-full items-center py-1"
-              dir="rtl"
-            >
-              <option value="" disabled>الرجاء اختيار مشروع</option>
-              {projects.map((project, i) => (
-                <option key={`${project}-${i}`} value={project}>
-                  {project}
-                </option>
-              ))}
-            </select>
-          </div>}
-          {/* Bell icon */}
-          <button
-            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-            title="notification"
-          >
-            <FontAwesomeIcon
-              icon={faBell}
-              className="text-xl text-watomsBlue"
-            />
-          </button>
-        </div>
-      </div>
+      <NewNavbar
+        searchStatus={false}
+        darkmodeStatus={false}
+        shareStatus={false}
+        ministerStatus={true}
+        dasboardPage={true}
+        projects={projects}
+        selectedProject={selectedProject}
+        setSelectedProject={setSelectedProject}
+      />
       {/* Page Body: left - middle - right sections*/}
       <div className="flex flex-row justify-between gap-4 relative w-full box-border" style={{
         maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,

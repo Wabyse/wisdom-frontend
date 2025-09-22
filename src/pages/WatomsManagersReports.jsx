@@ -121,7 +121,7 @@ const WatomsManagersReports = () => {
                 fullScreenStatus={false}
             />
             <div className="w-full h-[88vh] bg-[#0a183d] flex flex-col items-center gap-6">
-                <div className="my-auto flex justify-center items-start border-2 border-gray-400 p-2 rounded-2xl shadow-white shadow-md min-h-[64vh] h-[82vh] w-[95%]">
+                <div className="my-auto flex justify-center items-start border-2 border-gray-400 p-2 rounded-2xl shadow-white shadow-md min-h-[64vh] h-[74vh] w-[95%]">
                     <div className="flex justify-evenly items-center w-full h-full gap-4">
                         {organizationIndices.map((orgIndex) => (
                             <div key={orgIndex} className="flex flex-col flex-1 gap-2 justify-center items-center max-w-68">

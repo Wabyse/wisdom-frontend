@@ -12,10 +12,22 @@ import video10 from "../assets/followupvideo10.mp4";
 import video11 from "../assets/followupvideo11.mp4";
 import video12 from "../assets/followupvideo12.mp4";
 import video13 from "../assets/followupvideo13.mp4";
-import ebdaeduLogo from '../assets/ebad-edu.png';
-import molLogo from "../assets/Gov.png";
+import { useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 const WatomsFollowUp = () => {
+    const scrollRef = useRef(null);
+
+    const scroll = (direction) => {
+        if (scrollRef.current) {
+            const scrollAmount = 400; // adjust for how much you want to move
+            scrollRef.current.scrollBy({
+                left: direction === "left" ? -scrollAmount : scrollAmount,
+                behavior: "smooth",
+            });
+        }
+    };
     return (
         <>
             <NewNavbar
@@ -35,72 +47,39 @@ const WatomsFollowUp = () => {
                     <legend className="px-2 text-center font-bold text-white">تقارير المرور و المتابعة</legend>
 
                     {/* Video container */}
-                    <div className="flex flex-row gap-4 overflow-x-auto w-full h-full p-2">
-                        <video
-                            src={video1}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video2}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video3}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video4}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video5}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video6}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video7}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video8}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video9}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video10}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video11}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video12}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
-                        <video
-                            src={video13}
-                            controls
-                            className="h-full max-h-[60vh] rounded-lg shadow-lg"
-                        />
+                    <div className="relative w-full h-full">
+                        {/* Left Arrow */}
+                        <button
+                            onClick={() => scroll("left")}
+                            className="absolute w-10 h-10 flex justify-center items-center left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full shadow p-2 hover:bg-gray-200"
+                        >
+                            <FontAwesomeIcon icon={faChevronLeft} className="text-xl" />
+                        </button>
+
+                        {/* Scrollable Container */}
+                        <div
+                            ref={scrollRef}
+                            className="flex flex-row gap-4 overflow-x-auto w-full h-full p-2 scroll-smooth no-scrollbar"
+                        >
+                            {[video1, video2, video3, video4, video5, video6, video7, video8, video9, video10, video11, video12, video13].map(
+                                (video, i) => (
+                                    <video
+                                        key={i}
+                                        src={video}
+                                        controls
+                                        className="h-full max-h-[60vh] rounded-lg shadow-lg flex-shrink-0"
+                                    />
+                                )
+                            )}
+                        </div>
+
+                        {/* Right Arrow */}
+                        <button
+                            onClick={() => scroll("right")}
+                            className="absolute w-10 h-10 flex justify-center items-center right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full shadow p-2 hover:bg-gray-200"
+                        >
+                            <FontAwesomeIcon icon={faChevronRight} className="text-xl" />
+                        </button>
                     </div>
                 </fieldset>
             </div>

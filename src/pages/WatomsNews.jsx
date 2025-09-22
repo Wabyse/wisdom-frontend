@@ -151,7 +151,6 @@ const WatomsNews = () => {
                 searchStatus={false}
                 darkmodeStatus={false}
                 shareStatus={false}
-                homeStatus={false}
                 ministerStatus={true}
             />
             <div className="w-full h-[88vh] flex flex-col items-center bg-[#0a183d]">
