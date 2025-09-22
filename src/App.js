@@ -64,6 +64,7 @@ import DemoDashboard from "./pages/DemoDashboard";
 import WatomsNews from "./pages/WatomsNews";
 import WatomsPublishNews from "./pages/WatomsPublishNews";
 import WatomsManagersReports from "./pages/WatomsManagersReports";
+import WatomsFollowUp from "./pages/WatomsFollowUp";
 
 function App() {
   return (
@@ -426,6 +427,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <WatomsManagersReports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/follow-up"
+            element={
+              <ProtectedRoute>
+                <WatomsFollowUp />
               </ProtectedRoute>
             }
           />

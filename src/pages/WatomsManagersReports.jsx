@@ -5,15 +5,12 @@ import sharabyaManager from "../assets/sharabyaManager.jpg";
 import sharqiaManager from "../assets/sharqiaManager.jpg";
 import suezManager from "../assets/suezManager.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faChartSimple, faCheckSquare, faPhone, faScroll } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faChartSimple, faCheckSquare, faPhone } from "@fortawesome/free-solid-svg-icons";
 import DonutChart from "../components/DonutChart";
 import { roundNumber } from "../utils/roundNumber";
 import { useEffect, useState } from "react";
 import { fetchWatomsDetailsData } from "../services/dashboard";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import dashboardIcon from "../assets/dashboardIcon.png";
-import reportIcon from "../assets/reportIcon.png";
-import report2Icon from "../assets/report2Icon.png";
 import WatomsSingleOrgDashboard from "../components/WatomsSingleOrgDashboard";
 
 const WatomsManagersReports = () => {
@@ -22,10 +19,8 @@ const WatomsManagersReports = () => {
     const [selectedManagers, setSelectedManagers] = useState(new Set());
     const [hoveredManager, setHoveredManager] = useState(null);
     const [dashboardPopup, setDashboardPopup] = useState(false);
-
-    const openPopup = () => {
-        setDashboardPopup(true);
-    }
+    const [selectedOrg, setSelectedOrg] = useState(null);
+    const [orgRank, setOrgRank] = useState();
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -55,10 +50,10 @@ const WatomsManagersReports = () => {
     // Manager images mapping
     const managerImages = {
         4: ismailiaManager,
-        5: boulaqManager,
+        5: suezManager,
         7: sharabyaManager,
-        8: sharqiaManager,
-        9: suezManager
+        8: boulaqManager,
+        9: sharqiaManager
     };
 
     // Organization indices to display
@@ -92,6 +87,27 @@ const WatomsManagersReports = () => {
         }
         loadWatomsDetailedData();
     }, []);
+
+    // get org's rank due to month
+    useEffect(() => {
+        if (!watomsData?.organizations || !selectedOrg) return;
+
+        const rankingOrgs = Object.entries(watomsData.organizations)
+            .sort(([, a], [, b]) => {
+                const perfA = a?.months?.at(-1)?.performance ?? 0;
+                const perfB = b?.months?.at(-1)?.performance ?? 0;
+                return perfB - perfA; // sort high → low
+            });
+
+        const selectedOrgIdx = rankingOrgs.findIndex(
+            ([, org]) => org.id === selectedOrg.id
+        );
+
+        if (selectedOrgIdx !== -1) {
+            setOrgRank(selectedOrgIdx + 1); // rank is 1-based
+        }
+    }, [selectedOrg, watomsData]);
+
     return (
         <>
             <NewNavbar
@@ -99,12 +115,16 @@ const WatomsManagersReports = () => {
                 dashboardStatus={true}
                 callStatus={true}
                 searchStatus={false}
+                followUpStatus={true}
+                ministerStatus={true}
+                darkmodeStatus={false}
+                fullScreenStatus={false}
             />
             <div className="w-full h-[88vh] bg-[#0a183d] flex flex-col items-center gap-6">
                 <div className="my-auto flex justify-center items-start border-2 border-gray-400 p-2 rounded-2xl shadow-white shadow-md min-h-[64vh] h-[82vh] w-[95%]">
                     <div className="flex justify-evenly items-center w-full h-full gap-4">
                         {organizationIndices.map((orgIndex) => (
-                            <div key={orgIndex} className="flex flex-col flex-1 gap-2 h-[100%] justify-center items-center max-w-68">
+                            <div key={orgIndex} className="flex flex-col flex-1 gap-2 justify-center items-center max-w-68">
                                 <div
                                     className="rounded-2xl bg-[#2d3347] overflow-hidden flex-1 w-full flex flex-col items-center relative transition-all duration-300"
                                 >
@@ -116,30 +136,34 @@ const WatomsManagersReports = () => {
                                             </div>
                                         </div>
                                     )}
-                                    <FontAwesomeIcon icon={faChartSimple} className="absolute top-2 left-2 text-white text-2xl"/>
+                                    <FontAwesomeIcon icon={faChartSimple} className="absolute top-2 left-2 text-white text-2xl cursor-pointer" onClick={() => { setDashboardPopup(true); setSelectedOrg(watomsData?.organizations?.[orgIndex]) }} />
                                     <div
-                                        className="flex flex-col items-center p-2 gap-2 cursor-pointer relative w-full"
-                                        onMouseEnter={() => setHoveredManager(orgIndex)}
-                                        onMouseLeave={() => setHoveredManager(null)}
-                                        onClick={() => toggleManagerSelection(orgIndex)}
+                                        className="flex flex-col items-center p-2 gap-2 w-full"
                                     >
-                                        {/* Hover overlay with checkbox */}
-                                        {hoveredManager === orgIndex && (
-                                            <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10 transition-all duration-300 rounded-lg">
-                                                <div className="bg-white rounded-full p-3 shadow-lg w-12 h-12 flex justify-center items-center">
-                                                    <FontAwesomeIcon
-                                                        icon={faCheckSquare}
-                                                        className={`text-2xl ${selectedManagers.has(orgIndex) ? 'text-green-500' : 'text-gray-400'}`}
-                                                    />
+                                        {/* manager's photo with hover effect */}
+                                        <div
+                                            className="relative cursor-pointer"
+                                            onMouseEnter={() => setHoveredManager(orgIndex)}
+                                            onMouseLeave={() => setHoveredManager(null)}
+                                            onClick={() => toggleManagerSelection(orgIndex)}
+                                        >
+                                            {/* Hover overlay with checkbox */}
+                                            {hoveredManager === orgIndex && (
+                                                <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10 transition-all duration-300 rounded-full">
+                                                    <div className="bg-white rounded-full p-3 shadow-lg w-12 h-12 flex justify-center items-center">
+                                                        <FontAwesomeIcon
+                                                            icon={faCheckSquare}
+                                                            className={`text-2xl ${selectedManagers.has(orgIndex) ? 'text-green-500' : 'text-gray-400'}`}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        {/* manager's photo */}
-                                        <img
-                                            className="rounded-full w-32 h-32 shadow-lg shadow-green-500 mb-2"
-                                            src={managerImages[orgIndex]}
-                                            alt={`manager ${orgIndex}`}
-                                        />
+                                            )}
+                                            <img
+                                                className="rounded-full w-32 h-32 shadow-lg shadow-green-500 mb-2"
+                                                src={managerImages[orgIndex]}
+                                                alt={`manager ${orgIndex}`}
+                                            />
+                                        </div>
                                         <div className="flex justify-evenly w-full items-center gap-2">
                                             {/* vtc's score */}
                                             <DonutChart
@@ -222,10 +246,6 @@ const WatomsManagersReports = () => {
                                         <h1>التقرير السرية الدورية</h1>
                                     </div>
                                     <div className="flex bg-white bg-opacity-55 gap-2 justify-between items-center px-6 py-1 w-full rounded-xl">
-                                        <img src={report2Icon} className="w-7 h-7" />
-                                        <h1>تقرير المرور و المتابعة</h1>
-                                    </div>
-                                    <div className="flex bg-white bg-opacity-55 gap-2 justify-between items-center px-6 py-1 w-full rounded-xl">
                                         <FontAwesomeIcon icon={faPhone} className="text-xl" />
                                         <h1>الاتصال المباشر بالمركز</h1>
                                     </div>
@@ -235,7 +255,7 @@ const WatomsManagersReports = () => {
                     </div>
                 </div>
             </div>
-            {/* {dashboardPopup && <WatomsSingleOrgDashboard />} */}
+            {dashboardPopup && <WatomsSingleOrgDashboard isOpen={dashboardPopup} onClose={() => setDashboardPopup(false)} data={selectedOrg} rank={orgRank} />}
         </>
     )
 }

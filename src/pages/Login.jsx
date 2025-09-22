@@ -62,7 +62,11 @@ const Login = () => {
         toast.success("تم تسجيل الدخول بنجاح!");
       setUserInfo(data);
       console.log(data)
-      if (data.code === 1452) { navigate("/watoms/dashboard") } else { navigate(from, { replace: true }) }
+      if (data.code === 1452) {
+        navigate("/watoms/dashboard");
+      } else if (data.code === 1475) {
+        navigate("/watoms/news");
+      } else { navigate(from, { replace: true }) }
     } catch (err) {
       console.error("Error submitting data:", err);
       language ? toast.error("username or password are incorrect, please try again!") :
