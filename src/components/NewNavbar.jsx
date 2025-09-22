@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import useFullScreen from "../hooks/useFullScreen";
@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import report2Icon from "../assets/report2Icon.png";
 
-const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, followUpStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects }) => {
+const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, followUpStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -134,9 +134,16 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                     {/* --- نهاية الأيقونات --- */}
                     {homeStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                        onClick={() => { userInfo?.code === 1475 ? logout() : navigate('/watoms') }}
+                        onClick={() => { userInfo?.code === 1475 ? navigate('/watoms/news') : navigate('/watoms') }}
                     >
                         <FontAwesomeIcon icon={faHouse} className="text-xl text-green-700" />
+                    </button>}
+                    {/* --- نهاية الأيقونات --- */}
+                    {logoutStatus && <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                        onClick={() => logout()}
+                    >
+                        <FontAwesomeIcon icon={faSignOutAlt} className="text-xl text-wisdomOrange" />
                     </button>}
                 </div>
             </div>

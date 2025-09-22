@@ -151,7 +151,8 @@ const WatomsNews = () => {
                 searchStatus={false}
                 darkmodeStatus={false}
                 shareStatus={false}
-                ministerStatus={true}
+                homeStatus={false}
+                logoutStatus={true}
             />
             <div className="w-full h-[88vh] flex flex-col items-center bg-[#0a183d]">
                 <div className="flex justify-center w-[95%] h-full gap-6">
@@ -501,7 +502,7 @@ const WatomsNews = () => {
                                 {watomsNewsData.map((news, index) => (
                                     <div
                                         key={news.id || index}
-                                        className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-20 p-2 justify-between items-center cursor-pointer hover:bg-gray-700 hover:bg-opacity-30 transition-all duration-200"
+                                        className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-24 h-fit p-2 justify-between items-center cursor-pointer hover:bg-gray-700 hover:bg-opacity-30 transition-all duration-200"
                                         onClick={() => handleNewsClick(news)}
                                     >
                                         {!news?.notification && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>}
