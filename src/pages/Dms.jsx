@@ -555,6 +555,7 @@ const Dms = () => {
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
   if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+  if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
 
   return (
     <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>

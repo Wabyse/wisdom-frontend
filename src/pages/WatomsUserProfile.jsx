@@ -69,6 +69,7 @@ const WatomsUserProfile = () => {
     };
 
     if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+    if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 dark:bg-darkBg font-[Cairo,sans-serif]">

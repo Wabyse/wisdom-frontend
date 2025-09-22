@@ -92,6 +92,7 @@ const Assign = () => {
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/pms' />;
   if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+  if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
 
   return (
     <div className="bg-gray-500 m-0 min-h-[130vh] overflow-auto">

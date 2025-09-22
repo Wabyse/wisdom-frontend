@@ -24,6 +24,8 @@ const QRList = () => {
     }, [userInfo]);
 
     if (userInfo.code !== 3) return <DenyAccessPage homePage='/' />;
+    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+    if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
 
     return (
         // <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

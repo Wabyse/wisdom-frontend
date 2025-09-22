@@ -112,6 +112,7 @@ function TomsInterview() {
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role !== "Manager" && userInfo.user_role !== "Operations Excellence Lead") return <DenyAccessPage homePage='/watoms/pms' />;
   if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+  if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
 
   return (
     <div className="bg-formColor flex justify-center flex-wrap min-h-screen">

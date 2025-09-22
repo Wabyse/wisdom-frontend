@@ -828,6 +828,11 @@ export const INSTITUTION_NO_CURRICULUMS = {
     9: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 }
 
+export const SCHOOL_NO_CURRICULUMS = {
+    1: [1],
+    2: [1, 2],
+}
+
 export const DEMO_NO_CURRICULUMS = {
     14: [1]
 }
@@ -888,6 +893,33 @@ export const WATOMS_UNPREPARED_DATA = {
         labs: 1,
         employees: 6,
         trainers: 5,
+        supervisors: 0,
+        admins: 0,
+    },
+}
+
+export const WISDOM_UNPREPARED_DATA = {
+    "All": {
+        workShops: 0,
+        labs: 0,
+        employees: 0,
+        trainers: 0,
+        supervisors: 0,
+        admins: 0,
+    },
+    1: {
+        workShops: 0,
+        labs: 0,
+        employees: 0,
+        trainers: 0,
+        supervisors: 0,
+        admins: 0,
+    },
+    2: {
+        workShops: 0,
+        labs: 0,
+        employees: 0,
+        trainers: 0,
         supervisors: 0,
         admins: 0,
     },

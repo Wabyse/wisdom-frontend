@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { fetchSchools } from "../services/data";
 import { insertNews } from "../services/admins";
+import DenyAccessPage from "../components/DenyAccessPage";
+import { useAuth } from "../context/AuthContext";
 
 const WatomsPublishNews = () => {
+    const { userInfo } = useAuth();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
@@ -63,6 +66,8 @@ const WatomsPublishNews = () => {
             setIsSubmitting(false);
         }
     };
+
+    if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-900">

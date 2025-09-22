@@ -558,6 +558,7 @@ const DemoDashboard = () => {
 
   if (loading) return <LoadingScreen />;
   if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+  if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
 
   return (
     <div style={{
