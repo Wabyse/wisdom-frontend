@@ -5,13 +5,17 @@ import sharabyaManager from "../assets/sharabyaManager.jpg";
 import sharqiaManager from "../assets/sharqiaManager.jpg";
 import suezManager from "../assets/suezManager.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faChartSimple, faCheckSquare, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faChartSimple, faCheckSquare } from "@fortawesome/free-solid-svg-icons";
 import DonutChart from "../components/DonutChart";
 import { roundNumber } from "../utils/roundNumber";
 import { useEffect, useState } from "react";
 import { fetchWatomsDetailsData } from "../services/dashboard";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import WatomsSingleOrgDashboard from "../components/WatomsSingleOrgDashboard";
+import callIcon from '../assets/callIcon.png';
+import dashboardIcon from '../assets/DashboardIcon2.png';
+import reportIcon from '../assets/ReportIcon2.png';
+import secretIcon from '../assets/secretIcon.png';
 
 const WatomsManagersReports = () => {
     const [watomsData, setWatomsData] = useState([]);
@@ -126,7 +130,7 @@ const WatomsManagersReports = () => {
                         {organizationIndices.map((orgIndex) => (
                             <div key={orgIndex} className="flex flex-col flex-1 gap-2 justify-center items-center max-w-68">
                                 <div
-                                    className="rounded-2xl bg-[#2d3347] overflow-hidden flex-1 w-full flex flex-col items-center relative transition-all duration-300"
+                                    className="overflow-hidden flex-1 w-full flex flex-col items-center relative transition-all duration-300 gap-3"
                                 >
                                     {/* Selection indicator */}
                                     {selectedManagers.has(orgIndex) && hoveredManager !== orgIndex && (
@@ -136,9 +140,9 @@ const WatomsManagersReports = () => {
                                             </div>
                                         </div>
                                     )}
-                                    <FontAwesomeIcon icon={faChartSimple} className="absolute top-2 left-2 text-white text-2xl cursor-pointer" onClick={() => { setDashboardPopup(true); setSelectedOrg(watomsData?.organizations?.[orgIndex]) }} />
+                                    <img src={callIcon} className="absolute top-2 left-2 text-white w-8 cursor-pointer" />
                                     <div
-                                        className="flex flex-col items-center p-2 gap-2 w-full"
+                                        className="flex flex-col items-center p-2 gap-2 w-full rounded-2xl bg-[#2d3347]"
                                     >
                                         {/* manager's photo with hover effect */}
                                         <div
@@ -164,91 +168,89 @@ const WatomsManagersReports = () => {
                                                 alt={`manager ${orgIndex}`}
                                             />
                                         </div>
-                                        <div className="flex justify-evenly w-full items-center gap-2">
-                                            {/* vtc's score */}
-                                            <DonutChart
-                                                value={roundNumber(watomsData?.organizations?.[orgIndex]?.months?.[watomsData?.organizations?.[orgIndex]?.months?.length - 1]?.performance || 0)}
-                                                size={60}
-                                                color='url(#circularBlueGradient)'
-                                                bg='#23263a'
-                                                textColor='#fff'
-                                            />
-                                            {/* manager's detail */}
-                                            <div className="text-white text-center">
-                                                <h1 className="text-sm font-bold">
-                                                    {watomsData?.organizations?.[orgIndex]?.managerFirstName} {watomsData?.organizations?.[orgIndex]?.managerMiddleName} {watomsData?.organizations?.[orgIndex]?.managerLastName}
-                                                </h1>
-                                                <h1 className="text-xs text-gray-300">
-                                                    {watomsData?.organizations?.[orgIndex]?.name}
-                                                </h1>
-                                            </div>
+                                    </div>
+                                    <div className="flex justify-evenly w-full items-center gap-2 rounded-2xl bg-[#2d3347]">
+                                        {/* vtc's score */}
+                                        <DonutChart
+                                            value={roundNumber(watomsData?.organizations?.[orgIndex]?.months?.[watomsData?.organizations?.[orgIndex]?.months?.length - 1]?.performance || 0)}
+                                            size={60}
+                                            color='url(#circularBlueGradient)'
+                                            bg='#23263a'
+                                            textColor='#fff'
+                                        />
+                                        {/* manager's detail */}
+                                        <div className="text-white text-center">
+                                            <h1 className="text-sm font-bold">
+                                                {watomsData?.organizations?.[orgIndex]?.managerFirstName} {watomsData?.organizations?.[orgIndex]?.managerMiddleName} {watomsData?.organizations?.[orgIndex]?.managerLastName}
+                                            </h1>
+                                            <h1 className="text-xs text-gray-300">
+                                                {watomsData?.organizations?.[orgIndex]?.name}
+                                            </h1>
                                         </div>
                                     </div>
-                                    <div className="h-0 w-36 rounded-full border-white border-b-2 my-6" />
-                                    <ResponsiveContainer width="100%" height={140}>
-                                        <LineChart data={watomsData?.organizations?.[orgIndex]?.months} margin={{ left: -35, right: 15 }}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.3} />
-                                            <XAxis
-                                                dataKey="month"
-                                                stroke="#888"
-                                                fontSize={8}
-                                                tick={{ fill: '#fff' }}
-                                            />
-                                            <YAxis
-                                                stroke="#888"
-                                                fontSize={8}
-                                                tick={{ fill: '#fff' }}
-                                                domain={[0, 100]}
-                                                ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
-                                            />
-                                            <Tooltip content={<CustomTooltip />} />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="performance"
-                                                stroke="#facc15"
-                                                strokeWidth={3}
-                                                dot={(props) => (
-                                                    <circle
-                                                        cx={props.cx}
-                                                        cy={props.cy}
-                                                        r={6}
-                                                        fill={props.payload.color}
-                                                        stroke="#fff"
-                                                        strokeWidth={2}
-                                                        style={{ transition: 'all 0.3s ease' }}
-                                                    />
-                                                )}
-                                                activeDot={{
-                                                    r: 8,
-                                                    fill: '#facc15',
-                                                    stroke: '#fff',
-                                                    strokeWidth: 2,
-                                                    style: { transition: 'all 0.3s ease' }
-                                                }}
-                                            >
-                                                <LabelList
-                                                    dataKey="performance"
-                                                    position="top"
-                                                    offset={15}
-                                                    fill="#facc15"
-                                                    fontSize={11}
-                                                    fontWeight="bold"
-                                                    formatter={(value) => `${value}%`}
+                                    <div className="rounded-2xl bg-[#2d3347] w-full p-2">
+                                        <ResponsiveContainer width="100%" height={140}>
+                                            <LineChart data={watomsData?.organizations?.[orgIndex]?.months} margin={{ left: -35, right: 15 }}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.3} />
+                                                <XAxis
+                                                    dataKey="month"
+                                                    stroke="#888"
+                                                    fontSize={8}
+                                                    tick={{ fill: '#fff' }}
                                                 />
-                                            </Line>
-                                        </LineChart>
-                                    </ResponsiveContainer>
+                                                <YAxis
+                                                    stroke="#888"
+                                                    fontSize={8}
+                                                    tick={{ fill: '#fff' }}
+                                                    domain={[0, 100]}
+                                                    ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+                                                />
+                                                <Tooltip content={<CustomTooltip />} />
+                                                <Line
+                                                    type="monotone"
+                                                    dataKey="performance"
+                                                    stroke="#facc15"
+                                                    strokeWidth={3}
+                                                    dot={(props) => (
+                                                        <circle
+                                                            cx={props.cx}
+                                                            cy={props.cy}
+                                                            r={6}
+                                                            fill={props.payload.color}
+                                                            stroke="#fff"
+                                                            strokeWidth={2}
+                                                            style={{ transition: 'all 0.3s ease' }}
+                                                        />
+                                                    )}
+                                                    activeDot={{
+                                                        r: 8,
+                                                        fill: '#facc15',
+                                                        stroke: '#fff',
+                                                        strokeWidth: 2,
+                                                        style: { transition: 'all 0.3s ease' }
+                                                    }}
+                                                >
+                                                    <LabelList
+                                                        dataKey="performance"
+                                                        position="top"
+                                                        offset={15}
+                                                        fill="#facc15"
+                                                        fontSize={11}
+                                                        fontWeight="bold"
+                                                        formatter={(value) => `${value}%`}
+                                                    />
+                                                </Line>
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
                                 </div>
 
-                                <div className="w-full flex flex-col gap-2">
-                                    <div className="flex bg-white bg-opacity-55 gap-2 justify-between items-center px-6 py-1 w-full rounded-xl">
-                                        <FontAwesomeIcon icon={faBook} className="text-2xl" />
-                                        <h1>التقرير السرية الدورية</h1>
-                                    </div>
-                                    <div className="flex bg-white bg-opacity-55 gap-2 justify-between items-center px-6 py-1 w-full rounded-xl">
-                                        <FontAwesomeIcon icon={faPhone} className="text-xl" />
-                                        <h1>الاتصال المباشر بالمركز</h1>
-                                    </div>
+                                <div className="w-full flex gap-2 rounded-2xl bg-[#2d3347] justify-evenly items-center h-12">
+                                    <img className="w-8" src={secretIcon} alt="" />
+                                    <div className="w-0 h-5 border-l-2 border-white" />
+                                    <img className="w-8 cursor-pointer" src={dashboardIcon} alt="" onClick={() => { setDashboardPopup(true); setSelectedOrg(watomsData?.organizations?.[orgIndex]) }} />
+                                    <div className="w-0 h-5 border-l-2 border-white" />
+                                    <img className="w-8" src={reportIcon} alt="" />
                                 </div>
                             </div>
                         ))}
