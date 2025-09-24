@@ -83,13 +83,13 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(32,42,58,0.15)', zIndex: 1, pointerEvents: 'none' }} />
 
       {/* Content above pattern/overlay */}
-      <div className={`relative z-20 self-center flex flex-col w-${containerWidth}`}>
+      <div className={`relative z-20 self-center flex flex-col w-full`}>
         <div style={{ fontWeight: 700, fontSize: 16, color: '#facc15', textAlign: 'center', letterSpacing: 0.5 }}>
           {title}
         </div>
 
-        <ResponsiveContainer width={width} height={Number(height)}>
-          <LineChart data={data}>
+        <ResponsiveContainer width={"100%"} height={Number(height)}>
+          <LineChart data={data} margin={{ top: 20, right: 10, left: -35, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.3} />
             <XAxis
               dataKey="month"
@@ -152,15 +152,15 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
         }}>
           <div className='text-[10px]' style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#22c55e' }}></div>
-            <span style={{ color: '#fff', fontSize: 12 }}>أداء عالي (70%+)</span>
+            <span style={{ color: '#fff' }}>أداء عالي (70%+)</span>
           </div>
           <div className='text-[10px]' style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#f59e0b' }}></div>
-            <span style={{ color: '#fff', fontSize: 12 }}>أداء متوسط (40-69%)</span>
+            <span style={{ color: '#fff' }}>أداء متوسط (40-69%)</span>
           </div>
           <div className='text-[10px]' style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
-            <span style={{ color: '#fff', fontSize: 12 }}>أداء منخفض (&lt;40%)</span>
+            <span style={{ color: '#fff' }}>أداء منخفض (&lt;40%)</span>
           </div>
         </div>
       </div>

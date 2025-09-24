@@ -493,11 +493,16 @@ const WatomsSingleOrgDashboard = ({ isOpen, onClose, children, data, rank }) => 
         className="absolute inset-0 bg-black bg-opacity-50"
         onClick={onClose}
       />
-      <div className="flex flex-col w-[90%] rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-start px-6 py-2 w-full bg-blue-600">
+      <div className="flex flex-col w-[90%] rounded-2xl overflow-hidden z-10">
+        <div className="flex items-center justify-between px-6 py-1 w-full bg-blue-950">
           <button onClick={onClose} className="w-10 h-10 text-white cursor-pointer">
             X
           </button>
+          <div className="text-white text-xl flex gap-4 items-center">
+            <h1>{data.name}</h1>
+            <div className="w-0 h-4 border-l-2 border-white" />
+            <h1>مؤشرات الاداء اللحظي</h1>
+          </div>
         </div>
         <div className="flex flex-row justify-between gap-4 relative box-border bg-[#0a183d] h-[95%] w-full" style={{
           maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,

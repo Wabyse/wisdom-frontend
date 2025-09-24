@@ -15,6 +15,8 @@ import { fetchSchools } from "../services/data";
 import dashboardIcon from "../assets/dashboardIcon.png";
 import reportIcon from "../assets/reportIcon.png";
 import report2Icon from "../assets/report2Icon.png";
+import ebdaeduLogo from "../assets/ebad-edu.png";
+import molLogo from "../assets/Gov.png";
 
 const WatomsNews = () => {
     const navigate = useNavigate();
@@ -507,7 +509,7 @@ const WatomsNews = () => {
                                         onClick={() => handleNewsClick(news)}
                                     >
                                         {!news?.notification && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>}
-                                        <img
+                                        {/* <img
                                             src={(() => {
                                                 if (!news.image_path) return img;
 
@@ -569,8 +571,8 @@ const WatomsNews = () => {
                                                     timestamp: new Date().toISOString()
                                                 });
                                             }}
-                                        />
-                                        <div className="flex flex-col justify-center items-center">
+                                        /> */}
+                                        <div className="flex flex-col justify-center items-center w-full">
                                             <h1 className="text-white text-md text-center">
                                                 {news.title || "عنوان الخبر"}
                                             </h1>
@@ -617,7 +619,7 @@ const WatomsNews = () => {
                         {/* Content */}
                         <div className="p-4 m-2 bg-white rounded-2xl">
                             {/* News Image */}
-                            {selectedNews.image_path && (
+                            {/* {selectedNews.image_path && (
                                 <div className="mb-4 flex justify-center items-center gap-2">
                                     <button
                                         style={{
@@ -684,7 +686,11 @@ const WatomsNews = () => {
                                         &#8594;
                                     </button>
                                 </div>
-                            )}
+                            )} */}
+                            <div className="flex w-full justify-evenly items-center">
+                                <img className="w-1/3 h-44" src={ebdaeduLogo} alt="" />
+                                <img className="w-1/3" src={molLogo} alt="" />
+                            </div>
 
                             {/* News Details */}
                             <div className="space-y-4">
