@@ -31,6 +31,8 @@ const STATIC_LOCATIONS = [
   { id: 9, name: "الشرقية",             lon: 32.9000, lat: 30.7000, title: false },
   { id: 8, name: "بولاق",                   lon: 32.5000, lat: 30.0000, title: true },
   { id: 14, name: "wabys vtc",                   lon: 32.5000, lat: 30.0000, title: true },
+  { id: 1, name: "Badr",             lon: 31.8000, lat: 30.7000, title: false },
+  { id: 2, name: "Damietta",                   lon: 32.5000, lat: 30.0000, title: true },
 ];
 // id -> location lookup
 const ID_INDEX = Object.fromEntries(STATIC_LOCATIONS.map(p => [p.id, p]));
