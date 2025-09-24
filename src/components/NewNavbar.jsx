@@ -27,10 +27,10 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
     return (
-        <div className="relative z-10 bg-white">
+        <div className="relative z-10 bg-white w-full">
             <div className="relative flex flex-col md:flex-row items-center justify-between w-full px-6 h-[12vh] gap-8">
                 {/* Logos */}
-                <div className="flex items-center gap-6 my-2">
+                <div className="flex items-center md:gap-6 gap-4 my-2">
                     <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => { userInfo?.code !== 1475 && navigate('/wabys') }} />
                     <div className='border-l-2 border-black p-1 h-6' />
                     <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={ebdaeduLogo} alt="ebda edu Logo" />

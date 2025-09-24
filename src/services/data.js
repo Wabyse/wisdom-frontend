@@ -324,3 +324,19 @@ export const insertTraineeForm = async (formData) => {
     throw error;
   }
 };
+
+// All Trainees Registrations
+export const fetchTraineesRegistrations = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/traineesRegistrations`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.registrations || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.registrations || error.message
+    );
+    throw error;
+  }
+};

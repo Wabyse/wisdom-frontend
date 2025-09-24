@@ -166,10 +166,11 @@ const WisdomDashboard = () => {
 
     // fetching watoms' dashboard data
     useEffect(() => {
-        const loadWatomsDetailedData = async () => {
+        const loadWisdomDetailedData = async () => {
             try {
                 setLoading(true);
                 const response = await fetchWisdomDetailsData();
+                console.log(response)
                 setWatomsData(response);
                 // remove this later
                 setDatasMonths(response.total.months);
@@ -327,7 +328,7 @@ const WisdomDashboard = () => {
             }
         }
 
-        loadWatomsDetailedData();
+        loadWisdomDetailedData();
     }, []);
 
     useEffect(() => {
@@ -940,7 +941,7 @@ const WisdomDashboard = () => {
                     position: 'relative',
                 }}>
                     {/* Title */}
-                    <div className="text-2xl font-bold text-amber-400">المؤشرات الإجمالية {userInfo?.code === 1452 ? "لمشروع وزارة العمل" : selectedOrg?.id === "All" ? selectedProject === "" ? "لمشروع" : `ل${selectedProject}` : selectedOrg?.name}</div>
+                    <div className="text-2xl font-bold text-amber-400">المؤشرات الاجمالية للمشروع</div>
                     <div className="flex" style={{
                         position: 'relative',
                         width: "95%",
@@ -953,11 +954,11 @@ const WisdomDashboard = () => {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute left-28">
+                        {/* {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute left-28">
                             <p className="flex gap-2"><p>(049)</p><p>معيار فرعي</p></p>
                             <p className="flex gap-2"><p>(143)</p><p>مؤشر اداء</p></p>
                             <p className="flex gap-2"><p>(233)</p><p>ممارسة و دليل</p></p>
-                        </div>}
+                        </div>} */}
                         <Egypt
                             width={400}
                             height={340}
@@ -966,11 +967,11 @@ const WisdomDashboard = () => {
                             markerSize={80}
                             showLabels
                         />
-                        {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute right-28">
+                        {/* {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute right-28">
                             <p className="flex gap-2 justify-end"><p>مؤشرات مرجعية</p><p>(04)</p></p>
                             <p className="flex gap-2 justify-end"><p>مجال عام</p><p>(11)</p></p>
                             <p className="flex gap-2 justify-end"><p>اداة جمع بيانات</p><p>(45)</p></p>
-                        </div>}
+                        </div>} */}
                         {/* Selected center evaluation circle with arrow and info box */}
                         {selectedCenter && (
                             <>

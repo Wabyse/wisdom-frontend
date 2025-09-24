@@ -5,7 +5,8 @@ import { useLanguage } from '../context/LanguageContext';
 import Popup from '../components/Popup';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress
+    faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress,
+    faSheetPlastic
 } from "@fortawesome/free-solid-svg-icons";
 import wabysLogo from '../assets/wabys.png'
 import fullScreen from '../utils/fullScreen';
@@ -98,6 +99,14 @@ const Wabys = () => {
                             title={language ? 'العربية' : 'English'}
                             alt=''
                         />
+                        {/* Trainees Registration Form */}
+                        {(userInfo?.code === 3 || userInfo?.code === 10) && <button
+                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                            title={language ? 'trainees registration form' : 'استمارة تسجيل المتدربين'}
+                            onClick={() => navigate('/view-trainees-registrations')}
+                        >
+                            <FontAwesomeIcon icon={faSheetPlastic} className="text-watomsBlue text-lg" />
+                        </button>}
                         {/* System Info */}
                         <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
