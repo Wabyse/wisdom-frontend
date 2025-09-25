@@ -440,7 +440,7 @@ function App() {
             }
           />
           <Route
-            path="/watoms/follow-up"
+            path="/watoms/follow-up/:id"
             element={
               <ProtectedRoute>
                 <WatomsFollowUp />

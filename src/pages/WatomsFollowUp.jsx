@@ -15,8 +15,18 @@ import video13 from "../assets/followupvideo13.mp4";
 import { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "react-router-dom";
+
+const relatedVideos = {
+    4: [video7],
+    5: [video12],
+    7: [video1, video2, video5, video13],
+    8: [video3, video4, video6, video8, video9, video10],
+    9: [video11],
+}
 
 const WatomsFollowUp = () => {
+    const { id } = useParams();
     const scrollRef = useRef(null);
 
     const scroll = (direction) => {
@@ -61,7 +71,7 @@ const WatomsFollowUp = () => {
                             ref={scrollRef}
                             className="flex flex-row gap-4 overflow-x-auto w-full h-full p-2 scroll-smooth no-scrollbar"
                         >
-                            {[video1, video2, video3, video4, video5, video6, video7, video8, video9, video10, video11, video12, video13].map(
+                            {relatedVideos[id].map(
                                 (video, i) => (
                                     <video
                                         key={i}

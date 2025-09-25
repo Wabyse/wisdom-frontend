@@ -16,6 +16,7 @@ import callIcon from '../assets/callIcon.png';
 import dashboardIcon from '../assets/DashboardIcon2.png';
 import reportIcon from '../assets/ReportIcon2.png';
 import secretIcon from '../assets/secretIcon.png';
+import { useNavigate } from "react-router-dom";
 
 const WatomsManagersReports = () => {
     const [watomsData, setWatomsData] = useState([]);
@@ -25,6 +26,7 @@ const WatomsManagersReports = () => {
     const [dashboardPopup, setDashboardPopup] = useState(false);
     const [selectedOrg, setSelectedOrg] = useState(null);
     const [orgRank, setOrgRank] = useState();
+    const navigate = useNavigate();
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -250,7 +252,7 @@ const WatomsManagersReports = () => {
                                     <div className="w-0 h-5 border-l-2 border-white" />
                                     <img className="w-8 cursor-pointer" src={dashboardIcon} alt="" onClick={() => { setDashboardPopup(true); setSelectedOrg(watomsData?.organizations?.[orgIndex]) }} />
                                     <div className="w-0 h-5 border-l-2 border-white" />
-                                    <img className="w-8" src={reportIcon} alt="" />
+                                    <img className="w-8" src={reportIcon} alt="" onClick={() => navigate(`/watoms/follow-up/${orgIndex}`)}/>
                                 </div>
                             </div>
                         ))}

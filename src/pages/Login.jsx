@@ -66,6 +66,8 @@ const Login = () => {
         navigate("/watoms/dashboard");
       } else if (data.code === 1475) {
         navigate("/watoms/news");
+      } else if (data.code === 1310) {
+        navigate("/wisdom/dashboard");
       } else { navigate(from, { replace: true }) }
     } catch (err) {
       console.error("Error submitting data:", err);
