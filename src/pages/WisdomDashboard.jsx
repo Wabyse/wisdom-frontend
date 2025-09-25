@@ -1409,7 +1409,7 @@ const WisdomDashboard = () => {
                             </h3>
                             <div className="flex items-center justify-between gap-2">
                                 {/* Overall Score Circle */}
-                                <div className="flex flex-col items-center justify-center p-2 cursor-pointer" onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 ? setSubDataDetails("الكفاءة و الفاعلية") : null}>
+                                <div className="flex flex-col items-center justify-center p-2 cursor-pointer" onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 ? setSubDataDetails("GEEBM") : null}>
                                     <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                                     <span className='text-white mt-2'>الكفاءة و الفاعلية</span>
                                 </div>
