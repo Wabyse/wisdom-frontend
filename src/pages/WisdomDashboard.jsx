@@ -182,38 +182,38 @@ const WisdomDashboard = () => {
                 setArrangedOrgIdx(0);
                 setOrgStandards([
                     {
-                        name: "ODBM",
+                        name: "الانضباط العام",
                         score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ODBM?.totalODBM) || 0,
                         color: "#3b82f6"
                     },
                     {
-                        name: "APBM",
+                        name: "التقدم الأكاديمي",
                         score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.APBM?.totalAPBM) || 0,
                         color: "#10b981"
                     },
                     {
-                        name: "TQBM",
+                        name: "جودة التدريب الميداني",
                         score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.totalTQBM) || 0,
                         color: "#f59e0b"
                     },
                     {
-                        name: "PDBM",
+                        name: "التنمية المهنية",
                         score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.PDBM?.totalPDBM) || 0,
                         color: "#10b981"
                     },
                     {
-                        name: "EEBM",
+                        name: "الكفاءة والفعالية",
                         score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.EEBM?.totalEEBM) || 0,
                         color: "#f59e0b"
                     }
                 ])
                 setOrgSubStandards([
                     {
-                        name: "ODBM",
+                        name: "الانضباط العام",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.totalODBM) || 0,
                         subData: [
                             {
-                                name: "Sessions",
+                                name: "الحصص المنفذه",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.sessions?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.sessions?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.sessions?.scores || [],
@@ -221,7 +221,7 @@ const WisdomDashboard = () => {
                                 color: "#3b82f6"
                             },
                             {
-                                name: "Student Attendance",
+                                name: "حضور الطلاب",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ODBM?.STA?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STA?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STA?.scores || [],
@@ -229,7 +229,7 @@ const WisdomDashboard = () => {
                                 color: "#16a34a"
                             },
                             {
-                                name: "Student Commitment",
+                                name: "انضباط الطلاب",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ODBM?.STC?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STC?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STC?.scores || [],
@@ -237,7 +237,7 @@ const WisdomDashboard = () => {
                                 color: "#a855f7"
                             },
                             {
-                                name: "Morning Line",
+                                name: "الطابور الصباحي",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ODBM?.DO?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.DO?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.DO?.scores || [],
@@ -247,11 +247,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "APBM",
+                        name: "التقدم الأكاديمي",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.APBM?.totalAPBM) || 0,
                         subData: [
                             {
-                                name: "Project",
+                                name: "مشروع التخرج",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.APBM?.PRO?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.APBM?.PRO?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.APBM?.PRO?.scores || [],
@@ -259,7 +259,7 @@ const WisdomDashboard = () => {
                                 color: "#2e6f00"
                             },
                             {
-                                name: "Formative",
+                                name: "الاختبار التكويني",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.APBM?.FO?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.APBM?.FO?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.APBM?.FO?.scores || [],
@@ -267,7 +267,7 @@ const WisdomDashboard = () => {
                                 color: "#e43002"
                             },
                             {
-                                name: "Summative",
+                                name: "الاختبار التجميعي",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.APBM?.SU?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.APBM?.SU?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.APBM?.SU?.scores || [],
@@ -277,11 +277,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "TQBM",
+                        name: "جودة التدريب الميداني",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
                         subData: [
                             {
-                                name: "Training Regularity",
+                                name: "انتظام التدريب",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.TG?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.scores || [],
@@ -289,7 +289,7 @@ const WisdomDashboard = () => {
                                 color: "#aa4642"
                             },
                             {
-                                name: "Training 360",
+                                name: "تقييم التدريب",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.TR360?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TR360?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TR360?.scores || [],
@@ -297,7 +297,7 @@ const WisdomDashboard = () => {
                                 color: "#925515"
                             },
                             {
-                                name: "Competencies Acquisition",
+                                name: "اكتساب الجدارات",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.CA?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.CA?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.CA?.scores || [],
@@ -307,11 +307,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "PDBM",
+                        name: "التنمية المهنية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.PDBM?.totalPDBM) || 0,
                         subData: [
                             {
-                                name: "PDA",
+                                name: "أنشطة التنمية المهنية",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.PDBM?.PDA?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PDA?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PDA?.scores || [],
@@ -319,7 +319,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "Teacher Performance",
+                                name: "أداء المعلم",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.PDBM?.PD?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PD?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PD?.scores || [],
@@ -329,11 +329,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "EEBM",
+                        name: "الكفاءة والفعالية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.totalEEBM) || 0,
                         subData: [
                             {
-                                name: "ENV360",
+                                name: "تقييم البيئة التعليمية",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.EEBM?.EDU?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.scores || [],
@@ -341,7 +341,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "Labs Equipment Efficiency",
+                                name: "كفاءة المعامل والورش",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.EEBM?.LEE?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.scores || [],
@@ -351,11 +351,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "GEEBM",
+                        name: "الكفاءة والغعالية العامة",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.totalGEEBM) || 0,
                         subData: [
                             {
-                                name: "Work Environment",
+                                name: "تقييم بيئة العمل",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.W?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.scores || [],
@@ -363,7 +363,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "Curriculum",
+                                name: "تقييم المناهج",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.C?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.scores || [],
@@ -371,7 +371,7 @@ const WisdomDashboard = () => {
                                 color: "#596a95"
                             },
                             {
-                                name: "Teacher",
+                                name: "تقييم المعلم",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.T?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.scores || [],
@@ -424,27 +424,27 @@ const WisdomDashboard = () => {
             if ((selectedMonthIdx || selectedMonthIdx === 0) && watomsData.length !== 0) {
                 setOrgStandards([
                     {
-                        name: "ODBM",
+                        name: "الانضباط العام",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.totalODBM) || 0,
                         color: "#3b82f6"
                     },
                     {
-                        name: "APBM",
+                        name: "التقدم الأكاديمي",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.APBM?.totalAPBM) || 0,
                         color: "#10b981"
                     },
                     {
-                        name: "TQBM",
+                        name: "جودة التدريب الميداني",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
                         color: "#f59e0b"
                     },
                     {
-                        name: "PDBM",
+                        name: "التنمية المهنية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.PDBM?.totalPDBM) || 0,
                         color: "#10b981"
                     },
                     {
-                        name: "EEBM",
+                        name: "الكفاءة والفعالية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.totalEEBM) || 0,
                         color: "#f59e0b"
                     }
@@ -456,11 +456,11 @@ const WisdomDashboard = () => {
             if ((selectedMonthIdx || selectedMonthIdx === 0) && watomsData.length !== 0) {
                 setOrgSubStandards([
                     {
-                        name: "ODBM",
+                        name: "الانضباط العام",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.totalODBM) || 0,
                         subData: [
                             {
-                                name: "Sessions",
+                                name: "الحصص المنفذه",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.sessions?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.sessions?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.sessions?.scores || [],
@@ -468,7 +468,7 @@ const WisdomDashboard = () => {
                                 color: "#3b82f6"
                             },
                             {
-                                name: "Student Attendance",
+                                name: "حضور الطلاب",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.STA?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STA?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STA?.scores || [],
@@ -476,7 +476,7 @@ const WisdomDashboard = () => {
                                 color: "#16a34a"
                             },
                             {
-                                name: "Student Commitment",
+                                name: "انضباط الطلاب",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.STC?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STC?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.STC?.scores || [],
@@ -484,7 +484,7 @@ const WisdomDashboard = () => {
                                 color: "#a855f7"
                             },
                             {
-                                name: "Morning Line",
+                                name: "الطابور الصباحي",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ODBM?.DO?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.ODBM?.DO?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.ODBM?.DO?.scores || [],
@@ -494,11 +494,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "APBM",
+                        name: "التقدم الأكاديمي",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.APBM?.totalAPBM) || 0,
                         subData: [
                             {
-                                name: "Project",
+                                name: "مشروع التخرج",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.APBM?.PRO?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.APBM?.PRO?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.APBM?.PRO?.scores || [],
@@ -506,7 +506,7 @@ const WisdomDashboard = () => {
                                 color: "#2e6f00"
                             },
                             {
-                                name: "Formative",
+                                name: "الاختبار التكويني",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.APBM?.FO?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.APBM?.FO?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.APBM?.FO?.scores || [],
@@ -514,7 +514,7 @@ const WisdomDashboard = () => {
                                 color: "#e43002"
                             },
                             {
-                                name: "Summative",
+                                name: "الاختبار التجميعي",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.APBM?.SU?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.APBM?.SU?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.APBM?.SU?.scores || [],
@@ -524,11 +524,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "TQBM",
+                        name: "جودة التدريب الميداني",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
                         subData: [
                             {
-                                name: "Training Regularity",
+                                name: "انتظام التدريب",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.scores || [],
@@ -536,7 +536,7 @@ const WisdomDashboard = () => {
                                 color: "#aa4642"
                             },
                             {
-                                name: "Training 360",
+                                name: "تقييم التدريب",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TR360?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TR360?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TR360?.scores || [],
@@ -544,7 +544,7 @@ const WisdomDashboard = () => {
                                 color: "#925515"
                             },
                             {
-                                name: "Competencies Acquisition",
+                                name: "اكتساب الجدارات",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.CA?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.CA?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.CA?.scores || [],
@@ -554,11 +554,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "PDBM",
+                        name: "التنمية المهنية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.PDBM?.totalPDBM) || 0,
                         subData: [
                             {
-                                name: "Teachers Performance",
+                                name: "أداء المعلم",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.PDBM?.PD?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PD?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PD?.scores || [],
@@ -566,7 +566,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "PDA",
+                                name: "أنشطة التنمية المهنية",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.PDBM?.PDA?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PDA?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.PDBM?.PDA?.scores || [],
@@ -576,11 +576,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "EEBM",
+                        name: "الكفاءة والفعالية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.totalEEBM) || 0,
                         subData: [
                             {
-                                name: "ENV 360",
+                                name: "تقييم البيئة التعليمية",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.scores || [],
@@ -588,7 +588,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "Labs Equipment Efficiency",
+                                name: "كفاءة المعامل والورش",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.scores || [],
@@ -598,11 +598,11 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "GEEBM",
+                        name: "الكفاءة والغعالية العامة",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.totalGEEBM) || 0,
                         subData: [
                             {
-                                name: "Work Environment",
+                                name: "تقييم بيئة العمل",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.scores || [],
@@ -610,7 +610,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "Curriculum",
+                                name: "تقييم المناهج",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.scores || [],
@@ -618,7 +618,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "Teacher",
+                                name: "تقييم المعلم",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.scores || [],
@@ -860,15 +860,14 @@ const WisdomDashboard = () => {
                                     <span className="relative text-black text-2xl font-bold -translate-y-2">{orgRank}</span>
                                 </div>
                                 {/* Org's Manager info */}
-                                <div className="flex flex-col justify-center items-center gap-2 w-1/2">
+                                <div className="flex flex-col justify-center items-center gap-2 w-2/5">
                                     <div className="bg-gray-700 text-white p-2 w-full text-center">{`مدير ${selectedOrg?.name}`}</div>
                                     <div className="bg-gray-700 text-white p-2 w-full text-center">{selectedOrg?.managerFirstName} {selectedOrg?.managerMiddleName} {selectedOrg?.managerLastName}</div>
                                 </div>
-                                <img className="w-1/4 p-2 rounded-2xl" src={managerImg} alt="" />
+                                <div className="px-2 w-1/4 h-full"><div className="rounded-2xl border-2 border-blue-500 shadow-lg shadow-blue-400 w-full h-full" /></div>
                             </div>
                             {/* Org's img */}
-                            {orgImg !== "" ? <img className="w-full px-2 h-fit max-h-48 rounded-2xl" src={orgImg} alt="" /> :
-                                <div className="p-4 w-full h-full"><div className="rounded-2xl border-2 border-blue-500 shadow-lg shadow-blue-400 w-full h-full" /></div>}
+                            <div className="p-4 w-full h-full"><div className="rounded-2xl border-2 border-blue-500 shadow-lg shadow-blue-400 w-full h-full" /></div>
                         </div> :
                         <div className="flex flex-col justify-start gap-4 min-h-80">
                             {/* Total Institutions */}
@@ -901,7 +900,7 @@ const WisdomDashboard = () => {
                             </div>
                             {/* General Ranking Chart */}
                             <div
-                                className="rounded-2xl flex flex-col h-fit max-h-48 px-5 py-2 mb-0 items-stretch"
+                                className="rounded-2xl flex flex-col h-fit max-h-52 min-h-52 px-5 py-2 mb-0 items-stretch"
                                 style={{
                                     background: "#2d3347",
                                     boxShadow: '0 2px 12px #0004',
@@ -944,7 +943,7 @@ const WisdomDashboard = () => {
                                         justifyContent: 'flex-start',   // ✅ start at top
                                         zIndex: 1,
                                         marginTop: 4,
-                                        gap: 14,
+                                        gap: 30,
                                         overflowY: 'auto',
                                         overflowX: 'hidden',            // ✅ prevent x scroll
                                     }}
@@ -1050,7 +1049,7 @@ const WisdomDashboard = () => {
                     />
                 </div>
                 {/* وسط: الخريطة والدائرة */}
-                <div className="rounded-xl mt-4 w-1/3 py-2" style={{
+                <div className="rounded-xl mt-4 w-1/3 py-2 max-w-[600px]" style={{
                     flex: '1 1 36%',
                     background: "#2d3347",
                     minHeight: 260,
@@ -1152,13 +1151,14 @@ const WisdomDashboard = () => {
                             </>
                         )}
                     </div>
-                    <div className="flex justify-center px-2 w-full gap-6">
-                        <div className="w-32 overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
+                    <div className="flex justify-center px-2 w-full gap-4">
+                        <div className="w-36 overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
                             <table className="w-full table-fixed" dir="rtl">
                                 <thead>
                                     <tr className="bg-[#5268b1] border-b border-blue-200/60 text-white text-xs">
                                         <th className="py-2 text-center font-semibold">الورش</th>
                                         <th className="py-2 text-center font-semibold">المعامل</th>
+                                        <th className="py-2 text-center font-semibold">الفصول</th>
                                     </tr>
                                 </thead>
 
@@ -1176,6 +1176,13 @@ const WisdomDashboard = () => {
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
                                                 {WISDOM_UNPREPARED_DATA[selectedOrg.id].labs ?? 0}
+                                            </span>
+                                        </td>
+
+                                        <td className="py-2 text-center">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
+            ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].classes ?? 0}
                                             </span>
                                         </td>
                                     </tr>
@@ -1299,7 +1306,7 @@ const WisdomDashboard = () => {
                     </div>
                 </div>
                 {/* يمين: الإحصائيات */}
-                <div className="gap-4 w-1/3" style={{
+                <div className="gap-4 w-1/3 min-w-[550px]" style={{
                     flex: '0 1 28%',
                     maxHeight: "85vh",
                     padding: '1vw 1vw 0vw 0vw',
@@ -1310,29 +1317,29 @@ const WisdomDashboard = () => {
                     boxSizing: 'border-box',
                 }}>
                     {/* sum details */}
-                    <div className="p-2 gap-4 flex justify-evenly items-center" style={{
+                    <div className="p-2 flex justify-evenly items-center gap-2" style={{
                         background: "#2d3347",
                         borderRadius: 16,
                         minWidth: 220,
                         minHeight: 60,
                         boxShadow: '0 2px 8px #0002',
                     }}>
-                        <div className="flex justify-center items-center">
-                            <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.total.no_of_students : selectedOrg?.no_of_students}</div>
-                            <div className="text-xs text-end w-fit">عدد الطلاب</div>
+                        <div className="flex justify-end items-center w-1/3 gap-5">
+                            <div className="text-3xl w-fit">{watomsData?.total.no_of_students}</div>
+                            <div className="text-xs text-end w-9">عدد الطلاب</div>
                         </div>
-                        <div className='border-l-2 border-white h-3/4' />
-                        <div className="flex justify-center items-center gap-1">
+                        <div className='border-l-2 border-white h-3/4 w-0' />
+                        <div className="flex justify-end items-center w-1/3 gap-5">
                             <div className="text-3xl w-fit">10</div>
-                            <div className="text-xs text-end w-1/2">عدد المواد</div>
+                            <div className="text-xs text-end w-8">عدد المواد</div>
                         </div>
-                        <div className='border-l-2 border-white h-3/4' />
-                        <div className="flex justify-center items-center gap-2">
+                        <div className='border-l-2 border-white h-3/4 w-0' />
+                        <div className="flex justify-end items-center w-1/3 gap-5">
                             <div className="text-3xl w-fit">0%</div>
-                            <div className="text-xs text-end w-fit">نسبة تسرب الطلاب</div>
+                            <div className="text-xs text-end w-[60px]">نسبة تسرب الطلاب</div>
                         </div>
                     </div>
-                    <div className="flex flex-col rounded-xl w-full gap-7 py-7" style={{
+                    <div className="flex flex-col rounded-xl w-full py-2 gap-6" style={{
                         backgroundColor: "#2d3347"
                     }}>
                         <div className="mt-2" style={{
@@ -1402,16 +1409,16 @@ const WisdomDashboard = () => {
                                     display: "hidden",
                                 }}></div>}
                         </div>
-                        <div className="rounded-xl py-2 px-3">
+                        <div className="rounded-xl py-2 px-3 gap-5 flex flex-col">
                             {/* Title */}
-                            <h3 className="text-md font-bold text-white mb-2 text-center">
+                            <h3 className="text-md font-bold mb-2 text-center text-amber-400">
                                 {language ? 'Performance Standards Evaluation' : 'تقييم معايير الاداء'}
                             </h3>
                             <div className="flex items-center justify-between gap-2">
                                 {/* Overall Score Circle */}
-                                <div className="flex flex-col items-center justify-center p-2 cursor-pointer" onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 ? setSubDataDetails("GEEBM") : null}>
+                                <div className="flex flex-col items-center justify-center p-2 pt-0 cursor-pointer w-[35%]" onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 ? setSubDataDetails("الكفاءة والغعالية العامة") : null}>
                                     <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
-                                    <span className='text-white mt-2'>الكفاءة و الفاعلية</span>
+                                    <span className='text-white mt-2 text-center'>الكفاءة والغعالية العامة</span>
                                 </div>
                                 {/* Performance Bars */}
                                 <div className="flex flex-col flex-1 gap-1 my-2">
@@ -1419,33 +1426,39 @@ const WisdomDashboard = () => {
                                         ?.slice()
                                         .sort((a, b) => b.score - a.score)
                                         .map((s) => (
-                                            <div className='flex justify-between items-center mb-1'>
-                                                <span className="text-sm font-bold text-white w-fit px-1">{s.score}%</span>
+                                            <div className='flex justify-evenly items-center mb-1'>
                                                 <div
-                                                    className="min-w-3/5 max-w-3/5 w-3/5 cursor-pointer"
+                                                    className="min-w-3/5 max-w-3/5 w-3/5 cursor-pointer relative"
                                                     style={{
                                                         height: 22,
                                                         background: '#444652',
                                                         borderRadius: 18,
                                                         boxShadow: '0 2px 8px #0002',
-                                                        position: 'relative',
                                                         overflow: 'hidden',
                                                         transition: 'box-shadow 0.2s ease',
                                                     }}
-                                                    onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 ? setSubDataDetails(s.name) : null}
+                                                    onClick={() =>
+                                                        selectedOrg?.id !== "All" && userInfo?.code !== 1452
+                                                            ? setSubDataDetails(s.name)
+                                                            : null
+                                                    }
                                                 >
                                                     {/* Bar fill */}
                                                     <div
-                                                        className="h-4 rounded-full"
+                                                        className="h-full rounded-full"
                                                         style={{
-                                                            height: '100%',
                                                             width: `${s.score}%`,
                                                             background: s.color,
                                                             transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
                                                         }}
                                                     />
+
+                                                    {/* Text inside the bar */}
+                                                    <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white pointer-events-none">
+                                                        {s.name}
+                                                    </span>
                                                 </div>
-                                                <span className="min-w-1/5 max-w-1/5 w-1/5 text-xs font-medium text-white text-center">{s.name}</span>
+                                                <span className="text-sm font-bold text-white w-fit px-1">{s.score}%</span>
                                             </div>
                                         ))}
                                 </div>
@@ -1458,7 +1471,7 @@ const WisdomDashboard = () => {
                                 {orgSubStandards.map((s, i) => (
                                     <div className=' flex w-1/4'>
                                         <div className='flex flex-col w-full gap-1'>
-                                            <div className='flex justify-center w-full px-1'>
+                                            <div className='flex justify-evenly w-full px-1'>
                                                 {/* percentage bar for each sub data */}
                                                 {s.subData.map((item, i) =>
                                                     <div
@@ -1477,7 +1490,7 @@ const WisdomDashboard = () => {
                                                         <div
                                                             className="relative flex items-end justify-center w-[80%] bg-[#444652] overflow-hidden mb-0 pb-0"
                                                             style={{
-                                                                height: 85,
+                                                                height: 90,
                                                                 borderRadius: 8,
                                                             }}
                                                         >
@@ -1500,8 +1513,8 @@ const WisdomDashboard = () => {
                                                     </div>)}
                                             </div>
                                             {/* the data's title and top separater between it and the sub data's related to it */}
-                                            <div className={`border-t-2 border-white h-[85%] ${(i + 1 === orgSubStandards.length) && "w-[90%]"} ${(i === 0) && "w-[90%] self-end"}`} />
-                                            <h1 className='text-white text-center text-[10px] py-2'>{s.name}</h1>
+                                            <div className={`border-t-2 border-white h-0 ${(i + 1 === orgSubStandards.length) && "w-[90%]"} ${(i === 0) && "w-[90%] self-end"}`} />
+                                            <h1 className={`text-white text-center px-4 ${i === 5 ? "text-[8px]" : "text-[10px]"}`}>{s.name}</h1>
                                         </div>
                                         {/* white line separating the data's title */}
                                         {orgSubStandards.length !== i + 1 && <div className='border-l-2 border-white h-[90%]' />}

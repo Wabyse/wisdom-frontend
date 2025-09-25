@@ -902,6 +902,7 @@ export const WISDOM_UNPREPARED_DATA = {
     "All": {
         workShops: 0,
         labs: 0,
+        classes: 0,
         employees: 49,
         teachers: 24,
         students: 306,
@@ -910,6 +911,7 @@ export const WISDOM_UNPREPARED_DATA = {
     1: {
         workShops: 0,
         labs: 0,
+        classes: 0,
         employees: 26,
         teachers: 14,
         students: 161,
@@ -918,6 +920,7 @@ export const WISDOM_UNPREPARED_DATA = {
     2: {
         workShops: 0,
         labs: 0,
+        classes: 0,
         employees: 23,
         teachers: 10,
         students: 145,
