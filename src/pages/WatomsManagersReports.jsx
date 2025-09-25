@@ -17,6 +17,8 @@ import dashboardIcon from '../assets/DashboardIcon2.png';
 import reportIcon from '../assets/ReportIcon2.png';
 import secretIcon from '../assets/secretIcon.png';
 import { useNavigate } from "react-router-dom";
+import WatomsFollowUp from "../components/WatomsFollowUp";
+import WatomsFollowUpPopup from "../components/WatomsFollowUp";
 
 const WatomsManagersReports = () => {
     const [watomsData, setWatomsData] = useState([]);
@@ -27,6 +29,8 @@ const WatomsManagersReports = () => {
     const [selectedOrg, setSelectedOrg] = useState(null);
     const [orgRank, setOrgRank] = useState();
     const navigate = useNavigate();
+    const [showPopup, setShowPopup] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -121,7 +125,6 @@ const WatomsManagersReports = () => {
                 dashboardStatus={true}
                 callStatus={true}
                 searchStatus={false}
-                followUpStatus={true}
                 ministerStatus={true}
                 darkmodeStatus={false}
                 fullScreenStatus={false}
@@ -252,7 +255,7 @@ const WatomsManagersReports = () => {
                                     <div className="w-0 h-5 border-l-2 border-white" />
                                     <img className="w-8 cursor-pointer" src={dashboardIcon} alt="" onClick={() => { setDashboardPopup(true); setSelectedOrg(watomsData?.organizations?.[orgIndex]) }} />
                                     <div className="w-0 h-5 border-l-2 border-white" />
-                                    <img className="w-8" src={reportIcon} alt="" onClick={() => navigate(`/watoms/follow-up/${orgIndex}`)}/>
+                                    <img className="w-8" src={reportIcon} alt="" onClick={() => {setSelectedId(orgIndex) ;setShowPopup(true)}} />
                                 </div>
                             </div>
                         ))}
@@ -260,6 +263,13 @@ const WatomsManagersReports = () => {
                 </div>
             </div>
             {dashboardPopup && <WatomsSingleOrgDashboard isOpen={dashboardPopup} onClose={() => setDashboardPopup(false)} data={selectedOrg} rank={orgRank} />}
+            {showPopup && (
+                <WatomsFollowUp
+                    id={selectedId}
+                    onClose={() => setShowPopup(false)}
+                    name={watomsData?.organizations?.[selectedId]?.name}
+                />
+            )}
         </>
     )
 }

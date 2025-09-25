@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import report2Icon from "../assets/report2Icon.png";
 
-const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, followUpStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false }) => {
+const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -84,14 +84,6 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                     >
                         <FontAwesomeIcon icon={faShareNodes} className="text-xl text-gray-500" />
                     </button>}
-                    {/* follow up Button */}
-                    {followUpStatus &&
-                        <button
-                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                            onClick={() => navigate('/watoms/follow-up')}
-                        >
-                            <img className="w-7 h-7" src={report2Icon} alt="" />
-                        </button>}
                     {/* dashboard Button */}
                     {dashboardStatus && <button
                         onClick={() => navigate('/watoms/dashboard')}

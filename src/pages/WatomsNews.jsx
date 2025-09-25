@@ -478,13 +478,13 @@ const WatomsNews = () => {
                                     <h1 className="text-base text-center w-[75%] font-bold">الؤشرات الرئيسية للاداء اللحظي</h1>
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-2 items-center">
-                                <div className="flex text-black justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4 bg-opacity-55 bg-white rounded-2xl " onClick={() => navigate('/watoms/follow-up')}>
+                            <div className="flex flex-col gap-2 items-center bg-white bg-opacity-55 rounded-2xl" onClick={() => navigate('/watoms/managers')}>
+                                <div className="flex text-black justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
                                     <img src={report2Icon} className="w-6 h-6" />
                                     <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
                                     <h1 className="text-xs text-end w-[75%] font-bold border-b-2 border-[#0a183d] py-5">تقارير المرور والمتابعة</h1>
                                 </div>
-                                <div className="flex flex-col gap-2 bg-opacity-55 items-center bg-white rounded-2xl" onClick={() => navigate('/watoms/managers')}>
+                                <div className="flex flex-col gap-2 items-center">
                                     <div className="flex text-black justify-between items-center w-52 h-12 cursor-pointer text-xl gap-2 px-4">
                                         <FontAwesomeIcon icon={faBook} className="text-2xl" />
                                         <div className="my-auto w-0 h-8 border-l-2 border-[#0a183d] rounded-full" />
