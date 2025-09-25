@@ -99,6 +99,7 @@ const Watoms = () => {
 
     if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
     if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
+    if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 
     return (
         <div className={`min-h-screen w-full font-[Cairo,sans-serif] transition-colors duration-500 ${darkMode ? 'bg-watomsBlue text-white' : 'bg-gradient-to-br from-blue-50 via-white to-purple-100 text-gray-900'} relative overflow-hidden`}>

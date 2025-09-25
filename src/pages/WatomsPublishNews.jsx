@@ -68,6 +68,7 @@ const WatomsPublishNews = () => {
     };
 
     if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
+    if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-900">

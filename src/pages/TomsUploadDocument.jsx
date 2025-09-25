@@ -190,6 +190,7 @@ const TomsUploadDocument = () => {
   if (userInfo.user_role === "Student" || userInfo.user_role === "Trainee") return <DenyAccessPage homePage='/watoms/pms' />;
   if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
   if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
+  if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 
   return (
     <div className="bg-gray-500 h-[100vh] text-end">

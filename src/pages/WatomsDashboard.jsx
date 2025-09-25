@@ -21,6 +21,7 @@ import molLogo from '../assets/Gov.png';
 import ebdaeduLogo from '../assets/ebad-edu.png';
 import WatomsDashboardSubDataDetails from "../components/WatomsDashboardSubDataDetails";
 import NewNavbar from "../components/NewNavbar";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const HEADER_HEIGHT = 60;
 
@@ -632,6 +633,7 @@ const WatomsDashboard = () => {
   // const fallbackAnnualData = generateAnnualPerformanceData();
 
   if (loading) return <LoadingScreen />;
+  if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 
   return (
     <div style={{

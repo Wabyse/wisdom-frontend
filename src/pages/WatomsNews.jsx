@@ -17,9 +17,12 @@ import reportIcon from "../assets/reportIcon.png";
 import report2Icon from "../assets/report2Icon.png";
 import ebdaeduLogo from "../assets/ebad-edu.png";
 import molLogo from "../assets/Gov.png";
+import { useAuth } from "../context/AuthContext";
+import DenyAccessPage from "../components/DenyAccessPage";
 
 const WatomsNews = () => {
     const navigate = useNavigate();
+    const { userInfo } = useAuth();
     const [selectedOrg, setSelectedOrg] = useState(null);
     const [watomsData, setWatomsData] = useState([]);
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(null);
@@ -146,6 +149,7 @@ const WatomsNews = () => {
     };
 
     if (loading) return <LoadingScreen />;
+    if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 
     return (
         <>
