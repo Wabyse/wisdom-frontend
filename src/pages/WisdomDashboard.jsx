@@ -1325,7 +1325,7 @@ const WisdomDashboard = () => {
                         boxShadow: '0 2px 8px #0002',
                     }}>
                         <div className="flex justify-end items-center w-1/3 gap-5">
-                            <div className="text-3xl w-fit">{watomsData?.total.no_of_students}</div>
+                            <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.total.no_of_students : selectedOrg?.no_of_students}</div>
                             <div className="text-xs text-end w-9">عدد الطلاب</div>
                         </div>
                         <div className='border-l-2 border-white h-3/4 w-0' />
