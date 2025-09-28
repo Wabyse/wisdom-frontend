@@ -274,8 +274,9 @@ const WatomsManagersReports = () => {
             )}
             {showSecretPopup && (
                 <WatomsSecretReport
+                    id={selectedId}
                     onClose={() => setShowSecretPopup(false)}
-                    name={watomsData?.organizations?.[selectedId]?.name}
+                    org={watomsData?.organizations?.[selectedId]}
                 />
             )}
         </>

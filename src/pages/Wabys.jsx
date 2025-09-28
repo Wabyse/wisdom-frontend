@@ -6,7 +6,8 @@ import Popup from '../components/Popup';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress,
-    faSheetPlastic
+    faSheetPlastic,
+    faUserCheck
 } from "@fortawesome/free-solid-svg-icons";
 import wabysLogo from '../assets/wabys.png'
 import fullScreen from '../utils/fullScreen';
@@ -92,6 +93,14 @@ const Wabys = () => {
                             <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
                             {userFullName(userInfo, language)}
                         </span>
+                        {/* check in and out button */}
+                        {(userInfo?.code === 3 || userInfo?.code === 1) && <button
+                             onClick={() => navigate('/checkIns')}
+                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                            title={language ? "check ins" : "تسجيلات الدخول و الخروج"}
+                        >
+                            <FontAwesomeIcon icon={faUserCheck} className="text-watomsBlue" />
+                        </button>}
                         {/* Language Button */}
                         <img
                             src={languageIcon}
