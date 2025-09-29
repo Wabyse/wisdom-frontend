@@ -340,3 +340,51 @@ export const fetchTraineesRegistrations = async () => {
     throw error;
   }
 };
+
+// All Trainees Registrations
+export const fetchManagerEvaluationTemplate = async () => {
+  try {
+    const response = await api.get(`/api/v1/watoms/managers/evaluation`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.data || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.registrations || error.message
+    );
+    throw error;
+  }
+};
+
+// All Employees Roles
+export const fetchEmployeesRoles = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/employees/roles`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.roles || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.schools || error.message
+    );
+    throw error;
+  }
+};
+
+// All Employees Roles
+export const fetchEmployeesEvaluations = async (id) => {
+  try {
+    const response = await api.get(`/api/v1/watoms/managers/evaluations/${id}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.data || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.schools || error.message
+    );
+    throw error;
+  }
+};

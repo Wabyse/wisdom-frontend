@@ -6,6 +6,55 @@ import img from "../assets/ismailiaManager.jpg";
 import { ORG_MANAGER_IMG } from "../constants/constants";
 import DonutChart from "./DonutChart";
 import CustomLineChart from "./CustomLineChart";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
+const baseTemplates = [
+    { title: "تحمل المسؤولية", max: 10 },
+    { title: "الانضباط", max: 10 },
+    { title: "الإلتزام بالمواعيد", max: 10 },
+    { title: "الأمانة وحسن الخلق", max: 10 },
+    { title: "تغليب المصلحة العامة على الشخصية", max: 10 },
+    { title: "الثقة في النفس", max: 10 },
+    { title: "المظهر العام والنظافة الشخصية", max: 10 },
+    { title: "مستوى الكفاءة في المجال التخصصي", max: 10 },
+
+    { title: "القدرة على تفعيل مبادئ الحوكمة", max: 10 },
+    { title: "التعاون مع الزملاء", max: 10 },
+    { title: "⁠القدرة على إنفاذ الخطط الاستراتيجية والتشغيلية على الأرض", max: 10 },
+    { title: "القدرة على تفعيل المنظومة الإلكترونية", max: 10 },
+    { title: "القدرة على العمل تحت ضغط", max: 10 },
+
+    { title: "المهارات القيادية", max: 10 },
+    { title: "سرعة البديهة وحسن التصرف", max: 10 },
+    { title: "اللباقة أثناء الحديث", max: 10 },
+    { title: "مهارات التواصل والإقناع", max: 10 },
+    { title: "الإبتكار والإبداع", max: 10 },
+];
+
+const categoryMap = {
+    "تحمل المسؤولية": "السمات العامة للشخصية",
+    "الانضباط": "السمات العامة للشخصية",
+    "الإلتزام بالمواعيد": "السمات العامة للشخصية",
+    "الأمانة وحسن الخلق": "السمات العامة للشخصية",
+    "تغليب المصلحة العامة على الشخصية": "السمات العامة للشخصية",
+    "الثقة في النفس": "السمات العامة للشخصية",
+    "المظهر العام والنظافة الشخصية": "السمات العامة للشخصية",
+    "مستوى الكفاءة في المجال التخصصي": "السمات العامة للشخصية",
+
+    "القدرة على تفعيل مبادئ الحوكمة": "التقييم الوظيفي",
+    "التعاون مع الزملاء": "التقييم الوظيفي",
+    "⁠القدرة على إنفاذ الخطط الاستراتيجية والتشغيلية على الأرض": "التقييم الوظيفي",
+    "القدرة على تفعيل المنظومة الإلكترونية": "التقييم الوظيفي",
+    "القدرة على العمل تحت ضغط": "التقييم الوظيفي",
+
+    "المهارات القيادية": "المهارات الشخصية",
+    "سرعة البديهة وحسن التصرف": "المهارات الشخصية",
+    "اللباقة أثناء الحديث": "المهارات الشخصية",
+    "مهارات التواصل والإقناع": "المهارات الشخصية",
+    "الإبتكار والإبداع": "المهارات الشخصية",
+};
+
 
 const data = [
     {
@@ -94,68 +143,68 @@ const chartData2 = [
     { month: "سبتمبر", performance: 91, color: "#f87171" },
 ];
 
-
-const evaluationData = [
-    {
-        category: "السمات العامة للشخصية",
-        items: [
-            { name: "تحمل المسؤولية", score: 7 },
-            { name: "الانضباط", score: 7 },
-            { name: "الإلتزام بالمواعيد", score: 8 },
-            { name: "الأمانة وحسن الخلق", score: 7 },
-            { name: "تغليب المصلحة العامة على الشخصية", score: 5 },
-            { name: "الثقة في النفس", score: 7 },
-            { name: "المظهر العام والنظافة الشخصية", score: 7 },
-            { name: "مستوى الكفاءة في المجال التخصصي", score: 6 },
-        ],
-    },
-    {
-        category: "التقييم الوظيفي",
-        items: [
-            { name: "القدرة على تفعيل مبادئ الحوكمة", score: 7 },
-            { name: "التعاون مع الزملاء", score: 7 },
-            { name: "⁠القدرة على إنفاذ الخطط الاستراتيجية والتشغيلية على الأرض", score: 7 },
-            { name: "القدرة على تفعيل المنظومة الإلكترونية", score: 6 },
-            { name: "القدرة على العمل تحت ضغط", score: 6 },
-        ],
-    },
-    {
-        category: "المهارات الشخصية",
-        items: [
-            { name: "المهارات القيادية", score: 7 },
-            { name: "سرعة البديهة وحسن التصرف", score: 7 },
-            { name: "اللباقة أثناء الحديث", score: 7 },
-            { name: "مهارات التواصل والإقناع", score: 6 },
-            { name: "الإبتكار والإبداع", score: 7 },
-        ],
-    },
-];
-
-const WatomsSecretReport = ({ id, onClose, org }) => {
+const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState(null);
+    const [monthEvaluation, setMonthEvaluation] = useState([]);
+
+    const groupEvaluation = (evals) => {
+        return baseTemplates.reduce((acc, tpl) => {
+            const category = categoryMap[tpl.title] || "أخرى";
+            if (!acc[category]) acc[category] = [];
+
+            // look for this item in evaluations
+            const found = evals.find(eva => eva.template.title === tpl.title);
+
+            acc[category].push({
+                name: tpl.title,
+                score: found ? found.score : 0,       // ✅ default 0 if missing
+                max: found ? found.template.max_score : tpl.max,
+            });
+
+            return acc;
+        }, {});
+    };
 
     useEffect(() => {
-        setSelectedMonthIdx(org.months.length - 1)
-        setSelectedMonth(org.months[org.months.length - 1])
-        console.log(org.months[org.months.length - 1])
-    }, [])
+        const lastIdx = org.months.length - 1;
+        const lastMonth = org.months[lastIdx];
+
+        setSelectedMonthIdx(lastIdx);
+        setSelectedMonth(lastMonth);
+
+        const filteredEvaluation = evaluation.filter(
+            eva => eva.date === lastMonth.monthNumber
+        );
+
+        setMonthEvaluation(groupEvaluation(filteredEvaluation));
+    }, [org, evaluation]);
 
     const toggleMonth = (status) => {
         if (status) {
             if (selectedMonthIdx !== org.months.length - 1) {
                 setSelectedMonth(org.months[selectedMonthIdx + 1]);
                 setSelectedMonthIdx(prev => prev + 1);
+                const filteredEvaluation = evaluation.filter(eva => eva.date === org.months[selectedMonthIdx + 1].monthNumber)
+                setMonthEvaluation(groupEvaluation(filteredEvaluation))
             }
         } else {
             if (selectedMonthIdx !== 0) {
                 setSelectedMonth(org.months[selectedMonthIdx - 1]);
                 setSelectedMonthIdx(prev => prev - 1);
+                const filteredEvaluation = evaluation.filter(eva => eva.date === org.months[selectedMonthIdx - 1].monthNumber)
+                setMonthEvaluation(groupEvaluation(filteredEvaluation))
             }
         }
     }
     return (
         <div className="fixed inset-0 bg-black/60 flex flex-col overflow-y-auto justify-start gap-6 items-center z-50">
+            <button
+                onClick={onClose} // <-- add handler if you want to close modal
+                className="absolute top-4 right-4 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+            >
+                <FontAwesomeIcon icon={faXmark} />
+            </button>
             <div className="relative bg-white w-[40%] max-w-5xl h-[97vh] p-4 flex flex-col">
                 <div className="rounded-2xl border-black border-2 h-full flex flex-col items-center gap-2 py-2">
                     <div className="flex justify-between w-full p-2">
@@ -431,18 +480,28 @@ const WatomsSecretReport = ({ id, onClose, org }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {evaluationData.map((section, sectionIdx) => (
+                                {Object.entries(monthEvaluation).map(([category, items], sectionIdx) => (
                                     <React.Fragment key={sectionIdx}>
-                                        {section.items.map((item, i) => (
+                                        {items.map((item, i) => (
                                             <tr key={i}>
-                                                <td className={`border border-gray-400 px-4 py-1 ${section.items.length - 1 === i && "border-b-black border-b-2"}`}>{item.score}</td>
-                                                <td className={`border border-gray-400 px-4 py-1 ${section.items.length - 1 === i && "border-b-black border-b-2"}`}>{item.name}</td>
+                                                <td
+                                                    className={`border border-gray-400 px-4 py-1 ${items.length - 1 === i && "border-b-black border-b-2"
+                                                        }`}
+                                                >
+                                                    {item.score}
+                                                </td>
+                                                <td
+                                                    className={`border border-gray-400 px-4 py-1 ${items.length - 1 === i && "border-b-black border-b-2"
+                                                        }`}
+                                                >
+                                                    {item.name}
+                                                </td>
                                                 {i === 0 && (
                                                     <td
                                                         className="border border-gray-400 border-b-black border-b-2 px-4 py-1 font-bold"
-                                                        rowSpan={section.items.length}
+                                                        rowSpan={items.length}
                                                     >
-                                                        {section.category}
+                                                        {category}
                                                     </td>
                                                 )}
                                             </tr>

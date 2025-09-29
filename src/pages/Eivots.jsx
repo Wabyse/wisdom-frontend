@@ -5,7 +5,8 @@ import { useLanguage } from '../context/LanguageContext';
 import Popup from '../components/Popup';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress
+    faUser, faInfoCircle, faSearch, faSun, faMoon, faSignOutAlt, faExpand, faCompress,
+    faSheetPlastic
 } from "@fortawesome/free-solid-svg-icons";
 import watomsLogo from '../assets/watoms3.png';
 import fullScreen from '../utils/fullScreen';
@@ -132,6 +133,17 @@ const Eivots = () => {
                             <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
                             {userFullName(userInfo, language)}
                         </span>
+                        {/* Full Screen Toggle Button */}
+                        {(userInfo?.code === 3 || userInfo?.code === 100) && <button
+                            onClick={() => navigate('/watoms/evaluate/managers')}
+                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                            title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
+                        >
+                            <FontAwesomeIcon
+                                icon={faSheetPlastic}
+                                className="text-xl text-watomsBlue"
+                            />
+                        </button>}
                         {/* Language Toggle Button */}
                         <button
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all font-bold text-base"

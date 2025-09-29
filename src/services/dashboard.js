@@ -68,3 +68,15 @@ export const fetchDemoDetailsData = async () => {
     throw error;
   }
 }; 
+
+export const submitManagerEvaluation = async (data) => {
+  try {
+    const response = await api.post(`/api/v1/watoms/managers/evaluation`, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Points || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}

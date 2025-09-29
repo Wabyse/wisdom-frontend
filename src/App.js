@@ -65,6 +65,7 @@ import WatomsNews from "./pages/WatomsNews";
 import WatomsPublishNews from "./pages/WatomsPublishNews";
 import WatomsManagersReports from "./pages/WatomsManagersReports";
 import ViewTraineesRegistrations from "./pages/ViewTraineesRegistrations";
+import WatomsEvaluateManagers from "./pages/WatomsEvaluateManagers";
 
 function App() {
   return (
@@ -435,6 +436,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <WatomsManagersReports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/evaluate/managers"
+            element={
+              <ProtectedRoute>
+                <WatomsEvaluateManagers />
               </ProtectedRoute>
             }
           />
