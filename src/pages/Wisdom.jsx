@@ -103,9 +103,9 @@ const Wisdom = () => {
             subtitle: language ? 'Points and Rewards System' : 'نظام النقاط والمكافآت',
             description: language ? 'Points management and incentives' : 'إدارة النقاط والحوافز',
             icon: faStar,
-            path: '/points',
+            path: '/neqaty/schools',
             color: 'from-yellow-500 to-yellow-600',
-            available: false
+            available: true
         },
         {
             id: 'finance',

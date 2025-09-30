@@ -429,7 +429,7 @@ export const getWatomsSystems = (language, userOrg) => [
         subtitle: language ? 'Points and Rewards System' : 'نظام النقاط والمكافآت',
         description: language ? 'Points management and incentives' : 'إدارة النقاط والحوافز',
         icon: faStar,
-        path: '/neqaty',
+        path: '/neqaty/vtcs',
         color: 'from-yellow-500 to-yellow-600',
         available: userOrg === 3
     },
