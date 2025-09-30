@@ -3,11 +3,13 @@ import ebdaeduLogo from "../assets/ebad-edu.png";
 import wabysLogo from "../assets/wabys.png";
 import golLogo from "../assets/Gov.png";
 import img from "../assets/ismailiaManager.jpg";
-import { ORG_MANAGER_IMG } from "../constants/constants";
+import { NUMBER_TO_ARABIC_MONTHS, ORG_MANAGER_IMG } from "../constants/constants";
 import DonutChart from "./DonutChart";
 import CustomLineChart from "./CustomLineChart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { roundNumber } from "../utils/roundNumber";
+import { fetchManagerComments, fetchOrgAvgTasks } from "../services/specificData";
 
 const baseTemplates = [
     { title: "تحمل المسؤولية", max: 10 },
@@ -55,98 +57,28 @@ const categoryMap = {
     "الإبتكار والإبداع": "المهارات الشخصية",
 };
 
-
-const data = [
-    {
-        month: "يناير",
-        annual: "65%",
-        negativeCount: 100,
-        negativeGrade: 250,
-        positiveCount: 300,
-        positiveGrade: 750,
-        net: "80%",
-        penalties: 3,
-        accuracy: "70%",
-    },
-    {
-        month: "فبراير",
-        annual: "75%",
-        negativeCount: 50,
-        negativeGrade: 250,
-        positiveCount: 300,
-        positiveGrade: 750,
-        net: "60%",
-        penalties: 35,
-        accuracy: "75%",
-    },
-    {
-        month: "مارس",
-        annual: "80%",
-        negativeCount: 200,
-        negativeGrade: 250,
-        positiveCount: 300,
-        positiveGrade: 750,
-        net: "70%",
-        penalties: 40,
-        accuracy: "65%",
-    },
-    {
-        month: "ابريل",
-        annual: "75%",
-        negativeCount: 150,
-        negativeGrade: 250,
-        positiveCount: 300,
-        positiveGrade: 750,
-        net: "77%",
-        penalties: 50,
-        accuracy: "77%",
-    },
-    {
-        month: "مايو",
-        annual: "90%",
-        negativeCount: 200,
-        negativeGrade: 250,
-        positiveCount: 300,
-        positiveGrade: 750,
-        net: "88%",
-        penalties: 60,
-        accuracy: "80%",
-    },
-    {
-        month: "يونيو",
-        annual: "85%",
-        negativeCount: 175,
-        negativeGrade: 250,
-        positiveCount: 300,
-        positiveGrade: 750,
-        net: "90%",
-        penalties: 70,
-        accuracy: "85%",
-    },
-];
-
-const chartData = [
-    { month: "ابريل", performance: 72, color: "#f87171" },
-    { month: "مايو", performance: 45, color: "#f87171" },
-    { month: "يونيو", performance: 88, color: "#f87171" },
-    { month: "يوليو", performance: 66, color: "#f87171" },
-    { month: "اغسطس", performance: 53, color: "#f87171" },
-    { month: "سبتمبر", performance: 91, color: "#f87171" },
-];
-
-const chartData2 = [
-    { month: "ابريل", performance: 72, color: "#f87171" },
-    { month: "مايو", performance: 45, color: "#f87171" },
-    { month: "يونيو", performance: 88, color: "#f87171" },
-    { month: "يوليو", performance: 66, color: "#f87171" },
-    { month: "اغسطس", performance: 53, color: "#f87171" },
-    { month: "سبتمبر", performance: 91, color: "#f87171" },
-];
-
 const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [monthEvaluation, setMonthEvaluation] = useState([]);
+    const [mgrScores, setMgrScores] = useState([]);
+    const [tasksScores, setTasksScores] = useState([]);
+    const [managerComments, setManagerComments] = useState([]);
+
+    useEffect(() => {
+        const loadOrgAvgTasks = async () => {
+            const response = await fetchOrgAvgTasks(id);
+            setTasksScores(response)
+        }
+
+        const loadManagerComments = async () => {
+            const response = await fetchManagerComments(org.managerId);
+            setManagerComments(response)
+        }
+
+        loadOrgAvgTasks();
+        loadManagerComments();
+    }, [])
 
     const groupEvaluation = (evals) => {
         return baseTemplates.reduce((acc, tpl) => {
@@ -177,6 +109,23 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
             eva => eva.date === lastMonth.monthNumber
         );
 
+        const grouped = evaluation.reduce((acc, ev) => {
+            if (!acc[ev.date]) acc[ev.date] = [];
+            acc[ev.date].push(ev.score);
+            return acc;
+        }, {});
+
+        // 2. Compute average %
+        const results = Object.entries(grouped).map(([date, scores]) => {
+            const total = scores.reduce((a, b) => a + b, 0);
+            const count = scores.length;
+            const max = count * 10; // assuming max score per item is 10
+            const avg = (total / max) * 100;
+
+            return { monthNumber: Number(date), performance: roundNumber(avg.toFixed(2)), month: NUMBER_TO_ARABIC_MONTHS[Number(date)] };
+        });
+
+        setMgrScores(results);
         setMonthEvaluation(groupEvaluation(filteredEvaluation));
     }, [org, evaluation]);
 
@@ -301,12 +250,12 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
                         <div className="border-black border-2 rounded-2xl flex items-center p-2 gap-2">
                             <div className="w-[65%] h-40 flex flex-col justify-center items-center border-black border-2 rounded-2xl p-2">
                                 <h1 className="text-center text-[10px]">معدل تغير اداء المدير الشهري</h1>
-                                <CustomLineChart data={chartData} />
+                                <CustomLineChart data={mgrScores} />
                             </div>
                             <div className="w-0 h-16 border-l-2 border-black" />
                             <div className="w-[30%] flex flex-col justify-center items-center border-black border-2 rounded-2xl p-2 gap-4">
                                 <h1 className="text-center text-[10px]">التقييم العام الحالي</h1>
-                                <DonutChart value={56} />
+                                <DonutChart value={mgrScores[mgrScores.length - 1]?.performance || 0} />
                             </div>
                         </div>
                     </div>
@@ -315,12 +264,12 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
                         <div className="border-black border-2 rounded-2xl flex items-center p-2 gap-2">
                             <div className="w-[65%] h-40 flex flex-col justify-center items-center border-black border-2 rounded-2xl p-2">
                                 <h1 className="text-center text-[10px]">تحليل معدل تغيير اداء المركز</h1>
-                                <CustomLineChart data={chartData2} />
+                                <CustomLineChart data={org.months} />
                             </div>
                             <div className="w-0 h-16 border-l-2 border-black" />
                             <div className="w-[30%] flex flex-col justify-center items-center border-black border-2 rounded-2xl p-2 gap-4">
                                 <h1 className="text-center text-[10px]">تقييم اداء المركز</h1>
-                                <DonutChart value={56} />
+                                <DonutChart value={org.months[org.months.length - 1].performance} />
                             </div>
                         </div>
                     </div>
@@ -348,24 +297,24 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
                             </thead>
 
                             <tbody>
-                                {data.map((row, idx) => (
+                                {org.months.map((org, idx) => (
                                     <tr
                                         key={idx}
                                         className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
                                     >
-                                        <td className="border border-gray-300 px-3 py-2">{row.penalties}</td>
-                                        <td className="border border-gray-300 px-3 py-2">{row.accuracy}</td>
+                                        <td className="border border-gray-300 px-3 py-2">0</td>
+                                        <td className="border border-gray-300 px-3 py-2">{tasksScores.find(m => m.date === org.monthNumber)?.score || 0}%</td>
 
-                                        <td className="border border-gray-300 px-3 py-2 font-bold">{row.net}</td>
-                                        <td className="border border-gray-300 px-3 py-2">{row.negativeCount}</td>
-                                        <td className="border border-gray-300 px-3 py-2">{row.negativeGrade}</td>
+                                        <td className="border border-gray-300 px-3 py-2 font-bold">0</td>
+                                        <td className="border border-gray-300 px-3 py-2">0</td>
+                                        <td className="border border-gray-300 px-3 py-2">0</td>
 
-                                        <td className="border border-gray-300 px-3 py-2">{row.positiveCount}</td>
-                                        <td className="border border-gray-300 px-3 py-2">{row.positiveGrade}</td>
+                                        <td className="border border-gray-300 px-3 py-2">0</td>
+                                        <td className="border border-gray-300 px-3 py-2">0</td>
 
-                                        <td className="border border-gray-300 px-3 py-2">{row.annual}</td>
-                                        <td className="border border-gray-300 px-3 py-2">{row.annual}</td>
-                                        <td className="border border-gray-300 px-3 py-2">{row.month}</td>
+                                        <td className="border border-gray-300 px-3 py-2">{roundNumber(org.performance)}%</td>
+                                        <td className="border border-gray-300 px-3 py-2">{mgrScores.find(m => m.monthNumber === org.monthNumber)?.performance || 0}%</td>
+                                        <td className="border border-gray-300 px-3 py-2">{org.month}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -373,8 +322,14 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
                     </div>
                     <div className="w-[95%] font-bold">
                         <h1 className="text-end text-[11px]">:رابعا: الملاحظات</h1>
-                        <div className="border-black border-2 w-full text-red-600 text-end text-[10px] min-h-20">
-                            يحتاج للتحفيز المستمر
+                        <div className={`border-black border-2 w-full text-end text-[10px] min-h-20 max-h-20 ${managerComments.length > 5 && "overflow-y-scroll"}`}>
+                            {managerComments.map(comment => (
+                                <div className="flex w-full justify-end gap-2 px-2">
+                                    <p>{comment.comment}</p>
+                                    <p className={comment.type === "ايجابي" ? `text-green-600` : `text-red-600`}>({comment.type})</p>
+                                    <p className="text-blue-600">{comment.date.split("T")[0]}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

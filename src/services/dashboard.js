@@ -67,7 +67,7 @@ export const fetchDemoDetailsData = async () => {
     console.error('Error fetching Watoms Detailed Data:', error);
     throw error;
   }
-}; 
+};
 
 export const submitManagerEvaluation = async (data) => {
   try {
@@ -75,6 +75,42 @@ export const submitManagerEvaluation = async (data) => {
       headers: { "Content-Type": "application/json" },
     });
     return response.data?.Points || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const updateEmployeeEvaluation = async (data) => {
+  try {
+    const response = await api.patch(`/api/v1/watoms/employee/evaluation`, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Points || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const submitOrgTaskAvg = async (data) => {
+  try {
+    const response = await api.post(`/api/v1/watoms/organization/task-score`, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.taskScore || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const submitMangerComment = async (data) => {
+  try {
+    const response = await api.post(`/api/v1/watoms/manager/comment`, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.taskScore || [];
   } catch (error) {
     console.error("API Error:", error.response?.data || error.message);
     throw error;

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { fetchEmployeesRoles, fetchManagerEvaluationTemplate, fetchSchools, fetchVtcEmployees } from "../services/data";
 import NewNavbar from "../components/NewNavbar";
-import { submitManagerEvaluation } from "../services/dashboard";
+import { submitManagerEvaluation, submitMangerComment, submitOrgTaskAvg, updateEmployeeEvaluation } from "../services/dashboard";
 import Popup from "../components/Popup";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import person from '../assets/person.jpg';
+import { fetchEmployeeEvaluation } from "../services/specificData";
 
 const WatomsEvaluateManagers = () => {
     const navigate = useNavigate();
@@ -20,6 +21,47 @@ const WatomsEvaluateManagers = () => {
     const [data, setData] = useState([]);
     const [scores, setScores] = useState({});
     const [submitted, setSubmitted] = useState(false);
+    const [evaluatedData, setEvaluatedData] = useState([]);
+    const [taskAvg, setTaskAvg] = useState(null);
+    const [form, setForm] = useState({
+        comment: "",
+        type: "",
+        date: "",
+    });
+    const [submittimg, setSubmittimg] = useState(false);
+
+    const handleCommentChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+        if (submittimg) return;
+        setSubmittimg(true);
+        if (form.comment === "" || form.type === "" || form.date === "" || selectedEmployee === "") {
+            toast.error('الرجاء اختيار مدير المركز و تسجيل الملاحظة و النوع و التاريخ')
+        } else {
+            const data = {
+                comment: form.comment,
+                type: form.type,
+                date: form.date,
+                employee_id: selectedEmployee
+            }
+            await submitMangerComment(data);
+            setSubmittimg(false);
+            setSubmitted(true);
+        }
+    };
+
+    useEffect(() => {
+        const loadSpecificEvaluation = async () => {
+            const response = await fetchEmployeeEvaluation(Number(selectedEmployee), Number(selectedMonth));
+            setEvaluatedData(response)
+        }
+
+        if (selectedEmployee !== "" && selectedMonth !== "") loadSpecificEvaluation();
+    }, [selectedEmployee, selectedMonth])
 
     const closePopup = () => {
         setSubmitted(false)
@@ -89,6 +131,20 @@ const WatomsEvaluateManagers = () => {
         }));
     };
 
+    const submitTaskAvg = async (e) => {
+        e.preventDefault();
+        if (selectedOrg === "" || selectedMonth === "" || !taskAvg) {
+            toast.error("الرجاء اختيار الشهر و المركز و اضافة التقييم")
+        }
+        const data = {
+            organization_id: Number(selectedOrg),
+            date: Number(selectedMonth),
+            score: Number(taskAvg)
+        }
+        const response = await submitOrgTaskAvg(data);
+        if (response) setSubmitted(true)
+    }
+
     const handleConfirm = async (e) => {
         e.preventDefault();
         if (Object.keys(scores).length !== 18) {
@@ -111,26 +167,26 @@ const WatomsEvaluateManagers = () => {
             setSubmitted(true);
         }
     };
-    const handleEdit = (e) => {
+    const handleEdit = async (e) => {
         e.preventDefault();
-
-        const payload = {
-            organization_id: selectedOrg,
-            month: selectedMonth,
-            evaluations: data.map((cat, cIdx) => ({
-                title: cat.title,
-                statements: cat.statements.map((st, sIdx) => ({
-                    title: st.title,
-                    score: scores[`${cIdx}-${sIdx}`] || 0,
-                    max_score: st.max_score,
+        if (Object.keys(scores).length !== 18) {
+            toast.error("Please fill all statements");
+        } else {
+            const payload = {
+                employee_id: Number(selectedEmployee),
+                date: Number(selectedMonth),
+                evaluations: data.map((cat, cIdx) => ({
+                    title: cat.title,
+                    statements: cat.statements.map((st, sIdx) => ({
+                        id: st.id,
+                        score: Number(scores[st.id]) || 0,
+                    })),
                 })),
-            })),
-        };
+            };
 
-        console.log("Submit Payload:", payload);
-
-        // Send to backend
-        // fetch("/api/save-evaluation", { method: "POST", body: JSON.stringify(payload) })
+            await updateEmployeeEvaluation(payload)
+            setSubmitted(true);
+        }
     };
     const handleDelete = (e) => {
         e.preventDefault();
@@ -252,13 +308,13 @@ const WatomsEvaluateManagers = () => {
 
                     {/* Action Buttons */}
                     <div className="flex justify-end gap-3 mb-6">
-                        <button
+                        {evaluatedData.length === 0 && <button
                             type="button"
                             onClick={handleConfirm}
                             className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
                         >
                             تأكيد
-                        </button>
+                        </button>}
                         <button
                             type="button"
                             onClick={handleEdit}
@@ -276,6 +332,7 @@ const WatomsEvaluateManagers = () => {
                     </div>
 
                     {/* Categories & Statements */}
+                    {evaluatedData.length !== 0 && <h1 className="text-center">This month has already been evaluated you can update or delete it</h1>}
                     {data.map((category, cIdx) => (
                         <div key={cIdx} className="border rounded-lg p-4 shadow">
                             <h2 className="text-lg font-semibold mb-4 text-end">{category.title}</h2>
@@ -316,6 +373,81 @@ const WatomsEvaluateManagers = () => {
                         </div>
                     ))}
                 </form>
+                <form onSubmit={submitTaskAvg} className="flex items-center gap-3 my-4 justify-center">
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white px-4 py-1 rounded-md hover:bg-blue-700"
+                    >
+                        حفظ
+                    </button>
+                    <input
+                        id="taskRate"
+                        type="number"
+                        className="border rounded-md px-2 py-1 w-24 text-center"
+                        placeholder="0"
+                        onChange={(e) => setTaskAvg(e.target.value)}
+                    />
+                    <label htmlFor="taskRate" className="font-medium">
+                        معدل انجاز المهام
+                    </label>
+                </form>
+                <div className="w-full mx-auto mt-10 p-6 bg-white shadow rounded-lg">
+                    <h2 className="text-xl font-bold mb-4 text-center">إضافة ملاحظة لمدير المركز</h2>
+                    <form onSubmit={handleCommentSubmit} className="space-y-4">
+                        {/* Textbox */}
+                        <div>
+                            <label className="block mb-1 font-medium text-gray-700 text-right">الملاحظة</label>
+                            <input
+                                type="text"
+                                name="comment"
+                                value={form.comment}
+                                onChange={handleCommentChange}
+                                className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-end"
+                                placeholder="أدخل الملاحظة"
+                                required
+                            />
+                        </div>
+
+                        {/* Select */}
+                        <div>
+                            <label className="block mb-1 font-medium text-gray-700 text-right">النوع</label>
+                            <select
+                                name="type"
+                                value={form.type}
+                                onChange={handleCommentChange}
+                                className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                dir="rtl"
+                                required
+                            >
+                                <option value="">اختر النوع</option>
+                                <option value="ايجابي">إيجابي</option>
+                                <option value="سلبي">سلبي</option>
+                            </select>
+                        </div>
+
+                        {/* Date */}
+                        <div>
+                            <label className="block mb-1 font-medium text-gray-700 text-right">التاريخ</label>
+                            <input
+                                type="date"
+                                name="date"
+                                value={form.date}
+                                onChange={handleCommentChange}
+                                className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+
+                        {/* Submit */}
+                        <button
+                            type="submit"
+                            disabled={submittimg}
+                            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                        >
+                            حفظ
+                        </button>
+                    </form>
+                </div>
             </div>
             <Popup
                 isOpen={submitted}

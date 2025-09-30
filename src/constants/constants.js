@@ -934,3 +934,18 @@ export const WATOMS_MODERN_COLORS = [
     'linear-gradient(90deg, #ffb347 0%, #ff7c00 100%)',
     'linear-gradient(90deg, #bdbdbd 0%, #757575 100%)',
 ];
+
+export const NUMBER_TO_ARABIC_MONTHS = {
+    1: 'يناير',
+    2: 'فبراير',
+    3: 'مارس',
+    4: 'ابريل',
+    5: 'مايو',
+    6: 'يونيو',
+    7: 'يوليو',
+    8: 'اغسطس',
+    9: 'سبتمبر',
+    10: 'اكتوبر',
+    11: 'نوفمبر',
+    12: 'ديسمبر'
+}

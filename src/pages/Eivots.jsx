@@ -137,7 +137,7 @@ const Eivots = () => {
                         {(userInfo?.code === 3 || userInfo?.code === 100) && <button
                             onClick={() => navigate('/watoms/evaluate/managers')}
                             className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                            title={language ? (isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen') : (isFullScreen ? 'خروج من الشاشة الكاملة' : 'دخول الشاشة الكاملة')}
+                            title={language ? "employee evaluation" : "تقييم الموظقين"}
                         >
                             <FontAwesomeIcon
                                 icon={faSheetPlastic}
