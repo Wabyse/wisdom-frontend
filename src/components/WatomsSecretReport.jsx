@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import ebdaeduLogo from "../assets/ebad-edu.png";
 import wabysLogo from "../assets/wabys.png";
 import golLogo from "../assets/Gov.png";
-import img from "../assets/ismailiaManager.jpg";
 import { NUMBER_TO_ARABIC_MONTHS, ORG_MANAGER_IMG } from "../constants/constants";
 import DonutChart from "./DonutChart";
 import CustomLineChart from "./CustomLineChart";

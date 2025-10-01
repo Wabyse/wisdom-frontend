@@ -4,18 +4,23 @@ import LoadingScreen from "../components/LoadingScreen";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAdminAuth } from "../context/AdminAuthContext";
 import NeqatyNavbar from "../components/NeqatyNavbar";
-import { fetchVtcPoints, updateUserPoints } from "../services/neqaty";
+import { fetchEmployeePointsPerformance, fetchVtcPoints, fetchVtcPointsPerformance, updateUserPoints } from "../services/neqaty";
 import { fetchAllTeachers } from "../services/pms";
 import toast, { Toaster } from "react-hot-toast";
 import background from '../assets/neqatyBackground.jpg';
-import { faArrowTrendDown, faArrowTrendUp, faChartSimple, faComment, faScroll } from "@fortawesome/free-solid-svg-icons";
+import { faArrowTrendDown, faArrowTrendUp, faChartSimple, faComment, faScroll, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    LineChart, Line, PieChart, Pie, LabelList
+    LineChart, Line
 } from 'recharts';
 import person from '../assets/person.jpg';
 import Uploading from '../components/Uploading';
+import wabysLogo from "../assets/wabys.png";
+import ebdaeduLogo from "../assets/ebad-edu.png";
+import golLogo from "../assets/Gov.png";
+import { cairoDate } from "../utils/cairoDate";
+import { NUMBER_TO_ARABIC_MONTHS } from "../constants/constants";
 
 const chartData = [];
 
@@ -37,6 +42,11 @@ const NeqatyVtc = () => {
     const [points, setPoints] = useState([]);
     const [selectedPoints, setSelectedPoints] = useState([]);
     const [uploading, setUploading] = useState(false);
+    const [monthlyPoints, setMonthlyPoints] = useState([]);
+    const [employeePoints, setEmployeePoints] = useState([]);
+    const [rewardSum, setRewardSum] = useState(0);
+    const [punishmentSum, setPunishmentSum] = useState(0);
+    const [totalSum, setTotalSum] = useState(0);
 
     useEffect(() => {
         const loadAuth = async () => {
@@ -63,7 +73,6 @@ const NeqatyVtc = () => {
                 setLoading(false);
             }
         }
-
         const loadUsers = async () => {
             try {
                 const loadedEmployees = await fetchVtcEmployees();
@@ -76,10 +85,15 @@ const NeqatyVtc = () => {
                 setLoading(false);
             }
         };
+        const loadPointsPerformance = async () => {
+            const response = await fetchVtcPointsPerformance();
+            setMonthlyPoints(response)
+        };
 
         loadAuth();
         loadVtcs();
         loadUsers();
+        loadPointsPerformance();
     }, [])
     useEffect(() => {
         const filterVtcs = () => {
@@ -107,6 +121,33 @@ const NeqatyVtc = () => {
 
         filterUsers();
     }, [selectedVtc]);
+
+    useEffect(() => {
+        const loadEmployeePointsPerformance = async () => {
+            const response = await fetchEmployeePointsPerformance(Number(selectedUser));
+            if (response.employeePoints?.length) {
+                const { reward, punishment } = response.employeePoints.reduce(
+                    (acc, item) => {
+                        if (item["point.type"] === "vtc_reward") {
+                            acc.reward += item["point.points"];
+                        } else if (item["point.type"] === "vtc_punishment") {
+                            acc.punishment += item["point.points"];
+                        }
+                        return acc;
+                    },
+                    { reward: 0, punishment: 0 }
+                );
+
+                setRewardSum(reward);
+                setPunishmentSum(punishment);
+                setTotalSum(reward + punishment);
+            }
+            console.log(response)
+            setEmployeePoints(response);
+        }
+
+        loadEmployeePointsPerformance();
+    }, [selectedUser])
 
     const checkAuth = () => {
         if (!selectedAuth) {
@@ -338,6 +379,121 @@ const NeqatyVtc = () => {
         </div>
     );
 
+    const ReportModel = ({ onClose }) => (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black/60 flex flex-col overflow-y-auto justify-start gap-6 items-center z-50">
+                <button
+                    onClick={onClose} // <-- add handler if you want to close modal
+                    className="absolute top-4 right-4 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+                >
+                    <FontAwesomeIcon icon={faXmark} />
+                </button>
+                <div className="relative bg-white w-[40%] max-w-5xl h-[97vh] p-4 flex flex-col">
+                    <div className="rounded-2xl border-black border-2 h-full flex flex-col items-center gap-2 py-2">
+                        <div className="flex justify-between w-full p-2">
+                            <div className="flex flex-col">
+                                <img src={wabysLogo} className="w-14" alt="wabys logo" />
+                                <img src={ebdaeduLogo} className="ml-3 w-10" alt="ebda edu logo" />
+                            </div>
+                            <div className="flex flex-col items-center gap-2 text-sm font-bold">
+                                <h1 className="text-red-600 border-b-2 border-red-600">تقرير تفاصيل نقاط الاثابة {NUMBER_TO_ARABIC_MONTHS[employeePoints.months[employeePoints.months.length - 1].monthNumber]}</h1>
+                            </div>
+                            <img src={golLogo} className="w-10 h-10 mr-3 mt-1" alt="gol logo" />
+                        </div>
+                        <h1 className="font-bold text-xs">اولا: البيانات الشخصية</h1>
+                        <div className="w-[95%] border-black border-2 flex p-1 gap-1 min-h-20">
+                            <div className="flex flex-col items-center text-center gap-1 w-[15%] font-bold">
+                                <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">الصافي</div>
+                                <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">{totalSum}</div>
+                            </div>
+                            <div className="flex flex-col items-center text-center gap-1 w-[25%] font-bold">
+                                <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">اجمالي عدد النقاط السلبية</div>
+                                <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">{punishmentSum}</div>
+                            </div>
+                            <div className="flex flex-col items-center text-center gap-1 w-[25%] font-bold">
+                                <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">اجمالي عدد النقاط الايجابية</div>
+                                <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">{rewardSum}</div>
+                            </div>
+                            <div className="flex flex-col gap-1 w-[50%] text-[10px] font-bold justify-center items-center">
+                                <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">{users.find(user => user.id === Number(selectedUser)).employee.first_name} {users.find(user => user.id === Number(selectedUser)).employee.middle_name} {users.find(user => user.id === Number(selectedUser)).employee.last_name}</div>
+                                <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">{vtcs.find(vtc => vtc.id === Number(users.find(user => user.id === Number(selectedUser)).employee.organization_id)).name}</div>
+                            </div>
+                            <div className="flex flex-col gap-1 min-w-fit max-w-1/3 text-[10px] font-bold justify-center items-center">
+                                <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الاسم</div>
+                                <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">القسم</div>
+                            </div>
+                            <div className="border-black border-2 p-1">
+                                <img className="w-24" src={person} alt="" />
+                            </div>
+                            <div className="flex justify-center items-center">
+                                <div className="px-2 bg-gray-300 border-black border-2 text-xs">1</div>
+                            </div>
+                        </div>
+                        <h1 className="font-bold text-xs">ثانيا: معدل تغيير الاداء</h1>
+                        <ResponsiveContainer width="100%" height={230}>
+                            <LineChart data={employeePoints.months} margin={{ top: 6, right: 30, left: -25, bottom: -10 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12 }}
+                                    domain={[
+                                        (dataMin) => Math.min(-100, Math.floor(dataMin)),
+                                        (dataMax) => Math.max(100, Math.ceil(dataMax)),
+                                    ]}
+                                />
+                                <Tooltip contentStyle={{ backgroundColor: '#1a202c', border: '1px solid #4a5568', borderRadius: '6px', color: '#e2e8f0' }} />
+                                <Line type="monotone" dataKey="performance" stroke="#fbbf24" strokeWidth={2} dot={true} activeDot={{ r: 6 }} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                        <h1 className="font-bold text-xs">ثالثا: الملاحظات الاضافية</h1>
+                        <div
+                            className={`p-2 bg-slate-100 rounded-2xl shadow w-[95%] text-[10px] ${employeePoints.employeePoints.length > 10 && "overflow-y-scroll"
+                                }`}
+                        >
+                            <table className="w-full text-center border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-300 text-[11px]">
+                                        <th className="border px-2 py-1">التقييم</th>
+                                        <th className="border px-2 py-1">الفئة</th>
+                                        <th className="border px-2 py-1">الملاحظة</th>
+                                        <th className="border px-2 py-1">التاريخ</th>
+                                        <th className="border px-2 py-1">م</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {employeePoints.employeePoints.map((point, idx) => (
+                                        <tr
+                                            key={idx}
+                                            className={idx % 2 === 0 ? "bg-white" : "bg-slate-50"}
+                                        >
+                                            <td className="border px-2 py-1">({point["point.points"]})</td>
+                                            <td
+                                                className={`border px-2 py-1 font-bold ${point["point.type"] === "vtc_reward"
+                                                    ? "text-green-600"
+                                                    : "text-red-600"
+                                                    }`}
+                                            >
+                                                {point["point.type"] === "vtc_reward" ? "مكافأة" : "خصم"}
+                                            </td>
+                                            <td className="border px-2 py-1">{point["point.name"]}</td>
+                                            <td className="border px-2 py-1">
+                                                {cairoDate(point.updatedAt).split(",")[0].trim()}
+                                            </td>
+                                            <td className="border px-2 py-1">{idx + 1}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+        </div>
+    );
+
     const closeModal = () => {
         setPopup("");
     };
@@ -488,13 +644,20 @@ const NeqatyVtc = () => {
                 </div>
                 <div className="flex gap-4 justify-center">
                     <div className="mt-16 w-[40%] border-white border-2 rounded-2xl shadow-white shadow-md">
-                        <ResponsiveContainer width="100%" height={140}>
-                            <LineChart data={chartData} margin={{ top: 6, right: 30, left: -25, bottom: -10 }}>
+                        <ResponsiveContainer width="100%" height={230}>
+                            <LineChart data={employeePoints.length > 0 ? employeePoints.months : monthlyPoints} margin={{ top: 6, right: 30, left: -25, bottom: -10 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 7 }} />
-                                <YAxis domain={[0, 100]} axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                                <Tooltip contentStyle={{ backgroundColor: '#1a202c', border: '1px solid #4a5568', borderRadius: '6px', color: '#e2e8f0' }} />
-                                <Line type="monotone" dataKey="performance" stroke="#fbbf24" strokeWidth={2} dot={false} activeDot={false} />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12 }}
+                                    domain={[
+                                        (dataMin) => Math.min(-100, Math.floor(dataMin)),
+                                        (dataMax) => Math.max(100, Math.ceil(dataMax)),
+                                    ]}
+                                />                                <Tooltip contentStyle={{ backgroundColor: '#1a202c', border: '1px solid #4a5568', borderRadius: '6px', color: '#e2e8f0' }} />
+                                <Line type="monotone" dataKey="performance" stroke="#fbbf24" strokeWidth={2} dot={true} activeDot={{ r: 6 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
@@ -505,6 +668,7 @@ const NeqatyVtc = () => {
                                 <div
                                     id="التقارير"
                                     className={`w-1/5 group cursor-pointer transform transition-all duration-300 hover:scale-105`}
+                                    onClick={() => { selectedUser !== "" ? setPopup("report") : checkUser() }}
                                 >
                                     <div className={`bg-gradient-to-br from-purple-500 to-purple-600 min-h-48 flex justify-center items-center text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 relative overflow-hidden`}>
                                         <div>
@@ -634,6 +798,7 @@ const NeqatyVtc = () => {
             {popup === 'add' && <AddModel onClose={closeModal} />}
             {popup === 'remove' && <SubstractModel onClose={closeModal} />}
             {popup === 'notes' && <NotesModel onClose={closeModal} />}
+            {popup === 'report' && <ReportModel onClose={closeModal} />}
             {uploading && <Uploading />}
         </>
     )

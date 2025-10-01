@@ -80,7 +80,11 @@ function App() {
           <Route path="/services/training" element={<HomeServicesTraining />} />
           <Route path="/vtc-trainees-registration" element={<WatomsTraineesRegistration />} />
           <Route path="/checkin" element={<CheckInOut />} />
-          <Route path="/qrcodes" element={<QRList />} />
+          <Route path="/qrcodes" element={
+            <ProtectedRoute>
+              <QRList />
+            </ProtectedRoute>
+          } />
           <Route path="/login" element={<Login />} />
           <Route path="/neqaty/login" element={<NeqatyLogin />} />
           <Route path="/neqaty" element={
