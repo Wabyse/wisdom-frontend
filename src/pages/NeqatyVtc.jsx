@@ -47,6 +47,22 @@ const NeqatyVtc = () => {
     const [rewardSum, setRewardSum] = useState(0);
     const [punishmentSum, setPunishmentSum] = useState(0);
     const [totalSum, setTotalSum] = useState(0);
+    const [selectedMonth, setSelectedMonth] = useState(0);
+    const [selectedMonthIdx, setSelectedMonthIdx] = useState(0);
+
+    const toggleMonth = (status) => {
+        if (status) {
+            if (selectedMonthIdx !== employeePoints.months.length - 1) {
+                setSelectedMonth(employeePoints.months[selectedMonthIdx + 1]);
+                setSelectedMonthIdx(prev => prev + 1);
+            }
+        } else {
+            if (selectedMonthIdx !== 0) {
+                setSelectedMonth(employeePoints.months[selectedMonthIdx - 1]);
+                setSelectedMonthIdx(prev => prev - 1);
+            }
+        }
+    }
 
     useEffect(() => {
         const loadAuth = async () => {
@@ -125,8 +141,19 @@ const NeqatyVtc = () => {
     useEffect(() => {
         const loadEmployeePointsPerformance = async () => {
             const response = await fetchEmployeePointsPerformance(Number(selectedUser));
+
             if (response.employeePoints?.length) {
-                const { reward, punishment } = response.employeePoints.reduce(
+                // find latest month (last in response.months array)
+                const latestMonth = response.months[response.months.length - 1];
+
+                // filter points of that month only
+                const monthPoints = response.employeePoints.filter(
+                    (item) =>
+                        new Date(item.updatedAt).getMonth() + 1 === latestMonth.monthNumber
+                );
+
+                // calculate reward/punishment for that month
+                const { reward, punishment } = monthPoints.reduce(
                     (acc, item) => {
                         if (item["point.type"] === "vtc_reward") {
                             acc.reward += item["point.points"];
@@ -141,13 +168,43 @@ const NeqatyVtc = () => {
                 setRewardSum(reward);
                 setPunishmentSum(punishment);
                 setTotalSum(reward + punishment);
+
+                // also set latest month
+                setSelectedMonthIdx(response.months.length - 1);
+                setSelectedMonth(latestMonth);
             }
-            console.log(response)
+
             setEmployeePoints(response);
-        }
+        };
 
         loadEmployeePointsPerformance();
     }, [selectedUser])
+
+    // when selectedMonth changes, update sums
+    useEffect(() => {
+        if (!selectedMonth || !employeePoints?.employeePoints) return;
+
+        const monthPoints = employeePoints.employeePoints.filter(
+            (item) =>
+                new Date(item.updatedAt).getMonth() + 1 === selectedMonth.monthNumber
+        );
+
+        const { reward, punishment } = monthPoints.reduce(
+            (acc, item) => {
+                if (item["point.type"] === "vtc_reward") {
+                    acc.reward += item["point.points"];
+                } else if (item["point.type"] === "vtc_punishment") {
+                    acc.punishment += item["point.points"];
+                }
+                return acc;
+            },
+            { reward: 0, punishment: 0 }
+        );
+
+        setRewardSum(reward);
+        setPunishmentSum(punishment);
+        setTotalSum(reward + punishment);
+    }, [selectedMonth, employeePoints]);
 
     const checkAuth = () => {
         if (!selectedAuth) {
@@ -396,11 +453,70 @@ const NeqatyVtc = () => {
                                 <img src={ebdaeduLogo} className="ml-3 w-10" alt="ebda edu logo" />
                             </div>
                             <div className="flex flex-col items-center gap-2 text-sm font-bold">
-                                <h1 className="text-red-600 border-b-2 border-red-600">تقرير تفاصيل نقاط الاثابة {NUMBER_TO_ARABIC_MONTHS[employeePoints.months[employeePoints.months.length - 1].monthNumber]}</h1>
+                                <h1 className="text-red-600 border-b-2 border-red-600">تقرير تفاصيل نقاط الاثابة</h1>
                             </div>
                             <img src={golLogo} className="w-10 h-10 mr-3 mt-1" alt="gol logo" />
                         </div>
-                        <h1 className="font-bold text-xs">اولا: البيانات الشخصية</h1>
+                        <div style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: 10,
+                        }}>
+                            {selectedMonthIdx !== 0 ? <button
+                                onClick={() => toggleMonth(false)}
+                                className="flex justify-center items-center"
+                                style={{
+                                    color: '#0af',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 20,
+                                    fontWeight: 900,
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                }}
+                                title="الشهر السابق"
+                            >
+                                &#8592;
+                            </button> : <div
+                                style={{
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 20,
+                                    fontWeight: 900,
+                                    display: "hidden",
+                                }}></div>}
+                            <span style={{ fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
+                                {selectedMonth?.month}
+                            </span>
+                            {selectedMonthIdx !== (employeePoints?.months.length - 1) ? <button
+                                onClick={() => toggleMonth(true)}
+                                className="flex justify-center items-center"
+                                style={{
+                                    color: '#0af',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 20,
+                                    fontWeight: 900,
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                }}
+                                title="الشهر التالي"
+                            >
+                                &#8594;
+                            </button> : <div
+                                style={{
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 22,
+                                    fontWeight: 900,
+                                    display: "hidden",
+                                }}></div>}
+                        </div>
+                        <div className="w-full px-3">
+                            <h1 className="font-bold text-xs text-end underline">اولا: البيانات الشخصية</h1>
+                        </div>
                         <div className="w-[95%] border-black border-2 flex p-1 gap-1 min-h-20">
                             <div className="flex flex-col items-center text-center gap-1 w-[15%] font-bold">
                                 <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">الصافي</div>
@@ -429,7 +545,9 @@ const NeqatyVtc = () => {
                                 <div className="px-2 bg-gray-300 border-black border-2 text-xs">1</div>
                             </div>
                         </div>
-                        <h1 className="font-bold text-xs">ثانيا: معدل تغيير الاداء</h1>
+                        <div className="w-full px-3">
+                            <h1 className="font-bold text-xs text-end underline">ثانيا: معدل تغيير الاداء</h1>
+                        </div>
                         <ResponsiveContainer width="100%" height={230}>
                             <LineChart data={employeePoints.months} margin={{ top: 6, right: 30, left: -25, bottom: -10 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -447,11 +565,10 @@ const NeqatyVtc = () => {
                                 <Line type="monotone" dataKey="performance" stroke="#fbbf24" strokeWidth={2} dot={true} activeDot={{ r: 6 }} />
                             </LineChart>
                         </ResponsiveContainer>
-                        <h1 className="font-bold text-xs">ثالثا: الملاحظات الاضافية</h1>
-                        <div
-                            className={`p-2 bg-slate-100 rounded-2xl shadow w-[95%] text-[10px] ${employeePoints.employeePoints.length > 10 && "overflow-y-scroll"
-                                }`}
-                        >
+                        <div className="w-full px-3">
+                            <h1 className="font-bold text-xs text-end underline">ثالثا: الملاحظات الاضافية</h1>
+                        </div>
+                        <div className={`p-2 bg-slate-100 rounded-2xl shadow w-[95%] max-h-32 text-[10px] ${employeePoints.employeePoints.length > 4 && "overflow-y-scroll"}`} >
                             <table className="w-full text-center border-collapse">
                                 <thead>
                                     <tr className="bg-slate-300 text-[11px]">

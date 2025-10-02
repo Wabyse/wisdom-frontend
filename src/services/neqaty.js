@@ -86,7 +86,19 @@ export const fetchVtcPointsPerformance = async () => {
 
 export const fetchEmployeePointsPerformance = async (id) => {
   try {
-    const response = await api.get(`/api/v1/neqaty/watoms/monthly/performance/${id}`, {
+    const response = await api.get(`/api/v1/neqaty/monthly/performance/${id}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export const fetchSchoolPointsPerformance = async () => {
+  try {
+    const response = await api.get(`/api/v1/neqaty/wisdom/monthly/performance`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data?.data || [];

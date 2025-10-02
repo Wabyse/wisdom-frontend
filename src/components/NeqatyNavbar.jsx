@@ -11,8 +11,10 @@ import wabysLogo from '../assets/wabys.png';
 import watomsLogo from '../assets/watoms3.png';
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from "../hooks/useFullScreen";
+// images
+import wisdomLogo from '../assets/wisdom.png';
 
-const NeqatyNavbar = ({ homePage = false }) => {
+const NeqatyNavbar = ({ homePage = false, system="watoms" }) => {
     const { setAdminToken, setAdminInfo, adminInfo } = useAdminAuth();
     const navigate = useNavigate();
     const { language, setLanguage } = useLanguage();
@@ -34,7 +36,7 @@ const NeqatyNavbar = ({ homePage = false }) => {
                 <div className="flex items-center gap-6">
                     <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={wabysLogo} alt="Wabys Logo" onClick={() => navigate('/wabys')} />
                     <div className='border-l-2 border-gray-500 p-1 h-8' />
-                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={watomsLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
+                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer" src={system === "watoms" ? watomsLogo : wisdomLogo} alt="Wabys Logo" onClick={() => navigate('/watoms')} />
                 </div>
                 <div className="flex-1 flex justify-center">
                     <div className="relative w-full max-w-md">

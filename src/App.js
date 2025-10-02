@@ -87,6 +87,7 @@ function App() {
           } />
           <Route path="/login" element={<Login />} />
           <Route path="/neqaty/login" element={<NeqatyLogin />} />
+          {/* <Route path="/ebda-edu/neqaty/login" element={<NeqatyLogin />} /> */}
           <Route path="/neqaty" element={
             <ProtectedAdminRoute>
               <Neqaty />

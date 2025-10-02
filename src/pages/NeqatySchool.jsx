@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { fetchAuthorities, fetchSchools, fetchVtcEmployees } from "../services/data";
+import { fetchAuthorities, fetchSchoolEmployees, fetchSchools } from "../services/data";
 import LoadingScreen from "../components/LoadingScreen";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAdminAuth } from "../context/AdminAuthContext";
 import NeqatyNavbar from "../components/NeqatyNavbar";
-import { fetchEmployeePointsPerformance, fetchVtcPoints, fetchVtcPointsPerformance, updateUserPoints } from "../services/neqaty";
+import { fetchEmployeePointsPerformance, fetchSchoolPoints, fetchSchoolPointsPerformance, fetchVtcPoints, updateUserPoints } from "../services/neqaty";
 import { fetchAllTeachers } from "../services/pms";
 import toast, { Toaster } from "react-hot-toast";
 import background from '../assets/neqatyBackground.jpg';
-import { faArrowTrendDown, faArrowTrendUp, faChartSimple, faComment, faScroll, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowTrendDown, faArrowTrendUp, faComment, faScroll, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -20,6 +20,8 @@ import wabysLogo from "../assets/wabys.png";
 import ebdaeduLogo from "../assets/ebad-edu.png";
 import golLogo from "../assets/Gov.png";
 import { cairoDate } from "../utils/cairoDate";
+import { NUMBER_TO_ARABIC_MONTHS } from "../constants/constants";
+// images
 
 const chartData = [];
 
@@ -46,12 +48,28 @@ const NeqatySchool = () => {
     const [rewardSum, setRewardSum] = useState(0);
     const [punishmentSum, setPunishmentSum] = useState(0);
     const [totalSum, setTotalSum] = useState(0);
+    const [selectedMonth, setSelectedMonth] = useState(0);
+    const [selectedMonthIdx, setSelectedMonthIdx] = useState(0);
+
+    const toggleMonth = (status) => {
+        if (status) {
+            if (selectedMonthIdx !== employeePoints.months.length - 1) {
+                setSelectedMonth(employeePoints.months[selectedMonthIdx + 1]);
+                setSelectedMonthIdx(prev => prev + 1);
+            }
+        } else {
+            if (selectedMonthIdx !== 0) {
+                setSelectedMonth(employeePoints.months[selectedMonthIdx - 1]);
+                setSelectedMonthIdx(prev => prev - 1);
+            }
+        }
+    }
 
     useEffect(() => {
         const loadAuth = async () => {
             try {
                 const response = await fetchAuthorities();
-                const filteredAuth = response.filter(auth => auth.id !== 3)
+                const filteredAuth = response.filter(auth => auth.id !== 2)
                 setAuthorities(filteredAuth)
             } catch (err) {
                 console.error("API Error:", err);
@@ -60,11 +78,11 @@ const NeqatySchool = () => {
                 setLoading(false);
             }
         }
-        const loadVtcs = async () => {
+        const loadSchools = async () => {
             try {
                 const response = await fetchSchools();
-                const filteringVtcs = response.filter(vtc => vtc.authority_id === 1 || vtc.authority_id === 2);
-                setVtcs(filteringVtcs);
+                const filteringSchools = response.filter(school => (school.authority_id === 1 || school.authority_id === 3) && school.id !== 12);
+                setVtcs(filteringSchools);
             } catch (err) {
                 console.error("API Error:", err);
                 setError(err);
@@ -74,7 +92,7 @@ const NeqatySchool = () => {
         }
         const loadUsers = async () => {
             try {
-                const loadedEmployees = await fetchVtcEmployees();
+                const loadedEmployees = await fetchSchoolEmployees();
                 const loadedTeachers = await fetchAllTeachers();
                 setUsers([...loadedEmployees, ...loadedTeachers]);
             } catch (err) {
@@ -85,22 +103,23 @@ const NeqatySchool = () => {
             }
         };
         const loadPointsPerformance = async () => {
-            const response = await fetchVtcPointsPerformance();
+            const response = await fetchSchoolPointsPerformance();
             setMonthlyPoints(response)
         };
 
         loadAuth();
-        loadVtcs();
+        loadSchools();
         loadUsers();
         loadPointsPerformance();
     }, [])
+
     useEffect(() => {
-        const filterVtcs = () => {
-            const filteringVtcs = vtcs.filter(vtc => vtc?.authority_id === Number(selectedAuth))
-            setFilteredVtcs(filteringVtcs);
+        const filterSchools = () => {
+            const filteringSchools = vtcs.filter(school => school?.authority_id === Number(selectedAuth))
+            setFilteredVtcs(filteringSchools);
         }
 
-        filterVtcs();
+        filterSchools();
     }, [selectedAuth])
 
     useEffect(() => {
@@ -124,12 +143,23 @@ const NeqatySchool = () => {
     useEffect(() => {
         const loadEmployeePointsPerformance = async () => {
             const response = await fetchEmployeePointsPerformance(Number(selectedUser));
+
             if (response.employeePoints?.length) {
-                const { reward, punishment } = response.employeePoints.reduce(
+                // find latest month (last in response.months array)
+                const latestMonth = response.months[response.months.length - 1];
+
+                // filter points of that month only
+                const monthPoints = response.employeePoints.filter(
+                    (item) =>
+                        new Date(item.updatedAt).getMonth() + 1 === latestMonth.monthNumber
+                );
+
+                // calculate reward/punishment for that month
+                const { reward, punishment } = monthPoints.reduce(
                     (acc, item) => {
-                        if (item["point.type"] === "vtc_reward") {
+                        if (item["point.type"] === "school_reward") {
                             acc.reward += item["point.points"];
-                        } else if (item["point.type"] === "vtc_punishment") {
+                        } else if (item["point.type"] === "school_punishment") {
                             acc.punishment += item["point.points"];
                         }
                         return acc;
@@ -140,13 +170,43 @@ const NeqatySchool = () => {
                 setRewardSum(reward);
                 setPunishmentSum(punishment);
                 setTotalSum(reward + punishment);
+
+                // also set latest month
+                setSelectedMonthIdx(response.months.length - 1);
+                setSelectedMonth(latestMonth);
             }
-            console.log(response)
+
             setEmployeePoints(response);
-        }
+        };
 
         loadEmployeePointsPerformance();
     }, [selectedUser])
+
+    // when selectedMonth changes, update sums
+    useEffect(() => {
+        if (!selectedMonth || !employeePoints?.employeePoints) return;
+
+        const monthPoints = employeePoints.employeePoints.filter(
+            (item) =>
+                new Date(item.updatedAt).getMonth() + 1 === selectedMonth.monthNumber
+        );
+
+        const { reward, punishment } = monthPoints.reduce(
+            (acc, item) => {
+                if (item["point.type"] === "school_reward") {
+                    acc.reward += item["point.points"];
+                } else if (item["point.type"] === "school_punishment") {
+                    acc.punishment += item["point.points"];
+                }
+                return acc;
+            },
+            { reward: 0, punishment: 0 }
+        );
+
+        setRewardSum(reward);
+        setPunishmentSum(punishment);
+        setTotalSum(reward + punishment);
+    }, [selectedMonth, employeePoints]);
 
     const checkAuth = () => {
         if (!selectedAuth) {
@@ -392,12 +452,71 @@ const NeqatySchool = () => {
                         <div className="flex justify-between w-full p-2">
                             <div className="flex flex-col">
                                 <img src={wabysLogo} className="w-14" alt="wabys logo" />
-                                <img src={ebdaeduLogo} className="ml-3 w-10" alt="ebda edu logo" />
                             </div>
                             <div className="flex flex-col items-center gap-2 text-sm font-bold">
-                                <h1 className="text-red-600 border-b-2 border-red-600">التقرير</h1>
+                                <h1 className="text-red-600 border-b-2 border-red-600">تقرير تفاصيل نقاط الاثابة</h1>
                             </div>
-                            <img src={golLogo} className="w-10 h-10 mr-3 mt-1" alt="gol logo" />
+                            <img src={ebdaeduLogo} className="ml-3 w-10" alt="ebda edu logo" />
+                        </div>
+                        <div style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: 10,
+                        }}>
+                            {selectedMonthIdx !== 0 ? <button
+                                onClick={() => toggleMonth(false)}
+                                className="flex justify-center items-center"
+                                style={{
+                                    color: '#0af',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 20,
+                                    fontWeight: 900,
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                }}
+                                title="الشهر السابق"
+                            >
+                                &#8592;
+                            </button> : <div
+                                style={{
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 20,
+                                    fontWeight: 900,
+                                    display: "hidden",
+                                }}></div>}
+                            <span style={{ fontWeight: 700, fontSize: 15, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
+                                {selectedMonth?.month}
+                            </span>
+                            {selectedMonthIdx !== (employeePoints?.months.length - 1) ? <button
+                                onClick={() => toggleMonth(true)}
+                                className="flex justify-center items-center"
+                                style={{
+                                    color: '#0af',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 20,
+                                    fontWeight: 900,
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                }}
+                                title="الشهر التالي"
+                            >
+                                &#8594;
+                            </button> : <div
+                                style={{
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    fontSize: 22,
+                                    fontWeight: 900,
+                                    display: "hidden",
+                                }}></div>}
+                        </div>
+                        <div className="w-full px-3">
+                            <h1 className="font-bold text-xs text-end underline">اولا: البيانات الشخصية</h1>
                         </div>
                         <div className="w-[95%] border-black border-2 flex p-1 gap-1 min-h-20">
                             <div className="flex flex-col items-center text-center gap-1 w-[15%] font-bold">
@@ -427,6 +546,9 @@ const NeqatySchool = () => {
                                 <div className="px-2 bg-gray-300 border-black border-2 text-xs">1</div>
                             </div>
                         </div>
+                        <div className="w-full px-3">
+                            <h1 className="font-bold text-xs text-end underline">ثانيا: معدل تغيير الاداء</h1>
+                        </div>
                         <ResponsiveContainer width="100%" height={230}>
                             <LineChart data={employeePoints.months} margin={{ top: 6, right: 30, left: -25, bottom: -10 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -439,14 +561,15 @@ const NeqatySchool = () => {
                                         (dataMin) => Math.min(-100, Math.floor(dataMin)),
                                         (dataMax) => Math.max(100, Math.ceil(dataMax)),
                                     ]}
-                                />                                <Tooltip contentStyle={{ backgroundColor: '#1a202c', border: '1px solid #4a5568', borderRadius: '6px', color: '#e2e8f0' }} />
+                                />
+                                <Tooltip contentStyle={{ backgroundColor: '#1a202c', border: '1px solid #4a5568', borderRadius: '6px', color: '#e2e8f0' }} />
                                 <Line type="monotone" dataKey="performance" stroke="#fbbf24" strokeWidth={2} dot={true} activeDot={{ r: 6 }} />
                             </LineChart>
                         </ResponsiveContainer>
-                        <div
-                            className={`p-2 bg-slate-100 rounded-2xl shadow w-[95%] text-[10px] ${employeePoints.employeePoints.length > 10 && "overflow-y-scroll"
-                                }`}
-                        >
+                        <div className="w-full px-3">
+                            <h1 className="font-bold text-xs text-end underline">ثالثا: الملاحظات الاضافية</h1>
+                        </div>
+                        <div className={`p-2 bg-slate-100 rounded-2xl max-h-32 shadow w-[95%] text-[10px] ${employeePoints.employeePoints.length > 4 && "overflow-y-scroll"}`} >
                             <table className="w-full text-center border-collapse">
                                 <thead>
                                     <tr className="bg-slate-300 text-[11px]">
@@ -465,12 +588,12 @@ const NeqatySchool = () => {
                                         >
                                             <td className="border px-2 py-1">({point["point.points"]})</td>
                                             <td
-                                                className={`border px-2 py-1 font-bold ${point["point.type"] === "vtc_reward"
+                                                className={`border px-2 py-1 font-bold ${point["point.type"] === "school_reward"
                                                     ? "text-green-600"
                                                     : "text-red-600"
                                                     }`}
                                             >
-                                                {point["point.type"] === "vtc_reward" ? "مكافأة" : "خصم"}
+                                                {point["point.type"] === "school_reward" ? "مكافأة" : "خصم"}
                                             </td>
                                             <td className="border px-2 py-1">{point["point.name"]}</td>
                                             <td className="border px-2 py-1">
@@ -516,8 +639,8 @@ const NeqatySchool = () => {
     useEffect(() => {
         const loadVtcPoints = async () => {
             try {
-                const loadedVtcPoints = await fetchVtcPoints();
-                setPoints(loadedVtcPoints);
+                const loadedSchoolPoints = await fetchSchoolPoints();
+                setPoints(loadedSchoolPoints);
             } catch (err) {
                 console.error("API Error:", err);
                 setError(err);
@@ -528,8 +651,8 @@ const NeqatySchool = () => {
         loadVtcPoints();
     }, []);
 
-    const rewards = points?.filter((point) => point.type === "vtc_reward");
-    const punishments = points?.filter((point) => point.type === "vtc_punishment");
+    const rewards = points?.filter((point) => point.type === "school_reward");
+    const punishments = points?.filter((point) => point.type === "school_punishment");
 
     const handlePointToggle = (value) => {
         setSelectedPoints((prev) =>
@@ -545,7 +668,9 @@ const NeqatySchool = () => {
     return (
         <>
             <Toaster />
-            <NeqatyNavbar />
+            <NeqatyNavbar
+                system="wisdom"
+            />
             <div className="flex flex-col h-[85vh] max-h-screen" style={{ backgroundImage: `url(${background})` }}>
                 <div className="absolute left-32 top-48">
                     <div className="relative h-36 flex items-center justify-center w-[170px]">
