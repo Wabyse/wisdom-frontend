@@ -66,6 +66,7 @@ import WatomsPublishNews from "./pages/WatomsPublishNews";
 import WatomsManagersReports from "./pages/WatomsManagersReports";
 import ViewTraineesRegistrations from "./pages/ViewTraineesRegistrations";
 import WatomsEvaluateManagers from "./pages/WatomsEvaluateManagers";
+import EbdaEduLogin from "./pages/EbdaEduLogin";
 
 function App() {
   return (
@@ -85,9 +86,9 @@ function App() {
               <QRList />
             </ProtectedRoute>
           } />
+          {/* <Route path="/ebda-edu/login" element={<EbdaEduLogin />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/neqaty/login" element={<NeqatyLogin />} />
-          {/* <Route path="/ebda-edu/neqaty/login" element={<NeqatyLogin />} /> */}
           <Route path="/neqaty" element={
             <ProtectedAdminRoute>
               <Neqaty />

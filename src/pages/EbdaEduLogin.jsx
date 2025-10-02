@@ -1,23 +1,24 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useRef, useState } from "react";
-import { useAdminAuth } from "../context/AdminAuthContext";
-import { loginAdmin } from "../services/auth";
-import wabysLogo from "../assets/wabys.png";
+import { useEbdaEduAuth } from "../context/EbdaEduAuthContext";
+import { loginUser } from "../services/auth";
+import ebdaEduLogo from "../assets/ebad-edu.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 
-const EdbaEduNeqatyLogin = () => {
+const EbdaEduLogin = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const buttonRef = useRef(null);
-    const [language, setLanguage] = useState(false);
-    const from = location.state?.from?.pathname || "/ebda-edu/neqaty";
+    const from = location.state?.from?.pathname || "/home";
     const [revealPassword, setRevealPassword] = useState(false);
-    const { setAdminToken, setAdminInfo } = useAdminAuth();
-    const [username, setUsername] = useState("");
+    const { setEbdaEduCode } = useEbdaEduAuth();
+    const { setEbdaEduInfo } = useEbdaEduAuth();
+    const [code, setCode] = useState("");
     const [password, setPassword] = useState("");
     const [status, setStatus] = useState(true);
+    const [language, setLanguage] = useState(false);
+    const buttonRef = useRef(null);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -35,31 +36,36 @@ const EdbaEduNeqatyLogin = () => {
         e.preventDefault();
 
         const loginData = {
-            username,
+            code,
             password,
         };
 
-        if (!loginData.username || !loginData.password) {
-            toast.error("Username or Password is invalid Please Try Again!");
+        if (!loginData.code || !loginData.password) {
+            language ? toast.error("username or password are incorrect, please try again!") :
+                toast.error("اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى!");
             setStatus(false);
             return;
         }
 
         try {
             const userCredentials = {
-                username: loginData.username,
+                code: loginData.code,
                 password: loginData.password,
             };
-            const response = await loginAdmin(userCredentials);
+            const response = await loginUser(userCredentials);
             const data = await response;
-            setAdminInfo(data);
-            setAdminToken(data.token);
+            setEbdaEduInfo(data);
+            setEbdaEduCode(response.code);
             setStatus(true);
-            toast.success("Login successful!");
+            localStorage.setItem("token", response.token);
+            language ? toast.success("Login Successful!") :
+                toast.success("تم تسجيل الدخول بنجاح!");
+            setEbdaEduInfo(data);
             navigate(from, { replace: true });
         } catch (err) {
             console.error("Error submitting data:", err);
-            toast.error("Code or Password is invalid Please Try Again!");
+            language ? toast.error("username or password are incorrect, please try again!") :
+                toast.error("اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى!");
             setStatus(false);
         }
     };
@@ -83,15 +89,15 @@ const EdbaEduNeqatyLogin = () => {
                 {/* Left side: WABYS Logo, Title, Description */}
                 <div className={`flex-1 flex flex-col justify-between p-8 min-w-[250px] max-w-[350px] text-white ${language ? "text-start" : "text-end"}`}>
                     <div>
-                        <img src={wabysLogo} alt="WABYS Logo" className="w-32 h-20 mb-4 rounded-xl shadow-lg bg-white/30 p-2" />
-                        <div className="font-extrabold text-2xl mb-2 tracking-wide">{language ? "WABYS" : "وابيز"}</div>
-                        <div className="font-bold text-lg mb-1">{language ? "Wabys System for Smart School Management" : "نظام وابيز لإدارة المنشآت التعليمية والتدريبية و الفنية"}</div>
+                        <img src={ebdaEduLogo} alt="WABYS Logo" className="w-24 h-20 mb-4 rounded-xl shadow-lg bg-white/30 p-2" />
+                        <div className="font-extrabold text-2xl mb-2 tracking-wide">{language ? "EBDA EDU" : "ابدا اديو"}</div>
+                        <div className="font-bold text-lg mb-1">{language ? "Ebda Edu System for Smart School Management" : "نظام ابدا اديو لإدارة المنشآت التعليمية والتدريبية و الفنية"}</div>
                         <p className="text-xs opacity-80 mb-8">
                             {language ? "An integrated platform for efficiently and easily managing all school operations, supporting digital transformation and providing advanced tools for teachers, administrators, and students." : "منصة متكاملة لإدارة جميع عمليات المنشآة التعليمية بكفاءة وسهولة، تدعم التحول الرقمي وتوفر أدوات متقدمة لجميع المستويات الإدارية والتعليمية والفنية"}
                         </p>
                     </div>
                     <div className={`text-xs opacity-60 ${language ? "" : "mt-8"}`}>
-                        {language ? "All rights reserved \u00A9 Wabys for Training and Education 2024" : "جميع الحقوق محفوظة \u00A9 وابيز للتدريب والتعليم 2024"}
+                        {language ? "All rights reserved \u00A9 Ebda Edu for Training and Education 2024" : "جميع الحقوق محفوظة \u00A9 ابدا اديو للتدريب والتعليم 2024"}
                     </div>
                 </div>
                 {/* Divider */}
@@ -113,8 +119,8 @@ const EdbaEduNeqatyLogin = () => {
                             id="code"
                             name="code"
                             placeholder={language ? "username" : "اسم المستخدم"}
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
                             autoComplete="username"
                         />
                         <div className="relative">
@@ -159,4 +165,4 @@ const EdbaEduNeqatyLogin = () => {
     );
 };
 
-export default EdbaEduNeqatyLogin;
+export default EbdaEduLogin;
