@@ -100,7 +100,6 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
     useEffect(() => {
         const lastIdx = org.months.length - 1;
         const lastMonth = org.months[lastIdx];
-
         setSelectedMonthIdx(lastIdx);
         setSelectedMonth(lastMonth);
 
@@ -254,7 +253,7 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
                             <div className="w-0 h-16 border-l-2 border-black" />
                             <div className="w-[30%] flex flex-col justify-center items-center border-black border-2 rounded-2xl p-2 gap-4">
                                 <h1 className="text-center text-[10px]">التقييم العام الحالي</h1>
-                                <DonutChart value={mgrScores[mgrScores.length - 1]?.performance || 0} />
+                                <DonutChart value={mgrScores.find(mgr => mgr.monthNumber === selectedMonth.monthNumber).performance || 0} />
                             </div>
                         </div>
                     </div>

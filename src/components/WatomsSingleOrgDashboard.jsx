@@ -262,7 +262,7 @@ const WatomsSingleOrgDashboard = ({ isOpen, onClose, children, data, rank }) => 
     const setDefaultMonth = () => {
       const now = new Date();
       const currentMonth = now.getMonth();
-      const currentMonthData = datasMonths.find(month => month.monthNumber === (currentMonth + 1));
+      const currentMonthData = datasMonths.find(month => month.monthNumber === (currentMonth + 1)) || datasMonths[datasMonths.length - 1];
       const findMonth = datasMonths.findIndex(month => month.monthNumber === currentMonthData.monthNumber);
       setSelectedMonthIdx(findMonth)
       setSelectedMonth(currentMonthData)

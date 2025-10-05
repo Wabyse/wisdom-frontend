@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt, faPrint, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import useFullScreen from "../hooks/useFullScreen";
@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import report2Icon from "../assets/report2Icon.png";
 
-const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false }) => {
+const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -83,6 +83,19 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                     >
                         <FontAwesomeIcon icon={faShareNodes} className="text-xl text-gray-500" />
+                    </button>}
+                    {/* Print Button */}
+                    {printStatus && <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                    >
+                        <FontAwesomeIcon icon={faPrint} className="text-xl text-gray-500" />
+                    </button>}
+                    {/* Tms Plus Button */}
+                    {printStatus && <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                        onClick={() => navigate('/watoms/tms/my-tasks')}
+                    >
+                        <FontAwesomeIcon icon={faPlus} className="text-xl text-gray-500" />
                     </button>}
                     {/* dashboard Button */}
                     {dashboardStatus && <button

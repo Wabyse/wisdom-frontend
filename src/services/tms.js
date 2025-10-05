@@ -99,3 +99,19 @@ export const fetchTasksGeneralInfo = async () => {
     throw error;
   }
 };
+
+// fetch my tasks
+export const fetchMyTasks = async (id) => {
+  try {
+    const response = await api.get(`/api/v1/tasks/my-tasks/${id}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Tasks || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

@@ -67,6 +67,7 @@ import WatomsManagersReports from "./pages/WatomsManagersReports";
 import ViewTraineesRegistrations from "./pages/ViewTraineesRegistrations";
 import WatomsEvaluateManagers from "./pages/WatomsEvaluateManagers";
 import EbdaEduLogin from "./pages/EbdaEduLogin";
+import WatomsMyTasks from "./pages/WatomsMyTasks";
 
 function App() {
   return (
@@ -388,11 +389,35 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/watoms/tms"
             element={
               <ProtectedRoute>
                 <TomsTms />
+              </ProtectedRoute>
+            }
+          /> */}
+          <Route
+            path="/watoms/tms"
+            element={
+              <ProtectedRoute>
+                <WatomsTmsDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/tms/my-tasks"
+            element={
+              <ProtectedRoute>
+                <WatomsMyTasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/tms/tasks"
+            element={
+              <ProtectedRoute>
+                <WatomsTmsMyTasks />
               </ProtectedRoute>
             }
           />
@@ -401,14 +426,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <TomsAssign />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/watoms/tms/my-tasks"
-            element={
-              <ProtectedRoute>
-                <WatomsTmsMyTasks />
               </ProtectedRoute>
             }
           />
