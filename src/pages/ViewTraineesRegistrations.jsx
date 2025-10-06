@@ -123,7 +123,7 @@ const ViewTraineesRegistrations = () => {
                                             key={index}
                                             className="hover:bg-gray-50 transition duration-150 text-center"
                                         >
-                                            <td className="py-2 px-4 border">{index + 1}</td>
+                                            <td className="py-2 px-4 border">{unfilteredData.length - index}</td>
                                             <td className="py-2 px-4 border">{cairoDate(user.createdAt).split(",")[0].trim()}</td>
                                             <td className="py-2 px-4 border">{user.first_name} {user.second_name} {user.third_name} {user.fourth_name}</td>
                                             <td className="py-2 px-4 border">{`+2${user.whatsapp}`}</td>

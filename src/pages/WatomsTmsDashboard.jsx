@@ -3,13 +3,14 @@ import DenyAccessPage from "../components/DenyAccessPage";
 import DonutChart from "../components/DonutChart";
 import NewNavbar from "../components/NewNavbar";
 import { useAuth } from "../context/AuthContext";
-import { NUMBER_TO_ARABIC_MONTHS, WATOMS_MODERN_COLORS } from "../constants/constants";
+import { NUMBER_TO_ARABIC_MONTHS } from "../constants/constants";
 import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     LineChart, Line
 } from 'recharts';
 import TmsDashboardTables from "../components/TmsDashboardTables";
 import { fetchMyTasks } from "../services/tms";
+import { roundNumber } from "../utils/roundNumber";
 
 const staticMonthlyData = [
     { month: "يناير", performance: 45 },
@@ -31,12 +32,46 @@ const WatomsTmsDashboard = () => {
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(9);
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [showTablePopup, setShowTablePopup] = useState(false);
+    const [allTasks, setAllTasks] = useState([]);
+    const [selectedMonthTasks, setSelectedMonthTasks] = useState({});
+    const [selectedMonthDetails, setSelectedMonthDetails] = useState({ finishedPercentage: 0, totalFinished: 0, totalUnFinished: 0, totalImportant: 0, totalNormal: 0, totalEasy: 0, total50Important: 0, total50Normal: 0, total50Easy: 0, importantPercentage: 0, normalPercentage: 0, easyPercentage: 0 })
+
+    const currentMonth = new Date().getMonth() + 1;
 
     useEffect(() => {
         const loadMyTasks = async () => {
             const response = await fetchMyTasks(userInfo?.employee_id);
-            console.log(response)
-            setSelectedMonth(NUMBER_TO_ARABIC_MONTHS[10])
+            const currentMonthsTasks = response.find(task => task.monthNumber === currentMonth);
+            setAllTasks(response)
+            setSelectedMonth(currentMonthsTasks ? currentMonthsTasks?.month : NUMBER_TO_ARABIC_MONTHS[currentMonth])
+            setSelectedMonthIdx(currentMonth - 1)
+            setSelectedMonthTasks(currentMonthsTasks ? currentMonthsTasks : { monthNumber: currentMonth, tasks: [] })
+            const finishedTasksPercentage = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
+            const importantTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent").length : 0;
+            const normalTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important").length : 0;
+            const easyTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal").length : 0;
+            const importantTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+            const normalTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+            const easyTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+            const importantTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "finished" || task.status === "submitted")).length : 0;
+            const normalTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && (task.status === "finished" || task.status === "submitted")).length : 0;
+            const easyTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "finished" || task.status === "submitted")).length : 0;
+            const totalTasks = currentMonthsTasks ? currentMonthsTasks?.tasks.length : 0;
+            setSelectedMonthDetails(prev => ({
+                ...prev,
+                finishedPercentage: finishedTasksPercentage ? roundNumber((Number(finishedTasksPercentage) / Number(totalTasks)) * 100) : 0,
+                totalFinished: finishedTasksPercentage ? Number(finishedTasksPercentage) : 0,
+                totalUnFinished: selectedMonthTasks ? Number(totalTasks) - Number(finishedTasksPercentage) : 0,
+                totalImportant: Number(importantTasksCount),
+                totalNormal: Number(normalTasksCount),
+                totalEasy: Number(easyTasksCount),
+                total50Important: Number(importantTasks50Count),
+                total50Normal: Number(normalTasks50Count),
+                total50Easy: Number(easyTasks50Count),
+                importantPercentage: importantTasks100Count ? roundNumber((Number(importantTasks100Count) / Number(importantTasksCount)) * 100) : 0,
+                normalPercentage: normalTasks100Count ? roundNumber((Number(normalTasks100Count) / Number(normalTasksCount)) * 100) : 0,
+                easyPercentage: easyTasks100Count ? roundNumber((Number(easyTasks100Count) / Number(easyTasksCount)) * 100) : 0,
+            }));
         }
 
         loadMyTasks();
@@ -44,14 +79,70 @@ const WatomsTmsDashboard = () => {
 
     const toggleMonth = (status) => {
         if (status) {
-            if (selectedMonthIdx !== NUMBER_TO_ARABIC_MONTHS.length - 1) {
-                setSelectedMonth(NUMBER_TO_ARABIC_MONTHS[selectedMonthIdx + 1]);
+            if (selectedMonthIdx + 1 !== currentMonth) {
+                const selectedMonthTasks = allTasks.find(task => task.monthNumber === selectedMonthIdx + 2);
+                setSelectedMonth(NUMBER_TO_ARABIC_MONTHS[selectedMonthIdx + 2]);
                 setSelectedMonthIdx(prev => prev + 1);
+                setSelectedMonthTasks(selectedMonthTasks ? selectedMonthTasks : { monthNumber: currentMonth, tasks: [] })
+                const finishedTasksPercentage = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
+                const importantTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent").length : 0;
+                const normalTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important").length : 0;
+                const easyTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal").length : 0;
+                const totalTasks = selectedMonthTasks ? selectedMonthTasks?.tasks.length : 0;
+                const importantTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+                const normalTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+                const easyTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+                const importantTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "finished" || task.status === "submitted")).length : 0;
+                const normalTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "finished" || task.status === "submitted")).length : 0;
+                const easyTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "finished" || task.status === "submitted")).length : 0;
+                setSelectedMonthDetails(prev => ({
+                    ...prev,
+                    finishedPercentage: finishedTasksPercentage ? roundNumber((Number(finishedTasksPercentage) / Number(totalTasks)) * 100) : 0,
+                    totalFinished: finishedTasksPercentage ? Number(finishedTasksPercentage) : 0,
+                    totalUnFinished: selectedMonthTasks ? Number(totalTasks) - Number(finishedTasksPercentage) : 0,
+                    totalImportant: Number(importantTasksCount),
+                    totalNormal: Number(normalTasksCount),
+                    totalEasy: Number(easyTasksCount),
+                    total50Important: Number(importantTasks50Count),
+                    total50Normal: Number(normalTasks50Count),
+                    total50Easy: Number(easyTasks50Count),
+                    importantPercentage: importantTasks100Count ? roundNumber((Number(importantTasks100Count) / Number(importantTasksCount)) * 100) : 0,
+                    normalPercentage: normalTasks100Count ? roundNumber((Number(normalTasks100Count) / Number(normalTasksCount)) * 100) : 0,
+                    easyPercentage: easyTasks100Count ? roundNumber((Number(easyTasks100Count) / Number(easyTasksCount)) * 100) : 0,
+                }));
             }
         } else {
             if (selectedMonthIdx !== 0) {
-                setSelectedMonth(NUMBER_TO_ARABIC_MONTHS[selectedMonthIdx - 1]);
+                const selectedMonthTasks = allTasks.find(task => task.monthNumber === selectedMonthIdx);
+                setSelectedMonth(NUMBER_TO_ARABIC_MONTHS[selectedMonthIdx]);
                 setSelectedMonthIdx(prev => prev - 1);
+                setSelectedMonthTasks(selectedMonthTasks ? selectedMonthTasks : { monthNumber: currentMonth, tasks: [] })
+                const finishedTasksPercentage = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
+                const importantTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent").length : 0;
+                const normalTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important").length : 0;
+                const easyTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal").length : 0;
+                const totalTasks = selectedMonthTasks ? selectedMonthTasks?.tasks.length : 0;
+                const importantTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+                const normalTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+                const easyTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+                const importantTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "finished" || task.status === "submitted")).length : 0;
+                const normalTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "finished" || task.status === "submitted")).length : 0;
+                const easyTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "finished" || task.status === "submitted")).length : 0;
+                setSelectedMonthDetails(prev => ({
+                    ...prev,
+                    finishedPercentage: finishedTasksPercentage ? roundNumber((Number(finishedTasksPercentage) / Number(totalTasks)) * 100) : 0,
+                    totalFinished: finishedTasksPercentage ? Number(finishedTasksPercentage) : 0,
+                    totalUnFinished: selectedMonthTasks ? Number(totalTasks) - Number(finishedTasksPercentage) : 0,
+                    totalImportant: Number(importantTasksCount),
+                    totalNormal: Number(normalTasksCount),
+                    totalEasy: Number(easyTasksCount),
+                    total50Important: Number(importantTasks50Count),
+                    total50Normal: Number(normalTasks50Count),
+                    total50Easy: Number(easyTasks50Count),
+                    importantPercentage: importantTasks100Count ? roundNumber((Number(importantTasks100Count) / Number(importantTasksCount)) * 100) : 0,
+                    normalPercentage: normalTasks100Count ? roundNumber((Number(normalTasks100Count) / Number(normalTasksCount)) * 100) : 0,
+                    easyPercentage: easyTasks100Count ? roundNumber((Number(easyTasks100Count) / Number(easyTasksCount)) * 100) : 0,
+                }));
             }
         }
     }
@@ -423,7 +514,7 @@ const WatomsTmsDashboard = () => {
                                             <div
                                                 style={{
                                                     height: '100%',
-                                                    width: `45%`,
+                                                    width: `${selectedMonthDetails.finishedPercentage}%`,
                                                     background: "green",
                                                     borderRadius: 18,
                                                     transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
@@ -440,7 +531,7 @@ const WatomsTmsDashboard = () => {
                                             marginRight: 0,
                                             transition: 'color 0.2s ease'
                                         }}>
-                                            45%
+                                            {selectedMonthDetails.finishedPercentage}%
                                         </div>
                                     </div>
                                 </div>
@@ -449,7 +540,7 @@ const WatomsTmsDashboard = () => {
                                     <DonutChart value={60} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                                     <div className="flex p-2 rounded-2xl shadow gap-2">
                                         <h1>مهمة</h1>
-                                        <h1>2350</h1>
+                                        <h1>{selectedMonthTasks?.tasks?.length}</h1>
                                     </div>
                                 </div>
                             </div>
@@ -501,72 +592,145 @@ const WatomsTmsDashboard = () => {
                             <div className="flex flex-col gap-8 w-[45%]">
                                 <div className="flex flex-col">
                                     <div className={`text-white text-center rounded p-2 bg-[#2f417a]`}>اجمالي عدد المهام المنجزة</div>
-                                    <div className={`border-white p-2 border-2 rounded text-center font-bold mt-2 text-white`}>1050</div>
+                                    <div className={`border-white p-2 border-2 rounded text-center font-bold mt-2 text-white`}>{selectedMonthDetails.totalFinished}</div>
                                 </div>
                                 <div className="flex flex-col">
                                     <div className={`text-white text-center rounded p-2 bg-[#2f417a]`}>اجمالي عدد المهام الغير منجزة</div>
-                                    <div className={`border-white p-2 border-2 rounded text-center font-bold mt-2 text-white`}>77</div>
+                                    <div className={`border-white p-2 border-2 rounded text-center font-bold mt-2 text-white`}>{selectedMonthDetails.totalUnFinished}</div>
                                 </div>
                             </div>
                             <div className="w-0 h-32 border-white border-l-2" />
                             <div className="flex flex-col gap-3 w-[45%]">
                                 <div className={`text-white text-center rounded p-2 bg-[#2f417a]`}>مهام اقل من (%50)</div>
                                 <div className="flex gap-2">
-                                    <div className={`flex-1 border-white p-2 border-2 rounded text-center font-bold text-white`}>3</div>
+                                    <div className={`flex-1 border-white p-2 border-2 rounded text-center font-bold text-white`}>{selectedMonthDetails.total50Important}</div>
                                     <div className={`flex-1 text-center rounded p-2 bg-[#5268b1] text-white`}>اولوية قصوي</div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <div className={`flex-1 border-white p-2 border-2 rounded text-center font-bold text-white`}>70</div>
+                                    <div className={`flex-1 border-white p-2 border-2 rounded text-center font-bold text-white`}>{selectedMonthDetails.total50Normal}</div>
                                     <div className={`flex-1 text-center rounded p-2 bg-[#5268b1] text-white`}>اولوية متوسطة</div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <div className={`flex-1 border-white p-2 border-2 rounded text-center font-bold text-white`}>150</div>
+                                    <div className={`flex-1 border-white p-2 border-2 rounded text-center font-bold text-white`}>{selectedMonthDetails.total50Easy}</div>
                                     <div className={`flex-1 text-center rounded p-2 bg-[#5268b1] text-white`}>اولوية عادية</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-2xl shadow-md shadow-black p-2 h-[35vh] flex items-center bg-[#2d3347]">
-                            <div className="w-full overflow-hidden rounded-xl border border-slate-200/70 bg-[#5268b1] shadow-sm">
-                                <table className="w-full table-fixed border-collapse text-xs text-white" dir="rtl" onClick={() => setShowTablePopup(true)}>
-                                    <thead>
-                                        <tr className="bg-[#5268b1] border border-white/30">
-                                            <th className="py-2 text-center font-semibold border-l border-white/40">البند</th>
-                                            <th className="py-2 text-center font-semibold border-l border-white/40">أولوية قصوى</th>
-                                            <th className="py-2 text-center font-semibold border-l border-white/40">أولوية متوسطة</th>
-                                            <th className="py-2 text-center font-semibold border-l border-white/40">أولوية عادية</th>
-                                            <th className="py-2 text-center font-semibold">الإجمالي</th>
-                                        </tr>
-                                    </thead>
+                        <div className="h-[35vh] flex items-center">
+                            <div className="w-full flex flex-row-reverse gap-3 text-white text-xs">
+                                {/* === Priority columns === */}
+                                <div className="flex-1 flex flex-col gap-3">
+                                    {/* === Top section: إجمالي العدد === */}
+                                    <div className="overflow-hidden rounded-xl border border-white/30 bg-[#5268b1] shadow-sm">
+                                        <table className="w-full table-fixed border-collapse" dir="rtl">
+                                            <thead>
+                                                <tr className="bg-[#5268b1] border-b border-white/30">
+                                                    <th className="py-2 text-center font-semibold border-l border-white/30">البند</th>
+                                                    <th className="py-2 text-center font-semibold border-l border-white/30">أولوية قصوى</th>
+                                                    <th className="py-2 text-center font-semibold border-l border-white/30">أولوية متوسطة</th>
+                                                    <th className="py-2 text-center font-semibold">أولوية عادية</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr className="bg-[#2f417a] hover:bg-[#3b4e93] transition">
+                                                    <td className="py-2 text-center border-l border-white/30">إجمالي العدد</td>
+                                                    {[selectedMonthDetails.totalImportant, selectedMonthDetails.totalNormal, selectedMonthDetails.totalEasy].map(
+                                                        (value, i) => (
+                                                            <td key={i} className="py-2 text-center border-l border-white/30">
+                                                                <span className="inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full bg-white/20">
+                                                                    {value}
+                                                                </span>
+                                                            </td>
+                                                        )
+                                                    )}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
-                                    <tbody>
-                                        {[
-                                            "إجمالي العدد",
-                                            "إجمالي نسبة الاستكمال",
-                                            "إجمالي مستوى الدقة",
-                                            "إجمالي معدل السرعة",
-                                            "إجمالي التقييم",
-                                        ].map((label, index) => (
-                                            <tr
-                                                key={index}
-                                                className="bg-[#2f417a] border-t border-white/30 hover:bg-[#3b4e93] transition"
-                                            >
-                                                <td className="py-2 text-center border-l border-white/30">
-                                                    <span className="inline-flex items-center justify-center min-w-[3rem] px-2 h-6 rounded-full text-xs text-white">
-                                                        {label}
-                                                    </span>
-                                                </td>
+                                    {/* === Bottom section: other rows === */}
+                                    <div className="overflow-hidden rounded-xl border border-white/30 bg-[#5268b1] shadow-sm">
+                                        <table className="w-full table-fixed border-collapse" dir="rtl">
+                                            <tbody>
+                                                {[
+                                                    {
+                                                        label: "إجمالي نسبة الاستكمال",
+                                                        values: [
+                                                            `${selectedMonthDetails.importantPercentage}%`,
+                                                            `${selectedMonthDetails.normalPercentage}%`,
+                                                            `${selectedMonthDetails.easyPercentage}%`,
+                                                        ],
+                                                    },
+                                                    { label: "إجمالي مستوى الدقة", values: [92, 88, 95] },
+                                                    { label: "إجمالي معدل السرعة", values: [85, 80, 91] },
+                                                    { label: "إجمالي التقييم", values: [4.5, 4.8, 4.2] },
+                                                ].map((row, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className="bg-[#2f417a] border-t border-white/20 hover:bg-[#3b4e93] transition"
+                                                    >
+                                                        <td className="py-2 text-center border-l border-white/30">{row.label}</td>
+                                                        {row.values.map((value, i) => (
+                                                            <td key={i} className="py-2 text-center border-l border-white/30">
+                                                                <span className="inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full bg-white/20">
+                                                                    {value}
+                                                                </span>
+                                                            </td>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
-                                                {[0, 0, 0, 0].map((value, i) => (
-                                                    <td key={i} className="py-2 text-center border-l border-white/30">
-                                                        <span className="inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-white">
-                                                            {value}
+                                {/* === Total column (الإجمالي) === */}
+                                <div className="flex-1 max-w-[6rem] flex flex-col gap-3">
+                                    {/* === Top section (إجمالي العدد) === */}
+                                    <div className="overflow-hidden rounded-xl border border-white/30 bg-[#4459a8] shadow-sm">
+                                        <table className="w-full border-collapse" dir="rtl">
+                                            <thead>
+                                                <tr className="bg-[#4459a8] border-b border-white/30">
+                                                    <th className="py-2 text-center font-semibold">الإجمالي</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr className="bg-[#2f417a] hover:bg-[#3b4e93] transition">
+                                                    <td className="py-2 text-center">
+                                                        <span className="inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full bg-white/20">
+                                                            {selectedMonthTasks?.tasks?.length}
                                                         </span>
                                                     </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {/* === Bottom section (other rows) === */}
+                                    <div className="overflow-hidden rounded-xl border border-white/30 bg-[#4459a8] shadow-sm">
+                                        <table className="w-full border-collapse" dir="rtl">
+                                            <tbody>
+                                                {[
+                                                    { label: "إجمالي نسبة الاستكمال", value: `${selectedMonthDetails.finishedPercentage}%` },
+                                                    { label: "إجمالي مستوى الدقة", value: 89 },
+                                                    { label: "إجمالي معدل السرعة", value: 87 },
+                                                    { label: "إجمالي التقييم", value: 4.7 },
+                                                ].map((row, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className="bg-[#2f417a] border-t border-white/20 hover:bg-[#3b4e93] transition"
+                                                    >
+                                                        <td className="py-2 text-center">
+                                                            <span className="inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full bg-white/20">
+                                                                {row.value}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
                                                 ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -574,7 +738,7 @@ const WatomsTmsDashboard = () => {
             </div>
             {showTablePopup && (
                 <TmsDashboardTables
-                onClose={() => setShowTablePopup(false)}
+                    onClose={() => setShowTablePopup(false)}
                 />
             )}
         </>
