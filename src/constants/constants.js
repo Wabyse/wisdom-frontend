@@ -949,3 +949,18 @@ export const NUMBER_TO_ARABIC_MONTHS = {
     11: 'نوفمبر',
     12: 'ديسمبر'
 }
+
+export const MONTHS_ARABIC = [
+  { monthNumber: 1, month: "يناير" },
+  { monthNumber: 2, month: "فبراير" },
+  { monthNumber: 3, month: "مارس" },
+  { monthNumber: 4, month: "أبريل" },
+  { monthNumber: 5, month: "مايو" },
+  { monthNumber: 6, month: "يونيو" },
+  { monthNumber: 7, month: "يوليو" },
+  { monthNumber: 8, month: "أغسطس" },
+  { monthNumber: 9, month: "سبتمبر" },
+  { monthNumber: 10, month: "أكتوبر" },
+  { monthNumber: 11, month: "نوفمبر" },
+  { monthNumber: 12, month: "ديسمبر" },
+];

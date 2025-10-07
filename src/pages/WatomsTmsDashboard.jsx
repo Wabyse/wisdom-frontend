@@ -3,7 +3,7 @@ import DenyAccessPage from "../components/DenyAccessPage";
 import DonutChart from "../components/DonutChart";
 import NewNavbar from "../components/NewNavbar";
 import { useAuth } from "../context/AuthContext";
-import { NUMBER_TO_ARABIC_MONTHS } from "../constants/constants";
+import { MONTHS_ARABIC, NUMBER_TO_ARABIC_MONTHS } from "../constants/constants";
 import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     LineChart, Line
@@ -12,21 +12,6 @@ import TmsDashboardTables from "../components/TmsDashboardTables";
 import { fetchMyTasks } from "../services/tms";
 import { roundNumber } from "../utils/roundNumber";
 
-const staticMonthlyData = [
-    { month: "يناير", performance: 45 },
-    { month: "فبراير", performance: 60 },
-    { month: "مارس", performance: 72 },
-    { month: "أبريل", performance: 55 },
-    { month: "مايو", performance: 80 },
-    { month: "يونيو", performance: 65 },
-    { month: "يوليو", performance: 70 },
-    { month: "أغسطس", performance: 85 },
-    { month: "سبتمبر", performance: 78 },
-    { month: "أكتوبر", performance: 90 },
-    { month: "نوفمبر", performance: 82 },
-    { month: "ديسمبر", performance: 88 },
-];
-
 const WatomsTmsDashboard = () => {
     const { userInfo } = useAuth();
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(9);
@@ -34,9 +19,562 @@ const WatomsTmsDashboard = () => {
     const [showTablePopup, setShowTablePopup] = useState(false);
     const [allTasks, setAllTasks] = useState([]);
     const [selectedMonthTasks, setSelectedMonthTasks] = useState({});
-    const [selectedMonthDetails, setSelectedMonthDetails] = useState({ finishedPercentage: 0, totalFinished: 0, totalUnFinished: 0, totalImportant: 0, totalNormal: 0, totalEasy: 0, total50Important: 0, total50Normal: 0, total50Easy: 0, importantPercentage: 0, normalPercentage: 0, easyPercentage: 0 })
+    const [monthlyPerformance, setMonthlyPerformance] = useState([]);
+
+    const [selectedMonthDetails, setSelectedMonthDetails] = useState({
+        finishedPercentage: 0, totalFinished: 0, totalUnFinished: 0,
+        totalImportant: 0, totalNormal: 0, totalEasy: 0,
+        total50Important: 0, total50Normal: 0, total50Easy: 0,
+        importantPercentage: 0, normalPercentage: 0, easyPercentage: 0,
+        totalImportantLarge: 0, totalImportantMedium: 0, totalImportantSmall: 0,
+        totalNormalLarge: 0, totalNormalMedium: 0, totalNormalSmall: 0,
+        totalEasyLarge: 0, totalEasyMedium: 0, totalEasySmall: 0,
+        importantLargePercentage: 0, importantMediumPercentage: 0, importantSmallPercentage: 0,
+        normalLargePercentage: 0, normalMediumPercentage: 0, normalSmallPercentage: 0,
+        easyLargePercentage: 0, easyMediumPercentage: 0, easySmallPercentage: 0,
+        avgManagerSpeed: 0, avgManagerQuality: 0, avgReviewerSpeed: 0, avgReviewerQuality: 0,
+        avgManagerSpeedImportant: 0, avgManagerQualityImportant: 0, avgReviewerSpeedImportant: 0, avgReviewerQualityImportant: 0,
+        avgManagerSpeedNormal: 0, avgManagerQualityNormal: 0, avgReviewerSpeedNormal: 0, avgReviewerQualityNormal: 0,
+        avgManagerSpeedEasy: 0, avgManagerQualityEasy: 0, avgReviewerSpeedEasy: 0, avgReviewerQualityEasy: 0,
+        avgManagerQualityImportantLarge: 0, avgManagerQualityImportantMedium: 0, avgManagerQualityImportantSmall: 0,
+        avgReviewerQualityImportantLarge: 0, avgReviewerQualityImportantMedium: 0, avgReviewerQualityImportantSmall: 0,
+        avgManagerSpeedImportantLarge: 0, avgManagerSpeedImportantMedium: 0, avgManagerSpeedImportantSmall: 0,
+        avgReviewerSpeedImportantLarge: 0, avgReviewerSpeedImportantMedium: 0, avgReviewerSpeedImportantSmall: 0,
+        avgManagerQualityNormalLarge: 0, avgManagerQualityNormalMedium: 0, avgManagerQualityNormalSmall: 0,
+        avgReviewerQualityNormalLarge: 0, avgReviewerQualityNormalMedium: 0, avgReviewerQualityNormalSmall: 0,
+        avgManagerQualityEasyLarge: 0, avgManagerQualityEasyMedium: 0, avgManagerQualityEasySmall: 0,
+        avgReviewerQualityEasyLarge: 0, avgReviewerQualityEasyMedium: 0, avgReviewerQualityEasySmall: 0,
+    })
 
     const currentMonth = new Date().getMonth() + 1;
+
+    const calculateTmsDetails = (currentMonthsTasks) => {
+        const finishedTasksPercentage = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
+        const importantTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent").length : 0;
+        const normalTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important").length : 0;
+        const easyTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal").length : 0;
+        const importantTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+        const normalTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+        const easyTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
+        const importantTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const normalTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const easyTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const totalTasks = currentMonthsTasks ? currentMonthsTasks?.tasks.length : 0;
+        const importantLargeTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && task.task_size === "large").length : 0;
+        const importantMediumTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && task.task_size === "medium").length : 0;
+        const importantSmallTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && task.task_size === "small").length : 0;
+        const normalLargeTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && task.task_size === "large").length : 0;
+        const normalMediumTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && task.task_size === "medium").length : 0;
+        const normalSmallTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && task.task_size === "small").length : 0;
+        const easyLargeTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && task.task_size === "large").length : 0;
+        const easyMediumTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && task.task_size === "medium").length : 0;
+        const easySmallTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && task.task_size === "small").length : 0;
+        const importantLarge100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && task.task_size === "large" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const importantMedium100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && task.task_size === "medium" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const importantSmall100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && task.task_size === "small" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const normalLarge100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && task.task_size === "large" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const normalMedium100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && task.task_size === "medium" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const normalSmall100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && task.task_size === "small" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const easyLarge100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && task.task_size === "large" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const easyMedium100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && task.task_size === "medium" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const easySmall100TasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && task.task_size === "small" && (task.status === "finished" || task.status === "submitted")).length : 0;
+        const avgManagerSpeed = currentMonthsTasks?.tasks?.length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQuality = currentMonthsTasks?.tasks?.length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeed = currentMonthsTasks?.tasks?.length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQuality = currentMonthsTasks?.tasks?.length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerSpeedImportant = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityImportant = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedImportant = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityImportant = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerSpeedNormal = currentMonthsTasks?.tasks?.filter(task => task.importance === "important").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityNormal = currentMonthsTasks?.tasks?.filter(task => task.importance === "important").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedNormal = currentMonthsTasks?.tasks?.filter(task => task.importance === "important").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityNormal = currentMonthsTasks?.tasks?.filter(task => task.importance === "important").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedEasy = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityEasy = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedEasy = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityEasy = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedImportantLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityImportantLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedImportantLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityImportantLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedImportantMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityImportantMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedImportantMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityImportantMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedImportantSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityImportantSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedImportantSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityImportantSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "urgent" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        // 
+        const avgManagerSpeedNormalLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityNormalLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedNormalLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityNormalLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedNormalMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityNormalMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedNormalMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityNormalMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedNormalSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityNormalSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedNormalSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityNormalSmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "important" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        // 
+        const avgManagerSpeedEasyLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityEasyLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedEasyLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityEasyLarge = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "large").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedEasyMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityEasyMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedEasyMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityEasyMedium = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "medium").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        const avgManagerSpeedEasySmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgManagerQualityEasySmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.manager_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerSpeedEasySmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_speed_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+        const avgReviewerQualityEasySmall = currentMonthsTasks?.tasks?.filter(task => task.importance === "normal" && task.task_size === "small").length
+            ? roundNumber(
+                currentMonthsTasks.tasks.reduce(
+                    (sum, task) => sum + (Number(task.reviewer_quality_percentage) || 0),
+                    0
+                ) / currentMonthsTasks.tasks.length
+            )
+            : 0;
+
+        setSelectedMonthDetails(prev => ({
+            ...prev,
+            finishedPercentage: finishedTasksPercentage ? roundNumber((Number(finishedTasksPercentage) / Number(totalTasks)) * 100) : 0,
+            totalFinished: finishedTasksPercentage ? Number(finishedTasksPercentage) : 0,
+            totalUnFinished: selectedMonthTasks ? Number(totalTasks) - Number(finishedTasksPercentage) : 0,
+            totalImportant: Number(importantTasksCount),
+            totalNormal: Number(normalTasksCount),
+            totalEasy: Number(easyTasksCount),
+            total50Important: Number(importantTasks50Count),
+            total50Normal: Number(normalTasks50Count),
+            total50Easy: Number(easyTasks50Count),
+            importantPercentage: importantTasks100Count ? roundNumber((Number(importantTasks100Count) / Number(importantTasksCount)) * 100) : 0,
+            normalPercentage: normalTasks100Count ? roundNumber((Number(normalTasks100Count) / Number(normalTasksCount)) * 100) : 0,
+            easyPercentage: easyTasks100Count ? roundNumber((Number(easyTasks100Count) / Number(easyTasksCount)) * 100) : 0,
+            totalImportantLarge: Number(importantLargeTasksCount),
+            totalImportantMedium: Number(importantMediumTasksCount),
+            totalImportantSmall: Number(importantSmallTasksCount),
+            totalNormalLarge: Number(normalLargeTasksCount),
+            totalNormalMedium: Number(normalMediumTasksCount),
+            totalNormalSmall: Number(normalSmallTasksCount),
+            totalEasyLarge: Number(easyLargeTasksCount),
+            totalEasyMedium: Number(easyMediumTasksCount),
+            totalEasySmall: Number(easySmallTasksCount),
+            importantLargePercentage: importantLarge100TasksCount ? roundNumber((Number(importantLarge100TasksCount) / Number(importantLargeTasksCount)) * 100) : 0,
+            importantMediumPercentage: importantMedium100TasksCount ? roundNumber((Number(importantMedium100TasksCount) / Number(importantMediumTasksCount)) * 100) : 0,
+            importantSmallPercentage: importantSmall100TasksCount ? roundNumber((Number(importantSmall100TasksCount) / Number(importantSmallTasksCount)) * 100) : 0,
+            normalLargePercentage: normalLarge100TasksCount ? roundNumber((Number(normalLarge100TasksCount) / Number(normalLargeTasksCount)) * 100) : 0,
+            normalMediumPercentage: normalMedium100TasksCount ? roundNumber((Number(normalMedium100TasksCount) / Number(normalMediumTasksCount)) * 100) : 0,
+            normalSmallPercentage: normalSmall100TasksCount ? roundNumber((Number(normalSmall100TasksCount) / Number(normalSmallTasksCount)) * 100) : 0,
+            easyLargePercentage: easyLarge100TasksCount ? roundNumber((Number(easyLarge100TasksCount) / Number(easyLargeTasksCount)) * 100) : 0,
+            easyMediumPercentage: easyMedium100TasksCount ? roundNumber((Number(easyMedium100TasksCount) / Number(easyMediumTasksCount)) * 100) : 0,
+            easySmallPercentage: easySmall100TasksCount ? roundNumber((Number(easySmall100TasksCount) / Number(easySmallTasksCount)) * 100) : 0,
+            avgManagerSpeed, avgManagerQuality, avgReviewerSpeed, avgReviewerQuality,
+            avgManagerSpeedImportant, avgManagerQualityImportant, avgReviewerSpeedImportant, avgReviewerQualityImportant,
+            avgManagerSpeedNormal, avgManagerQualityNormal, avgReviewerSpeedNormal, avgReviewerQualityNormal,
+            avgManagerSpeedEasy, avgManagerQualityEasy, avgReviewerSpeedEasy, avgReviewerQualityEasy,
+            avgManagerQualityImportantLarge, avgManagerQualityImportantMedium, avgManagerQualityImportantSmall,
+            avgReviewerQualityImportantLarge, avgReviewerQualityImportantMedium, avgReviewerQualityImportantSmall,
+            avgManagerSpeedImportantLarge, avgManagerSpeedImportantMedium, avgManagerSpeedImportantSmall,
+            avgReviewerSpeedImportantLarge, avgReviewerSpeedImportantMedium, avgReviewerSpeedImportantSmall,
+            avgManagerQualityNormalLarge, avgManagerQualityNormalMedium, avgManagerQualityNormalSmall,
+            avgReviewerQualityNormalLarge, avgReviewerQualityNormalMedium, avgReviewerQualityNormalSmall,
+            avgManagerSpeedNormalLarge, avgManagerSpeedNormalMedium, avgManagerSpeedNormalSmall,
+            avgReviewerSpeedNormalLarge, avgReviewerSpeedNormalMedium, avgReviewerSpeedNormalSmall,
+            avgManagerQualityEasyLarge, avgManagerQualityEasyMedium, avgManagerQualityEasySmall,
+            avgReviewerQualityEasyLarge, avgReviewerQualityEasyMedium, avgReviewerQualityEasySmall,
+            avgManagerSpeedEasyLarge, avgManagerSpeedEasyMedium, avgManagerSpeedEasySmall,
+            avgReviewerSpeedEasyLarge, avgReviewerSpeedEasyMedium, avgReviewerSpeedEasySmall,
+        }));
+
+        // === Compute and store monthly performance ===
+        const performanceScore = roundNumber(
+            (((avgManagerSpeed + avgReviewerSpeed) / 2) * 0.3) +
+            (((avgManagerQuality + avgReviewerQuality) / 2) * 0.3) +
+            ((finishedTasksPercentage / totalTasks) * 100 * 0.4)
+        );
+
+        setMonthlyPerformance(prev => {
+            const updated = prev.filter(m => m.monthNumber !== currentMonthsTasks?.monthNumber);
+            return [
+                ...updated,
+                {
+                    monthNumber: currentMonthsTasks?.monthNumber,
+                    month: NUMBER_TO_ARABIC_MONTHS[currentMonthsTasks?.monthNumber],
+                    performance: performanceScore,
+                },
+            ];
+        });
+
+    }
 
     useEffect(() => {
         const loadMyTasks = async () => {
@@ -46,36 +584,11 @@ const WatomsTmsDashboard = () => {
             setSelectedMonth(currentMonthsTasks ? currentMonthsTasks?.month : NUMBER_TO_ARABIC_MONTHS[currentMonth])
             setSelectedMonthIdx(currentMonth - 1)
             setSelectedMonthTasks(currentMonthsTasks ? currentMonthsTasks : { monthNumber: currentMonth, tasks: [] })
-            const finishedTasksPercentage = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
-            const importantTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent").length : 0;
-            const normalTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important").length : 0;
-            const easyTasksCount = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal").length : 0;
-            const importantTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-            const normalTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-            const easyTasks50Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-            const importantTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "finished" || task.status === "submitted")).length : 0;
-            const normalTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "important" && (task.status === "finished" || task.status === "submitted")).length : 0;
-            const easyTasks100Count = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "finished" || task.status === "submitted")).length : 0;
-            const totalTasks = currentMonthsTasks ? currentMonthsTasks?.tasks.length : 0;
-            setSelectedMonthDetails(prev => ({
-                ...prev,
-                finishedPercentage: finishedTasksPercentage ? roundNumber((Number(finishedTasksPercentage) / Number(totalTasks)) * 100) : 0,
-                totalFinished: finishedTasksPercentage ? Number(finishedTasksPercentage) : 0,
-                totalUnFinished: selectedMonthTasks ? Number(totalTasks) - Number(finishedTasksPercentage) : 0,
-                totalImportant: Number(importantTasksCount),
-                totalNormal: Number(normalTasksCount),
-                totalEasy: Number(easyTasksCount),
-                total50Important: Number(importantTasks50Count),
-                total50Normal: Number(normalTasks50Count),
-                total50Easy: Number(easyTasks50Count),
-                importantPercentage: importantTasks100Count ? roundNumber((Number(importantTasks100Count) / Number(importantTasksCount)) * 100) : 0,
-                normalPercentage: normalTasks100Count ? roundNumber((Number(normalTasks100Count) / Number(normalTasksCount)) * 100) : 0,
-                easyPercentage: easyTasks100Count ? roundNumber((Number(easyTasks100Count) / Number(easyTasksCount)) * 100) : 0,
-            }));
+            calculateTmsDetails(currentMonthsTasks);
         }
 
         loadMyTasks();
-    }, [])
+    }, [currentMonth, userInfo])
 
     const toggleMonth = (status) => {
         if (status) {
@@ -84,32 +597,7 @@ const WatomsTmsDashboard = () => {
                 setSelectedMonth(NUMBER_TO_ARABIC_MONTHS[selectedMonthIdx + 2]);
                 setSelectedMonthIdx(prev => prev + 1);
                 setSelectedMonthTasks(selectedMonthTasks ? selectedMonthTasks : { monthNumber: currentMonth, tasks: [] })
-                const finishedTasksPercentage = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
-                const importantTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent").length : 0;
-                const normalTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important").length : 0;
-                const easyTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal").length : 0;
-                const totalTasks = selectedMonthTasks ? selectedMonthTasks?.tasks.length : 0;
-                const importantTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-                const normalTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-                const easyTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-                const importantTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "finished" || task.status === "submitted")).length : 0;
-                const normalTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "finished" || task.status === "submitted")).length : 0;
-                const easyTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "finished" || task.status === "submitted")).length : 0;
-                setSelectedMonthDetails(prev => ({
-                    ...prev,
-                    finishedPercentage: finishedTasksPercentage ? roundNumber((Number(finishedTasksPercentage) / Number(totalTasks)) * 100) : 0,
-                    totalFinished: finishedTasksPercentage ? Number(finishedTasksPercentage) : 0,
-                    totalUnFinished: selectedMonthTasks ? Number(totalTasks) - Number(finishedTasksPercentage) : 0,
-                    totalImportant: Number(importantTasksCount),
-                    totalNormal: Number(normalTasksCount),
-                    totalEasy: Number(easyTasksCount),
-                    total50Important: Number(importantTasks50Count),
-                    total50Normal: Number(normalTasks50Count),
-                    total50Easy: Number(easyTasks50Count),
-                    importantPercentage: importantTasks100Count ? roundNumber((Number(importantTasks100Count) / Number(importantTasksCount)) * 100) : 0,
-                    normalPercentage: normalTasks100Count ? roundNumber((Number(normalTasks100Count) / Number(normalTasksCount)) * 100) : 0,
-                    easyPercentage: easyTasks100Count ? roundNumber((Number(easyTasks100Count) / Number(easyTasksCount)) * 100) : 0,
-                }));
+                calculateTmsDetails(selectedMonthTasks);
             }
         } else {
             if (selectedMonthIdx !== 0) {
@@ -117,35 +605,16 @@ const WatomsTmsDashboard = () => {
                 setSelectedMonth(NUMBER_TO_ARABIC_MONTHS[selectedMonthIdx]);
                 setSelectedMonthIdx(prev => prev - 1);
                 setSelectedMonthTasks(selectedMonthTasks ? selectedMonthTasks : { monthNumber: currentMonth, tasks: [] })
-                const finishedTasksPercentage = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
-                const importantTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent").length : 0;
-                const normalTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important").length : 0;
-                const easyTasksCount = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal").length : 0;
-                const totalTasks = selectedMonthTasks ? selectedMonthTasks?.tasks.length : 0;
-                const importantTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-                const normalTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-                const easyTasks50Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "not started yet" || task.status === "in progress" || task.status === "0" || task.status === "25")).length : 0;
-                const importantTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "urgent" && (task.status === "finished" || task.status === "submitted")).length : 0;
-                const normalTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "important" && (task.status === "finished" || task.status === "submitted")).length : 0;
-                const easyTasks100Count = selectedMonthTasks ? selectedMonthTasks?.tasks.filter(task => task.importance === "normal" && (task.status === "finished" || task.status === "submitted")).length : 0;
-                setSelectedMonthDetails(prev => ({
-                    ...prev,
-                    finishedPercentage: finishedTasksPercentage ? roundNumber((Number(finishedTasksPercentage) / Number(totalTasks)) * 100) : 0,
-                    totalFinished: finishedTasksPercentage ? Number(finishedTasksPercentage) : 0,
-                    totalUnFinished: selectedMonthTasks ? Number(totalTasks) - Number(finishedTasksPercentage) : 0,
-                    totalImportant: Number(importantTasksCount),
-                    totalNormal: Number(normalTasksCount),
-                    totalEasy: Number(easyTasksCount),
-                    total50Important: Number(importantTasks50Count),
-                    total50Normal: Number(normalTasks50Count),
-                    total50Easy: Number(easyTasks50Count),
-                    importantPercentage: importantTasks100Count ? roundNumber((Number(importantTasks100Count) / Number(importantTasksCount)) * 100) : 0,
-                    normalPercentage: normalTasks100Count ? roundNumber((Number(normalTasks100Count) / Number(normalTasksCount)) * 100) : 0,
-                    easyPercentage: easyTasks100Count ? roundNumber((Number(easyTasks100Count) / Number(easyTasksCount)) * 100) : 0,
-                }));
+                calculateTmsDetails(selectedMonthTasks);
             }
         }
     }
+
+    // Normalize monthlyPerformance to include all 12 months
+    const normalizedPerformance = MONTHS_ARABIC.map(m => {
+        const found = monthlyPerformance.find(d => d.monthNumber === m.monthNumber);
+        return found ? found : { ...m, performance: 0 };
+    });
 
     if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
     if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
@@ -364,7 +833,7 @@ const WatomsTmsDashboard = () => {
                                             <div
                                                 style={{
                                                     height: '100%',
-                                                    width: `60%`,
+                                                    width: `${(selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2}%`,
                                                     background: "red",
                                                     borderRadius: 18,
                                                     transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
@@ -381,7 +850,7 @@ const WatomsTmsDashboard = () => {
                                             marginRight: 0,
                                             transition: 'color 0.2s ease'
                                         }}>
-                                            60%
+                                            {(selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2}%
                                         </div>
                                     </div>
                                     <div
@@ -439,7 +908,7 @@ const WatomsTmsDashboard = () => {
                                             <div
                                                 style={{
                                                     height: '100%',
-                                                    width: `95%`,
+                                                    width: `${(selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2}%`,
                                                     background: "blue",
                                                     borderRadius: 18,
                                                     transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
@@ -456,7 +925,7 @@ const WatomsTmsDashboard = () => {
                                             marginRight: 0,
                                             transition: 'color 0.2s ease'
                                         }}>
-                                            95%
+                                            {(selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2}%
                                         </div>
                                     </div>
                                     <div
@@ -537,7 +1006,7 @@ const WatomsTmsDashboard = () => {
                                 </div>
                                 <div className='border-l-2 border-white p-1 h-12 w-0' />
                                 <div className="flex flex-col gap-2 items-center">
-                                    <DonutChart value={60} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
+                                    <DonutChart value={roundNumber((((selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2) * 0.3) + (((selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2) * 0.3) + (selectedMonthDetails.finishedPercentage * 0.4))} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                                     <div className="flex p-2 rounded-2xl shadow gap-2">
                                         <h1>مهمة</h1>
                                         <h1>{selectedMonthTasks?.tasks?.length}</h1>
@@ -549,7 +1018,7 @@ const WatomsTmsDashboard = () => {
                             <h1 className="text-center font-bold">تحليل معدل تغيير الاداء</h1>
                             <ResponsiveContainer width="100%" height={200}>
                                 <LineChart
-                                    data={staticMonthlyData}
+                                    data={normalizedPerformance}
                                     margin={{ top: 6, right: 30, left: -25, bottom: -10 }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" /> {/* optional grey grid */}
@@ -582,6 +1051,18 @@ const WatomsTmsDashboard = () => {
                                         strokeWidth={2}
                                         dot={{ r: 5, fill: "#fbbf24" }}
                                         activeDot={{ r: 7, stroke: "#fff", strokeWidth: 2 }}
+                                        label={({ x, y, value }) => (
+                                            <text
+                                                x={x}
+                                                y={y - 10} // move up a little
+                                                textAnchor="middle"
+                                                fill="#ffffff"
+                                                fontSize={12}
+                                                fontWeight="bold"
+                                            >
+                                                {value}%
+                                            </text>
+                                        )}
                                     />
                                 </LineChart>
                             </ResponsiveContainer>
@@ -617,7 +1098,7 @@ const WatomsTmsDashboard = () => {
                             </div>
                         </div>
                         <div className="h-[35vh] flex items-center">
-                            <div className="w-full flex flex-row-reverse gap-3 text-white text-xs">
+                            <div className="w-full flex flex-row-reverse gap-3 text-white text-xs cursor-pointer" onClick={() => setShowTablePopup(true)}>
                                 {/* === Priority columns === */}
                                 <div className="flex-1 flex flex-col gap-3">
                                     {/* === Top section: إجمالي العدد === */}
@@ -661,9 +1142,9 @@ const WatomsTmsDashboard = () => {
                                                             `${selectedMonthDetails.easyPercentage}%`,
                                                         ],
                                                     },
-                                                    { label: "إجمالي مستوى الدقة", values: [92, 88, 95] },
-                                                    { label: "إجمالي معدل السرعة", values: [85, 80, 91] },
-                                                    { label: "إجمالي التقييم", values: [4.5, 4.8, 4.2] },
+                                                    { label: "إجمالي مستوى الدقة", values: [`${(selectedMonthDetails.avgManagerQualityImportant * selectedMonthDetails.avgReviewerQualityImportant) / 2}%`, `${(selectedMonthDetails.avgManagerQualityNormal * selectedMonthDetails.avgReviewerQualityNormal) / 2}%`, `${(selectedMonthDetails.avgManagerQualityEasy * selectedMonthDetails.avgReviewerQualityEasy) / 2}%`] },
+                                                    { label: "إجمالي معدل السرعة", values: [`${(selectedMonthDetails.avgManagerSpeedImportant * selectedMonthDetails.avgReviewerSpeedImportant) / 2}%`, `${(selectedMonthDetails.avgManagerSpeedNormal * selectedMonthDetails.avgReviewerSpeedNormal) / 2}%`, `${(selectedMonthDetails.avgManagerSpeedEasy * selectedMonthDetails.avgReviewerSpeedEasy) / 2}%`] },
+                                                    { label: "إجمالي التقييم", values: [`${roundNumber((((selectedMonthDetails.avgManagerSpeedImportant + selectedMonthDetails.avgReviewerSpeedImportant) / 2) * 0.3) + (((selectedMonthDetails.avgManagerQualityImportant + selectedMonthDetails.avgReviewerQualityImportant) / 2) * 0.3) + (selectedMonthDetails.importantPercentage * 0.4))}%`, `${roundNumber((((selectedMonthDetails.avgManagerSpeedNormal + selectedMonthDetails.avgReviewerSpeedNormal) / 2) * 0.3) + (((selectedMonthDetails.avgManagerQualityNormal + selectedMonthDetails.avgReviewerQualityNormal) / 2) * 0.3) + (selectedMonthDetails.normalPercentage * 0.4))}%`, `${roundNumber((((selectedMonthDetails.avgManagerSpeedEasy + selectedMonthDetails.avgReviewerSpeedEasy) / 2) * 0.3) + (((selectedMonthDetails.avgManagerQualityEasy + selectedMonthDetails.avgReviewerQualityEasy) / 2) * 0.3) + (selectedMonthDetails.easyPercentage * 0.4))}%`] },
                                                 ].map((row, index) => (
                                                     <tr
                                                         key={index}
@@ -712,9 +1193,9 @@ const WatomsTmsDashboard = () => {
                                             <tbody>
                                                 {[
                                                     { label: "إجمالي نسبة الاستكمال", value: `${selectedMonthDetails.finishedPercentage}%` },
-                                                    { label: "إجمالي مستوى الدقة", value: 89 },
-                                                    { label: "إجمالي معدل السرعة", value: 87 },
-                                                    { label: "إجمالي التقييم", value: 4.7 },
+                                                    { label: "إجمالي مستوى الدقة", value: `${(selectedMonthDetails.avgManagerQuality * selectedMonthDetails.avgReviewerQuality) / 2}%` },
+                                                    { label: "إجمالي معدل السرعة", value: `${(selectedMonthDetails.avgManagerSpeed * selectedMonthDetails.avgReviewerSpeed) / 2}%` },
+                                                    { label: "إجمالي التقييم", value: `${roundNumber((((selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2) * 0.3) + (((selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2) * 0.3) + (selectedMonthDetails.finishedPercentage * 0.4))}%` },
                                                 ].map((row, index) => (
                                                     <tr
                                                         key={index}
@@ -739,6 +1220,8 @@ const WatomsTmsDashboard = () => {
             {showTablePopup && (
                 <TmsDashboardTables
                     onClose={() => setShowTablePopup(false)}
+                    selectedMonthTasks={selectedMonthTasks}
+                    selectedMonthDetails={selectedMonthDetails}
                 />
             )}
         </>
