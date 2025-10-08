@@ -68,6 +68,7 @@ import ViewTraineesRegistrations from "./pages/ViewTraineesRegistrations";
 import WatomsEvaluateManagers from "./pages/WatomsEvaluateManagers";
 import EbdaEduLogin from "./pages/EbdaEduLogin";
 import WatomsMyTasks from "./pages/WatomsMyTasks";
+import WatomsTmsAddTask from "./pages/WatomsTmsAddTask";
 
 function App() {
   return (
@@ -418,6 +419,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <WatomsTmsMyTasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/tms/add-task"
+            element={
+              <ProtectedRoute>
+                <WatomsTmsAddTask />
               </ProtectedRoute>
             }
           />

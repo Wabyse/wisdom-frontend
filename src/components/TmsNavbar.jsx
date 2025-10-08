@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import report2Icon from "../assets/report2Icon.png";
 
-const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false }) => {
+const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false, addTaskPage = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -104,6 +104,13 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                     >
                         <FontAwesomeIcon icon={faPlus} className="text-xl text-gray-500" />
                     </button>}
+                    {/* Task page Plus Button */}
+                    {addTaskPage && <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                        onClick={() => navigate('/watoms/tms/add-task')}
+                    >
+                        <FontAwesomeIcon icon={faPlus} className="text-xl text-gray-500" />
+                    </button>}
                     {/* dashboard Button */}
                     {dashboardStatus && <button
                         onClick={() => navigate('/watoms/dashboard')}
@@ -163,4 +170,4 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
     )
 }
 
-export default NewNavbar;
+export default TmsNavbar;
