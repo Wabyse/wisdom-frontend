@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import report2Icon from "../assets/report2Icon.png";
 
-const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false, addTaskPage = false }) => {
+const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, submitedTask = false, isFilter, setIsFilter, filterTmsStatus = false, addTaskPage = false, setSubmitTask }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -150,6 +150,7 @@ const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                             className="text-xl text-watomsBlue"
                         />
                     </button>}
+                    {submitedTask && <button onClick={() => setSubmitTask(true)} className="bg-green-600 hover:bg-green-700 text-white rounded-xl p-1 font-bold">Save</button>}
                     {/* --- نهاية الأيقونات --- */}
                     {homeStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
