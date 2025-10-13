@@ -98,33 +98,37 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
     };
 
     useEffect(() => {
-        const lastIdx = org.months.length - 1;
-        const lastMonth = org.months[lastIdx];
-        setSelectedMonthIdx(lastIdx);
-        setSelectedMonth(lastMonth);
+        const monthlyEvaluation = () => {
+            const lastIdx = org.months.length - 1;
+            const lastMonth = org.months[lastIdx];
+            setSelectedMonthIdx(lastIdx);
+            setSelectedMonth(lastMonth);
 
-        const filteredEvaluation = evaluation.filter(
-            eva => eva.date === lastMonth.monthNumber
-        );
+            const filteredEvaluation = evaluation.filter(
+                eva => eva.date === lastMonth.monthNumber
+            );
 
-        const grouped = evaluation.reduce((acc, ev) => {
-            if (!acc[ev.date]) acc[ev.date] = [];
-            acc[ev.date].push(ev.score);
-            return acc;
-        }, {});
+            const grouped = evaluation.reduce((acc, ev) => {
+                if (!acc[ev.date]) acc[ev.date] = [];
+                acc[ev.date].push(ev.score);
+                return acc;
+            }, {});
 
-        // 2. Compute average %
-        const results = Object.entries(grouped).map(([date, scores]) => {
-            const total = scores.reduce((a, b) => a + b, 0);
-            const count = scores.length;
-            const max = count * 10; // assuming max score per item is 10
-            const avg = (total / max) * 100;
+            // 2. Compute average %
+            const results = Object.entries(grouped).map(([date, scores]) => {
+                const total = scores.reduce((a, b) => a + b, 0);
+                const count = scores.length;
+                const max = count * 10; // assuming max score per item is 10
+                const avg = (total / max) * 100;
 
-            return { monthNumber: Number(date), performance: roundNumber(avg.toFixed(2)), month: NUMBER_TO_ARABIC_MONTHS[Number(date)] };
-        });
+                return { monthNumber: Number(date), performance: roundNumber(avg.toFixed(2)), month: NUMBER_TO_ARABIC_MONTHS[Number(date)] };
+            });
 
-        setMgrScores(results);
-        setMonthEvaluation(groupEvaluation(filteredEvaluation));
+            setMgrScores(results);
+            setMonthEvaluation(groupEvaluation(filteredEvaluation));
+        }
+
+        monthlyEvaluation();
     }, [org, evaluation]);
 
     const toggleMonth = (status) => {
@@ -253,7 +257,7 @@ const WatomsSecretReport = ({ id, onClose, org, evaluation }) => {
                             <div className="w-0 h-16 border-l-2 border-black" />
                             <div className="w-[30%] flex flex-col justify-center items-center border-black border-2 rounded-2xl p-2 gap-4">
                                 <h1 className="text-center text-[10px]">التقييم العام الحالي</h1>
-                                <DonutChart value={mgrScores.find(mgr => mgr.monthNumber === selectedMonth.monthNumber).performance || 0} />
+                                <DonutChart value={mgrScores.find(mgr => mgr.monthNumber === selectedMonth.monthNumber)?.performance || 0} />
                             </div>
                         </div>
                     </div>

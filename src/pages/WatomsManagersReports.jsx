@@ -37,9 +37,13 @@ const WatomsManagersReports = () => {
     const [selectedOrgEvaluation, setSelectedOrgEvaluation] = useState([]);
 
     const fetchSecretReportData = async (org) => {
-        const response = await fetchEmployeesEvaluations(watomsData?.organizations?.[org]?.managerId)
-        setSelectedOrgEvaluation(response)
-    }
+        const response = await fetchEmployeesEvaluations(
+            watomsData?.organizations?.[org]?.managerId
+        );
+        setSelectedOrgEvaluation(response);
+        setShowSecretPopup(true); // move it here
+    };
+
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -260,7 +264,7 @@ const WatomsManagersReports = () => {
                                 </div>
 
                                 <div className="w-full flex gap-2 rounded-2xl bg-[#2d3347] justify-evenly items-center h-12">
-                                    <img className="w-8 cursor-pointer" src={secretIcon} alt="" onClick={() => { setSelectedId(orgIndex); setShowSecretPopup(true); fetchSecretReportData(orgIndex) }} />
+                                    <img className="w-8 cursor-pointer" src={secretIcon} alt="" onClick={() => { setSelectedId(orgIndex); fetchSecretReportData(orgIndex) }} />
                                     <div className="w-0 h-5 border-l-2 border-white" />
                                     <img className="w-8 cursor-pointer" src={dashboardIcon} alt="" onClick={() => { setDashboardPopup(true); setSelectedOrg(watomsData?.organizations?.[orgIndex]) }} />
                                     <div className="w-0 h-5 border-l-2 border-white" />

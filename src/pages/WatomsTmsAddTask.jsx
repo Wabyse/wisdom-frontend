@@ -1,20 +1,114 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import "../styles/Tms.css";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
-import TmsSingleTaskDetails from "../components/TmsSingleTaskDetails";
 import TmsNavbar from "../components/TmsNavbar";
-import TmsSingleDataTemplate from "../components/TmsSingleDataTemplate";
-import TmsChatAccess from "../components/TmsChatAccess";
-import TmsDoubleDataTemplate from "../components/TmsDoubleDataTemplate";
+import { fetchAuthorities, fetchUsers } from "../services/data";
+import { fetchingOrgs } from "../services/dms";
+import { fetchTaskCategories } from "../services/tms";
+import toast, { Toaster } from "react-hot-toast";
 
 const WatomsTmsAddTask = () => {
     const location = useLocation();
     const { userInfo } = useAuth();
-    const [loading,] = useState(false);
-    const [error,] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [auths, setAuths] = useState([]);
+    const [selectedAuth, setSelectedAuth] = useState(null);
+    const [orgs, setOrgs] = useState([]);
+    const [filteredOrgs, setFilteredOrgs] = useState([]);
+    const [selectedOrg, setSelectedOrg] = useState(null);
+    const [users, setUsers] = useState([]);
+    const [filteredAssignee, setFilteredAssignee] = useState([]);
+    const [selectedAssignee, setSelectedAssignee] = useState(null);
+    const [selectedImportance, setSelectedImportance] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [subCategories, setSubCategories] = useState([]);
+    const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+    const [taskDescription, setTaskDescription] = useState("");
+
+    const checkCategory = () => {
+        if (selectedCategory === null || selectedCategory === "") {
+            toast.error("الرجاء اختيار التصنيف");
+        }
+    }
+
+    useEffect(() => {
+        const loadAllData = async () => {
+            setLoading(true);
+            try {
+                const [authResponse, orgResponse, usersResponse, categoryResponse] = await Promise.all([
+                    fetchAuthorities(),
+                    fetchingOrgs(userInfo),
+                    fetchUsers(userInfo),
+                    fetchTaskCategories(userInfo),
+                ]);
+
+                // Filter authorities
+                const watomsAuth = authResponse.filter(a => a.id !== 3);
+                setAuths(watomsAuth);
+
+                // Filter orgs
+                const watomsOrgs = orgResponse.filter(o => o.authority_id !== 3);
+                setOrgs(watomsOrgs);
+                setFilteredOrgs(watomsOrgs);
+
+                // Handle users
+                setUsers(usersResponse);
+                setFilteredAssignee(usersResponse);
+
+                // Handle Categories and sub categories
+                setCategories(categoryResponse)
+            } catch (error) {
+                console.error("Error loading data:", error);
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadAllData();
+    }, [userInfo]);
+
+    // filter orgs based on authority
+    useEffect(() => {
+        const filterOrgs = () => {
+            if (selectedAuth !== null) {
+                const filtered = orgs.filter(org => org.authority_id === Number(selectedAuth));
+                setFilteredOrgs(filtered);
+            }
+        }
+
+        filterOrgs();
+    }, [selectedAuth]);
+
+    // filter assignee based on org
+    useEffect(() => {
+        const filterAssignee = () => {
+            if (selectedOrg !== null) {
+                const filtered = users.filter(user => user.employee.organization_id === Number(selectedOrg));
+                setFilteredAssignee(filtered);
+            }
+        }
+
+        filterAssignee();
+    }, [selectedOrg]);
+
+    // filter sub category based on category
+    useEffect(() => {
+        const filterSubCategories = () => {
+            if (selectedCategory !== null) {
+                const filtered = categories.filter(category => category.id === Number(selectedCategory));
+                setSubCategories(filtered[0].subCategory);
+            }
+        }
+
+        filterSubCategories();
+    }, [selectedCategory]);
 
     if (loading) return <LoadingScreen />;
     if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
@@ -26,6 +120,7 @@ const WatomsTmsAddTask = () => {
 
     return (
         <div className="flex flex-col items-center w-full">
+            <Toaster />
             <TmsNavbar
                 shareStatus={false}
             />
@@ -132,32 +227,100 @@ const WatomsTmsAddTask = () => {
                             البيانات الاساسية للمهمة
                         </div>
                         <div className="flex gap-2 mt-2">
+                            {/* assignee selector */}
                             <div className="w-[75%] overflow-y-auto">
                                 <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     اسم المنفذ
                                 </div>
-                                <input type="text" className={`border-black p-2 border-2 rounded text-center font-bold mt-2 flex items-center justify-center w-full`} />
+                                <select
+                                    className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
+                                    defaultValue=""
+                                    onChange={(e) => setSelectedAssignee(e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        اختر المنفذ
+                                    </option>
+                                    {filteredAssignee.map(emp => (
+                                        <option value={emp.employee.employee_first_name}>{emp.employee.employee_first_name} {emp.employee.employee_middle_name} {emp.employee.employee_last_name}</option>
+                                    ))}
+                                </select>
                             </div>
+                            {/* org selector */}
+                            <div className="w-[25%] overflow-y-auto">
+                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                    المشروع
+                                </div>
+                                <select
+                                    className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
+                                    defaultValue=""
+                                    onChange={(e) => setSelectedOrg(e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        اختر المشروع
+                                    </option>
+                                    {filteredOrgs.map(org => (
+                                        <option value={org.id}>{org.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            {/* auth selector */}
                             <div className="w-[25%] overflow-y-auto">
                                 <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     الجهة
                                 </div>
-                                <input type="text" className={`border-black p-2 border-2 rounded text-center font-bold mt-2 flex items-center justify-center w-full`} />
+                                <select
+                                    className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
+                                    defaultValue=""
+                                    onChange={(e) => setSelectedAuth(e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        اختر الجهة
+                                    </option>
+                                    {auths.map(auth => (
+                                        <option value={auth.id}>{auth.name}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                         <div className="flex gap-2 mt-2 w-full">
+                            {/* sub category selector */}
                             <div className="w-[25%]">
                                 <div className={`text-white text-center text-xs rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     التصنيف الفرعي للمهمة
                                 </div>
-                                <input className={`border-black p-2 border-2 rounded text-center font-bold mt-2 w-full`} />
+                                <select
+                                    className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
+                                    defaultValue=""
+                                    onChange={(e) => setSelectedSubCategory(e.target.value)}
+                                    onClick={checkCategory}
+                                >
+                                    <option value="" disabled>
+                                        اختر التصنيف
+                                    </option>
+                                    {subCategories.map(sub => (
+                                        <option value={sub.id}>{sub.name}</option>
+                                    ))}
+                                </select>
                             </div>
+                            {/* category selector */}
                             <div className="w-[25%]" >
                                 <div className={`text-white text-center text-xs rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     التصنيف
                                 </div>
-                                <input type="text" className={`border-black p-2 border-2 rounded text-center font-bold mt-2 w-full`} />
+                                <select
+                                    className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
+                                    defaultValue=""
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        اختر التصنيف
+                                    </option>
+                                    {categories.map(category => (
+                                        <option value={category.id}>{category.name}</option>
+                                    ))}
+                                </select>
                             </div>
+                            {/* size selector */}
                             <div className="w-[25%]">
                                 <div className={`text-white text-center text-xs rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     حجم المهمة
@@ -165,6 +328,7 @@ const WatomsTmsAddTask = () => {
                                 <select
                                     className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
                                     defaultValue=""
+                                    onChange={(e) => setSelectedSize(e.target.value)}
                                 >
                                     <option value="" disabled>
                                         اختر حجم المهمة
@@ -174,14 +338,15 @@ const WatomsTmsAddTask = () => {
                                     <option value="small">صغيرة</option>
                                 </select>
                             </div>
+                            {/* importance selector */}
                             <div className="w-[25%]">
                                 <div className="text-white text-center text-xs rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
                                     الاولوية
                                 </div>
-
                                 <select
                                     className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
                                     defaultValue=""
+                                    onChange={(e) => setSelectedImportance(e.target.value)}
                                 >
                                     <option value="" disabled>
                                         اختر الأولوية
@@ -199,11 +364,16 @@ const WatomsTmsAddTask = () => {
                                 </div>
                                 <input type="text" className={`border-black p-2 border-2 rounded text-center font-bold mt-2 h-32 flex items-center justify-center w-full`} />
                             </div>
+                            {/* task description input */}
                             <div className="min-w-[50%] w-[50%] max-w-[80%] overflow-y-auto">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
                                     وصف المهمة
                                 </div>
-                                <input type="text" className={`border-black p-2 border-2 rounded text-center font-bold mt-2 h-32 flex items-center justify-center w-full`} />
+
+                                <textarea
+                                    className="border-black p-2 border-2 rounded text-center font-bold mt-2 h-32 w-full resize-none overflow-y-auto"
+                                    placeholder="أدخل وصف المهمة هنا..."
+                                />
                             </div>
                         </div>
                     </div>
