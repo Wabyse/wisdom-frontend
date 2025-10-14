@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { downloadTaskFile, fetchTasks } from "../services/tms";
+import { downloadTaskFile, wisdomFetchTasks } from "../services/tms";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import DenyAccessPage from "../components/DenyAccessPage";
@@ -42,7 +42,7 @@ const ViewTask = () => {
   useEffect(() => {
     const loadingTasks = async () => {
       try {
-        const response = await fetchTasks();
+        const response = await wisdomFetchTasks();
         const filteredTask = response.find(
           (task) => task.id === Number(id)
         );

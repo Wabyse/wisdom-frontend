@@ -578,7 +578,7 @@ const WatomsTmsDashboard = () => {
 
     useEffect(() => {
         const loadMyTasks = async () => {
-            const response = await fetchMyTasks(userInfo?.employee_id);
+            const response = await fetchMyTasks(userInfo?.id, "ebdaedu");
             const currentMonthsTasks = response.find(task => task.monthNumber === currentMonth);
             setAllTasks(response)
             setSelectedMonth(currentMonthsTasks ? currentMonthsTasks?.month : NUMBER_TO_ARABIC_MONTHS[currentMonth])

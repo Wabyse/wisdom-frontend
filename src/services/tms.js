@@ -70,9 +70,9 @@ export const updateMyTask = async (id, formData) => {
   }
 };
 
-export const fetchTasks = async () => {
+export const ebdaeduFetchTasks = async () => {
   try {
-    const response = await api.get(`/api/v1/tasks/view`, {
+    const response = await api.get(`/api/v1/tasks/ebdaedu/view`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data?.Tasks || [];
@@ -85,9 +85,69 @@ export const fetchTasks = async () => {
   }
 };
 
-export const fetchTasksGeneralInfo = async () => {
+export const wisdomFetchTasks = async () => {
   try {
-    const response = await api.get(`/api/v1/tasks/general-info`, {
+    const response = await api.get(`/api/v1/tasks/wisdom/view`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Tasks || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const watomsFetchTasks = async () => {
+  try {
+    const response = await api.get(`/api/v1/tasks/watoms/view`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.Tasks || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const ebdaeduFetchTasksGeneralInfo = async () => {
+  try {
+    const response = await api.get(`/api/v1/tasks/ebdaedu/general-info`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.generalData || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.generalData || error.message
+    );
+    throw error;
+  }
+};
+
+export const wisdomFetchTasksGeneralInfo = async () => {
+  try {
+    const response = await api.get(`/api/v1/tasks/wisdom/general-info`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.generalData || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.generalData || error.message
+    );
+    throw error;
+  }
+};
+
+export const watomsFetchTasksGeneralInfo = async () => {
+  try {
+    const response = await api.get(`/api/v1/tasks/watoms/general-info`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data?.generalData || [];
@@ -101,9 +161,9 @@ export const fetchTasksGeneralInfo = async () => {
 };
 
 // fetch my tasks
-export const fetchMyTasks = async (id) => {
+export const fetchMyTasks = async (id, system) => {
   try {
-    const response = await api.get(`/api/v1/tasks/my-tasks/${id}`, {
+    const response = await api.get(`/api/v1/tasks/my-tasks/${id}/${system}`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data?.Tasks || [];

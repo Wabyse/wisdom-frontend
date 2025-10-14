@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { LuDownload } from "react-icons/lu";
-import { downloadTaskFile, fetchTasks, updateMyTask } from "../services/tms";
+import { downloadTaskFile, updateMyTask, wisdomFetchTasks } from "../services/tms";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { STATUS_OPTIONS } from "../constants/constants";
@@ -84,7 +84,7 @@ const MyTasks = () => {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const response = await fetchTasks();
+        const response = await wisdomFetchTasks();
 
         setTasks(response);
       } catch (err) {

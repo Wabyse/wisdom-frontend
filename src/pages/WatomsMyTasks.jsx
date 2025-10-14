@@ -130,12 +130,14 @@ const WatomsMyTasks = () => {
     }
 
     const calculateTaskOverallScore = (data) => {
-        const finishedTasksPercentage = statusScore(data.status);
-        const avgManagerSpeed = Number(data.manager_speed_percentage);
-        const avgManagerQuality = Number(data.manager_quality_percentage);
-        const avgReviewerSpeed = Number(data.reviewer_speed_percentage);
-        const avgReviewerQuality = Number(data.reviewer_quality_percentage);
-        return roundNumber(((finishedTasksPercentage * 0.4) + ((avgManagerSpeed + avgReviewerSpeed) * 0.3) + ((avgManagerQuality + avgReviewerQuality) * 0.3)))
+        const finishedTasksPercentage = statusScore(data.assignee_status);
+        const avgManagerSpeed = Number(data.manager_speed);
+        const avgManagerQuality = Number(data.manager_quality);
+        const avgManagerStatus = Number(data.manager_status);
+        const avgReviewerSpeed = Number(data.reviewer_speed);
+        const avgReviewerQuality = Number(data.reviewer_quality);
+        const avgReviewerStatus = Number(data.reviewer_status);
+        return roundNumber(((finishedTasksPercentage * 0.4) + (((avgManagerSpeed + avgReviewerSpeed + avgReviewerStatus) / 3) * 0.3) + (((avgManagerQuality + avgReviewerQuality + avgManagerStatus) / 3) * 0.3)))
     }
 
     const statusPercentage = (status) => {
@@ -152,7 +154,7 @@ const WatomsMyTasks = () => {
 
     useEffect(() => {
         const loadMyTasks = async () => {
-            const response = await fetchMyTasks(userInfo?.employee_id);
+            const response = await fetchMyTasks(userInfo?.id, "ebdaedu");
             const allTasksFlat = response.flatMap(month => month.tasks);
             calculateTmsDetails(allTasksFlat)
             setAllTasks(allTasksFlat)
@@ -265,11 +267,6 @@ const WatomsMyTasks = () => {
                             {isFilter && <div className="absolute right-8 w-0 h-3 border-white border-l-2" />}
                             <h1>حجم المهمة</h1>
                         </div>
-                        <div className={`relative text-white text-center rounded p-2 bg-[#5268b1] flex-1 text-xs flex justify-center items-center`}>
-                            {isFilter && <FontAwesomeIcon icon={faFilter} className="absolute right-1 text-md text-white" />}
-                            {isFilter && <div className="absolute right-9 w-0 h-3 border-white border-l-2" />}
-                            <h1>التصنيف</h1>
-                        </div>
                         <div className={`relative text-white text-center rounded p-2 bg-[#5268b1] flex-1 text-xs flex justify-center items-center gap-[10px]`}>
                             {isFilter && <FontAwesomeIcon icon={faFilter} className="absolute right-1 text-md text-white" />}
                             {isFilter && <div className="w-0 h-3 border-white border-l-2" />}
@@ -319,11 +316,10 @@ const WatomsMyTasks = () => {
                                 </div>
                             </div>
                             <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{task.importance}</div>
-                            <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{task.task_size}</div>
-                            <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{task.taskSubCategory.name}</div>
+                            <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{task.size}</div>
                             <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{cairoDate(task.start_date)}</div>
                             <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{cairoDate(task.end_date)}</div>
-                            <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{statusPercentage(task.status)}</div>
+                            <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{statusPercentage(task.assignee_status)}</div>
                             <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{taskStatus(task)}</div>
                             <div className={`text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center ${calculateTaskOverallScore(task) < 50 && "text-red-500 font-bold"}`}>
                                 {calculateTaskOverallScore(task)}%

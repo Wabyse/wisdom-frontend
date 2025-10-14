@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 // import { useAuth } from "../context/AuthContext";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import "../styles/Tms.css";
-import { fetchTaskCategories, fetchTasks } from "../services/tms";
+import { fetchTaskCategories, wisdomFetchTasks } from "../services/tms";
 import { fetchUsers } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
@@ -213,7 +213,7 @@ const Tms = () => {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const response = await fetchTasks();
+        const response = await wisdomFetchTasks();
         let filtered = [];
         const filteredTasks = response;
 

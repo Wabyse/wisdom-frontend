@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 // import { useAuth } from "../context/AuthContext";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import "../styles/Tms.css";
-import { fetchTaskCategories, fetchTasks, fetchTasksGeneralInfo } from "../services/tms";
+import { ebdaeduFetchTasksGeneralInfo, fetchTaskCategories, watomsFetchTasks } from "../services/tms";
 import { fetchAuthorities, fetchProjects, fetchUsers } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
@@ -94,7 +94,7 @@ const TomsTms = () => {
     const loadTasksGeneralInfo = async () => {
       try {
         setLoading(true);
-        const response = await fetchTasksGeneralInfo();
+        const response = await ebdaeduFetchTasksGeneralInfo();
         setGeneralInfo(response);
       } catch (err) {
         console.error("API Error:", err);
@@ -321,7 +321,7 @@ const TomsTms = () => {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const response = await fetchTasks();
+        const response = await watomsFetchTasks();
         let filtered = [];
         const filteredTasks = response;
 

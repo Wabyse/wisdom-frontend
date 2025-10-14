@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { downloadTaskFile, fetchTasks } from "../services/tms";
+import { downloadTaskFile, watomsFetchTasks } from "../services/tms";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { useAuth } from "../context/AuthContext";
 
@@ -40,7 +40,7 @@ const TomsViewTask = () => {
   useEffect(() => {
     const loadingTasks = async () => {
       try {
-        const response = await fetchTasks();
+        const response = await watomsFetchTasks();
         const filteredTask = response.find(
           (task) => task.id === Number(id)
         );
