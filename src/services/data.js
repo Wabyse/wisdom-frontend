@@ -300,9 +300,9 @@ export const fetchAuthorities = async () => {
 };
 
 // All Projects
-export const fetchProjects = async () => {
+export const fetchOrgsCheck = async () => {
   try {
-    const response = await api.get(`/api/v1/data/projects`, {
+    const response = await api.get(`/api/v1/data/orgs/check`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data?.projects || [];
@@ -384,6 +384,54 @@ export const fetchEmployeesEvaluations = async (id) => {
     console.error(
       "Error fetching forms:",
       error.response?.schools || error.message
+    );
+    throw error;
+  }
+};
+
+// All Projects
+export const fetchProjects = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/projects`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.projects || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.projects || error.message
+    );
+    throw error;
+  }
+};
+
+// All Programs
+export const fetchPrograms = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/programs`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.programs || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.programs || error.message
+    );
+    throw error;
+  }
+};
+
+// All Organizations
+export const fetchOrganizations = async () => {
+  try {
+    const response = await api.get(`/api/v1/data/orgs`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.orgs || [];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.orgs || error.message
     );
     throw error;
   }

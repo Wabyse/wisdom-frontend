@@ -150,7 +150,7 @@ const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                             className="text-xl text-watomsBlue"
                         />
                     </button>}
-                    {submitedTask && <button onClick={() => setSubmitTask(true)} className="bg-green-600 hover:bg-green-700 text-white rounded-xl p-1 font-bold">Save</button>}
+                    {submitedTask && <button onClick={() => setSubmitTask(prev => !prev)} className="bg-green-600 hover:bg-green-700 text-white rounded-xl p-1 font-bold">Save</button>}
                     {/* --- نهاية الأيقونات --- */}
                     {homeStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"

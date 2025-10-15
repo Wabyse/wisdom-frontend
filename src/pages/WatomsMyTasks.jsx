@@ -51,12 +51,11 @@ const WatomsMyTasks = () => {
         if (clickTimeout.current) {
             clearTimeout(clickTimeout.current);
             clickTimeout.current = null;
-            navigate('/watoms/tms/tasks')
+            navigate(`/watoms/tms/edit/${task.id}`)
         } else {
             // Otherwise, set a timer for single click
             clickTimeout.current = setTimeout(() => {
-                const subTasks = allTasks.filter(task => task.sub_task_id === task.id)
-                console.log(subTasks);
+                // console.log(task);
                 clickTimeout.current = null;
             }, 250); // delay to detect double-click (250ms is a good default)
         }

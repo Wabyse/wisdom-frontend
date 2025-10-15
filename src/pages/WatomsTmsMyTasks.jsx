@@ -4,16 +4,16 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import "../styles/Tms.css";
 import { ebdaeduFetchTasksGeneralInfo, fetchTaskCategories, watomsFetchTasks } from "../services/tms";
-import { fetchAuthorities, fetchProjects, fetchUsers } from "../services/data";
+import { fetchAuthorities, fetchOrgsCheck, fetchUsers } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import { fetchingOrgs } from "../services/dms";
-import { STATUS_OPTIONS, TMS_DESCRIPTION, TMS_HERO_INFO, IMPORTANCE_LEVELS } from "../constants/constants";
+import { STATUS_OPTIONS, IMPORTANCE_LEVELS } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faUser, faShareNodes, faSun, faMoon, faInfoCircle, faTasks, faListAlt, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress, faHouse, faBuilding } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUser, faShareNodes, faSun, faMoon, faTasks, faFilter, faCalendarAlt, faUserTie, faClock, faFlag, faFolder, faPlus, faExpand, faCompress, faHouse, faBuilding } from "@fortawesome/free-solid-svg-icons";
 import { useState as useThemeState } from "react";
 import watomsLogo from '../assets/watoms3.png';
 import wabysLogo from '../assets/wabys.png';
@@ -40,14 +40,12 @@ const statusPercentage = {
 const WatomsTmsMyTasks = () => {
   const location = useLocation();
   const navigate = useNavigate(); //for navigate to another page (component)
-  const { userInfo, logout } = useAuth();
+  const { userInfo } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { language, setLanguage } = useLanguage();
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selected3, setSelected3] = useState("");
-  const [selectedVtc, setSelectedVtc] = useState("");
   const [selectedAssigneeOrganization, setSelectedAssigneeOrganization] = useState("");
   const [selectedAssignerOrganization, setSelectedAssignerOrganization] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -111,7 +109,7 @@ const WatomsTmsMyTasks = () => {
     }
 
     const loadProjects = async () => {
-      const response = await fetchProjects();
+      const response = await fetchOrgsCheck();
       const watomsProjects = response.filter(project => project.authority_id === 1 || project.authority_id === 2);
       setProjects(watomsProjects);
     }
@@ -123,12 +121,6 @@ const WatomsTmsMyTasks = () => {
 
   const handleClick = (id) => {
     navigate(`/watoms/tms/view/${id}`);
-  };
-
-  const handleSubCategoryClick = () => {
-    if (!selectedCategory) {
-      alert("Please select a category first!");
-    }
   };
 
   const resetFilters = (e) => {
@@ -199,28 +191,8 @@ const WatomsTmsMyTasks = () => {
     scrollDown(targetDivRef);
   };
 
-  const handle3Change = (e) => {
-    setSelected3(e.target.value);
-    scrollDown(targetDivRef);
-  };
-
-  const handleVtcChange = (e) => {
-    setSelectedVtc(e.target.value);
-    scrollDown(targetDivRef);
-  };
-
   const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
-    scrollDown(targetDivRef);
-  };
-
-  const handleAssigneeOrganizationChange = (e) => {
-    setSelectedAssigneeOrganization(e.target.value);
-    scrollDown(targetDivRef);
-  };
-
-  const handleAssignerOrganizationChange = (e) => {
-    setSelectedAssignerOrganization(e.target.value);
     scrollDown(targetDivRef);
   };
 

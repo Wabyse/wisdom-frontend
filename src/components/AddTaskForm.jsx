@@ -4,7 +4,7 @@ import { createTaskFormData } from "../utils/createTaskFormData";
 import { useAuth } from "../context/AuthContext";
 import { assignTask, fetchTaskCategories } from "../services/tms";
 import { IMPORTANCE_LEVELS, TASK_SIZES } from "../constants/constants";
-import { fetchAuthorities, fetchProjects, fetchSchools, fetchUsers } from "../services/data";
+import { fetchAuthorities, fetchOrgsCheck, fetchSchools, fetchUsers } from "../services/data";
 import { useLanguage } from "../context/LanguageContext";
 
 const AddTaskForm = ({ taskId, onClose, mainTask = true }) => {
@@ -153,7 +153,7 @@ const AddTaskForm = ({ taskId, onClose, mainTask = true }) => {
         }
 
         const loadProjects = async () => {
-            const response = await fetchProjects();
+            const response = await fetchOrgsCheck();
             const watomsProjects = response.filter(project => project.authority_id === 1 || project.authority_id === 2);
             setProjects(watomsProjects);
         }

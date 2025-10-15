@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { assignTask, fetchTaskCategories } from "../services/tms";
-import { fetchAuthorities, fetchProjects, fetchSchools, fetchUsers } from "../services/data";
+import { fetchAuthorities, fetchOrgsCheck, fetchUsers } from "../services/data";
 import { IMPORTANCE_LEVELS, TASK_SIZES } from "../constants/constants";
 import TmsSubTaskDetails from "./TmsSubTaskDetails";
 import { cairoDate } from "../utils/cairoDate";
@@ -155,7 +155,7 @@ const TmsSingleTaskDetails = ({
                 const [employees, categories, schools, authorities] = await Promise.all([
                     fetchUsers(userInfo),
                     fetchTaskCategories(userInfo),
-                    fetchProjects(),
+                    fetchOrgsCheck(),
                     fetchAuthorities()
 
                 ]);

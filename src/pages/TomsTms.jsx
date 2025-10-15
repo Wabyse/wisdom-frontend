@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import "../styles/Tms.css";
 import { ebdaeduFetchTasksGeneralInfo, fetchTaskCategories, watomsFetchTasks } from "../services/tms";
-import { fetchAuthorities, fetchProjects, fetchUsers } from "../services/data";
+import { fetchAuthorities, fetchOrgsCheck, fetchUsers } from "../services/data";
 import { scrollDown } from "../utils/scrollDown";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
@@ -111,7 +111,7 @@ const TomsTms = () => {
     }
 
     const loadProjects = async () => {
-      const response = await fetchProjects();
+      const response = await fetchOrgsCheck();
       const watomsProjects = response.filter(project => project.authority_id === 1 || project.authority_id === 2);
       setProjects(watomsProjects);
     }

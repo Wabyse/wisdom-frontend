@@ -175,3 +175,33 @@ export const fetchMyTasks = async (id, system) => {
     throw error;
   }
 };
+
+// fetch a task
+export const fetchTask = async (id) => {
+  try {
+    const response = await api.get(`/api/v1/tasks/task/${id}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data?.task[0];
+  } catch (error) {
+    console.error(
+      "Error fetching forms:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const updateTask = async (id, formData) => {
+  try {
+    await api.patch(`/api/v1/tasks/task/edit/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+  } catch (error) {
+    console.error(
+      "Error downloading file:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};

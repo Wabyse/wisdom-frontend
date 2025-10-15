@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import "../styles/Tms.css";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 import DenyAccessPage from "../components/DenyAccessPage";
 import TmsNavbar from "../components/TmsNavbar";
-import { fetchAuthorities, fetchUsers } from "../services/data";
-import { fetchingOrgs } from "../services/dms";
+import { fetchAuthorities, fetchOrganizations, fetchPrograms, fetchProjects, fetchUsers } from "../services/data";
+import { assignTask } from "../services/tms";
 import toast, { Toaster } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -14,10 +14,17 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 const WatomsTmsAddTask = () => {
     const location = useLocation();
     const { userInfo } = useAuth();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [auths, setAuths] = useState([]);
     const [selectedAuth, setSelectedAuth] = useState(null);
+    const [projects, setProjects] = useState([]);
+    const [filteredProjects, setFilteredProjects] = useState([]);
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [programs, setPrograms] = useState([]);
+    const [filteredPrograms, setFilteredPrograms] = useState([]);
+    const [selectedProgram, setSelectedProgram] = useState(null);
     const [orgs, setOrgs] = useState([]);
     const [filteredOrgs, setFilteredOrgs] = useState([]);
     const [selectedOrg, setSelectedOrg] = useState(null);
@@ -38,20 +45,44 @@ const WatomsTmsAddTask = () => {
     const [selectedReviewer, setSelectedReviewer] = useState(null);
     const [taskCount, setTaskCount] = useState(1);
     const [submitTask, setSubmitTask] = useState(false);
+    const [tasks, setTasks] = useState([]);
+
+    const handleChange = (index, field, value) => {
+        setTasks(prev => {
+            const updated = [...prev];
+            updated[index] = { ...updated[index], [field]: value };
+            return updated;
+        });
+    };
+
 
     useEffect(() => {
         const loadAllData = async () => {
             setLoading(true);
             try {
-                const [authResponse, orgResponse, usersResponse] = await Promise.all([
+                const [authResponse, orgResponse, usersResponse, projectResponse, programResponse] = await Promise.all([
                     fetchAuthorities(),
-                    fetchingOrgs(userInfo),
+                    fetchOrganizations(),
                     fetchUsers(userInfo),
+                    fetchProjects(),
+                    fetchPrograms(),
                 ]);
 
                 // Filter authorities
                 const watomsAuth = authResponse.filter(a => a.id !== 3);
                 setAuths(watomsAuth);
+
+                // Filter Projects
+                const watomsProjects = projectResponse.filter(a => a.authority_id !== 3);
+                setProjects(watomsProjects);
+                setFilteredProjects(watomsProjects);
+
+                // Filter Programs
+                const watomsPrograms = programResponse.filter(a =>
+                    projectResponse.some(p => p.id === a.project_id)
+                );
+                setPrograms(watomsPrograms);
+                setFilteredPrograms(watomsPrograms);
 
                 // Filter orgs
                 const watomsOrgs = orgResponse.filter(o => o.authority_id !== 3);
@@ -72,17 +103,44 @@ const WatomsTmsAddTask = () => {
         loadAllData();
     }, [userInfo]);
 
-    // filter orgs based on authority
+    // filter projects based on authority
     useEffect(() => {
-        const filterOrgs = () => {
+        const filterProjects = () => {
             if (selectedAuth !== null) {
-                const filtered = orgs.filter(org => org.authority_id === Number(selectedAuth));
+                const filtered = projects.filter(project => project.authority_id === Number(selectedAuth));
+                setFilteredProjects(filtered);
+            }
+        }
+
+        filterProjects();
+    }, [selectedAuth]);
+
+    // filter programs based on project
+    useEffect(() => {
+        const filterProgram = () => {
+            if (selectedProject !== null) {
+                const filtered = programs.filter(program => program.project_id === Number(selectedProject));
+                setFilteredPrograms(filtered);
+            }
+        }
+
+        filterProgram();
+    }, [selectedProject]);
+
+    // filter orgs based on program
+    useEffect(() => {
+        const filterOrg = () => {
+            if (selectedProgram !== null) {
+                const filtered = orgs.filter(org =>
+                    Array.isArray(org.programs) &&
+                    org.programs.some(program => program.id === Number(selectedProgram))
+                );
                 setFilteredOrgs(filtered);
             }
         }
 
-        filterOrgs();
-    }, [selectedAuth]);
+        filterOrg();
+    }, [selectedProgram]);
 
     // filter assignee based on org
     useEffect(() => {
@@ -97,11 +155,39 @@ const WatomsTmsAddTask = () => {
     }, [selectedOrg]);
 
     useEffect(() => {
-        const submitingTask = () => {
-            if (!selectedAuth || !selectedOrg || !selectedImportance || !selectedSize || !dateFrom || !dateTo || !selectedAssignee || !selectedManager || !selectedReviewer || !taskTitle || !taskDescription) {
+        const submitingTask = async () => {
+            if (!selectedAuth || !selectedProject || !selectedProgram || !selectedOrg || !selectedImportance || !selectedSize || !dateFrom || !dateTo || !selectedAssignee || !selectedManager || !selectedReviewer || !taskTitle || !taskDescription) {
                 toast.error('الرجاء مليء كل المطلوب')
             }
-            setSubmitTask(false);
+            console.log(tasks, selectedAuth, selectedProject, selectedProgram, selectedOrg, selectedImportance, selectedSize, dateFrom, dateTo, selectedAssignee, selectedManager, selectedReviewer, taskTitle, taskDescription)
+            try {
+                const taskData = new FormData();
+                taskData.append("task_details", JSON.stringify(tasks));
+                taskData.append("start_date", new Date(`${dateFrom}T${timeFrom || "00:00"}`).toISOString());
+                taskData.append("end_date", new Date(`${dateTo}T${timeTo || "00:00"}`).toISOString());
+                taskData.append("importance", selectedImportance);
+                taskData.append("size", selectedSize);
+                taskData.append("assigner_id", userInfo?.id);
+                taskData.append("assignee_id", Number(selectedAssignee));
+                taskData.append("reviewer_id", Number(selectedReviewer));
+                taskData.append("manager_id", Number(selectedManager));
+                taskData.append("organization_id", Number(selectedOrg));
+                taskData.append("program_id", Number(selectedProgram));
+                taskData.append("project_id", Number(selectedProject));
+                taskData.append("authority_id", Number(selectedAuth));
+                taskData.append("system", "ebdaedu");
+
+                if (selectedFile) {
+                    taskData.append("file", selectedFile); // 👈 Important!
+                }
+
+                await assignTask(taskData);
+                toast.success("تم تكليف المهمة");
+                setSubmitTask(false);
+                navigate("/watoms/tms/my-tasks")
+            } catch (err) {
+                console.error("Error submitting data:", err);
+            }
         }
 
         if (submitTask === true) submitingTask();
@@ -122,6 +208,7 @@ const WatomsTmsAddTask = () => {
                 shareStatus={false}
                 submitedTask={true}
                 setSubmitTask={setSubmitTask}
+                searchStatus={false}
             />
             <div className="border-black border-2 rounded-xl flex flex-col w-[95%] mt-2 pt-2">
 
@@ -142,7 +229,7 @@ const WatomsTmsAddTask = () => {
                                     اختر المنفذ
                                 </option>
                                 {filteredAssignee.map(emp => (
-                                    <option value={emp.employee.employee_first_name}>{emp.employee.employee_first_name} {emp.employee.employee_middle_name} {emp.employee.employee_last_name}</option>
+                                    <option key={emp.id} value={emp.id}>{emp.employee.employee_first_name} {emp.employee.employee_middle_name} {emp.employee.employee_last_name}</option>
                                 ))}
                             </select>
                             <div className={`w-[30%] text-white text-center text-sm flex justify-center items-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
@@ -161,7 +248,7 @@ const WatomsTmsAddTask = () => {
                                     اختر المراجع
                                 </option>
                                 {filteredAssignee.map(emp => (
-                                    <option value={emp.employee.employee_first_name}>{emp.employee.employee_first_name} {emp.employee.employee_middle_name} {emp.employee.employee_last_name}</option>
+                                    <option key={emp.id} value={emp.id}>{emp.employee.employee_first_name} {emp.employee.employee_middle_name} {emp.employee.employee_last_name}</option>
                                 ))}
                             </select>
                             <div className={`w-[30%] text-white text-center flex justify-center items-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
@@ -180,7 +267,7 @@ const WatomsTmsAddTask = () => {
                                     اختر المدير
                                 </option>
                                 {filteredAssignee.map(emp => (
-                                    <option value={emp.employee.employee_first_name}>{emp.employee.employee_first_name} {emp.employee.employee_middle_name} {emp.employee.employee_last_name}</option>
+                                    <option key={emp.id} value={emp.id}>{emp.employee.employee_first_name} {emp.employee.employee_middle_name} {emp.employee.employee_last_name}</option>
                                 ))}
                             </select>
                             <div className={`w-[30%] text-white text-center flex justify-center items-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
@@ -219,13 +306,13 @@ const WatomsTmsAddTask = () => {
                         </div>
                     </div>
 
-                    <div className="w-[45%] border-black border-2 p-2 rounded-xl">
+                    <div className="w-[50%] border-black border-2 p-2 rounded-xl">
                         <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center">
                             البيانات الاساسية للمهمة
                         </div>
                         <div className="flex gap-2 mt-2">
                             {/* org selector */}
-                            <div className="w-[33%] overflow-y-auto">
+                            <div className="w-[25%] overflow-y-auto">
                                 <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     التصنيف الفرعي
                                 </div>
@@ -238,32 +325,50 @@ const WatomsTmsAddTask = () => {
                                         اختر التصنيف الفرعي
                                     </option>
                                     {filteredOrgs.map(org => (
-                                        <option value={org.id}>{org.name}</option>
+                                        <option key={org.id} value={org.id}>{org.name}</option>
                                     ))}
                                 </select>
                             </div>
-                            {/* org selector */}
-                            <div className="w-[33%] overflow-y-auto">
+                            {/* program selector */}
+                            <div className="w-[25%] overflow-y-auto">
                                 <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     التصنيف الرئيسي
                                 </div>
                                 <select
                                     className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
                                     defaultValue=""
-                                    onChange={(e) => setSelectedOrg(e.target.value)}
+                                    onChange={(e) => setSelectedProgram(e.target.value)}
                                 >
                                     <option value="" disabled>
                                         اختر التصنيف الرئيسي
                                     </option>
-                                    {filteredOrgs.map(org => (
-                                        <option value={org.id}>{org.name}</option>
+                                    {filteredPrograms.map(program => (
+                                        <option key={program.id} value={program.id}>{program.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            {/* project selector */}
+                            <div className="w-[25%] overflow-y-auto">
+                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                    الجهة الفرعية
+                                </div>
+                                <select
+                                    className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
+                                    defaultValue=""
+                                    onChange={(e) => setSelectedProject(e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        اختر الجهة الفرعية
+                                    </option>
+                                    {filteredProjects.map(project => (
+                                        <option key={project.id} value={project.id}>{project.name}</option>
                                     ))}
                                 </select>
                             </div>
                             {/* auth selector */}
-                            <div className="w-[33%] overflow-y-auto">
+                            <div className="w-[25%] overflow-y-auto">
                                 <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                    الجهة
+                                    الجهة الرئيسية
                                 </div>
                                 <select
                                     className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black cursor-pointer"
@@ -271,10 +376,10 @@ const WatomsTmsAddTask = () => {
                                     onChange={(e) => setSelectedAuth(e.target.value)}
                                 >
                                     <option value="" disabled>
-                                        اختر الجهة
+                                        اختر الجهة الرئيسية
                                     </option>
                                     {auths.map(auth => (
-                                        <option value={auth.id}>{auth.name}</option>
+                                        <option key={auth.id} value={auth.id}>{auth.name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -333,7 +438,7 @@ const WatomsTmsAddTask = () => {
                 </div>
                 <div className="mx-3 mb-3 flex flex-col justify-between border-black border-2 p-2 rounded-xl">
                     <div className="relative mb-3 flex justify-between" >
-                        <div onClick={() => setTaskCount(prev => prev+1)} className="absolute -top-5 -right-5 text-xl rounded-full w-7 h-7 flex justify-center items-center bg-gray-300 hover:bg-gray-400 cursor-pointer">
+                        <div onClick={() => setTaskCount(prev => prev + 1)} className="absolute -top-5 -right-5 text-xl rounded-full w-7 h-7 flex justify-center items-center bg-gray-300 hover:bg-gray-400 cursor-pointer">
                             <FontAwesomeIcon icon={faPlus} />
                         </div>
                         <div className="flex gap-2 w-full">
@@ -367,44 +472,46 @@ const WatomsTmsAddTask = () => {
                         </div>
                     </div>
                     {Array.from({ length: taskCount }, (_, i) => (
-                        <div
-                            key={i}
-                            className="mb-3 flex justify-between"
-                        >
+                        <div key={i} className="mb-3 flex justify-between">
                             <div className="flex gap-2 w-full">
-                                {/* Task notes input */}
-                                <div className="min-w-[33%] w-[33%] max-w-[33%] overflow-y-auto">
+
+                                {/* Notes */}
+                                <div className="min-w-[33%] w-[33%] max-w-[33%]">
                                     <textarea
                                         className="border-black p-2 border-2 rounded text-center font-bold w-full h-12 resize-none overflow-y-auto"
                                         placeholder="أدخل ملاحظات المهمة هنا..."
-                                        onChange={(e) => setTaskNotes(e.target.value)}
+                                        value={tasks[i]?.note || ""}
+                                        onChange={(e) => handleChange(i, "note", e.target.value)}
                                     />
                                 </div>
 
-                                {/* Task description input */}
-                                <div className="min-w-[45%] w-[45%] max-w-[45%] overflow-y-auto">
+                                {/* Description */}
+                                <div className="min-w-[45%] w-[45%] max-w-[45%]">
                                     <textarea
                                         className="border-black p-2 border-2 rounded text-center font-bold w-full h-12 resize-none overflow-y-auto"
                                         placeholder="أدخل وصف المهمة هنا..."
-                                        onChange={(e) => setTaskDescription(e.target.value)}
+                                        value={tasks[i]?.description || ""}
+                                        onChange={(e) => handleChange(i, "description", e.target.value)}
                                     />
                                 </div>
 
-                                {/* Task title input */}
+                                {/* Title */}
                                 <div className="min-w-[15%] w-[15%]">
                                     <textarea
                                         className="border-black p-2 border-2 rounded text-center font-bold h-12 w-full resize-none overflow-y-auto"
                                         placeholder="أدخل عنوان المهمة هنا..."
-                                        onChange={(e) => setTaskTitle(e.target.value)}
+                                        value={tasks[i]?.title || ""}
+                                        onChange={(e) => handleChange(i, "title", e.target.value)}
                                     />
                                 </div>
 
-                                {/* Task ID display */}
+                                {/* ID */}
                                 <div className="min-w-[5%] w-[5%]">
                                     <div className="border-black p-2 border-2 rounded text-center font-bold h-12 w-full">
                                         {i + 1}
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     ))}
