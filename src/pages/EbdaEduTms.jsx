@@ -21,11 +21,13 @@ import golLogo from "../assets/Gov.png";
 import ebdaeduLogo from "../assets/ebad-edu.png";
 import wabysLogo from "../assets/wabys.png";
 import person from "../assets/person.jpg";
+import { useEbdaEduAuth } from "../context/EbdaEduAuthContext";
+import EbdaEduNavbar from "../components/EbdaEduNavbar";
 
 const currentMonth = new Date().getMonth() + 1;
 
-const WatomsTmsDashboard = () => {
-    const { userInfo } = useAuth();
+const EbdaEduTms = () => {
+    const { ebdaUserInfo } = useEbdaEduAuth();
     const pdfRef = useRef();
     const [pdfStatus, setPdfStatus] = useState(false);
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(9);
@@ -63,7 +65,7 @@ const WatomsTmsDashboard = () => {
     // fetch user's tasks
     useEffect(() => {
         const loadMyTasks = async () => {
-            const response = await fetchMyTasks(userInfo?.id, "ebdaedu");
+            const response = await fetchMyTasks(ebdaUserInfo?.id, "ebdaedu");
             const currentMonthsTasks = response.find(task => task.monthNumber === currentMonth);
             setAllTasks(response)
             setSelectedMonth(currentMonthsTasks ? currentMonthsTasks?.month : NUMBER_TO_ARABIC_MONTHS[currentMonth])
@@ -73,7 +75,7 @@ const WatomsTmsDashboard = () => {
         }
 
         loadMyTasks();
-    }, [currentMonth, userInfo])
+    }, [currentMonth, ebdaUserInfo])
 
     // create pdf to download
     const handleDownloadPdf = async () => {
@@ -1189,21 +1191,17 @@ const WatomsTmsDashboard = () => {
         return found ? found : { ...m, performance: 0 };
     });
 
-    if (userInfo?.code === 1452 || userInfo?.code === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;
-    if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
-    if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
     return (
         <>
-            <NewNavbar
+            <EbdaEduNavbar
                 shareStatus={false}
                 plusStatus={true}
-                AddStatus={true}
             >
                 {/* open Pdf */}
                 <button onClick={() => setPdfStatus(true)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                     <FontAwesomeIcon icon={faPrint} className="text-xl text-gray-500" />
                 </button>
-            </NewNavbar>
+            </EbdaEduNavbar>
             <div className="bg-[#0a183d] h-[88vh] pt-4">
                 <div className="text-white mb-2" style={{
                     width: '100%',
@@ -1807,4 +1805,4 @@ const WatomsTmsDashboard = () => {
     )
 }
 
-export default WatomsTmsDashboard;
+export default EbdaEduTms;

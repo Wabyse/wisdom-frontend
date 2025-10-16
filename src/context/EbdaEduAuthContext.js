@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 const EbdaEduAuthContext = createContext();
 
 export const EbdaEduAuthProvider = ({ children }) => {
-  const [ebdaEduCode, setEbdaEduCode] = useState(() => {
+  const [ebdaToken, setEbdaToken] = useState(() => {
     const storedData = localStorage.getItem("ebdaEduAuthData");
     if (storedData) {
       const parsedData = JSON.parse(storedData);
@@ -11,12 +11,12 @@ export const EbdaEduAuthProvider = ({ children }) => {
         localStorage.removeItem("ebdaEduAuthData");
         return null;
       }
-      return parsedData.ebdaEduCode;
+      return parsedData.ebdaToken;
     }
     return null;
   });
 
-  const [ebdaEduInfo, setEbdaEduInfo] = useState(() => {
+  const [ebdaUserInfo, setEbdaUserInfo] = useState(() => {
     const storedData = localStorage.getItem("ebdaEduAuthData");
     if (storedData) {
       const parsedData = JSON.parse(storedData);
@@ -24,11 +24,12 @@ export const EbdaEduAuthProvider = ({ children }) => {
         localStorage.removeItem("ebdaEduAuthData");
         return null;
       }
-      return parsedData.ebdaEduInfo;
+      return parsedData.ebdaUserInfo;
     }
     return null;
   });
 
+  // Handle expiry and auto logout
   useEffect(() => {
     const storedData = localStorage.getItem("ebdaEduAuthData");
 
@@ -39,40 +40,43 @@ export const EbdaEduAuthProvider = ({ children }) => {
       if (timeLeft > 0) {
         const timeoutId = setTimeout(() => {
           localStorage.removeItem("ebdaEduAuthData");
-          setEbdaEduCode(null);
-          setEbdaEduInfo(null);
-          window.location.href = "/ebda-edu/login";
+          setEbdaToken(null);
+          setEbdaUserInfo(null);
+          window.location.href = "/login";
         }, timeLeft);
 
         return () => clearTimeout(timeoutId);
       } else {
         localStorage.removeItem("ebdaEduAuthData");
-        setEbdaEduCode(null);
-        setEbdaEduInfo(null);
-        window.location.href = "/ebda-edu/login";
+        setEbdaToken(null);
+        setEbdaUserInfo(null);
+        window.location.href = "/login";
       }
     }
-  }, []); // only runs on mount
+  }, []); // run once on mount
 
+  // Save new token & info to localStorage with expiry
   useEffect(() => {
-    if (ebdaEduCode && ebdaEduInfo) {
-      const expiryTime = Date.now() + 60 * 60 * 1000;
-      const authData = { ebdaEduCode, ebdaEduInfo, expiry: expiryTime };
+    if (ebdaToken && ebdaUserInfo) {
+      const expiryTime = Date.now() + 60 * 60 * 1000; // 1 hour
+      const authData = { ebdaToken, ebdaUserInfo, expiry: expiryTime };
       localStorage.setItem("ebdaEduAuthData", JSON.stringify(authData));
     } else {
       localStorage.removeItem("ebdaEduAuthData");
     }
-  }, [ebdaEduCode, ebdaEduInfo]);
+  }, [ebdaToken, ebdaUserInfo]);
 
   const logout = () => {
     localStorage.removeItem("ebdaEduAuthData");
-        setEbdaEduCode(null);
-        setEbdaEduInfo(null);
-    window.location.href = "/ebda-edu/login";
+    setEbdaToken(null);
+    setEbdaUserInfo(null);
+    window.location.href = "/login";
   };
 
   return (
-    <EbdaEduAuthContext.Provider value={{ ebdaEduCode, setEbdaEduCode, ebdaEduInfo, setEbdaEduInfo, logout }}>
+    <EbdaEduAuthContext.Provider
+      value={{ ebdaToken, setEbdaToken, ebdaUserInfo, setEbdaUserInfo, logout }}
+    >
       {children}
     </EbdaEduAuthContext.Provider>
   );

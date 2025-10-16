@@ -70,6 +70,9 @@ import EbdaEduLogin from "./pages/EbdaEduLogin";
 import WatomsMyTasks from "./pages/WatomsMyTasks";
 import WatomsTmsAddTask from "./pages/WatomsTmsAddTask";
 import WatomsTmsEdit from "./pages/WatomsTmsEdit";
+import ProtectedEbdaEduRoute from "./components/ProtectedEbdaEduRoute";
+import EbdaEdu from "./pages/EbdaEdu";
+import EbdaEduTms from "./pages/EbdaEduTms";
 
 function App() {
   return (
@@ -89,7 +92,23 @@ function App() {
               <QRList />
             </ProtectedRoute>
           } />
-          {/* <Route path="/ebda-edu/login" element={<EbdaEduLogin />} /> */}
+          <Route path="/IEES/login" element={<EbdaEduLogin />} />
+          <Route
+            path="/IEES"
+            element={
+              <ProtectedEbdaEduRoute>
+                <EbdaEdu />
+              </ProtectedEbdaEduRoute>
+            }
+          />
+          <Route
+            path="/IEES/tms"
+            element={
+              <ProtectedEbdaEduRoute>
+                <EbdaEduTms />
+              </ProtectedEbdaEduRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/neqaty/login" element={<NeqatyLogin />} />
           <Route path="/neqaty" element={
@@ -435,7 +454,7 @@ function App() {
             path="/watoms/tms/edit/:id"
             element={
               <ProtectedRoute>
-                  <WatomsTmsEdit />
+                <WatomsTmsEdit />
               </ProtectedRoute>
             }
           />

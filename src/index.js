@@ -7,14 +7,17 @@ import { AuthProvider } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { AdminAuthProvider } from "./context/AdminAuthContext";
+import { EbdaEduAuthProvider } from "./context/EbdaEduAuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <AuthProvider>
     <AdminAuthProvider>
-      <LanguageProvider>
-        <App />
-      </LanguageProvider>
+      <EbdaEduAuthProvider>
+        <LanguageProvider>
+          <App />
+        </LanguageProvider>
+      </EbdaEduAuthProvider>
     </AdminAuthProvider>
   </AuthProvider>
 );
