@@ -779,7 +779,7 @@ const WisdomDashboard = () => {
             }}>
                 {/* WABYS and Wisdom logo */}
                 <div className="flex items-center gap-6 my-2">
-                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => userInfo?.code !== 1452 ? navigate('/wabys') : navigate('/login')} />
+                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => userInfo?.code !== 1452 && userInfo?.code !== 1476 ? navigate('/wabys') : navigate('/login')} />
                     <div className='border-l-2 border-black p-1 h-6' />
                     <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={ebdaeduLogo} alt="ebda edu Logo" />
                 </div>
@@ -801,7 +801,7 @@ const WisdomDashboard = () => {
                         {userFullName(userInfo, language)}
                     </span>
                     {/* Filter bar */}
-                    {userInfo?.code !== 1452 && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
+                    {userInfo?.code !== 1452 && userInfo?.code !== 1476 && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
                         <select
                             value={selectedProject}
                             onChange={(e) => setSelectedProject(e.target.value)}
@@ -1416,7 +1416,7 @@ const WisdomDashboard = () => {
                             </h3>
                             <div className="flex items-center justify-between gap-2">
                                 {/* Overall Score Circle */}
-                                <div className="flex flex-col items-center justify-center p-2 pt-0 cursor-pointer w-[35%]" onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 ? setSubDataDetails("الكفاءة والغعالية العامة") : null}>
+                                <div className="flex flex-col items-center justify-center p-2 pt-0 cursor-pointer w-[35%]" onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 && userInfo?.code !== 1476 ? setSubDataDetails("الكفاءة والغعالية العامة") : null}>
                                     <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                                     <span className='text-white mt-2 text-center'>الكفاءة والغعالية العامة</span>
                                 </div>
@@ -1438,7 +1438,7 @@ const WisdomDashboard = () => {
                                                         transition: 'box-shadow 0.2s ease',
                                                     }}
                                                     onClick={() =>
-                                                        selectedOrg?.id !== "All" && userInfo?.code !== 1452
+                                                        selectedOrg?.id !== "All" && userInfo?.code !== 1452 && userInfo?.code !== 1476
                                                             ? setSubDataDetails(s.name)
                                                             : null
                                                     }

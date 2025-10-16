@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import DenyAccessPage from "../components/DenyAccessPage";
 import DonutChart from "../components/DonutChart";
 import NewNavbar from "../components/NewNavbar";
@@ -11,9 +13,21 @@ import {
 import TmsDashboardTables from "../components/TmsDashboardTables";
 import { fetchMyTasks } from "../services/tms";
 import { roundNumber } from "../utils/roundNumber";
+// icons
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
+// images
+import golLogo from "../assets/Gov.png";
+import ebdaeduLogo from "../assets/ebad-edu.png";
+import wabysLogo from "../assets/wabys.png";
+import person from "../assets/person.jpg";
+
+const currentMonth = new Date().getMonth() + 1;
 
 const WatomsTmsDashboard = () => {
     const { userInfo } = useAuth();
+    const pdfRef = useRef();
+    const [pdfStatus, setPdfStatus] = useState(false);
     const [selectedMonthIdx, setSelectedMonthIdx] = useState(9);
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [showTablePopup, setShowTablePopup] = useState(false);
@@ -46,7 +60,401 @@ const WatomsTmsDashboard = () => {
         avgReviewerQualityEasyLarge: 0, avgReviewerQualityEasyMedium: 0, avgReviewerQualityEasySmall: 0,
     })
 
-    const currentMonth = new Date().getMonth() + 1;
+    // fetch user's tasks
+    useEffect(() => {
+        const loadMyTasks = async () => {
+            const response = await fetchMyTasks(userInfo?.id, "ebdaedu");
+            const currentMonthsTasks = response.find(task => task.monthNumber === currentMonth);
+            setAllTasks(response)
+            setSelectedMonth(currentMonthsTasks ? currentMonthsTasks?.month : NUMBER_TO_ARABIC_MONTHS[currentMonth])
+            setSelectedMonthIdx(currentMonth - 1)
+            setSelectedMonthTasks(currentMonthsTasks ? currentMonthsTasks : { monthNumber: currentMonth, tasks: [] })
+            calculateTmsDetails(currentMonthsTasks);
+        }
+
+        loadMyTasks();
+    }, [currentMonth, userInfo])
+
+    // create pdf to download
+    const handleDownloadPdf = async () => {
+        const element = pdfRef.current;
+        const canvas = await html2canvas(element, { scale: 2 });
+        const data = canvas.toDataURL("image/png");
+
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgProps = pdf.getImageProperties(data);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        let position = 0;
+        pdf.addImage(data, "PNG", 0, position, pdfWidth, imgHeight);
+        pdf.save("myFile.pdf");
+    };
+
+    // create the pdf template to view
+    const PdfPages = () => (
+        <div className="fixed inset-0 bg-black/60 flex flex-col overflow-y-auto justify-start gap-6 items-center z-50">
+            <button
+                onClick={() => setPdfStatus(false)}
+                className="absolute top-4 right-4 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+            >
+                <FontAwesomeIcon icon={faXmark} />
+            </button>
+            <button
+                onClick={handleDownloadPdf}
+                className="absolute top-4 right-20 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+            >
+                <FontAwesomeIcon icon={faPrint} />
+            </button>
+            <div ref={pdfRef} className="relative bg-white w-[40%] max-w-5xl h-[97vh] p-4 flex flex-col">
+                <div className="rounded-2xl border-black border-2 h-full flex flex-col items-center gap-2 p-2">
+                    {/* Header */}
+                    <div className="flex justify-between items-center w-full">
+                        {/* logo */}
+                        <div className="flex flex-col">
+                            <img src={ebdaeduLogo} className="w-10" alt="ebda edu logo" />
+                        </div>
+                        {/* title */}
+                        <div className="flex flex-col items-center gap-2 text-xs font-bold">
+                            <h1 className="border-b-2 border-black">تقرير ملخص اداء المهام في الفترة من الي</h1>
+                        </div>
+                        <div className="w-10" />
+                    </div>
+                    {/* user's Summary */}
+                    <div className="w-full border-black border-2 flex p-1 gap-1 min-h-20">
+                        {/* total score */}
+                        <div className="flex flex-col items-center text-center gap-1 w-[15%] font-bold">
+                            <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">اجمالي التقييم</div>
+                            <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">{`${roundNumber((((selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2) * 0.3) + (((selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2) * 0.3) + (selectedMonthDetails.finishedPercentage * 0.4))}%`}</div>
+                        </div>
+                        {/* no of tasks */}
+                        <div className="flex flex-col items-center text-center gap-1 w-[15%] font-bold">
+                            <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">اجمالي عدد المهام</div>
+                            <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">{selectedMonthTasks?.tasks?.length}</div>
+                        </div>
+                        {/* orgs titles */}
+                        <div className="flex flex-col gap-1 w-1/3 text-[10px] font-bold justify-center items-center">
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">EBDA EDU</div>
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">EBDA EDU</div>
+                        </div>
+                        {/* orgs details */}
+                        <div className="flex flex-col gap-1 min-w-fit max-w-1/3 text-[10px] font-bold justify-center items-center">
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الجهة الرئيسية</div>
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الجهة الفرعية</div>
+                        </div>
+                        {/* user's photo */}
+                        <div className="border-black border-2 p-1">
+                            <img className="w-16" src={person} alt="" />
+                        </div>
+                        <div className="flex justify-center items-center">
+                            <div className="px-2 bg-gray-300 border-black border-2 text-xs">1</div>
+                        </div>
+                    </div>
+                    {/* user's tasks score summary */}
+                    <h1 className="w-full text-end font-bold underline">ثانيا: تقييم معايير معدل تنفيذ المهام</h1>
+                    <div className="w-full h-fit flex flex-col items-center gap-4 p-4 border-black border-2">
+                        <div className="flex items-center gap-2 w-full">
+                            <div
+                                className="w-[75%] flex flex-col justify-start overflow-y-auto overflow-x-hidden"
+                                style={{
+                                    minHeight: 60,
+                                    maxHeight: 300,
+                                    zIndex: 1,
+                                    marginTop: 9
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        marginBottom: 0,
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease, opacity 0.2s ease',
+                                        borderRadius: 8,
+                                        minWidth: 0,
+                                        transformOrigin: 'center',
+                                    }}
+                                    className="justify-between hover:bg-gray-600 hover:bg-opacity-20 py-[4px] px-6"
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1.02)';
+                                        e.currentTarget.style.opacity = '0.9';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1)';
+                                        e.currentTarget.style.opacity = '1';
+                                    }}
+                                >
+                                    {/* Center name (on the left) */}
+                                    <div className="text-start min-w-36" style={{
+                                        maxWidth: 120,
+                                        fontWeight: 900,
+                                        fontSize: 15,
+                                        marginRight: 8,
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        transition: 'color 0.2s ease'
+                                    }}>
+                                        سرعة التنفيذ المهام
+                                    </div>
+                                    {/* Bar background with fixed width */}
+                                    <div style={{
+                                        flex: 1,                   // ✅ take remaining space
+                                        minWidth: 0,
+                                        maxWidth: 170,              // ✅ allow shrink
+                                        height: 20,
+                                        background: '#444652',
+                                        borderRadius: 18,
+                                        boxShadow: '0 2px 8px #0002',
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        marginLeft: 8,
+                                        marginRight: 8,
+                                        transition: 'box-shadow 0.2s ease',
+                                    }}
+                                    >
+                                        {/* Bar fill */}
+                                        <div
+                                            style={{
+                                                height: '100%',
+                                                width: `${(selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2}%`,
+                                                background: "red",
+                                                borderRadius: 18,
+                                                transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
+                                            }}
+                                        />
+                                    </div>
+                                    {/* Percentage (on the right) */}
+                                    <div className="text-end" style={{
+                                        minWidth: 38,
+                                        fontWeight: 900,
+                                        fontSize: 17,
+                                        textAlign: 'right',
+                                        marginLeft: 0,
+                                        marginRight: 0,
+                                        transition: 'color 0.2s ease'
+                                    }}>
+                                        {(selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2}%
+                                    </div>
+                                </div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        marginBottom: 0,
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease, opacity 0.2s ease',
+                                        borderRadius: 8,
+                                        minWidth: 0,
+                                        transformOrigin: 'center',
+                                    }}
+                                    className="justify-between hover:bg-gray-600 hover:bg-opacity-20 py-[4px] px-6"
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1.02)';
+                                        e.currentTarget.style.opacity = '0.9';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1)';
+                                        e.currentTarget.style.opacity = '1';
+                                    }}
+                                >
+                                    {/* Center name (on the left) */}
+                                    <div className="text-start min-w-36" style={{
+                                        maxWidth: 120,
+                                        fontWeight: 900,
+                                        fontSize: 15,
+                                        marginRight: 8,
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        transition: 'color 0.2s ease'
+                                    }}>
+                                        دقة التنفيذ المهام
+                                    </div>
+                                    {/* Bar background with fixed width */}
+                                    <div style={{
+                                        flex: 1,                   // ✅ take remaining space
+                                        minWidth: 0,
+                                        maxWidth: 170,              // ✅ allow shrink
+                                        height: 20,
+                                        background: '#444652',
+                                        borderRadius: 18,
+                                        boxShadow: '0 2px 8px #0002',
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        marginLeft: 8,
+                                        marginRight: 8,
+                                        transition: 'box-shadow 0.2s ease',
+                                    }}
+                                    >
+                                        {/* Bar fill */}
+                                        <div
+                                            style={{
+                                                height: '100%',
+                                                width: `${(selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2}%`,
+                                                background: "blue",
+                                                borderRadius: 18,
+                                                transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
+                                            }}
+                                        />
+                                    </div>
+                                    {/* Percentage (on the right) */}
+                                    <div className="text-end" style={{
+                                        minWidth: 38,
+                                        fontWeight: 900,
+                                        fontSize: 17,
+                                        textAlign: 'right',
+                                        marginLeft: 0,
+                                        marginRight: 0,
+                                        transition: 'color 0.2s ease'
+                                    }}>
+                                        {(selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2}%
+                                    </div>
+                                </div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        marginBottom: 0,
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease, opacity 0.2s ease',
+                                        borderRadius: 8,
+                                        minWidth: 0,
+                                        transformOrigin: 'center',
+                                    }}
+                                    className="justify-between hover:bg-gray-600 hover:bg-opacity-20 py-[4px] px-6"
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1.02)';
+                                        e.currentTarget.style.opacity = '0.9';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1)';
+                                        e.currentTarget.style.opacity = '1';
+                                    }}
+                                >
+                                    {/* Center name (on the left) */}
+                                    <div className="text-start min-w-36" style={{
+                                        maxWidth: 120,
+                                        fontWeight: 900,
+                                        fontSize: 15,
+                                        marginRight: 8,
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        transition: 'color 0.2s ease'
+                                    }}>
+                                        نسبة اكتمال المهام
+                                    </div>
+                                    {/* Bar background with fixed width */}
+                                    <div style={{
+                                        flex: 1,                   // ✅ take remaining space
+                                        minWidth: 0,
+                                        maxWidth: 170,              // ✅ allow shrink
+                                        height: 20,
+                                        background: '#444652',
+                                        borderRadius: 18,
+                                        boxShadow: '0 2px 8px #0002',
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        marginLeft: 8,
+                                        marginRight: 8,
+                                        transition: 'box-shadow 0.2s ease',
+                                    }}
+                                    >
+                                        {/* Bar fill */}
+                                        <div
+                                            style={{
+                                                height: '100%',
+                                                width: `${selectedMonthDetails.finishedPercentage}%`,
+                                                background: "green",
+                                                borderRadius: 18,
+                                                transition: 'width 0.7s cubic-bezier(.4,2,.6,1)',
+                                            }}
+                                        />
+                                    </div>
+                                    {/* Percentage (on the right) */}
+                                    <div className="text-end" style={{
+                                        minWidth: 38,
+                                        fontWeight: 900,
+                                        fontSize: 17,
+                                        textAlign: 'right',
+                                        marginLeft: 0,
+                                        marginRight: 0,
+                                        transition: 'color 0.2s ease'
+                                    }}>
+                                        {selectedMonthDetails.finishedPercentage}%
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='border-l-2 border-white p-1 h-12 w-0' />
+                            <div className="flex flex-col gap-2 items-center">
+                                <DonutChart value={roundNumber((((selectedMonthDetails.avgManagerSpeed + selectedMonthDetails.avgReviewerSpeed) / 2) * 0.3) + (((selectedMonthDetails.avgManagerQuality + selectedMonthDetails.avgReviewerQuality) / 2) * 0.3) + (selectedMonthDetails.finishedPercentage * 0.4))} size={90} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
+                                <div className="flex p-2 border-black border-2 gap-2">
+                                    <h1>مهمة</h1>
+                                    <h1>{selectedMonthTasks?.tasks?.length}</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* user's line chart */}
+                    <h1 className="w-full text-end font-bold underline">ثالثا: تحليل معدل تغيير الاداء</h1>
+                    <div className="w-full h-fit p-2 border-black border-2">
+                        <ResponsiveContainer width="100%" height={200}>
+                            <LineChart
+                                data={normalizedPerformance}
+                                margin={{ top: 6, right: 30, left: -25, bottom: -10 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" /> {/* optional grey grid */}
+                                <XAxis
+                                    dataKey="month"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: "black" }} // ← white x-axis text
+                                />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: "black" }} // ← white y-axis text
+                                    domain={[0, 100]}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "#1a202c",
+                                        border: "1px solid #4a5568",
+                                        borderRadius: "6px",
+                                        color: "#ffffff", // ← white tooltip text
+                                    }}
+                                    labelStyle={{ color: "#ffffff" }} // ← white label
+                                    itemStyle={{ color: "#ffffff" }} // ← white items
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="performance"
+                                    stroke="#fbbf24"
+                                    strokeWidth={2}
+                                    dot={{ r: 5, fill: "#fbbf24" }}
+                                    activeDot={{ r: 7, stroke: "#fff", strokeWidth: 2 }}
+                                    label={({ x, y, value }) => (
+                                        <text
+                                            x={x}
+                                            y={y - 10} // move up a little
+                                            textAnchor="middle"
+                                            fill="#ffffff"
+                                            fontSize={12}
+                                            fontWeight="bold"
+                                        >
+                                            {value}%
+                                        </text>
+                                    )}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 
     const calculateTmsDetails = (currentMonthsTasks) => {
         const finishedTasksPercentage = currentMonthsTasks ? currentMonthsTasks?.tasks.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
@@ -576,20 +984,6 @@ const WatomsTmsDashboard = () => {
 
     }
 
-    useEffect(() => {
-        const loadMyTasks = async () => {
-            const response = await fetchMyTasks(userInfo?.id, "ebdaedu");
-            const currentMonthsTasks = response.find(task => task.monthNumber === currentMonth);
-            setAllTasks(response)
-            setSelectedMonth(currentMonthsTasks ? currentMonthsTasks?.month : NUMBER_TO_ARABIC_MONTHS[currentMonth])
-            setSelectedMonthIdx(currentMonth - 1)
-            setSelectedMonthTasks(currentMonthsTasks ? currentMonthsTasks : { monthNumber: currentMonth, tasks: [] })
-            calculateTmsDetails(currentMonthsTasks);
-        }
-
-        loadMyTasks();
-    }, [currentMonth, userInfo])
-
     const toggleMonth = (status) => {
         if (status) {
             if (selectedMonthIdx + 1 !== currentMonth) {
@@ -616,16 +1010,20 @@ const WatomsTmsDashboard = () => {
         return found ? found : { ...m, performance: 0 };
     });
 
-    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+    if (userInfo?.code === 1452 || userInfo?.code === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;
     if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
     if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
     return (
         <>
             <NewNavbar
                 shareStatus={false}
-                printStatus={true}
                 plusStatus={true}
-            />
+            >
+                {/* open Pdf */}
+                <button onClick={() => setPdfStatus(true)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
+                    <FontAwesomeIcon icon={faPrint} className="text-xl text-gray-500" />
+                </button>
+            </NewNavbar>
             <div className="bg-[#0a183d] h-[88vh] pt-4">
                 <div className="text-white mb-2" style={{
                     width: '100%',
@@ -1217,6 +1615,7 @@ const WatomsTmsDashboard = () => {
                     </div>
                 </div>
             </div>
+            {pdfStatus && <PdfPages />}
             {showTablePopup && (
                 <TmsDashboardTables
                     onClose={() => setShowTablePopup(false)}

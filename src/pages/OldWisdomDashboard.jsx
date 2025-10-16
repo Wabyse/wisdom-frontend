@@ -460,7 +460,7 @@ const OldWisdomDashboard = () => {
         }
     ] : [];
 
-    if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+    if (userInfo?.code === 1452 || userInfo?.code === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;
 
     return (
         <div style={{

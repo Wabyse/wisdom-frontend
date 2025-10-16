@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import report2Icon from "../assets/report2Icon.png";
 
-const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, submitedTask = false, isFilter, setIsFilter, filterTmsStatus = false, addTaskPage = false, setSubmitTask }) => {
+const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, submitedTask = false, isFilter, setIsFilter, filterTmsStatus = false, addTaskPage = false, setSubmitTask, notificationStatus = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -58,6 +58,10 @@ const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                     </h1>
                 )}
                 <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
+                    {/* notifications */}
+                    {notificationStatus && <button className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
+                        <FontAwesomeIcon icon={faBell} className="text-xl text-watomsBlue" />
+                    </button>}
                     {/* dark mode / light mode */}
                     {darkmodeStatus && <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
@@ -125,7 +129,7 @@ const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                         <FontAwesomeIcon icon={faPhone} className="text-xl text-gray-500" />
                     </button>}
                     {/* Filter bar */}
-                    {(userInfo?.code !== 1452 || userInfo?.code !== 1475) && dashboardPage && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
+                    {(userInfo?.code !== 1452 && userInfo?.code !== 1476 && userInfo?.code !== 1475) && dashboardPage && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
                         <select
                             value={selectedProject}
                             onChange={(e) => setSelectedProject(e.target.value)}
@@ -141,7 +145,7 @@ const TmsNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                         </select>
                     </div>}
                     {/* Bell icon */}
-                    {(userInfo?.code !== 1452 || userInfo?.code !== 1475) && dashboardPage && <button
+                    {(userInfo?.code !== 1452 && userInfo?.code !== 1476 && userInfo?.code !== 1475) && dashboardPage && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                         title="notification"
                     >

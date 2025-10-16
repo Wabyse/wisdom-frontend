@@ -8,6 +8,7 @@ import { roundNumber } from "../utils/roundNumber";
 import TmsNavbar from "../components/TmsNavbar";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { calculateTaskStatus } from "../utils/calculateTaskStatus";
 
 
 const WatomsMyTasks = () => {
@@ -60,18 +61,6 @@ const WatomsMyTasks = () => {
             }, 250); // delay to detect double-click (250ms is a good default)
         }
     };
-
-    const taskStatus = (data) => {
-        if (new Date(data.end_date) < new Date() && (data.status !== "submitted" && data.status !== "finished")) {
-            return "متاخر - لم يتم التسليم - الملف غير مكتمل"
-        } else if (new Date(data.end_date) > new Date() && (data.status !== "submitted" || data.status !== "finished")) {
-            return "قيد التنفيذ - الملف غير مكتمل"
-        } else if (new Date(data.end_date) < new Date() && (data.status === "submitted")) {
-            return "متاخر - لم يتم التسليم - الملف مكتمل"
-        } else if (new Date(data.end_date) < new Date() && (data.status === "finished")) {
-            return "تم التسليم - في الميعاد - الملف مكتمل"
-        }
-    }
 
     const calculateTmsDetails = (data) => {
         const finishedTasksPercentage = data ? data?.filter(task => task.status === "finished" || task.status === "submitted").length : 0;
@@ -319,7 +308,7 @@ const WatomsMyTasks = () => {
                             <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{cairoDate(task.start_date)}</div>
                             <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{cairoDate(task.end_date)}</div>
                             <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{statusPercentage(task.assignee_status)}</div>
-                            <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{taskStatus(task)}</div>
+                            <div className="text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center">{calculateTaskStatus(task)}</div>
                             <div className={`text-black text-center rounded p-2 bg-white flex-1 text-sm flex justify-center items-center ${calculateTaskOverallScore(task) < 50 && "text-red-500 font-bold"}`}>
                                 {calculateTaskOverallScore(task)}%
                             </div>

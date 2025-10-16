@@ -62,7 +62,7 @@ const Login = () => {
         toast.success("تم تسجيل الدخول بنجاح!");
       setUserInfo(data);
       console.log(data)
-      if (data.code === 1452) {
+      if (data.code === 1452 || data.code === 1476) {
         navigate("/watoms/dashboard");
       } else if (data.code === 1475) {
         navigate("/watoms/news");

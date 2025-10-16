@@ -6,7 +6,8 @@ import { fetchTask, updateTask } from "../services/tms";
 import { cairoDate } from "../utils/cairoDate";
 import TmsChatAccess from "../components/TmsChatAccess";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faPaperclip, faPaperPlane, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { calculateTaskStatus } from "../utils/calculateTaskStatus";
 
 const WatomsTmsEdit = () => {
     const { id } = useParams();
@@ -32,12 +33,11 @@ const WatomsTmsEdit = () => {
         }
 
         loadTask();
-    }, [])
+    }, [id])
 
     useEffect(() => {
         const submitingTask = async () => {
             try {
-                console.log("hi")
                 if (assigneeStatus || tasks.length > 0) {
                     const taskData = new FormData();
                     taskData.append("task_details", JSON.stringify(tasks));
@@ -54,7 +54,7 @@ const WatomsTmsEdit = () => {
         }
 
         if (submitTask === true) submitingTask();
-    }, [submitTask])
+    }, [submitTask, id])
 
     return (
         <div className="flex flex-col items-center w-full">
@@ -64,180 +64,118 @@ const WatomsTmsEdit = () => {
                 submitedTask={true}
                 setSubmitTask={setSubmitTask}
                 searchStatus={false}
+                notificationStatus={true}
             />
             <div className="border-black border-2 rounded-xl flex flex-col w-[95%] mt-2 pt-2">
 
-                {/* main content (your three columns) */}
-                <div className="px-3 pb-3 flex justify-between">
-                    <div className="w-[34%] border-black border-2 p-2 rounded-xl flex flex-col gap-2 items-center">
+                {/* main content (three columns) */}
+                <div className="px-3 pb-3 flex justify-between gap-2">
+                    {/* first column */}
+                    <div className="w-[35%] border-black border-2 p-2 rounded-xl flex flex-col gap-2 items-center">
                         <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center w-full">
                             عناصر التنفيذ والتقييم
                         </div>
-                        {/* assignee selector */}
-                        <div className="w-full flex gap-2 h-[40px]">
-                            <input className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold w-[15%] flex justify-center items-center bg-white text-black"
-                                type="text" max={100} min={0} onChange={(e) => Number(e.target.value) && e.target.value < 101 && e.target.value >= 0 ? setAssigneeStatus(e.target.value) : setAssigneeStatus("")}
-                                value={assigneeStatus}
-                                defaultValue={task?.assignee_status}
-                            />
-                            <div className="border-black p-2 border-2 rounded text-center text-sm font-bold w-[70%] h-full bg-white text-black" >
-                                {task?.assignee?.employee?.first_name} {task?.assignee?.employee?.middle_name} {task?.assignee?.employee?.last_name}
-                            </div>
-                            <div className={`min-w-[32%] text-white text-center text-xs flex justify-center items-center rounded bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                        <div className="w-full grid grid-cols-[13%,13%,13%,40%,14%] gap-2">
+                            {/* Table Header */}
+                            <div className="flex justify-center items-center text-white text-center text-xs rounded p-2 min-h-10 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
                                 نسبة الاستكمال
                             </div>
+                            <div className="flex justify-center items-center text-white text-center text-xs rounded p-2 min-h-10 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                سرعة التنفيذ
+                            </div>
+                            <div className="flex justify-center items-center text-white text-center text-xs rounded p-2 min-h-10 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                تقييم الدقة
+                            </div>
+                            <div className="flex justify-center items-center text-white text-center text-xs rounded p-2 min-h-10 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                الاسم
+                            </div>
+                            <div className="flex justify-center items-center text-white text-center text-xs rounded p-2 min-h-10 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                المسؤلية
+                            </div>
+
+                            {/* Reviewer Row */}
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">{task?.reviewer_status}</div>
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">{task?.reviewer_speed}</div>
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">{task?.reviewer_quality}</div>
+                            <div className="text-center text-xs font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">
+                                {task?.reviewer?.employee?.first_name} {task?.reviewer?.employee?.middle_name} {task?.reviewer?.employee?.last_name}
+                            </div>
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">المراجع</div>
+
+                            {/* Manager Row */}
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">{task?.manager_status}</div>
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">{task?.manager_speed}</div>
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">{task?.manager_quality}</div>
+                            <div className="text-center text-xs font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">
+                                {task?.manager?.employee?.first_name} {task?.manager?.employee?.middle_name} {task?.manager?.employee?.last_name}
+                            </div>
+                            <div className="text-center font-bold rounded p-2 min-h-10 bg-white border-black border-2 flex justify-center items-center">المدير</div>
                         </div>
-
-                        <div className="h-0 w-[90%] border-t-2 border-black" />
-
-                        <div className="flex gap-2 w-full">
-                            {/* reviewer status */}
-                            <div className="w-1/6 flex gap-2">
-                                <div className="w-full">
-                                    <div className={`text-white text-center text-[11px] rounded p-2 min-h-12 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                        نسبة الاستكمال
-                                    </div>
-                                    <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                        {task?.reviewer_status}
-                                    </div>
-                                </div>
+                        {/* Task Status */}
+                        <div className="w-full">
+                            <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                نسبة الاستكمال الموقف التنفيذي
                             </div>
-
-                            {/* reviewer speed */}
-                            <div className="w-1/6 flex gap-2">
-                                <div className="w-full">
-                                    <div className={`text-white text-center text-[10px] rounded p-2 min-h-12 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                        نسبة سرعة الاداء
-                                    </div>
-                                    <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                        {task?.reviewer_speed}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* reviewer quality */}
-                            <div className="w-1/6 flex gap-2">
-                                <div className="w-full">
-                                    <div className={`text-white text-center text-[11px] rounded p-2  min-h-12 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                        نسبة دقة الاداء
-                                    </div>
-                                    <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                        {task?.reviewer_quality}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Reviewer selector */}
-                            <div className="w-3/6 flex flex-col gap-2 h-[40px]">
-                                <div className={`text-white text-center text-xs rounded p-2 min-h-12 flex justify-center items-center bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                    اسم المراجع
-                                </div>
-                                <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold w-full h-full bg-white text-black" >
-                                    {task?.reviewer?.employee?.first_name} {task?.reviewer?.employee?.middle_name} {task?.reviewer?.employee?.last_name}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="h-0 w-[90%] border-t-2 border-black" />
-
-                        {/* Manager selector */}
-                        <div className="flex gap-2 w-full">
-                            {/* manager status */}
-                            <div className="w-1/6 flex gap-2">
-                                <div className="w-full">
-                                    <div className={`text-white text-center text-[11px] rounded p-2 min-h-12 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                        نسبة الاستكمال
-                                    </div>
-                                    <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                        {task?.manager_status}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* manager speed */}
-                            <div className="w-1/6 flex gap-2">
-                                <div className="w-full">
-                                    <div className={`text-white text-center text-[10px] rounded p-2 min-h-12 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                        نسبة سرعة الاداء
-                                    </div>
-                                    <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                        {task?.manager_speed}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* manager quality */}
-                            <div className="w-1/6 flex gap-2">
-                                <div className="w-full">
-                                    <div className={`text-white text-center text-[11px] rounded p-2  min-h-12 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                        نسبة دقة الاداء
-                                    </div>
-                                    <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                        {task?.manager_quality}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* manager selector */}
-                            <div className="w-3/6 flex flex-col gap-2 h-[40px]">
-                                <div className={`text-white text-center text-xs rounded p-2 min-h-12 flex justify-center items-center bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                    اسم المدير
-                                </div>
-                                <div className="border-black px-2 py-1 border-2 rounded text-center text-sm font-bold w-full h-full bg-white text-black" >
-                                    {task?.manager?.employee?.first_name} {task?.manager?.employee?.middle_name} {task?.manager?.employee?.last_name}
-                                </div>
+                            <div className="h-10 border-black p-2 border-2 rounded text-center font-bold mt-2 w-full bg-white text-black" >
+                                {calculateTaskStatus(task)}
                             </div>
                         </div>
                     </div>
 
-                    <div className="w-[15%] border-black border-2 p-2 rounded-xl flex flex-col gap-2">
-                        <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center">
-                            التواريخ و التوقيت
-                        </div>
-                        {/* Date From input */}
-                        <div className="flex gap-2">
-                            <div className="w-full">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                    تاريخ و التوقيتات البدء
-                                </div>
-                                <div className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                    {cairoDate(task?.start_date)}
-                                </div>
-                            </div>
-                        </div>
-                        {/* Date To input */}
-                        <div className="flex gap-2">
-                            <div className="w-full">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                    تاريخ و التوقيتات الانتهاء
-                                </div>
-                                <div className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                    {cairoDate(task?.end_date)}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* submitted date */}
-                        <div className="flex gap-2">
-                            <div className="w-full">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                    تاريخ و التوقيتات التسليم
-                                </div>
-                                <div className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
-                                    {task.assignee_status === 100 ? cairoDate(task?.updatedAt) : "----"}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="w-[50%] border-black border-2 p-2 rounded-xl flex flex-col gap-2 items-center">
+                    {/* second column */}
+                    <div className="w-[30%] border-black border-2 p-2 rounded-xl flex flex-col gap-2 items-center">
                         <div className="bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center w-full">
+                            محادثة
+                        </div>
+                        <div className="w-full max-h-60 h-60 bg-gradient-to-b min-h-fit from-blue-400 to-blue-600 rounded-xl flex flex-col p-4 overflow-y-auto space-y-3 shadow-inner">
+                            {/* Received message */}
+                            {/* <div className="bg-blue-800 text-white rounded-2xl py-2 px-4 max-w-[70%] shadow-md break-words">
+                                Hey there! How are you doing today?
+                            </div> */}
+
+                            {/* Sent message */}
+                            {/* <div className="bg-white text-gray-900 rounded-2xl py-2 px-4 max-w-[70%] self-end shadow-md border border-gray-200">
+                                I’m good! How about you?
+                            </div> */}
+
+                            {/* Sent message with icon */}
+                            {/* <button className="flex items-center gap-2 bg-white text-gray-900 hover:bg-slate-600 hover:text-white rounded-2xl py-2 px-4 max-w-[70%] self-end shadow-md transition-all duration-200 border border-gray-200">
+                                Download File <FontAwesomeIcon icon={faDownload} />
+                            </button> */}
+
+                            {/* Long message wrapping */}
+                            {/* <div className="bg-blue-800 text-white rounded-2xl py-2 px-4 max-w-[70%] shadow-md break-words">
+                                asdfhbasdjkfnhasldbfnabldnabdfjnajkdnjhkladfadjkdbvadnsvjkndvasjhbsjkvsb
+                            </div> */}
+                        </div>
+
+                        {/* Input area */}
+                        <div className="w-full flex items-center gap-2 mt-2">
+                            <button className="text-blue-900 hover:text-blue-600 transition-all duration-200">
+                                <FontAwesomeIcon icon={faPaperclip} size="lg" />
+                            </button>
+
+                            <input
+                                type="text"
+                                className="border-slate-400 border-2 rounded-full w-full px-4 py-2 text-end focus:outline-none focus:ring-2 focus:ring-blue-700"
+                                placeholder="ابدأ المحادثة"
+                            />
+
+                            <button className="text-blue-900 hover:text-blue-600 transition-all duration-200">
+                                <FontAwesomeIcon icon={faPaperPlane} size="lg" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* three column */}
+                    <div className="w-[35%] border-black border-2 p-2 rounded-xl flex flex-col gap-3 items-center">
+                        <div className="w-full bg-gradient-to-b from-blue-900 to-blue-950 text-white rounded p-2 text-center">
                             البيانات الاساسية للمهمة
                         </div>
                         <div className="flex gap-2 w-full">
                             {/* org selector */}
                             <div className="w-[25%] overflow-y-auto">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     التصنيف الفرعي
                                 </div>
                                 <div className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -246,7 +184,7 @@ const WatomsTmsEdit = () => {
                             </div>
                             {/* program selector */}
                             <div className="w-[25%] overflow-y-auto">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     التصنيف الرئيسي
                                 </div>
                                 <div className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -255,7 +193,7 @@ const WatomsTmsEdit = () => {
                             </div>
                             {/* project selector */}
                             <div className="w-[25%] overflow-y-auto">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     الجهة الفرعية
                                 </div>
                                 <div className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -264,7 +202,7 @@ const WatomsTmsEdit = () => {
                             </div>
                             {/* auth selector */}
                             <div className="w-[25%] overflow-y-auto">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     الجهة الرئيسية
                                 </div>
                                 <div className="border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -273,13 +211,20 @@ const WatomsTmsEdit = () => {
                             </div>
                         </div>
                         <div className="flex gap-2 w-full">
-                            {/* Chat */}
-                            <div className="flex gap-2 w-[25%]">
-                                <TmsChatAccess title="المحادثة" cardAdditionalCSS="w-full" valueAdditionalCSS="h-10" />
+                            {/* Task Assignee Status */}
+                            <div className="flex-1 overflow-y-auto">
+                                <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                    نسبة الاستكمال
+                                </div>
+                                <input className="h-10 border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black"
+                                    type="text" max={100} min={0} onChange={(e) => Number(e.target.value) && e.target.value < 101 && e.target.value >= 0 ? setAssigneeStatus(e.target.value) : setAssigneeStatus("")}
+                                    value={assigneeStatus}
+                                    defaultValue={task?.assignee_status}
+                                />
                             </div>
                             {/* Task File */}
-                            <div className="w-[25%] overflow-y-auto">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                            <div className="flex-1 overflow-y-auto">
+                                <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     المرفقات
                                 </div>
                                 <div className="h-10 border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -287,8 +232,8 @@ const WatomsTmsEdit = () => {
                                 </div>
                             </div>
                             {/* size selector */}
-                            <div className="w-[25%]">
-                                <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                            <div className="flex-1">
+                                <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                     حجم المهمة
                                 </div>
                                 <div className="h-10 border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -296,8 +241,8 @@ const WatomsTmsEdit = () => {
                                 </div>
                             </div>
                             {/* importance selector */}
-                            <div className="w-[25%]">
-                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                            <div className="flex-1">
+                                <div className="text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
                                     الاولوية
                                 </div>
                                 <div className="h-10 border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -305,9 +250,45 @@ const WatomsTmsEdit = () => {
                                 </div>
                             </div>
                         </div>
+                        <div className="flex gap-2 w-full">
+                            {/* submitted date */}
+                            <div className="flex gap-2 flex-1">
+                                <div className="w-full">
+                                    <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                        تاريخ و التوقيتات التسليم
+                                    </div>
+                                    <div className="min-h-16 flex justify-center items-center border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
+                                        {task.assignee_status === 100 ? cairoDate(task?.updatedAt) : "----"}
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Date To input */}
+                            <div className="flex gap-2 flex-1">
+                                <div className="w-full">
+                                    <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                        تاريخ و التوقيتات الانتهاء
+                                    </div>
+                                    <div className="min-h-16 flex justify-center items-center border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
+                                        {cairoDate(task?.end_date)}
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Date From input */}
+                            <div className="flex gap-2 flex-1">
+                                <div className="w-full">
+                                    <div className={`text-white text-center text-sm rounded py-2 px-4 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                        تاريخ و التوقيتات البدء
+                                    </div>
+                                    <div className="min-h-16 flex justify-center items-center border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
+                                        {cairoDate(task?.start_date)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="mx-3 mb-3 flex flex-col justify-between border-black border-2 p-2 rounded-xl">
+                    {/* Task Details Title */}
                     <div className="relative mb-3 flex justify-between" >
                         <div onClick={() => setTaskCount(prev => prev + 1)} className="absolute -top-5 -right-5 text-xl rounded-full w-7 h-7 flex justify-center items-center bg-gray-300 hover:bg-gray-400 cursor-pointer">
                             <FontAwesomeIcon icon={faPlus} />
@@ -342,6 +323,7 @@ const WatomsTmsEdit = () => {
                             </div>
                         </div>
                     </div>
+                    {/* Task Details Current Data */}
                     {task?.details?.map((detail, idx) => (
                         <div className="mb-3 flex justify-between">
                             <div className="flex gap-2 w-full">
@@ -375,10 +357,10 @@ const WatomsTmsEdit = () => {
                             </div>
                         </div>
                     ))}
+                    {/* Task Details New Data */}
                     {Array.from({ length: taskCount }, (_, i) => (
                         <div key={i} className="mb-3 flex justify-between">
                             <div className="flex gap-2 w-full">
-
                                 {/* Notes */}
                                 <div className="min-w-[33%] w-[33%] max-w-[33%]">
                                     <textarea
@@ -415,7 +397,6 @@ const WatomsTmsEdit = () => {
                                         {i + 2}
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     ))}

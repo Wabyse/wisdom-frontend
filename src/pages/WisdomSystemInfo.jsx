@@ -155,7 +155,7 @@ const WisdomSystemInfo = () => {
         }
     };
 
-    if (userCode === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+    if (userCode === 1452 || userCode === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;
     if (userCode === 1475) return <DenyAccessPage homePage='/watoms/news' />;
     if (userCode === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 

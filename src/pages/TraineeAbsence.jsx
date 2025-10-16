@@ -206,7 +206,7 @@ function TraineeAbsence() {
   if (error?.status === 403) return <Navigate to="/login" state={{ from: location }} replace />;
   if (error) return <p>Error: {error.message}</p>;
   if (userInfo.user_role !== "Operations Excellence Lead" && userInfo.user_role !== "Teacher" && userInfo.user_role !== "Trainer" && userInfo.user_role !== "ADMIN") return <DenyAccessPage homePage='/watoms/pms' />;
-  if (userInfo?.code === 1452) return <DenyAccessPage homePage='/watoms/dashboard' />;
+  if (userInfo?.code === 1452 || userInfo?.code === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;
   if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
   if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 

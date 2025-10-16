@@ -192,6 +192,7 @@ export const fetchTask = async (id) => {
   }
 };
 
+// update single task
 export const updateTask = async (id, formData) => {
   try {
     await api.patch(`/api/v1/tasks/task/edit/${id}`, formData, {

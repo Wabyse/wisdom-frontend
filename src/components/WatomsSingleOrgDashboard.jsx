@@ -564,7 +564,7 @@ const WatomsSingleOrgDashboard = ({ isOpen, onClose, children, data, rank }) => 
             position: 'relative',
           }}>
             {/* Title */}
-            <div className="text-2xl font-bold text-amber-400">المؤشرات الإجمالية {userInfo?.code === 1452 ? "لمشروع وزارة العمل" : data?.name}</div>
+            <div className="text-2xl font-bold text-amber-400">المؤشرات الإجمالية {userInfo?.code === 1452 || userInfo?.code === 1476 ? "لمشروع وزارة العمل" : data?.name}</div>
             <div className="flex" style={{
               position: 'relative',
               width: "95%",

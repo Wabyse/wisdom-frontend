@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import report2Icon from "../assets/report2Icon.png";
 
-const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false }) => {
+const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -52,12 +52,15 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                     </div>}
                 </div>
                 {ministerStatus && (
-                    <h1 className="absolute left-1/2 -translate-x-1/2 font-bold w-72 text-center text-lg text-black">
+                    userInfo?.code === 1476 ? <h1 className="absolute left-1/2 -translate-x-1/2 font-bold w-72 text-center text-lg text-black">
+                        {userInfo?.user_role}
+                    </h1> : <h1 className="absolute left-1/2 -translate-x-1/2 font-bold w-72 text-center text-lg text-black">
                         His Excellency
                         Egyptian Minister Of Labor
                     </h1>
                 )}
                 <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
+
                     {/* dark mode / light mode */}
                     {darkmodeStatus && <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
@@ -84,6 +87,7 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                     >
                         <FontAwesomeIcon icon={faShareNodes} className="text-xl text-gray-500" />
                     </button>}
+                    {children}
                     {/* Print Button */}
                     {printStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
@@ -118,7 +122,7 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                         <FontAwesomeIcon icon={faPhone} className="text-xl text-gray-500" />
                     </button>}
                     {/* Filter bar */}
-                    {(userInfo?.code !== 1452 || userInfo?.code !== 1475) && dashboardPage && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
+                    {(userInfo?.code !== 1452 && userInfo?.code !== 1476 && userInfo?.code !== 1475) && dashboardPage && <div className="flex justify-center items-center bg-[#bdbdbd] px-2 rounded-full w-52">
                         <select
                             value={selectedProject}
                             onChange={(e) => setSelectedProject(e.target.value)}
@@ -134,7 +138,7 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                         </select>
                     </div>}
                     {/* Bell icon */}
-                    {(userInfo?.code !== 1452 || userInfo?.code !== 1475) && dashboardPage && <button
+                    {(userInfo?.code !== 1452 && userInfo?.code !== 1476 && userInfo?.code !== 1475) && dashboardPage && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                         title="notification"
                     >
@@ -146,7 +150,7 @@ const NewNavbar = ({ searchStatus = true, darkmodeStatus = true, shareStatus = t
                     {/* --- نهاية الأيقونات --- */}
                     {homeStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                        onClick={() => { userInfo?.code === 1475 ? navigate('/watoms/news') : navigate('/watoms') }}
+                        onClick={() => { userInfo?.code === 1475 ? navigate('/watoms/news') : userInfo?.code === 1476 ? logout() : navigate('/watoms') }}
                     >
                         <FontAwesomeIcon icon={faHouse} className="text-xl text-green-700" />
                     </button>}
