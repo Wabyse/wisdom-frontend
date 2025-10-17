@@ -14,7 +14,7 @@ import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 import { useEbdaEduAuth } from "../context/EbdaEduAuthContext";
 
-const EbdaEduNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false }) => {
+const EbdaEduNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false, addTaskPage = false, submitedTask = false, setSubmitTask, notificationStatus = false }) => {
     const navigate = useNavigate();
     const { logout, ebdaUserInfo } = useEbdaEduAuth();
     const { language } = useLanguage();
@@ -31,11 +31,7 @@ const EbdaEduNavbar = ({ children, searchStatus = true, darkmodeStatus = true, s
             <div className="relative flex flex-col md:flex-row items-center justify-between w-full px-6 h-[12vh] gap-8">
                 {/* Logos */}
                 <div className="flex items-center md:gap-6 gap-4 my-2">
-                    <img className="w-[100px] md:w-[120px] lg:w-[140px] cursor-pointer rounded-xl" src={wabysLogo} alt="Wabys Logo" onClick={() => { ebdaUserInfo?.code !== 1475 && navigate('/wabys') }} />
-                    <div className='border-l-2 border-black p-1 h-6' />
                     <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={ebdaeduLogo} alt="ebda edu Logo" />
-                    <div className='border-l-2 border-black p-1 h-6' />
-                    <img className="w-[60px] md:w-[60px] lg:w-[60px]" src={molLogo} alt="mol Logo" />
                 </div>
                 <div className="flex-1 flex justify-center">
                     {/* Search */}
@@ -60,7 +56,10 @@ const EbdaEduNavbar = ({ children, searchStatus = true, darkmodeStatus = true, s
                     </h1>
                 )}
                 <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
-
+                    {/* notifications */}
+                    {notificationStatus && <button className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
+                        <FontAwesomeIcon icon={faBell} className="text-xl text-watomsBlue" />
+                    </button>}
                     {/* dark mode / light mode */}
                     {darkmodeStatus && <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
@@ -102,9 +101,16 @@ const EbdaEduNavbar = ({ children, searchStatus = true, darkmodeStatus = true, s
                         <FontAwesomeIcon icon={faFilter} className="text-xl text-wisdomOrange" />
                     </button>}
                     {/* Tms Plus Button */}
-                    {printStatus && <button
+                    {plusStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                        onClick={() => navigate('/watoms/tms/my-tasks')}
+                        onClick={() => navigate('/IEES/tms/my-tasks')}
+                    >
+                        <FontAwesomeIcon icon={faPlus} className="text-xl text-gray-500" />
+                    </button>}
+                    {/* Task page Plus Button */}
+                    {addTaskPage && <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                        onClick={() => navigate('/IEES/tms/add-task')}
                     >
                         <FontAwesomeIcon icon={faPlus} className="text-xl text-gray-500" />
                     </button>}
@@ -147,10 +153,11 @@ const EbdaEduNavbar = ({ children, searchStatus = true, darkmodeStatus = true, s
                             className="text-xl text-watomsBlue"
                         />
                     </button>}
+                    {submitedTask && <button onClick={() => setSubmitTask(prev => !prev)} className="bg-green-600 hover:bg-green-700 text-white rounded-xl p-1 font-bold">Save</button>}
                     {/* --- نهاية الأيقونات --- */}
                     {homeStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
-                        onClick={() => { ebdaUserInfo?.code === 1475 ? navigate('/watoms/news') : ebdaUserInfo?.code === 1476 ? logout() : navigate('/watoms') }}
+                        onClick={() => { navigate('/IEES') }}
                     >
                         <FontAwesomeIcon icon={faHouse} className="text-xl text-green-700" />
                     </button>}

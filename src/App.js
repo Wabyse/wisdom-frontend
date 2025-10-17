@@ -73,6 +73,9 @@ import WatomsTmsEdit from "./pages/WatomsTmsEdit";
 import ProtectedEbdaEduRoute from "./components/ProtectedEbdaEduRoute";
 import EbdaEdu from "./pages/EbdaEdu";
 import EbdaEduTms from "./pages/EbdaEduTms";
+import EbdaEduTmsMyTasks from "./pages/EbdaEduTmsMyTasks";
+import EbdaEduTmsAddTask from "./pages/EbdaEduTmsAddTask";
+import EbdaEduTmsEditTask from "./pages/EbdaEduTmsEditTask";
 
 function App() {
   return (
@@ -106,6 +109,30 @@ function App() {
             element={
               <ProtectedEbdaEduRoute>
                 <EbdaEduTms />
+              </ProtectedEbdaEduRoute>
+            }
+          />
+          <Route
+            path="/IEES/tms/my-tasks"
+            element={
+              <ProtectedEbdaEduRoute>
+                <EbdaEduTmsMyTasks />
+              </ProtectedEbdaEduRoute>
+            }
+          />
+          <Route
+            path="/IEES/tms/add-task"
+            element={
+              <ProtectedEbdaEduRoute>
+                <EbdaEduTmsAddTask />
+              </ProtectedEbdaEduRoute>
+            }
+          />
+          <Route
+            path="/IEES/tms/edit/:id"
+            element={
+              <ProtectedEbdaEduRoute>
+                <EbdaEduTmsEditTask />
               </ProtectedEbdaEduRoute>
             }
           />
