@@ -27,11 +27,23 @@ const Eivots = () => {
     const [darkMode, setDarkMode] = useState(false);
     const isFullScreen = useFullScreen();
     const systems = useMemo(
-        () => getWatomsSystems(language, userInfo?.organization_id),
-        [language, userInfo?.organization_id]
+        () => getWatomsSystems(language, userInfo?.organization_id, userInfo),
+        [language, userInfo?.organization_id, userInfo]
     );
+    const [filteringSystems, setFilteringSystems] = useState([]);
+
     const getTitle = useCallback(system => system.title, []);
-    const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
+
+    // your custom hook that filters based on search input
+    const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(filteringSystems, getTitle);
+
+    useEffect(() => {
+        if (!systems) return;
+
+        const filtered = systems.filter(obj => !(obj.id === 'Professional examination' && userInfo.code !== 3 && userInfo.code !== 1));
+        setFilteringSystems(filtered);
+    }, [systems, userInfo.code]); // ✅ depend on data & userInfo, not filteredSystems
+
 
     // Update time every minute // why?
     useEffect(() => {

@@ -21,8 +21,8 @@ const EbdaEduNavbar = ({ children, searchStatus = true, darkmodeStatus = true, s
     const isFullScreen = useFullScreen();
     const [darkMode, setDarkMode] = useState(false);
     const systems = useMemo(
-        () => getWatomsSystems(language, ebdaUserInfo?.organization_id),
-        [language, ebdaUserInfo?.organization_id]
+        () => getWatomsSystems(language, ebdaUserInfo?.organization_id, ebdaUserInfo),
+        [language, ebdaUserInfo?.organization_id, ebdaUserInfo]
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);

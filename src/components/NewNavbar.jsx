@@ -13,15 +13,15 @@ import molLogo from "../assets/Gov.png";
 import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 
-const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, plusStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus=false }) => {
+const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, croStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus = false, setCroPopup, filteredCroData }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
     const isFullScreen = useFullScreen();
     const [darkMode, setDarkMode] = useState(false);
     const systems = useMemo(
-        () => getWatomsSystems(language, userInfo?.organization_id),
-        [language, userInfo?.organization_id]
+        () => getWatomsSystems(language, userInfo?.organization_id, userInfo),
+        [language, userInfo?.organization_id, userInfo]
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
@@ -63,6 +63,11 @@ const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, share
                     {/* dark mode / light mode */}
                     {darkmodeStatus && <button onClick={() => setDarkMode(!darkMode)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
+                    </button>}
+                    {/* CRO Score */}
+                    {croStatus && <button onClick={() => filteredCroData.length > 1 ? setCroPopup(true) : filteredCroData[0].reports.length === 0 ? setCroPopup(false) : setCroPopup(true)} className={`relative rounded-full w-fit h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
+                        <div className="absolute -top-1 -right-3 bg-red-600 text-white rounded-full w-6 h-6">{filteredCroData.reduce((acc, obj) => acc + obj.reports.length, 0)}</div>
+                        التوصيات
                     </button>}
                     {/* Full Screen Toggle Button */}
                     {fullScreenStatus && <button

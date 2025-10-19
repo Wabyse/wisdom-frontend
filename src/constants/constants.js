@@ -228,7 +228,8 @@ export const WATOMS_PMS_LIST = {
     TG: "البرامج التدريبية",
     TR: "اداء المتدرب",
     T: "اداء المدرب",
-    CP: "المشاركة المجتمعية"
+    CP: "المشاركة المجتمعية",
+    CRO: "التنمية المهنية"
 };
 
 export const WATOMS_PMS_ROLE_PERMISSION = {
@@ -239,7 +240,8 @@ export const WATOMS_PMS_ROLE_PERMISSION = {
     AD: "ADMIN",
     MGR: "Manager",
     OEL: "Operations Excellence Lead",
-    SV: "VtcSupervisor"
+    SV: "VtcSupervisor",
+    CRO: "ClassRoom Observation"
 };
 
 export const WATOMS_PMS_FORMS_LOGOS = [
@@ -385,7 +387,7 @@ export const getEbdaEduSystems = (language, userOrg) => [
     }
 ];
 
-export const getWatomsSystems = (language, userOrg) => [
+export const getWatomsSystems = (language, userOrg, userInfo) => [
     {
         id: 'pms',
         title: 'Perfo.MS',
@@ -485,6 +487,16 @@ export const getWatomsSystems = (language, userOrg) => [
         path: userOrg === 14 || userOrg === 13 ? '/demo/dashboard' : '/watoms/dashboard',
         color: 'from-cyan-500 to-cyan-600',
         available: true
+    },
+    {
+        id: 'Professional examination',
+        title: language ? 'Professional examination' : 'فحص مهني',
+        subtitle: language ? 'Control Panels and Statistics' : 'لوحات التحكم والإحصائيات',
+        description: language ? 'Interactive management dashboards' : 'لوحات تحكم تفاعلية للإدارة',
+        icon: faChartBar,
+        path: '/watoms',
+        color: 'from-red-500 to-red-600',
+        available: userInfo?.code === 3 || userInfo?.code === 1 ? true : false
     }
 ];
 

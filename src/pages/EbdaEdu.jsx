@@ -12,7 +12,7 @@ import watomsLogo from '../assets/watoms3.png';
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from '../hooks/useFullScreen';
 import { userFullName } from '../utils/userFullName';
-import { getEbdaEduSystems, getWatomsSystems } from '../constants/constants';
+import { getEbdaEduSystems } from '../constants/constants';
 import { useSearchFilter } from '../hooks/useSearchFilter';
 import wabysLogo from '../assets/wabys.png';
 import SystemCard from '../components/SystemCard';

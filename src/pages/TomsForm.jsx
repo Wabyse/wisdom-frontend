@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate, Navigate } from "react-router-dom";
 import "../styles/Form.css";
-import CollapsibleSection from "../components/CollapsibleSection";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import newLogo from "../assets/newLogo2.jpg";
@@ -59,11 +58,8 @@ function TomsForm() {
   const [answeredCount, setAnsweredCount] = useState(0);
   const [activeStep, setActiveStep] = useState(0);
   const [showReview, setShowReview] = useState(false);
-  const navigate = useNavigate(); //for navigate to another page (component)
-  const sectionRefs = useRef({});
+  const navigate = useNavigate();
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'auto');
-  const [draftSaved, setDraftSaved] = useState(false);
-  const [draftTimeout, setDraftTimeout] = useState(null);
   const [answers, setAnswers] = useState({});
   const [openReviewSection, setOpenReviewSection] = useState(0);
 
@@ -79,9 +75,10 @@ function TomsForm() {
   };
 
   const submitFormHandler = (formType) => {
+    console.log()
     if (formType === "curriculum") {
       return submitCurriculumForm;
-    } else if (formType === "ClassRoom Observation") {
+    } else if (formType === "ClassRoom Observation" || formType === "Watoms ClassRoom Observation") {
       return submitIndividualForm;
     } else if (formType === "normal2") {
       return submitenvironmentForm;
@@ -379,6 +376,7 @@ function TomsForm() {
       )
     ),
   ];
+  console.log(formType)
 
   const closePopup = () => {
     setSubmitted(false)
@@ -456,6 +454,7 @@ function TomsForm() {
   if (error) return <p>Error: {error.message}</p>;
   if (!loading && (!form || form.length === 0)) return <LoadingScreen />;
   if (userInfo?.code === 1452 || userInfo?.code === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;
+  if (reviewee === "Watoms ClassRoom Observation" && userInfo?.code !== 3 && userInfo?.code !== 2 && userInfo?.code !== 1 && userInfo?.code !== 100) return <DenyAccessPage homePage='/watoms/dashboard' />;
   if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
   if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;
 
@@ -611,6 +610,36 @@ function TomsForm() {
                   />
                 </div>
               )}
+              {formType[0] === "Watoms ClassRoom Observation" &&
+                <>
+                  <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
+                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="department">{language ? "Department:" : ":القسم"}</label>
+                    <Selector2
+                      label="department"
+                      title=""
+                      description={language ? "Please Select a Department" : "الرجاء اختيار القسم"}
+                      data={departments}
+                      value={selectedDepartment}
+                      onChange={handleDepartmentChange}
+                      name="Name"
+                      selectCSS="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
+                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="user">{language ? "Trainer:" : ":المدرب"}</label>
+                    <Selector2
+                      label="user"
+                      title=""
+                      description={language ? "Please Select a Teacher" : "الرجاء اختيار المعلم"}
+                      data={filteredUsers}
+                      value={selectedUser}
+                      onChange={handleUserChange}
+                      name="userEmp"
+                      selectCSS="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg"
+                    />
+                  </div>
+                </>
+              }
               {userInfo.user_role === "Operations Excellence Lead" && (
                 <WatomsVtcFilter onVtcChange={handleVtcChange} />
               )}

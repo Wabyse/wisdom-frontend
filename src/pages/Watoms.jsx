@@ -25,8 +25,8 @@ const Watoms = () => {
     const [darkMode, setDarkMode] = useState(false);
     const isFullScreen = useFullScreen();
     const systems = useMemo(
-        () => getWatomsSystems(language, userInfo?.organization_id),
-        [language, userInfo?.organization_id]
+        () => getWatomsSystems(language, userInfo?.organization_id, userInfo),
+        [language, userInfo?.organization_id, userInfo]
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);

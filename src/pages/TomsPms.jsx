@@ -3,419 +3,23 @@ import "../styles/Pms.css";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { fetchForms } from "../services/pms";
 import { useLanguage } from "../context/LanguageContext";
-import Navbar2 from "../components/Navbar2";
-import CollapsibleSection from "../components/CollapsibleSection";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
-import { WISDOM_PMS_AR_LIST, PMS_DISCREPTION, WISDOM_PMS_EN_LIST, WISDOM_PMS_FORMS_LOGOS, WISDOM_PMS_HERO_INFO, WISDOM_PMS_ROLE_PERMISSION, WSIDOM_PMS_FORMS_ORDER, WATOMS_PMS_ROLE_PERMISSION, WATOMS_PMS_FORMS_ORDER, WATOMS_PMS_LIST, WATOMS_PMS_HERO_INFO } from "../constants/constants";
+import { WATOMS_PMS_ROLE_PERMISSION, WATOMS_PMS_FORMS_ORDER, WATOMS_PMS_LIST, WATOMS_PMS_HERO_INFO } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup, faUserGraduate, faUserGear, faDatabase, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faChartLine, faGraduationCap, faClock, faUserTie, faBookOpen, faSchool, faAddressCard, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faArrowRight, faStar, faExpand, faCompress, faUserGraduate, faUserGear, faDatabase, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import watomsLogo from '../assets/watoms3.png'
 import wabysLogo from '../assets/wabys.png';
 import DenyAccessPage from "../components/DenyAccessPage";
 
-// Move modal outside component to prevent recreation
-const SimpleCategoriesModal = ({ data, onClose, language, getCategoryIcon, getCategoryGradient, setFocusedCardId }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-    <div className="relative bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[85vh] overflow-hidden border border-gray-100 modal-fade-in">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 p-6 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <FontAwesomeIcon icon={faThLarge} className="text-2xl" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold">{language ? "Performance Categories" : "فئات الأداء"}</h2>
-              <p className="text-white/80 text-lg">{language ? "Select a category to view forms" : "اختر فئة لعرض النماذج"}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 text-2xl"
-          >
-            ×
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 overflow-y-auto max-h-[calc(85vh-120px)] custom-scrollbar smooth-scroll">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {data?.map((category, idx) => (
-            <div
-              key={category.id}
-              className="group relative bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 cursor-pointer hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:scale-105 card-hover-lift"
-              onClick={() => {
-                setFocusedCardId(category.id);
-                onClose();
-              }}
-            >
-              {/* Category Icon */}
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl font-bold bg-gradient-to-br ${getCategoryGradient(category.code)}`}>
-                  <FontAwesomeIcon icon={getCategoryIcon(category.code)} />
-                </div>
-                <div className="text-right">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">
-                    {category.forms.length} {language ? 'forms' : 'نموذج'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Category Title */}
-              <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                {language ? category.code : category.codeAr}
-              </h3>
-
-              {/* Category Description */}
-              {/* <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                {language ? category.description || 'Performance management category' : category.descriptionAr || 'فئة إدارة الأداء'}
-              </p> */}
-
-              {/* Hover Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              {/* Click Indicator */}
-              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <FontAwesomeIcon icon={faArrowRight} className="text-white text-sm" />
-                </div>
-              </div>
-
-              {/* Form Count Badge */}
-              <div className="absolute top-4 right-4">
-                <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                  {category.forms.length}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {(!data || data.length === 0) && (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FontAwesomeIcon icon={faFolderOpen} className="text-4xl text-gray-400" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              {language ? "No Categories Found" : "لم يتم العثور على فئات"}
-            </h3>
-            <p className="text-gray-600">
-              {language ? "There are no performance categories available at the moment." : "لا توجد فئات أداء متاحة في الوقت الحالي."}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="bg-gray-50 px-6 py-4 border-t border-gray-100">
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <span>
-            {language ? `Showing ${data?.length || 0} categories` : `عرض ${data?.length || 0} فئات`}
-          </span>
-          <span>
-            {language ? "Click any category to view forms" : "انقر على أي فئة لعرض النماذج"}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const ProfileModal = ({ data, onClose, language }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-    <div className="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden modal-fade-in">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 via-red-500 to-blue-600 p-6 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <FontAwesomeIcon icon={faUser} className="text-2xl" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold">{language ? "User Profile" : "الملف الشخصي"}</h2>
-              <p className="text-white/80 text-lg">{language ? "Account information and system access" : "معلومات الحساب والوصول للنظام"}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 text-2xl"
-          >
-            ×
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 overflow-y-auto max-h-[calc(85vh-120px)] custom-scrollbar smooth-scroll">
-        {/* User Avatar and Basic Info */}
-        <div className="flex items-center gap-6 mb-8">
-          <div className="relative">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-              <FontAwesomeIcon icon={faUser} className="text-3xl text-white" />
-            </div>
-            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
-              <div className="w-2 h-2 bg-white rounded-full"></div>
-            </div>
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-1">{data?.username || 'User'}</h3>
-            <p className="text-lg text-gray-600 mb-2">{data?.user_role || 'Role'}</p>
-            <div className="flex items-center gap-2">
-              <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">
-                {language ? 'Active' : 'نشط'}
-              </span>
-              <span className="text-sm text-gray-500">
-                {language ? 'Last login: Today' : 'آخر تسجيل: اليوم'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Account Information */}
-        <div className="space-y-4">
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-100 shadow-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FontAwesomeIcon icon={faIdCard} className="text-blue-600" />
-              </div>
-              <h4 className="text-lg font-bold text-gray-900">{language ? "Account Information" : "معلومات الحساب"}</h4>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                <span className="font-semibold text-gray-700">{language ? "Username:" : "اسم المستخدم:"}</span>
-                <span className="text-gray-900 font-medium">{data?.username}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                <span className="font-semibold text-gray-700">{language ? "Role:" : "الدور:"}</span>
-                <span className="text-gray-900 font-medium">{data?.user_role}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                <span className="font-semibold text-gray-700">{language ? "Email:" : "البريد الإلكتروني:"}</span>
-                <span className="text-gray-900 font-medium">{data?.email || 'N/A'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* System Access */}
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-100 shadow-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <FontAwesomeIcon icon={faShieldAlt} className="text-green-600" />
-              </div>
-              <h4 className="text-lg font-bold text-gray-900">{language ? "System Access" : "الوصول للنظام"}</h4>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white px-4 py-3 rounded-lg flex items-center gap-2">
-                <FontAwesomeIcon icon={faThLarge} className="text-sm" />
-                <span className="font-semibold">PMS</span>
-              </div>
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white px-4 py-3 rounded-lg flex items-center gap-2">
-                <FontAwesomeIcon icon={faFolder} className="text-sm" />
-                <span className="font-semibold">DMS</span>
-              </div>
-              <div className="bg-gradient-to-br from-gray-500 to-gray-600 text-white px-4 py-3 rounded-lg flex items-center gap-2">
-                <FontAwesomeIcon icon={faTasks} className="text-sm" />
-                <span className="font-semibold">TMS</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-100 shadow-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <FontAwesomeIcon icon={faCog} className="text-purple-600" />
-              </div>
-              <h4 className="text-lg font-bold text-gray-900">{language ? "Quick Actions" : "إجراءات سريعة"}</h4>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <button className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-3 rounded-lg flex items-center gap-2 transition-colors">
-                <FontAwesomeIcon icon={faEdit} className="text-sm" />
-                <span className="font-medium">{language ? "Edit Profile" : "تعديل الملف"}</span>
-              </button>
-              <button className="bg-orange-50 hover:bg-orange-100 text-orange-700 px-4 py-3 rounded-lg flex items-center gap-2 transition-colors">
-                <FontAwesomeIcon icon={faKey} className="text-sm" />
-                <span className="font-medium">{language ? "Change Password" : "تغيير كلمة المرور"}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const InfoModal = ({ data, onClose, language, filteredForms }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-    <div className="relative bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden modal-fade-in">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 p-6 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <FontAwesomeIcon icon={faInfoCircle} className="text-2xl" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold">{language ? "System Information" : "معلومات النظام"}</h2>
-              <p className="text-white/80 text-lg">{language ? "System overview and featured features" : "نظرة عامة على النظام والميزات المميزة"}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 text-2xl"
-          >
-            ×
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] custom-scrollbar smooth-scroll">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Featured Features */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <FontAwesomeIcon icon={faStar} className="text-white text-lg" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900">{language ? "Featured Features" : "الميزات المميزة"}</h3>
-            </div>
-            <div className="space-y-4">
-              {data?.heroInfo?.map((slide, idx) => (
-                <div key={idx} className="group bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                      {idx + 1}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                        {slide.title}
-                      </h4>
-                      {/* <p className="text-gray-700 leading-relaxed">
-                        {slide.description}
-                      </p> */}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* System Overview */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <FontAwesomeIcon icon={faChartLine} className="text-white text-lg" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900">{language ? "System Overview" : "نظرة عامة على النظام"}</h3>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <FontAwesomeIcon icon={faThLarge} className="text-2xl opacity-80" />
-                  <span className="text-3xl font-bold">{filteredForms?.length || 0}</span>
-                </div>
-                <div className="text-sm opacity-90">{language ? "Categories" : "فئات"}</div>
-              </div>
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <FontAwesomeIcon icon={faFileAlt} className="text-2xl opacity-80" />
-                  <span className="text-3xl font-bold">{filteredForms?.reduce((acc, cat) => acc + cat.forms.length, 0) || 0}</span>
-                </div>
-                <div className="text-sm opacity-90">{language ? "Total Forms" : "إجمالي النماذج"}</div>
-              </div>
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <FontAwesomeIcon icon={faClock} className="text-2xl opacity-80" />
-                  <span className="text-3xl font-bold">24/7</span>
-                </div>
-                <div className="text-sm opacity-90">{language ? "Availability" : "التوفر"}</div>
-              </div>
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <FontAwesomeIcon icon={faShieldAlt} className="text-2xl opacity-80" />
-                  <span className="text-3xl font-bold">100%</span>
-                </div>
-                <div className="text-sm opacity-90">{language ? "Secure" : "آمن"}</div>
-              </div>
-            </div>
-
-            {/* System Status */}
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-100 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <FontAwesomeIcon icon={faCheckCircle} className="text-green-600" />
-                </div>
-                <h4 className="text-lg font-bold text-gray-900">{language ? "System Status" : "حالة النظام"}</h4>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-gray-700">{language ? "Database Connection" : "اتصال قاعدة البيانات"}</span>
-                  <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">
-                    {language ? 'Online' : 'متصل'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-gray-700">{language ? "API Services" : "خدمات API"}</span>
-                  <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">
-                    {language ? 'Active' : 'نشط'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-gray-700">{language ? "Security Layer" : "طبقة الأمان"}</span>
-                  <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">
-                    {language ? 'Protected' : 'محمي'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-100 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <FontAwesomeIcon icon={faLink} className="text-blue-600" />
-                </div>
-                <h4 className="text-lg font-bold text-gray-900">{language ? "Quick Links" : "روابط سريعة"}</h4>
-              </div>
-              <div className="grid grid-cols-1 gap-3">
-                <button className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-3 rounded-lg flex items-center gap-2 transition-colors">
-                  <FontAwesomeIcon icon={faBook} className="text-sm" />
-                  <span className="font-medium">{language ? "Documentation" : "التوثيق"}</span>
-                </button>
-                <button className="bg-orange-50 hover:bg-orange-100 text-orange-700 px-4 py-3 rounded-lg flex items-center gap-2 transition-colors">
-                  <FontAwesomeIcon icon={faHeadset} className="text-sm" />
-                  <span className="font-medium">{language ? "Support Center" : "مركز الدعم"}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 const TomsPms = () => {
+  const { userInfo, logout } = useAuth();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [forms, setForms] = useState([]);
   const [pd, setPd] = useState([]);
   const [dailyOperations, setDailyOperations] = useState([]);
-  const { userInfo, logout } = useAuth();
-  const [expandedCategory, setExpandedCategory] = useState(null);
   const { language, setLanguage } = useLanguage();
   const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -493,10 +97,6 @@ const TomsPms = () => {
     return () => clearTimeout(timer);
   }, [slideIdx]);
 
-  // Animated hero text
-  const heroText = language ? "Performance Management System" : "نظام إدارة الأداء";
-  const heroDesc = language ? "Empower your organization with a next-generation, data-driven performance platform. Track, evaluate, and grow with style." : "منصة أداء عصرية لقياس وتطوير الأداء المؤسسي والفردي.";
-
   // Guard for hero info
   const currentSlide = Array.isArray(WATOMS_PMS_HERO_INFO) && WATOMS_PMS_HERO_INFO[slideIdx]
     ? WATOMS_PMS_HERO_INFO[slideIdx]
@@ -524,10 +124,6 @@ const TomsPms = () => {
     navigate(`/watoms/pms/test`);
   };
 
-  const toggleCategory = (categoryId) => {
-    setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
-  };
-
   const getCategoryIcon = (categoryCode) => {
     const iconMap = {
       "اداء المدرب": faUserTie,
@@ -544,24 +140,6 @@ const TomsPms = () => {
       "الجودة و التطوير": faStar
     };
     return iconMap[categoryCode] || faClipboard;
-  };
-
-  const getCategoryColor = (categoryCode) => {
-    const colorMap = {
-      "اداء المدرب": 'bg-blue-500',
-      "الاداء المؤسسي": 'bg-purple-500',
-      "البرامج التدريبية": 'bg-green-500',
-      "التخطيط و التشغيل": 'bg-red-500',
-      "بيئة التدريب": 'bg-yellow-500',
-      "اداء المتدرب": 'bg-indigo-500',
-      "المشاركة المجتمعية": 'bg-pink-500',
-      "بيئة العمل": 'bg-orange-500',
-      "الاشراف اليومي": 'bg-teal-500',
-      "التنمية المهنية": 'bg-emerald-500',
-      "الرقمنة و تخزين البيانات": 'bg-rose-500',
-      "الجودة و التطوير": "from-yellow-400 to-yellow-600"
-    };
-    return colorMap[categoryCode] || 'bg-gray-500';
   };
 
   // Helper: category color gradients
@@ -593,6 +171,7 @@ const TomsPms = () => {
             filter.type !== "360 Curriculum Assessment" &&
             filter.type !== "normal"
         );
+        console.log(filtertomsForms)
 
         const groupedData = [];
 
@@ -1195,6 +774,42 @@ const TomsPms = () => {
                       </button>
                     </div>
                   </div>
+                  {pd.map(type => (
+                    <div>
+                        {type.forms.map((form, idx) => (
+                          <div
+                            key={form.id}
+                            className="group bg-white/80 backdrop-blur rounded-xl shadow-lg border border-white/40 px-4 py-4 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 animate-fadeInUp cursor-pointer hover:border-blue-400/60 flex flex-col"
+                            style={{ animationDelay: `${idx * 80}ms` }}
+                            onClick={() => handleClick(form.id, form.ar_name, form.ar_name, form.permission, type.reviewee)}
+                          >
+                            {/* Form Header */}
+                            <div className="flex items-center gap-2 mb-4">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-lg flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-300">
+                                <FontAwesomeIcon icon={faPlus} className="text-white text-base" />
+                              </div>
+                              <h4 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                {form.ar_name}
+                              </h4>
+                            </div>
+                            {/* Action Button */}
+                            <div className="pt-2 mt-auto">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleClick(form.id, form.ar_name, form.ar_name, form.permission, type.reviewee);
+                                }}
+                                className="w-full bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 group relative overflow-hidden text-base"
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                <span className="relative z-10">{language ? 'Open Form' : 'فتح النموذج'}</span>
+                                <FontAwesomeIcon icon={faArrowRight} className="text-xs group-hover:translate-x-1 transition-transform relative z-10" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

@@ -116,3 +116,13 @@ export const submitMangerComment = async (data) => {
     throw error;
   }
 }
+
+export const fetchCROData = async () => {
+  try {
+    const response = await api.get(`/api/v1/dashboard/watoms/cro/evaluation`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Watoms Detailed Data:', error);
+    throw error;
+  }
+};
