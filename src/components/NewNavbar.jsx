@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt, faPrint, faPlus, faFilter } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt, faPrint, faPlus, faFilter, faFile, faSheetPlastic, faNewspaper } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import useFullScreen from "../hooks/useFullScreen";
@@ -13,7 +13,7 @@ import molLogo from "../assets/Gov.png";
 import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 
-const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, croStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus = false, setCroPopup, filteredCroData }) => {
+const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, croStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus = false, setCroPopup, filteredCroData, setCro2Popup, cro2Status = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -65,9 +65,13 @@ const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, share
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
                     </button>}
                     {/* CRO Score */}
-                    {croStatus && <button onClick={() => filteredCroData.length > 1 ? setCroPopup(true) : filteredCroData[0].reports.length === 0 ? setCroPopup(false) : setCroPopup(true)} className={`relative rounded-full w-fit h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
-                        <div className="absolute -top-1 -right-3 bg-red-600 text-white rounded-full w-6 h-6">{filteredCroData.reduce((acc, obj) => acc + obj.reports.length, 0)}</div>
-                        التوصيات
+                    {cro2Status && <button onClick={() => filteredCroData.length > 1 ? setCro2Popup(true) : filteredCroData[0].reports.length === 0 ? setCro2Popup(false) : setCro2Popup(true)} className={`rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
+                        <FontAwesomeIcon icon={faNewspaper} className="text-xl text-watomsBlue" />
+                    </button>}
+                    {/* CRO Score */}
+                    {croStatus && <button onClick={() => filteredCroData.length > 1 ? setCroPopup(true) : filteredCroData[0].reports.length === 0 ? setCroPopup(false) : setCroPopup(true)} className={`relative rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
+                        <div className="absolute -top-1 -right-3 bg-red-600 text-white rounded-full w-5 h-5 text-sm">{filteredCroData.reduce((acc, obj) => acc + obj.reports.length, 0)}</div>
+                        <FontAwesomeIcon icon={faFile} className="text-xl text-watomsBlue" />
                     </button>}
                     {/* Full Screen Toggle Button */}
                     {fullScreenStatus && <button
