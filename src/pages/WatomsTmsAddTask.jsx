@@ -187,6 +187,7 @@ const WatomsTmsAddTask = () => {
                 navigate("/watoms/tms/my-tasks")
             } catch (err) {
                 console.error("Error submitting data:", err);
+                setSubmitTask(false);
             }
         }
 
@@ -443,7 +444,14 @@ const WatomsTmsAddTask = () => {
                         </div>
                         <div className="flex gap-2 w-full">
                             {/* Task notes input */}
-                            <div className="min-w-[33%] w-[33%] max-w-[33%] overflow-y-auto">
+                            <div className="min-w-[15%] w-[15%] max-w-[15%] overflow-y-auto">
+                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                    تاريخ و توقيت الانتهاء
+                                </div>
+                            </div>
+
+                            {/* Task notes input */}
+                            <div className="min-w-[17.5%] w-[17.5%] max-w-[17.5%] overflow-y-auto">
                                 <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
                                     ملاحظات
                                 </div>
@@ -476,7 +484,13 @@ const WatomsTmsAddTask = () => {
                             <div className="flex gap-2 w-full">
 
                                 {/* Notes */}
-                                <div className="min-w-[33%] w-[33%] max-w-[33%]">
+                                <div className="min-w-[15%] w-[15%] max-w-[15%] flex gap-2">
+                                    <input type="date" onChange={(e) => handleChange(i, "end_date", e.target.value)} className={`w-1/2 text-[10px] border-black h-[47px] p-2 border-2 rounded text-center font-bold min-h-[5vh] flex justify-center items-center`} />
+                                    <input type="time" onChange={(e) => handleChange(i, "end_time", e.target.value)} className={`w-1/2 text-[10px] border-black h-[47px] p-2 border-2 rounded text-center font-bold min-h-[5vh] flex justify-center items-center`} />
+                                </div>
+
+                                {/* Notes */}
+                                <div className="min-w-[17.5%] w-[17.5%] max-w-[17.5%]">
                                     <textarea
                                         className="border-black p-2 border-2 rounded text-center font-bold w-full h-12 resize-none overflow-y-auto"
                                         placeholder="أدخل ملاحظات المهمة هنا..."
