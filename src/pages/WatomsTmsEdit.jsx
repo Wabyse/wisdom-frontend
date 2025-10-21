@@ -8,6 +8,18 @@ import TmsChatAccess from "../components/TmsChatAccess";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faPaperclip, faPaperPlane, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { calculateTaskStatus } from "../utils/calculateTaskStatus";
+import {
+    DndContext,
+    closestCenter,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import DraggableRows from "../components/DraggableRows";
+import { restrictToParentElement } from "@dnd-kit/modifiers";
+import { faGripLines } from "@fortawesome/free-solid-svg-icons";
 
 const WatomsTmsEdit = () => {
     const { id } = useParams();
@@ -15,38 +27,63 @@ const WatomsTmsEdit = () => {
     const [task, setTask] = useState({});
     const [submitTask, setSubmitTask] = useState(false);
     const [taskCount, setTaskCount] = useState(0);
-    const [tasks, setTasks] = useState([]);
+    const [taskDetails, setTaskDetails] = useState([]);
     const [assigneeStatus, setAssigneeStatus] = useState(null);
 
-    const handleChange = (index, field, value) => {
-        setTasks(prev => {
-            const updated = [...prev];
-            updated[index] = { ...updated[index], [field]: value };
-            return updated;
-        });
+    const handleChange = (id, field, value) => {
+        setTaskDetails((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            )
+        );
     };
 
     useEffect(() => {
         const loadTask = async () => {
             const response = await fetchTask(id);
-            setTask(response)
-        }
+            setTask(response);
+        };
 
         loadTask();
-    }, [id])
+    }, [id]);
+
+
+    useEffect(() => {
+        if (!task) return;
+
+        const safeDetails = (task.details || []).map((d, i) => ({
+            ...d,
+            id: d.id ?? `existing-${i + 1}`,
+            isNew: false,
+        }));
+
+        const newRows = Array.from({ length: taskCount }, (_, i) => ({
+            id: `new-${i + 1}-${Date.now()}`,
+            order: safeDetails.length + i + 1,
+            isNew: true,
+            note: "",
+            description: "",
+            title: "",
+            end_date: "",
+            status: 0,
+        }));
+
+        setTaskDetails([...safeDetails, ...newRows]);
+    }, [task, taskCount]);
 
     useEffect(() => {
         const submitingTask = async () => {
             try {
-                if (assigneeStatus || tasks.length > 0) {
+                if (assigneeStatus || taskDetails.length > 0) {
                     const taskData = new FormData();
-                    taskData.append("task_details", JSON.stringify(tasks));
-                    taskData.append("assignee_status", Number(assigneeStatus));
+                    // taskData.append("task_details", JSON.stringify(taskDetails));
+                    // taskData.append("assignee_status", Number(assigneeStatus));
+                    console.log(taskDetails)
 
-                    await updateTask(id, taskData);
+                    // await updateTask(id, taskData);
                     toast.success("تم تحديث المهمة");
                     setSubmitTask(false);
-                    navigate("/watoms/tms/my-tasks")
+                    // navigate("/watoms/tms/my-tasks")
                 }
             } catch (err) {
                 console.error("Error submitting data:", err);
@@ -55,6 +92,20 @@ const WatomsTmsEdit = () => {
 
         if (submitTask === true) submitingTask();
     }, [submitTask, id])
+
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+
+        const oldIndex = taskDetails.findIndex((i) => i.id === active.id);
+        const newIndex = taskDetails.findIndex((i) => i.id === over.id);
+
+        const reordered = arrayMove(taskDetails, oldIndex, newIndex).map(
+            (item, i) => ({ ...item, order: i + 1 })
+        );
+
+        setTaskDetails(reordered);
+    };
 
     return (
         <div className="flex flex-col items-center w-full">
@@ -113,10 +164,10 @@ const WatomsTmsEdit = () => {
                         </div>
                         {/* Task Status */}
                         <div className="w-full">
-                            <div className={`text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
-                                نسبة الاستكمال الموقف التنفيذي
+                            <div className={`h-16 flex justify-center items-center text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                الموقف التنفيذي
                             </div>
-                            <div className="h-10 border-black p-2 border-2 rounded text-center font-bold mt-2 w-full bg-white text-black" >
+                            <div className="h-16 flex justify-center items-center border-black p-2 border-2 rounded text-center font-bold mt-2 w-full bg-white text-black" >
                                 {calculateTaskStatus(task)}
                             </div>
                         </div>
@@ -254,7 +305,7 @@ const WatomsTmsEdit = () => {
                             {/* submitted date */}
                             <div className="flex gap-2 flex-1">
                                 <div className="w-full">
-                                    <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                    <div className={`max-h-10 text-white text-center text-xs rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                         تاريخ و التوقيتات التسليم
                                     </div>
                                     <div className="min-h-16 flex justify-center items-center border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -265,7 +316,7 @@ const WatomsTmsEdit = () => {
                             {/* Date To input */}
                             <div className="flex gap-2 flex-1">
                                 <div className="w-full">
-                                    <div className={`text-white text-center text-sm rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                    <div className={`max-h-10 text-white text-center text-xs rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                         تاريخ و التوقيتات الانتهاء
                                     </div>
                                     <div className="min-h-16 flex justify-center items-center border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -276,7 +327,7 @@ const WatomsTmsEdit = () => {
                             {/* Date From input */}
                             <div className="flex gap-2 flex-1">
                                 <div className="w-full">
-                                    <div className={`text-white text-center text-sm rounded py-2 px-4 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
+                                    <div className={`max-h-10 text-white text-center text-xs rounded py-2 px-4 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange`}>
                                         تاريخ و التوقيتات البدء
                                     </div>
                                     <div className="min-h-16 flex justify-center items-center border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black" >
@@ -287,119 +338,174 @@ const WatomsTmsEdit = () => {
                         </div>
                     </div>
                 </div>
-                <div className="mx-3 mb-3 flex flex-col justify-between border-black border-2 p-2 rounded-xl">
+                {/* Main Details */}
+                <div className="mx-3 mb-3 flex flex-col justify-between border-black border-2 p-2 rounded-xl relative overflow-hidden gap-2">
                     {/* Task Details Title */}
-                    <div className="relative mb-3 flex justify-between" >
-                        <div onClick={() => setTaskCount(prev => prev + 1)} className="absolute -top-5 -right-5 text-xl rounded-full w-7 h-7 flex justify-center items-center bg-gray-300 hover:bg-gray-400 cursor-pointer">
+                    <div className="relative flex justify-between">
+                        {/* Plus Button */}
+                        <div
+                            onClick={() => setTaskCount((prev) => prev + 1)}
+                            className="absolute -top-2 -right-2 text-xl rounded-full w-7 h-7 flex justify-center items-center bg-gray-300 hover:bg-gray-400 cursor-pointer"
+                        >
                             <FontAwesomeIcon icon={faPlus} />
                         </div>
                         <div className="flex gap-2 w-full">
-                            {/* Task notes input */}
-                            <div className="min-w-[33%] w-[33%] max-w-[33%] overflow-y-auto">
-                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
-                                    ملاحظات
+                            <div className="min-w-[33.5%] w-[33.5%] max-w-[33.5%] text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                ملاحظات
+                            </div>
+                            <div className="min-w-[45%] w-[45%] max-w-[45%] text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                وصف المهمة
+                            </div>
+                            <div className="min-w-[20%] w-[20%] text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                عنوان المهمة
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex justify-between">
+                        <div className="flex gap-2 w-full">
+
+                            {/* Notes */}
+                            <div className="min-w-[33.5%] w-[33.5%] max-w-[33.5%]">
+                                <div className="min-h-10 border-black p-2 border-2 rounded text-center text-sm font-bold w-full bg-white text-black">
+                                    {task.note || "-----"}
                                 </div>
                             </div>
 
-                            {/* Task description input */}
-                            <div className="min-w-[45%] w-[45%] max-w-[45%] overflow-y-auto">
-                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
-                                    وصف المهمة
+                            {/* Description */}
+                            <div className="min-w-[45%] w-[45%] max-w-[45%]">
+                                <div className="min-h-10 border-black p-2 border-2 rounded text-center text-sm font-bold w-full bg-white text-black">
+                                    {task.description}
                                 </div>
                             </div>
 
-                            {/* Task title input */}
-                            <div className="min-w-[15%] w-[15%]">
-                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
-                                    عنوان المهمة
-                                </div>
-                            </div>
-
-                            {/* Task ID display */}
-                            <div className="min-w-[5%] w-[5%]">
-                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
-                                    مسلسل
+                            {/* Title */}
+                            <div className="min-w-[20%] w-[20%]">
+                                <div className="min-h-10 border-black p-2 border-2 rounded text-center text-sm font-bold w-full bg-white text-black">
+                                    {task.title}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {/* Task Details Current Data */}
-                    {task?.details?.map((detail, idx) => (
-                        <div className="mb-3 flex justify-between">
-                            <div className="flex gap-2 w-full">
-                                {/* Notes */}
-                                <div className="min-w-[33%] w-[33%] max-w-[33%]">
-                                    <div className="border-black p-2 border-2 rounded text-center text-sm font-bold w-full bg-white text-black" >
-                                        {detail?.note}
-                                    </div>
-                                </div>
-
-                                {/* Description */}
-                                <div className="min-w-[45%] w-[45%] max-w-[45%]">
-                                    <div className="border-black p-2 border-2 rounded text-center text-sm font-bold w-full bg-white text-black" >
-                                        {detail?.description}
-                                    </div>
-                                </div>
-
-                                {/* Title */}
-                                <div className="min-w-[15%] w-[15%]">
-                                    <div className="border-black p-2 border-2 rounded text-center text-sm font-bold w-full bg-white text-black" >
-                                        {detail?.title}
-                                    </div>
-                                </div>
-
-                                {/* ID */}
-                                <div className="min-w-[5%] w-[5%]">
-                                    <div className="border-black p-2 border-2 rounded text-center text-sm font-bold w-full bg-white text-black" >
-                                        {idx + 1}
-                                    </div>
-                                </div>
+                </div>
+                {/* task details */}
+                <div className="mx-3 mb-3 flex flex-col justify-between border-black border-2 p-2 rounded-xl relative overflow-hidden gap-2">
+                    {/* Task Details Title */}
+                    <div className="flex justify-between">
+                        <div className="flex gap-2 w-full">
+                            <div className="min-w-[15%] w-[15%] max-w-[15%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                تاريخ الانتهاء
+                            </div>
+                            <div className="min-w-[17.5%] w-[17.5%] max-w-[17.5%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                ملاحظات
+                            </div>
+                            <div className="min-w-[5%] w-[5%] max-w-[5%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                الحالة
+                            </div>
+                            <div className="min-w-[39.5%] w-[39.5%] max-w-[39.5%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                وصف المهمة
+                            </div>
+                            <div className="min-w-[15%] w-[15%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                عنوان المهمة
+                            </div>
+                            <div className="min-w-[5%] w-[5%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                مسلسل
                             </div>
                         </div>
-                    ))}
-                    {/* Task Details New Data */}
-                    {Array.from({ length: taskCount }, (_, i) => (
-                        <div key={i} className="mb-3 flex justify-between">
-                            <div className="flex gap-2 w-full">
-                                {/* Notes */}
-                                <div className="min-w-[33%] w-[33%] max-w-[33%]">
-                                    <textarea
-                                        className="border-black p-2 border-2 rounded text-center font-bold w-full h-12 resize-none overflow-y-auto"
-                                        placeholder="أدخل ملاحظات المهمة هنا..."
-                                        value={tasks[i]?.note || ""}
-                                        onChange={(e) => handleChange(i, "note", e.target.value)}
-                                    />
-                                </div>
+                    </div>
 
-                                {/* Description */}
-                                <div className="min-w-[45%] w-[45%] max-w-[45%]">
-                                    <textarea
-                                        className="border-black p-2 border-2 rounded text-center font-bold w-full h-12 resize-none overflow-y-auto"
-                                        placeholder="أدخل وصف المهمة هنا..."
-                                        value={tasks[i]?.description || ""}
-                                        onChange={(e) => handleChange(i, "description", e.target.value)}
-                                    />
-                                </div>
+                    {/* Sortable List */}
+                    <DndContext
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                        modifiers={[restrictToParentElement]}
+                    >
+                        <SortableContext
+                            items={taskDetails.map((d) => d.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {taskDetails.map((detail, index) => (
+                                <DraggableRows key={detail.id} id={detail.id}>
+                                    {({ listeners, attributes }) => (
+                                        <div className="flex justify-between">
+                                            <div className="flex gap-2 w-full">
+                                                {/* End Date */}
+                                                <div className="min-w-[15%]">
+                                                    <input
+                                                        type="date"
+                                                        className="border-2 border-black rounded p-2 text-center font-bold w-full h-12"
+                                                        value={detail.end_date || ""}
+                                                        onChange={(e) =>
+                                                            handleChange(detail.id, "end_date", e.target.value)
+                                                        }
+                                                    />
+                                                </div>
 
-                                {/* Title */}
-                                <div className="min-w-[15%] w-[15%]">
-                                    <textarea
-                                        className="border-black p-2 border-2 rounded text-center font-bold h-12 w-full resize-none overflow-y-auto"
-                                        placeholder="أدخل عنوان المهمة هنا..."
-                                        value={tasks[i]?.title || ""}
-                                        onChange={(e) => handleChange(i, "title", e.target.value)}
-                                    />
-                                </div>
+                                                {/* Note */}
+                                                <div className="min-w-[17.5%]">
+                                                    <textarea
+                                                        className="border-2 border-black rounded p-2 text-center font-bold w-full h-12 resize-none"
+                                                        value={detail.note || ""}
+                                                        onChange={(e) =>
+                                                            handleChange(detail.id, "note", e.target.value)
+                                                        }
+                                                    />
+                                                </div>
 
-                                {/* ID */}
-                                <div className="min-w-[5%] w-[5%]">
-                                    <div className="border-black p-2 border-2 rounded text-center font-bold h-12 w-full">
-                                        {i + 2}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                                                {/* Status */}
+                                                <div className="min-w-[5%]">
+                                                    <input
+                                                        type="number"
+                                                        className="border-2 border-black rounded p-2 text-center font-bold w-full h-12"
+                                                        value={detail.status || 0}
+                                                        onChange={(e) =>
+                                                            handleChange(detail.id, "status", e.target.value)
+                                                        }
+                                                    />
+                                                </div>
+
+                                                {/* Description */}
+                                                <div className="min-w-[39.5%]">
+                                                    <textarea
+                                                        className="border-2 border-black rounded p-2 text-center font-bold w-full h-12 resize-none"
+                                                        value={detail.description || ""}
+                                                        onChange={(e) =>
+                                                            handleChange(detail.id, "description", e.target.value)
+                                                        }
+                                                    />
+                                                </div>
+
+                                                {/* Title */}
+                                                <div className="min-w-[15%]">
+                                                    <textarea
+                                                        className="border-2 border-black rounded p-2 text-center font-bold w-full h-12 resize-none"
+                                                        value={detail.title || ""}
+                                                        onChange={(e) =>
+                                                            handleChange(detail.id, "title", e.target.value)
+                                                        }
+                                                    />
+                                                </div>
+
+                                                {/* Drag handle */}
+                                                <div className="min-w-[5%] relative flex justify-center items-center">
+                                                    <button
+                                                        type="button"
+                                                        className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 cursor-grab"
+                                                        {...listeners}
+                                                        {...attributes}
+                                                    >
+                                                        <FontAwesomeIcon icon={faGripLines} />
+                                                    </button>
+                                                    <div className="border-2 border-black rounded p-2 w-full text-center bg-gray-200 font-bold">
+                                                        {index + 1}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </DraggableRows>
+                            ))}
+                        </SortableContext>
+                    </DndContext>
                 </div>
             </div>
         </div >

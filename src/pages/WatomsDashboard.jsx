@@ -1205,8 +1205,8 @@ const WatomsDashboard = () => {
           }}>
             {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute left-28">
               <p className="flex gap-2"><p>(049)</p><p>معيار فرعي</p></p>
-              <p className="flex gap-2"><p>(143)</p><p>مؤشر اداء</p></p>
-              <p className="flex gap-2"><p>(233)</p><p>ممارسة و دليل</p></p>
+              <p className="flex gap-2"><p>(149)</p><p>مؤشر اداء</p></p>
+              <p className="flex gap-2"><p>(242)</p><p>ممارسة و دليل</p></p>
             </div>}
             <Egypt
               width={400}

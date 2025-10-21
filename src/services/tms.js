@@ -182,7 +182,7 @@ export const fetchTask = async (id) => {
     const response = await api.get(`/api/v1/tasks/task/${id}`, {
       headers: { "Content-Type": "application/json" },
     });
-    return response.data?.task[0];
+    return response.data?.task;
   } catch (error) {
     console.error(
       "Error fetching forms:",

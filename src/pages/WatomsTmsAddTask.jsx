@@ -43,7 +43,7 @@ const WatomsTmsAddTask = () => {
     const [timeTo, setTimeTo] = useState();
     const [selectedManager, setSelectedManager] = useState(null);
     const [selectedReviewer, setSelectedReviewer] = useState(null);
-    const [taskCount, setTaskCount] = useState(1);
+    const [taskCount, setTaskCount] = useState(0);
     const [submitTask, setSubmitTask] = useState(false);
     const [tasks, setTasks] = useState([]);
 
@@ -75,19 +75,16 @@ const WatomsTmsAddTask = () => {
                 // Filter Projects
                 const watomsProjects = projectResponse.filter(a => a.authority_id !== 3);
                 setProjects(watomsProjects);
-                setFilteredProjects(watomsProjects);
 
                 // Filter Programs
                 const watomsPrograms = programResponse.filter(a =>
                     projectResponse.some(p => p.id === a.project_id)
                 );
                 setPrograms(watomsPrograms);
-                setFilteredPrograms(watomsPrograms);
 
                 // Filter orgs
                 const watomsOrgs = orgResponse.filter(o => o.authority_id !== 3);
                 setOrgs(watomsOrgs);
-                setFilteredOrgs(watomsOrgs);
 
                 // Handle users
                 setUsers(usersResponse);
@@ -156,13 +153,20 @@ const WatomsTmsAddTask = () => {
 
     useEffect(() => {
         const submitingTask = async () => {
-            if (!selectedAuth || !selectedProject || !selectedProgram || !selectedOrg || !selectedImportance || !selectedSize || !dateFrom || !dateTo || !selectedAssignee || !selectedManager || !selectedReviewer || !taskTitle || !taskDescription) {
+            if (!selectedAuth || !selectedProject || !selectedProgram || !selectedOrg || !selectedImportance || !selectedSize || !dateFrom || !dateTo || !selectedAssignee || !selectedManager || !selectedReviewer || !taskTitle|| !taskDescription) {
                 toast.error('الرجاء مليء كل المطلوب')
+                return
             }
-            console.log(tasks, selectedAuth, selectedProject, selectedProgram, selectedOrg, selectedImportance, selectedSize, dateFrom, dateTo, selectedAssignee, selectedManager, selectedReviewer, taskTitle, taskDescription)
+            if (tasks.some(task => !task.title || !task.description || !task.end_date)) {
+                toast.error("الرجاء مليء كل المطلوب");
+                return;
+            }
             try {
                 const taskData = new FormData();
                 taskData.append("task_details", JSON.stringify(tasks));
+                taskData.append("title", taskTitle);
+                taskData.append("description", taskDescription);
+                taskData.append("note", taskNotes);
                 taskData.append("start_date", new Date(`${dateFrom}T${timeFrom || "00:00"}`).toISOString());
                 taskData.append("end_date", new Date(`${dateTo}T${timeTo || "00:00"}`).toISOString());
                 taskData.append("importance", selectedImportance);
@@ -443,15 +447,9 @@ const WatomsTmsAddTask = () => {
                             <FontAwesomeIcon icon={faPlus} />
                         </div>
                         <div className="flex gap-2 w-full">
-                            {/* Task notes input */}
-                            <div className="min-w-[15%] w-[15%] max-w-[15%] overflow-y-auto">
-                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
-                                    تاريخ و توقيت الانتهاء
-                                </div>
-                            </div>
 
                             {/* Task notes input */}
-                            <div className="min-w-[17.5%] w-[17.5%] max-w-[17.5%] overflow-y-auto">
+                            <div className="min-w-[33%] w-[33%] max-w-[33%] overflow-y-auto">
                                 <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
                                     ملاحظات
                                 </div>
@@ -465,15 +463,83 @@ const WatomsTmsAddTask = () => {
                             </div>
 
                             {/* Task title input */}
-                            <div className="min-w-[15%] w-[15%]">
+                            <div className="min-w-[20%] w-[20%]">
                                 <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
                                     عنوان المهمة
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div key="main" className="mb-3 flex justify-between">
+                        <div className="flex gap-2 w-full">
+
+                            {/* Notes */}
+                            <div className="min-w-[33%] w-[33%] max-w-[33%]">
+                                <textarea
+                                    className="border-black p-2 border-2 rounded text-center font-bold w-full h-12 resize-none overflow-y-auto"
+                                    placeholder="أدخل ملاحظات المهمة هنا..."
+                                    value={taskNotes || ""}
+                                    onChange={(e) => setTaskNotes(e.target.value)}
+                                />
+                            </div>
+
+                            {/* Description */}
+                            <div className="min-w-[45%] w-[45%] max-w-[45%]">
+                                <textarea
+                                    className="border-black p-2 border-2 rounded text-center font-bold w-full h-12 resize-none overflow-y-auto"
+                                    placeholder="أدخل وصف المهمة هنا..."
+                                    value={taskDescription || ""}
+                                    onChange={(e) => setTaskDescription(e.target.value)}
+                                />
+                            </div>
+
+                            {/* Title */}
+                            <div className="min-w-[20%] w-[20%]">
+                                <textarea
+                                    className="border-black p-2 border-2 rounded text-center font-bold h-12 w-full resize-none overflow-y-auto"
+                                    placeholder="أدخل عنوان المهمة هنا..."
+                                    value={taskTitle || ""}
+                                    onChange={(e) => setTaskTitle(e.target.value)}
+                                />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {taskCount > 0 && <div className="mx-3 mb-3 flex flex-col justify-between border-black border-2 p-2 rounded-xl">
+                    <div className="relative mb-3 flex justify-between" >
+                        <div className="flex gap-2 w-full">
+                            {/* Task notes input */}
+                            <div className="min-w-[15%] w-[15%] max-w-[15%] overflow-y-auto">
+                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                    تاريخ و توقيت الانتهاء
+                                </div>
+                            </div>
+
+                            {/* Task notes input */}
+                            <div className="min-w-[17.5%] w-[17.5%] max-w-[17.5%] overflow-y-auto">
+                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                    ملاحظات المهمة الفرعية
+                                </div>
+                            </div>
+
+                            {/* Task description input */}
+                            <div className="min-w-[45%] w-[45%] max-w-[45%] overflow-y-auto">
+                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                    وصف المهمة الفرعية
+                                </div>
+                            </div>
+
+                            {/* Task title input */}
+                            <div className="min-w-[15%] w-[15%]">
+                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                    عنوان المهمة الفرعية
                                 </div>
                             </div>
 
                             {/* Task ID display */}
                             <div className="min-w-[5%] w-[5%]">
-                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-wisdomLighterOrange to-wisdomLightOrange">
+                                <div className="text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
                                     مسلسل
                                 </div>
                             </div>
@@ -485,7 +551,7 @@ const WatomsTmsAddTask = () => {
 
                                 {/* Notes */}
                                 <div className="min-w-[15%] w-[15%] max-w-[15%] flex gap-2">
-                                    <input type="date" onChange={(e) => handleChange(i, "end_date", e.target.value)} className={`w-1/2 text-[10px] border-black h-[47px] p-2 border-2 rounded text-center font-bold min-h-[5vh] flex justify-center items-center`} />
+                                    <input type="date" onChange={(e) => { handleChange(i, "end_date", e.target.value); dateTo && dateTo < e.target.value && toast.error("الرجاء اختيار تاريخ صحيح") && handleChange(i, "end_date", "") }} className={`w-1/2 text-[10px] border-black h-[47px] p-2 border-2 rounded text-center font-bold min-h-[5vh] flex justify-center items-center`} />
                                     <input type="time" onChange={(e) => handleChange(i, "end_time", e.target.value)} className={`w-1/2 text-[10px] border-black h-[47px] p-2 border-2 rounded text-center font-bold min-h-[5vh] flex justify-center items-center`} />
                                 </div>
 
@@ -529,7 +595,7 @@ const WatomsTmsAddTask = () => {
                             </div>
                         </div>
                     ))}
-                </div>
+                </div>}
             </div>
         </div >
     );
