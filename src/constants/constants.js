@@ -396,7 +396,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faChartLine,
         path: '/watoms/pms',
         color: 'from-blue-500 to-blue-600',
-        available: true
+        available: true,
+        notificationStatus: false
     },
     {
         id: 'dms',
@@ -406,7 +407,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faFolder,
         path: '/watoms/dms',
         color: 'from-green-500 to-green-600',
-        available: true
+        available: true,
+        notificationStatus: false
     },
     {
         id: 'tms',
@@ -416,7 +418,9 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faGraduationCap,
         path: '/watoms/tms',
         color: 'from-purple-500 to-purple-600',
-        available: true
+        available: true,
+        notificationStatus: true,
+        notificationNumber: 3,
     },
     {
         id: 'lms',
@@ -426,7 +430,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faDesktop,
         path: '/lms',
         color: 'from-indigo-500 to-indigo-600',
-        available: false
+        available: false,
+        notificationStatus: false
     },
     {
         id: 'pdms',
@@ -436,7 +441,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faFileAlt,
         path: '/pdms',
         color: 'from-orange-500 to-orange-600',
-        available: false
+        available: false,
+        notificationStatus: false
     },
     {
         id: 'points',
@@ -446,7 +452,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faStar,
         path: '/neqaty/vtcs',
         color: 'from-yellow-500 to-yellow-600',
-        available: userOrg === 3
+        available: userOrg === 3,
+        notificationStatus: false
     },
     {
         id: 'finance',
@@ -456,7 +463,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faMoneyBill,
         path: '/finance',
         color: 'from-emerald-500 to-emerald-600',
-        available: false
+        available: false,
+        notificationStatus: false
     },
     {
         id: 'hr',
@@ -466,7 +474,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faUserTie,
         path: '/hr',
         color: 'from-pink-500 to-pink-600',
-        available: false
+        available: false,
+        notificationStatus: false
     },
     {
         id: 'INFA',
@@ -476,7 +485,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faBuilding,
         path: '/watoms/dashboard',
         color: 'from-slate-500 to-slate-600',
-        available: false
+        available: false,
+        notificationStatus: false
     },
     {
         id: 'dashboards',
@@ -486,7 +496,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faChartBar,
         path: userOrg === 14 || userOrg === 13 ? '/demo/dashboard' : '/watoms/dashboard',
         color: 'from-cyan-500 to-cyan-600',
-        available: true
+        available: true,
+        notificationStatus: false
     },
     {
         id: 'Professional examination',
@@ -496,7 +507,8 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faChartBar,
         path: '/watoms',
         color: 'from-red-500 to-red-600',
-        available: userInfo?.code === 3 || userInfo?.code === 1 ? true : false
+        available: userInfo?.code === 3 || userInfo?.code === 1 ? true : false,
+        notificationStatus: false
     }
 ];
 
@@ -1016,3 +1028,5 @@ export const CRO_RECOMMENDATIONS = [
         field: "​التقييم والتقويم",
     },
 ]
+
+export const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

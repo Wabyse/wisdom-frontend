@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt, faPrint, faPlus, faFilter, faFile, faSheetPlastic, faNewspaper } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +13,7 @@ import molLogo from "../assets/Gov.png";
 import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getWatomsSystems } from "../constants/constants";
 
-const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, croStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus = false, setCroPopup, filteredCroData, setCro2Popup, cro2Status = false }) => {
+const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, croStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus = false, setCroPopup, filteredCroData, setCro2Popup, cro2Status = false, notificationStatus = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
@@ -25,6 +25,22 @@ const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, share
     );
     const getTitle = useCallback(system => system.title, []);
     const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
+                setShowNotifications(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     return (
         <div className="relative z-10 bg-white w-full">
             <div className="relative flex flex-col md:flex-row items-center justify-between w-full px-6 h-[12vh] gap-8">
@@ -89,6 +105,37 @@ const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, share
                         <FontAwesomeIcon icon={faUser} className="text-watomsBlue" />
                         {userFullName(userInfo, language)}
                     </span>
+                    {/* notification */}
+                    {notificationStatus && <div className="relative" ref={dropdownRef}>
+                        <button
+                            onClick={() => setShowNotifications(!showNotifications)}
+                            className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                        >
+                            <FontAwesomeIcon icon={faBell} className="text-xl text-gray-500" />
+                        </button>
+
+                        {/* Notification Dropdown */}
+                        {showNotifications && (
+                            <div
+                                className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 z-[9999]"
+                            >
+                                <div className="p-3 font-semibold text-gray-700 border-b text-center">
+                                    Notifications
+                                </div>
+                                <ul className="max-h-64 overflow-y-auto text-end">
+                                    <li className="p-3 hover:bg-gray-100 cursor-pointer text-sm">
+                                        اختبار
+                                    </li>
+                                    <li className="p-3 hover:bg-gray-100 cursor-pointer text-sm">
+                                        اختبار
+                                    </li>
+                                    <li className="p-3 hover:bg-gray-100 cursor-pointer text-sm rounded-b-xl">
+                                        اختبار
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>}
                     {/* Share Button */}
                     {shareStatus && <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"

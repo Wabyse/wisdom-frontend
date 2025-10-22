@@ -47,7 +47,6 @@ const WatomsTmsEdit = () => {
         loadTask();
     }, [id]);
 
-
     useEffect(() => {
         if (!task) return;
 
@@ -393,14 +392,14 @@ const WatomsTmsEdit = () => {
                     {/* Task Details Title */}
                     <div className="flex justify-between">
                         <div className="flex gap-2 w-full">
-                            <div className="min-w-[15%] w-[15%] max-w-[15%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
-                                تاريخ الانتهاء
-                            </div>
                             <div className="min-w-[17.5%] w-[17.5%] max-w-[17.5%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
                                 ملاحظات
                             </div>
+                            <div className="min-w-[15%] w-[15%] max-w-[15%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
+                                تاريخ الانتهاء
+                            </div>
                             <div className="min-w-[5%] w-[5%] max-w-[5%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
-                                الحالة
+                                الوزن
                             </div>
                             <div className="min-w-[39.5%] w-[39.5%] max-w-[39.5%] text-white text-center rounded p-2 bg-gradient-to-b from-gray-500 to-gray-600">
                                 وصف المهمة
@@ -429,6 +428,17 @@ const WatomsTmsEdit = () => {
                                     {({ listeners, attributes }) => (
                                         <div className="flex justify-between">
                                             <div className="flex gap-2 w-full">
+                                                {/* Note */}
+                                                <div className="min-w-[17.5%]">
+                                                    <textarea
+                                                        className="border-2 border-black rounded p-2 text-center font-bold w-full h-12 resize-none"
+                                                        value={detail.note || ""}
+                                                        onChange={(e) =>
+                                                            handleChange(detail.id, "note", e.target.value)
+                                                        }
+                                                    />
+                                                </div>
+
                                                 {/* End Date */}
                                                 <div className="min-w-[15%]">
                                                     <input
@@ -438,17 +448,6 @@ const WatomsTmsEdit = () => {
                                                         disabled={detail.end_date ? true : false}
                                                         onChange={(e) =>
                                                             handleChange(detail.id, "end_date", e.target.value)
-                                                        }
-                                                    />
-                                                </div>
-
-                                                {/* Note */}
-                                                <div className="min-w-[17.5%]">
-                                                    <textarea
-                                                        className="border-2 border-black rounded p-2 text-center font-bold w-full h-12 resize-none"
-                                                        value={detail.note || ""}
-                                                        onChange={(e) =>
-                                                            handleChange(detail.id, "note", e.target.value)
                                                         }
                                                     />
                                                 </div>

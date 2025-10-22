@@ -1,14 +1,15 @@
 import { useLanguage } from "../context/LanguageContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const SystemCard = ({ handleClick = () => { }, available = false, color = 'from-blue-500 to-blue-600', iconType = "img", icon = "", title = "", subtitle = "", redSubtitle = "", subtitle2 = "" }) => {
+const SystemCard = ({ handleClick = () => { }, available = false, color = 'from-blue-500 to-blue-600', iconType = "img", icon = "", title = "", subtitle = "", redSubtitle = "", subtitle2 = "", notificationStatus = false, notificationNumber = 0 }) => {
     const { language } = useLanguage();
 
     return (
         <div
             onClick={handleClick}
-            className={`group cursor-pointer transform transition-all duration-300 hover:scale-105 ${!available ? 'opacity-60' : ''}`}
+            className={`relative group cursor-pointer transform transition-all duration-300 hover:scale-105 ${!available ? 'opacity-60' : ''}`}
         >
+            {notificationStatus && <div className="absolute -top-2 -right-2 font-bold w-7 h-7 bg-red-600 text-white z-50 rounded-full flex justify-center items-center">{notificationNumber}</div>}
             <div className={`bg-gradient-to-br ${color} min-h-48 flex justify-center items-center text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 relative overflow-hidden`}>
                 <div>
                     {/* Coming Soon Badge */}

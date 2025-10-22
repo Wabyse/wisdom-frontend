@@ -214,6 +214,8 @@ const Eivots = () => {
                             icon={system.icon}
                             title={system.title}
                             subtitle={system.subtitle}
+                            notificationStatus={system.notificationStatus}
+                            notificationNumber={system.notificationNumber}
                         />
                     ))}
                 </div>

@@ -15,12 +15,15 @@ import { fetchMyTasks } from "../services/tms";
 import { roundNumber } from "../utils/roundNumber";
 // icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
 // images
 import golLogo from "../assets/Gov.png";
 import ebdaeduLogo from "../assets/ebad-edu.png";
 import wabysLogo from "../assets/wabys.png";
 import person from "../assets/person.jpg";
+import AddAlarmModal from "../components/alarms/AlarmModal";
+import AlarmList from "../components/alarms/AlarmList";
+import AlarmModal from "../components/alarms/AlarmModal";
 
 const currentMonth = new Date().getMonth() + 1;
 
@@ -1198,7 +1201,9 @@ const WatomsTmsDashboard = () => {
                 shareStatus={false}
                 plusStatus={true}
                 AddStatus={true}
+                notificationStatus={true}
             >
+                <AlarmModal userId={userInfo?.id} />
                 {/* open Pdf */}
                 <button onClick={() => setPdfStatus(true)} className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all">
                     <FontAwesomeIcon icon={faPrint} className="text-xl text-gray-500" />
