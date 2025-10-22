@@ -75,15 +75,15 @@ const WatomsTmsEdit = () => {
         const submitingTask = async () => {
             try {
                 if (assigneeStatus || taskDetails.length > 0) {
+                    const average = taskDetails.length > 0 ? taskDetails.reduce((sum, obj) => sum + (Number(obj.status) || 0), 0) / taskDetails.length : Number(assigneeStatus);
                     const taskData = new FormData();
-                    // taskData.append("task_details", JSON.stringify(taskDetails));
-                    // taskData.append("assignee_status", Number(assigneeStatus));
-                    console.log(taskDetails)
+                    taskData.append("task_details", JSON.stringify(taskDetails));
+                    taskData.append("assignee_status", average);
 
-                    // await updateTask(id, taskData);
+                    await updateTask(id, taskData);
                     toast.success("تم تحديث المهمة");
                     setSubmitTask(false);
-                    // navigate("/watoms/tms/my-tasks")
+                    navigate("/watoms/tms/my-tasks")
                 }
             } catch (err) {
                 console.error("Error submitting data:", err);
@@ -268,6 +268,7 @@ const WatomsTmsEdit = () => {
                                     نسبة الاستكمال
                                 </div>
                                 <input className="h-10 border-black p-2 border-2 rounded text-center text-sm font-bold mt-2 w-full bg-white text-black"
+                                    disabled={taskDetails.length > 0 ? true : false}
                                     type="text" max={100} min={0} onChange={(e) => Number(e.target.value) && e.target.value < 101 && e.target.value >= 0 ? setAssigneeStatus(e.target.value) : setAssigneeStatus("")}
                                     value={assigneeStatus}
                                     defaultValue={task?.assignee_status}
@@ -433,7 +434,8 @@ const WatomsTmsEdit = () => {
                                                     <input
                                                         type="date"
                                                         className="border-2 border-black rounded p-2 text-center font-bold w-full h-12"
-                                                        value={detail.end_date || ""}
+                                                        value={detail.end_date ? new Date(detail.end_date).toISOString().split("T")[0] : ""}
+                                                        disabled={detail.end_date ? true : false}
                                                         onChange={(e) =>
                                                             handleChange(detail.id, "end_date", e.target.value)
                                                         }
