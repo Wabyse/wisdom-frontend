@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { createAlarm } from "./AlarmTypes";
+import { createAlarm } from "../components/alarms/AlarmTypes";
 
 const AlarmContext = createContext(null);
 

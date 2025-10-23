@@ -169,9 +169,9 @@ const TomsPms = () => {
           (filter) =>
             filter.type !== "360 Individual Assessment" &&
             filter.type !== "360 Curriculum Assessment" &&
-            filter.type !== "normal"
+            filter.type !== "normal" &&
+            filter.type !== "Wisdom ClassRoom Observation"
         );
-        console.log(filtertomsForms)
 
         const groupedData = [];
 

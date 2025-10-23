@@ -74,7 +74,7 @@ function Form() {
   const submitFormHandler = (formType) => {
     if (formType === "360 Curriculum Assessment") {
       return submitCurriculumForm;
-    } else if (formType === "360 Individual Assessment") {
+    } else if (formType === "360 Individual Assessment" || formType === "Wisdom ClassRoom Observation") {
       return submitIndividualForm;
     } else if (formType === "normal") {
       return submitenvironmentForm;
@@ -503,6 +503,36 @@ function Form() {
                   />
                 </div>
               )}
+              {formType[0] === "Wisdom ClassRoom Observation" &&
+                <>
+                  <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
+                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="department">{language ? "Department:" : ":القسم"}</label>
+                    <Selector2
+                      label="department"
+                      title=""
+                      description={language ? "Please Select a Department" : "الرجاء اختيار القسم"}
+                      data={departments}
+                      value={selectedDepartment}
+                      onChange={handleDepartmentChange}
+                      name="Name"
+                      selectCSS="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center bg-white rounded-full shadow-lg p-4 md:min-w-[320px] min-w-full">
+                    <label className="font-extrabold text-lg mb-2 text-[#F05A1A] tracking-wide" htmlFor="user">{language ? "Teacher:" : ":المعلم"}</label>
+                    <Selector2
+                      label="user"
+                      title=""
+                      description={language ? "Please Select a Teacher" : "الرجاء اختيار المعلم"}
+                      data={filteredUsers}
+                      value={selectedUser}
+                      onChange={handleUserChange}
+                      name="userEmp"
+                      selectCSS="rounded-full shadow-md focus:ring-2 focus:ring-[#F05A1A] border-2 border-gray-200 focus:border-[#F05A1A] px-6 py-2 text-lg"
+                    />
+                  </div>
+                </>
+              }
               {(formType[0] === "normal" || formType[0] === "360 Curriculum Assessment") && userInfo.user_role === "Operations Excellence Lead" && (
                 <WisdomSchoolFilter onSchoolChange={handleSchoolChange} />
               )}

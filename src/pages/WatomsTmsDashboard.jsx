@@ -21,9 +21,8 @@ import golLogo from "../assets/Gov.png";
 import ebdaeduLogo from "../assets/ebad-edu.png";
 import wabysLogo from "../assets/wabys.png";
 import person from "../assets/person.jpg";
-import AddAlarmModal from "../components/alarms/AlarmModal";
-import AlarmList from "../components/alarms/AlarmList";
 import AlarmModal from "../components/alarms/AlarmModal";
+import useAlarmWatcher from "../hooks/useAlarmWatcher";
 
 const currentMonth = new Date().getMonth() + 1;
 
@@ -1190,6 +1189,11 @@ const WatomsTmsDashboard = () => {
     const normalizedPerformance = MONTHS_ARABIC.map(m => {
         const found = monthlyPerformance.find(d => d.monthNumber === m.monthNumber);
         return found ? found : { ...m, performance: 0 };
+    });
+
+    useAlarmWatcher(userInfo?.id, (alarm) => {
+        // 👇 Replace this with your notification system later
+        alert(`⏰ Alarm triggered: ${alarm.label}`);
     });
 
     if (userInfo?.code === 1452 || userInfo?.code === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;

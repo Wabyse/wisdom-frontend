@@ -3,13 +3,11 @@ import "../styles/Pms.css";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { fetchForms } from "../services/pms";
 import { useLanguage } from "../context/LanguageContext";
-import Navbar2 from "../components/Navbar2";
-import CollapsibleSection from "../components/CollapsibleSection";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
-import { WISDOM_PMS_AR_LIST, PMS_DISCREPTION, WISDOM_PMS_EN_LIST, WISDOM_PMS_FORMS_LOGOS, WISDOM_PMS_HERO_INFO, WISDOM_PMS_ROLE_PERMISSION, WSIDOM_PMS_FORMS_ORDER } from "../constants/constants";
+import { WISDOM_PMS_AR_LIST, WISDOM_PMS_EN_LIST, WISDOM_PMS_HERO_INFO, WISDOM_PMS_ROLE_PERMISSION, WSIDOM_PMS_FORMS_ORDER } from "../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight, faChevronDown, faPlus, faChartLine, faUsers, faClipboardCheck, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faBriefcase, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faTimes, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress, faList, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faChartLine, faGraduationCap, faShieldAlt, faClock, faExclamationTriangle, faUserTie, faBookOpen, faBuilding, faSchool, faIdCard, faAddressCard, faClipboard, faSearch, faUser, faSignOutAlt, faThLarge, faSun, faMoon, faInfoCircle, faFolder, faTasks, faArrowRight, faFolderOpen, faCog, faEdit, faKey, faStar, faFileAlt, faCheckCircle, faLink, faBook, faHeadset, faExpand, faCompress } from "@fortawesome/free-solid-svg-icons";
 import DenyAccessPage from "../components/DenyAccessPage";
 
 // Move modal outside component to prevent recreation
@@ -487,10 +485,6 @@ const Pms = () => {
     return () => clearTimeout(timer);
   }, [slideIdx]);
 
-  // Animated hero text
-  const heroText = language ? "Performance Management System" : "نظام إدارة الأداء";
-  const heroDesc = language ? "Empower your organization with a next-generation, data-driven performance platform. Track, evaluate, and grow with style." : "منصة أداء عصرية لقياس وتطوير الأداء المؤسسي والفردي.";
-
   // Guard for hero info
   const currentSlide = Array.isArray(WISDOM_PMS_HERO_INFO) && WISDOM_PMS_HERO_INFO[slideIdx]
     ? WISDOM_PMS_HERO_INFO[slideIdx]
@@ -530,10 +524,6 @@ const Pms = () => {
     navigate(`/pms/test`);
   };
 
-  const toggleCategory = (categoryId) => {
-    setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
-  };
-
   const getCategoryIcon = (categoryCode) => {
     const iconMap = {
       'Teacher': faUserTie,
@@ -549,23 +539,6 @@ const Pms = () => {
       'behavior': faExclamationTriangle
     };
     return iconMap[categoryCode] || faClipboard;
-  };
-
-  const getCategoryColor = (categoryCode) => {
-    const colorMap = {
-      'Teacher': 'bg-blue-500',
-      'Academic Principle': 'bg-purple-500',
-      'Curriculum': 'bg-green-500',
-      'HOD': 'bg-red-500',
-      'Edu Environment': 'bg-yellow-500',
-      'Executive Manager': 'bg-indigo-500',
-      'Specialist': 'bg-pink-500',
-      'Work Environment': 'bg-orange-500',
-      'Daily Operations': 'bg-teal-500',
-      'PD': 'bg-emerald-500',
-      'Student behavior': 'bg-rose-500'
-    };
-    return colorMap[categoryCode] || 'bg-gray-500';
   };
 
   // Helper: category color gradients
@@ -593,7 +566,9 @@ const Pms = () => {
           (filter) =>
             filter.type !== "ClassRoom Observation" &&
             filter.type !== "curriculum" &&
-            filter.type !== "normal2"
+            filter.type !== "normal2" &&
+            filter.type !== "Watoms ClassRoom Observation" &&
+            filter.code !== "Cl | PD"
         );
 
         const groupedData = [];

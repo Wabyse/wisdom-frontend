@@ -97,7 +97,7 @@ export const WISDOM_PMS_EN_LIST = {
     SPEC: "Specialist",
     W: "Work Enivornment",
     DO: "Daily Operations",
-    PD: "PD",
+    CRO: "PD",
 };
 
 export const WISDOM_PMS_AR_LIST = {
@@ -110,7 +110,7 @@ export const WISDOM_PMS_AR_LIST = {
     SPEC: "المتخصص",
     W: "بيئة العمل",
     DO: "الأشراف المدرسي",
-    PD: "التنمية المهنية",
+    CRO: "التنمية المهنية",
 };
 
 export const PMS_DISCREPTION = "This module drives organizational success by setting clear goals, tracking progress, and offering feedback. It supports data-driven decisions for talent development, performance improvement, and strategic goal achievement, boosting efficiency and effectiveness.";
@@ -126,6 +126,7 @@ export const WISDOM_PMS_ROLE_PERMISSION = {
     QA: "Quality Officer",
     ML: "Line Supervisor",
     E: "Employee",
+    OB: "Employee",
     AD: "ADMIN",
     OEL: "Operations Excellence Lead"
 };
@@ -342,11 +343,11 @@ export const INSTITUTION_CURRICULUM_RELATION = {
 }
 
 export const INSTITUTION_COURSE_RELATION = {
-    4: [4, 9, 31, 7, 20, 52],
-    5: [6, 8, 4, 30, 5, 7, 34, 32],
-    7: [5, 20, 9, 34, 24, 4, 7, 30, 6, 8, 37],
-    8: [12, 38, 39, 30, 4, 6, 8, 40, 24, 41, 31, 9, 42, 43, 36, 5, 7, 44, 45],
-    9: [6, 8, 4, 30, 35, 7, 31, 9, 36, 37]
+    4: [53, 4, 9, 31, 7, 20, 52],
+    5: [53, 6, 8, 4, 30, 5, 7, 34, 32],
+    7: [53, 5, 20, 9, 34, 24, 4, 7, 30, 6, 8, 37],
+    8: [53, 12, 38, 39, 30, 4, 6, 8, 40, 24, 41, 31, 9, 42, 43, 36, 5, 7, 44, 45],
+    9: [53, 6, 8, 4, 30, 35, 7, 31, 9, 36, 37]
 }
 
 export const SCHOOL_CURRICULUM_RELATION = {

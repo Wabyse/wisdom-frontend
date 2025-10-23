@@ -126,3 +126,13 @@ export const fetchCROData = async () => {
     throw error;
   }
 };
+
+export const wisdomFetchCROData = async () => {
+  try {
+    const response = await api.get(`/api/v1/dashboard/wisdom/cro/evaluation`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Watoms Detailed Data:', error);
+    throw error;
+  }
+};

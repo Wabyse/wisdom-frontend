@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAlarms } from "./AlarmContext";
+import { useAlarms } from "../../context/AlarmContext";
 import { DAYS } from "../../constants/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faTrash, faToggleOn, faToggleOff } from "@fortawesome/free-solid-svg-icons";

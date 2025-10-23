@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { fetchCenters, fetchWatomsDetailsData, fetchWisdomDetailsData } from "../services/dashboard";
+import React, { useEffect, useRef, useState } from "react";
+import { fetchCenters, fetchWatomsDetailsData, fetchWisdomDetailsData, wisdomFetchCROData } from "../services/dashboard";
 import wabysLogo from "../assets/wabys.png";
 import { useNavigate } from "react-router-dom";
 import AnnualPerformanceChart from "../components/AnnualPerformanceChart";
@@ -7,18 +7,22 @@ import ProjectUnitsRankingModal from '../components/ProjectUnitsRankingModal';
 import fullScreen from '../utils/fullScreen';
 import useFullScreen from "../hooks/useFullScreen";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExpand, faCompress, faUser, faBell } from "@fortawesome/free-solid-svg-icons";
+import { faExpand, faCompress, faUser, faBell, faXmark, faPrint, faNewspaper, faFile } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { userFullName } from "../utils/userFullName";
 import { useAuth } from "../context/AuthContext";
 // import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
-import { SCHOOL_NO_CURRICULUMS, ORG_MANAGER_IMG, WISDOM_UNPREPARED_DATA } from "../constants/constants";
+import { ORG_MANAGER_IMG, WISDOM_UNPREPARED_DATA } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
 import Egypt from "../components/Egypt";
-import molLogo from '../assets/Gov.png';
-import ebdaeduLogo from '../assets/ebad-edu.png';
 import WatomsDashboardSubDataDetails from "../components/WatomsDashboardSubDataDetails";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+// Images
+import person from "../assets/person.jpg";
+import ebdaeduLogo from '../assets/ebad-edu.png';
+import molLogo from '../assets/Gov.png';
 
 const HEADER_HEIGHT = 60;
 
@@ -100,7 +104,7 @@ const WisdomDashboard = () => {
     const [loading, setLoading] = useState(true);
     // const [uploading, setUploading] = useState(false);
     const [datasMonths, setDatasMonths] = useState([]);
-    const [selectedOrgId, setSelectedOrgId] = useState(null);
+    const [selectedOrgId, setSelectedOrgId] = useState("All");
     const [orgStandards, setOrgStandards] = useState([]);
     const [orgSubStandards, setOrgSubStandards] = useState([]);
     const [managerImg, setManagerImg] = useState(null);
@@ -127,6 +131,309 @@ const WisdomDashboard = () => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
     const [subDataDetails, setSubDataDetails] = useState("");
+    const [croPopup, setCroPopup] = useState(false);
+    const [croData, setCroData] = useState([]);
+    const [filteredCroData, setFilteredCroData] = useState([]);
+    const [sortedCroData, setSortedCroData] = useState([]);
+    const pdfRef = useRef();
+    const pdf2Ref = useRef();
+    const [cro2Popup, setCro2Popup] = useState(false);
+
+    const handleDownloadPdf = async (ref) => {
+        const element = ref.current;
+
+        // Create a high-res canvas of the element
+        const canvas = await html2canvas(element, {
+            scale: 2, // higher scale = better quality
+            useCORS: true, // allows external images like logos
+        });
+
+        const imageData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // Add first page
+        pdf.addImage(imageData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        // Add extra pages if needed
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imageData, "PNG", 0, position, imgWidth, imgHeight);
+            heightLeft -= pdfHeight;
+        }
+
+        pdf.save("report.pdf");
+    };
+
+    const combineAllReports = (data) => {
+        const grouped = {};
+
+        data.forEach((monthData) => {
+            monthData.reports.forEach((report) => {
+                report.scores.forEach((score) => {
+                    const rec = score.recommendation;
+                    const field = score.field_name;
+
+                    // Create recommendation group if not exists
+                    if (!grouped[rec]) grouped[rec] = {};
+
+                    // Create field group if not exists
+                    if (!grouped[rec][field]) grouped[rec][field] = [];
+
+                    // Add score info
+                    grouped[rec][field].push({
+                        name: report.name,
+                        subject: report.subject,
+                        authority: report.authority,
+                        avg_score: score.avg_score,
+                        field_id: score.field_id,
+                    });
+                });
+            });
+        });
+
+        return grouped;
+    };
+
+
+    useEffect(() => {
+        const loadCROData = async () => {
+            const response = await wisdomFetchCROData();
+
+            const arrangeData = response.map(item => {
+                const months = item.months || [];
+                return months[months.length - 1];
+            });
+            setCroData(response);
+            setFilteredCroData(arrangeData);
+            const sortedData = combineAllReports(arrangeData)
+            setSortedCroData(sortedData)
+        }
+
+        loadCROData();
+    }, [])
+
+    useEffect(() => {
+        const filterCROData = async () => {
+            if (!croData || croData.length === 0) return; // data not ready
+
+            if (selectedOrgId !== "All") {
+                const result = croData.find(obj => obj.id === selectedOrgId);
+
+                if (!result || !result.months) {
+                    console.warn("No matching org or months data found for:", selectedOrgId);
+                    setFilteredCroData([]);
+                    setSortedCroData([]);
+                    return;
+                }
+
+                const monthData = result.months[selectedMonthIdx] || result.months.at(-1);
+                setFilteredCroData([monthData]);
+                const sortedData = combineAllReports([monthData]);
+                setSortedCroData(sortedData);
+            } else {
+                const arrangeData = croData.map(item => {
+                    const months = item.months || [];
+                    return months[months.length - 1];
+                });
+                const sortedData = combineAllReports(arrangeData);
+                setSortedCroData(sortedData);
+                setFilteredCroData(arrangeData);
+            }
+        };
+
+        filterCROData();
+    }, [selectedMonthIdx, selectedOrgId, croData]);
+
+    const CroReport = () => (
+        <div className="fixed inset-0 bg-black/60 flex flex-col overflow-y-auto justify-start gap-6 items-center z-50">
+            <button
+                onClick={() => setCroPopup(false)}
+                className="absolute top-4 right-4 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+            >
+                <FontAwesomeIcon icon={faXmark} />
+            </button>
+            <button
+                onClick={() => handleDownloadPdf(pdfRef)}
+                className="absolute top-4 right-20 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+            >
+                <FontAwesomeIcon icon={faPrint} />
+            </button>
+            <div ref={pdfRef} className="relative bg-white w-[40%] max-w-5xl h-fit p-4 flex flex-col mt-4 text-black">
+                {/* Header */}
+                <div className="flex justify-between items-center w-full">
+                    {/* logo */}
+                    <div className="flex flex-col items-center w-14">
+                        <img src={ebdaeduLogo} className="w-14" alt="ebda edu logo" />
+                    </div>
+                    {/* title */}
+                    <div className="flex flex-col items-center gap-2 text-xs font-bold">
+                        <h1 className="border-b-2 border-black text-black">تقرير توصيات توجيه مؤشر الاداء</h1>
+                        <h1 className="border-b-2 border-black text-black"> لتنمية الجوانب المهنية</h1>
+                    </div>
+                    {/* logo */}
+                    <div className="flex flex-col">
+                        <img src={wabysLogo} className="w-14" alt="ebda edu logo" />
+                    </div>
+                </div>
+                {filteredCroData.map((data, idx) => data.reports.length > 0 && data.reports.map(report => <div className="rounded-xl shadow-black shadow-md p-2 flex flex-col mt-2 w-full gap-2">
+                    <div className="w-full border-black border-2 flex p-1 gap-1 min-h-20">
+                        <div className="flex flex-col items-center text-center gap-1 w-[15%] font-bold">
+                            <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">متوسط التقييم</div>
+                            <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">{report.scores.reduce((sum, item) => sum + (item.avg_score || 0), 0) / (report.scores.length || 1)}%</div>
+                        </div>
+                        <div className="flex flex-col gap-1 w-2/3 text-[10px] font-bold justify-center items-center">
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">{report.name}</div>
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">{report.authority}</div>
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">{report.subject}</div>
+                        </div>
+                        <div className="flex flex-col gap-1 min-w-fit max-w-1/3 text-[10px] font-bold justify-center items-center">
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الاسم</div>
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الجهة الرئيسية</div>
+                            <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">التخصص</div>
+                        </div>
+                        <div className="border-black border-2 p-1 flex items-center">
+                            <img className="w-16" src={person} alt="" />
+                        </div>
+                        <div className="flex justify-center items-center">
+                            <div className="px-2 bg-gray-300 border-black border-2 text-xs">{idx}</div>
+                        </div>
+                    </div>
+                    <div className="border-2 border-black m-2 p-2 rounded-md overflow-x-auto">
+                        <table className="w-full border-collapse text-center">
+                            <thead className="bg-gray-100">
+                                <tr className="border-b border-black">
+                                    <th className="min-w-[15%] w-[15%] py-2 border-black border-r-2">التوصية</th>
+                                    <th colSpan={2} className="min-w-[40%] w-[40%] py-2 border-black border-x-2">
+                                        النسبة
+                                    </th>
+                                    <th className="min-w-[45%] w-[45%] py-2 border-black border-l-2">العنوان</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {report.scores.map((score, i) => (
+                                    <tr key={i} className="border-b last:border-0 hover:bg-gray-50">
+                                        {/* التوصية */}
+                                        <td className="py-2 text-xs font-medium border-black border-r-2">
+                                            {score.recommendation}
+                                        </td>
+
+                                        {/* النسبة (الرقم) */}
+                                        <td className="py-2 font-bold text-sm w-[15%]">{score.avg_score}%</td>
+
+                                        {/* النسبة (الشريط) */}
+                                        <td className="py-2 w-[25%]">
+                                            <div className="w-[95%] h-5 bg-[#444652] rounded-full shadow-inner relative overflow-hidden">
+                                                <div
+                                                    className="h-full rounded-full transition-all duration-700 ease-[cubic-bezier(.4,2,.6,1)]"
+                                                    style={{
+                                                        width: `${score.avg_score}%`,
+                                                        backgroundColor: `${score.avg_score <= 50 ? "red" : score.avg_score <= 60 ? "#FFDE21" : score.avg_score <= 70 ? "orange" : score.avg_score <= 80 ? "green" : "#274AB3"}`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </td>
+
+                                        {/* العنوان */}
+                                        <td className="py-2 text-xs font-medium text-end border-black border-l-2">
+                                            {score.field_name}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>))}
+            </div>
+        </div>
+    )
+
+    const Cro2Report = () => (
+        <div className="fixed inset-0 bg-black/60 flex flex-col overflow-y-auto justify-start gap-6 items-center z-50">
+            <button
+                onClick={() => setCro2Popup(false)}
+                className="absolute top-4 right-4 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+            >
+                <FontAwesomeIcon icon={faXmark} />
+            </button>
+            <button
+                onClick={() => handleDownloadPdf(pdf2Ref)}
+                className="absolute top-4 right-20 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+            >
+                <FontAwesomeIcon icon={faPrint} />
+            </button>
+            <div className="w-full flex flex-col items-center" ref={pdf2Ref}>
+                {Object.entries(sortedCroData).map(([key, value]) => (
+                    <div className="bg-white w-[40%] max-w-5xl h-fit p-4 flex flex-col items-center mt-4 text-black rounded-lg shadow-lg">
+                        {/* Header */}
+                        <div className="flex justify-between items-center w-full max-w-4xl mb-2">
+                            {/* Left logos */}
+                            <div className="flex flex-col items-center w-14">
+                                <img src={ebdaeduLogo} className="w-14" alt="Ebda Edu logo" />
+                            </div>
+
+                            {/* Center title */}
+                            <div className="flex flex-col items-center gap-2 text-xs font-bold text-center">
+                                <h1 className="border-b-2 border-black text-black">تقرير توصيات توجيه مؤشر الاداء</h1>
+                                <h1 className="border-b-2 border-black text-black">لتنمية الجوانب المهنية - ( {key} )</h1>
+                            </div>
+
+                            {/* Right logo */}
+                            <div className="flex flex-col">
+                                <img src={wabysLogo} className="w-14" alt="Wabys logo" />
+                            </div>
+                        </div>
+
+                        {/* Reports */}
+                        {Object.entries(value).map(([key, value2]) => (
+                            <div key={key} className="w-full max-w-4xl rounded-xl shadow mt-2 border border-gray-300 bg-white">
+                                <h1 className="flex justify-between gap-2 text-end pr-4 font-bold text-sm mt-2 mb-1 px-1"><p>عدد المعلمين : {value2.length}</p> <p>: {key}</p></h1>
+                                <div className="w-full border-t border-gray-300 p-2">
+                                    <table className="w-full border-collapse text-center">
+                                        <thead className="bg-gray-100">
+                                            <tr className="border-b border-black">
+                                                <th className="w-2/12 py-2">النسبة</th>
+                                                <th className="w-2/12 py-2">التخصص</th>
+                                                <th className="w-2/12 py-2">المدرسة</th>
+                                                <th className="w-3/12 py-2">الاسم</th>
+                                                <th className="w-2/12 py-2">الصورة</th>
+                                                <th className="w-1/12 py-2">م</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {value2.map((result, idx) => (
+                                                <tr className="border-b last:border-0 hover:bg-gray-50">
+                                                    <td className="py-2 font-bold text-sm">{result.avg_score}%</td>
+                                                    <td className="py-2 text-xs font-medium text-center">{result.subject}</td>
+                                                    <td className="py-2 text-xs font-medium text-center">{result.authority}</td>
+                                                    <td className="py-2 text-xs font-medium text-center">{result.name}</td>
+                                                    <td className="py-2 text-xs font-medium text-center">
+                                                        <img src={person} alt="" className="w-10 h-10 object-cover rounded-full mx-auto" />
+                                                    </td>
+                                                    <td className="py-2 text-xs font-medium text-center">{idx + 1}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        ))}
+                    </div>))}
+            </div>
+        </div>
+    )
 
     useEffect(() => {
         setLanguage(false);
@@ -774,7 +1081,7 @@ const WisdomDashboard = () => {
                 padding: '0 32px',
                 boxSizing: 'border-box',
                 position: 'relative',
-                zIndex: 100,
+                zIndex: 20,
                 borderBottom: '1px solid #222',
             }}>
                 {/* WABYS and Wisdom logo */}
@@ -784,6 +1091,15 @@ const WisdomDashboard = () => {
                     <img className="w-[70px] md:w-[70px] lg:w-[70px]" src={ebdaeduLogo} alt="ebda edu Logo" />
                 </div>
                 <div className="flex items-center gap-4 relative flex-wrap justify-evenly">
+                    {/* CRO Score */}
+                    <button onClick={() => filteredCroData.length > 1 ? setCro2Popup(true) : filteredCroData[0].reports.length === 0 ? setCro2Popup(false) : setCro2Popup(true)} className={`rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
+                        <FontAwesomeIcon icon={faNewspaper} className="text-xl text-watomsBlue" />
+                    </button>
+                    {/* CRO Score */}
+                    <button onClick={() => filteredCroData.length > 1 ? setCroPopup(true) : filteredCroData[0].reports.length === 0 ? setCroPopup(false) : setCroPopup(true)} className={`relative rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
+                        <div className="absolute -top-1 -right-3 bg-red-600 text-white rounded-full w-5 h-5 text-sm">{filteredCroData.reduce((acc, obj) => acc + obj.reports.length, 0)}</div>
+                        <FontAwesomeIcon icon={faFile} className="text-xl text-watomsBlue" />
+                    </button>
                     {/* Full Screen */}
                     <button
                         onClick={fullScreen}
@@ -1549,6 +1865,8 @@ const WisdomDashboard = () => {
                 orgSubStandards={orgSubStandards.find(sub => sub.name === subDataDetails)}
                 selectedOrg={selectedOrg}
             />
+            {croPopup && <CroReport />}
+            {cro2Popup && <Cro2Report />}
         </div>
     );
 };

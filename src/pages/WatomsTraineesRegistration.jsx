@@ -70,9 +70,8 @@ const WatomsTraineesRegistration = () => {
         const loadVtcs = async () => {
             try {
                 const response = await fetchSchools();
-                // const filteringVtcs = response.filter(vtc => vtc.authority_id === 2)
-                // console.log(filteringVtcs)
-                setVtcs(response);
+                const filteringVtcs = response.filter(vtc => vtc.authority_id === 2)
+                setVtcs(filteringVtcs);
             } catch (err) {
                 console.error(err);
             }

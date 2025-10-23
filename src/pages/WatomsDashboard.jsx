@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fetchCenters, fetchCROData, fetchWatomsDetailsData } from "../services/dashboard";
-import { useNavigate } from "react-router-dom";
 import AnnualPerformanceChart from "../components/AnnualPerformanceChart";
 import ProjectUnitsRankingModal from '../components/ProjectUnitsRankingModal';
-import useFullScreen from "../hooks/useFullScreen";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 // import Uploading from "../components/Uploading";
 import LoadingScreen from "../components/LoadingScreen";
-import { CRO_RECOMMENDATIONS, INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG, WATOMS_UNPREPARED_DATA } from "../constants/constants";
+import { INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG, WATOMS_UNPREPARED_DATA } from "../constants/constants";
 import { roundNumber } from "../utils/roundNumber";
 import Egypt from "../components/Egypt";
 import WatomsDashboardSubDataDetails from "../components/WatomsDashboardSubDataDetails";
@@ -91,14 +89,11 @@ function CircularProgressBar({ value, size = 64, stroke = 8, color = 'url(#circu
 }
 
 const WatomsDashboard = () => {
-  const navigate = useNavigate();
   const { userInfo } = useAuth();
   const { language, setLanguage } = useLanguage();
-  const isFullScreen = useFullScreen();
   const [watomsData, setWatomsData] = useState([]);
   const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
-  const [projectUnitsRankingLoading, setProjectUnitsRankingLoading] = useState(false);
   const [isProjectUnitsModalOpen, setIsProjectUnitsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   // const [uploading, setUploading] = useState(false);
@@ -241,7 +236,7 @@ const WatomsDashboard = () => {
     }
 
     filterCROData();
-  }, [selectedMonthIdx, selectedOrgId])
+  }, [selectedMonthIdx, selectedOrgId, croData])
 
   const CroReport = () => (
     <div className="fixed inset-0 bg-black/60 flex flex-col overflow-y-auto justify-start gap-6 items-center z-50">
@@ -278,8 +273,8 @@ const WatomsDashboard = () => {
         {filteredCroData.map((data, idx) => data.reports.length > 0 && data.reports.map(report => <div className="rounded-xl shadow-black shadow-md p-2 flex flex-col mt-2 w-full gap-2">
           <div className="w-full border-black border-2 flex p-1 gap-1 min-h-20">
             <div className="flex flex-col items-center text-center gap-1 w-[15%] font-bold">
-              <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">اجمالي التقييم</div>
-              <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">67%</div>
+              <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">متوسط التقييم</div>
+              <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">{report.scores.reduce((sum, item) => sum + (item.avg_score || 0), 0) / (report.scores.length || 1)}%</div>
             </div>
             <div className="flex flex-col gap-1 w-2/3 text-[10px] font-bold justify-center items-center">
               <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">{report.name}</div>
@@ -328,7 +323,7 @@ const WatomsDashboard = () => {
                           className="h-full rounded-full transition-all duration-700 ease-[cubic-bezier(.4,2,.6,1)]"
                           style={{
                             width: `${score.avg_score}%`,
-                            backgroundColor: 'red',
+                            backgroundColor: `${score.avg_score <= 50 ? "red" : score.avg_score <= 60 ? "#FFDE21" : score.avg_score <= 70 ? "orange" : score.avg_score <= 80 ? "green" : "#274AB3"}`,
                           }}
                         />
                       </div>
@@ -363,71 +358,71 @@ const WatomsDashboard = () => {
         <FontAwesomeIcon icon={faPrint} />
       </button>
       <div className="w-full flex flex-col items-center" ref={pdf2Ref}>
-      {Object.entries(sortedCroData).map(([key, value]) => (
-        <div className="bg-white w-[40%] max-w-5xl h-fit p-4 flex flex-col items-center mt-4 text-black rounded-lg shadow-lg">
-          {/* Header */}
-          <div className="flex justify-between items-center w-full max-w-4xl mb-2">
-            {/* Left logos */}
-            <div className="flex flex-col items-center w-14">
-              <img src={wabysLogo} className="w-14" alt="Wabys logo" />
-              <img src={ebdaeduLogo} className="w-10" alt="Ebda Edu logo" />
-            </div>
+        {Object.entries(sortedCroData).map(([key, value]) => (
+          <div className="bg-white w-[40%] max-w-5xl h-fit p-4 flex flex-col items-center mt-4 text-black rounded-lg shadow-lg">
+            {/* Header */}
+            <div className="flex justify-between items-center w-full max-w-4xl mb-2">
+              {/* Left logos */}
+              <div className="flex flex-col items-center w-14">
+                <img src={wabysLogo} className="w-14" alt="Wabys logo" />
+                <img src={ebdaeduLogo} className="w-10" alt="Ebda Edu logo" />
+              </div>
 
-            {/* Center title */}
-            <div className="flex flex-col items-center gap-2 text-xs font-bold text-center">
-              <h1 className="border-b-2 border-black text-black">تقرير توصيات توجيه مؤشر الاداء</h1>
-              <h1 className="border-b-2 border-black text-black">لتنمية الجوانب المهنية - ( {key} )</h1>
-            </div>
+              {/* Center title */}
+              <div className="flex flex-col items-center gap-2 text-xs font-bold text-center">
+                <h1 className="border-b-2 border-black text-black">تقرير توصيات توجيه مؤشر الاداء</h1>
+                <h1 className="border-b-2 border-black text-black">لتنمية الجوانب المهنية - ( {key} )</h1>
+              </div>
 
-            {/* Right logo */}
-            <div className="flex flex-col">
-              <img src={molLogo} className="w-14" alt="MOL logo" />
-            </div>
-          </div>
-
-          {/* Reports */}
-          {Object.entries(value).map(([key, value2]) => (
-            <div key={key} className="w-full max-w-4xl rounded-xl shadow mt-2 border border-gray-300 bg-white">
-              <h1 className="text-end pr-4 font-bold text-sm mt-2">{key}</h1>
-              <div className="w-full border-t border-gray-300 p-2">
-                <table className="w-full border-collapse text-center">
-                  <thead className="bg-gray-100">
-                    <tr className="border-b border-black">
-                      <th className="w-2/12 py-2">النسبة</th>
-                      <th className="w-2/12 py-2">التخصص</th>
-                      <th className="w-2/12 py-2">الجهة</th>
-                      <th className="w-3/12 py-2">الاسم</th>
-                      <th className="w-2/12 py-2">الصورة</th>
-                      <th className="w-1/12 py-2">م</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {value2.map((result, idx) => (
-                      <tr className="border-b last:border-0 hover:bg-gray-50">
-                        <td className="py-2 font-bold text-sm">{result.avg_score}%</td>
-                        <td className="py-2 text-xs font-medium text-center">{result.subject}</td>
-                        <td className="py-2 text-xs font-medium text-center">{result.authority}</td>
-                        <td className="py-2 text-xs font-medium text-center">{result.name}</td>
-                        <td className="py-2 text-xs font-medium text-center">
-                          <img src={person} className="w-10 h-10 object-cover rounded-full mx-auto" />
-                        </td>
-                        <td className="py-2 text-xs font-medium text-center">{idx + 1}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {/* Right logo */}
+              <div className="flex flex-col">
+                <img src={molLogo} className="w-14" alt="MOL logo" />
               </div>
             </div>
-          ))}
-        </div>))}
-        </div>
+
+            {/* Reports */}
+            {Object.entries(value).map(([key, value2]) => (
+              <div key={key} className="w-full max-w-4xl rounded-xl shadow mt-2 border border-gray-300 bg-white">
+                <h1 className="flex justify-between gap-2 text-end pr-4 font-bold text-sm mt-2 mb-1 px-1"><p>عدد المعلمين : {value2.length}</p> <p>: {key}</p></h1>
+                <div className="w-full border-t border-gray-300 p-2">
+                  <table className="w-full border-collapse text-center">
+                    <thead className="bg-gray-100">
+                      <tr className="border-b border-black">
+                        <th className="w-2/12 py-2">النسبة</th>
+                        <th className="w-2/12 py-2">التخصص</th>
+                        <th className="w-2/12 py-2">الجهة</th>
+                        <th className="w-3/12 py-2">الاسم</th>
+                        <th className="w-2/12 py-2">الصورة</th>
+                        <th className="w-1/12 py-2">م</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {value2.map((result, idx) => (
+                        <tr className="border-b last:border-0 hover:bg-gray-50">
+                          <td className="py-2 font-bold text-sm">{result.avg_score}%</td>
+                          <td className="py-2 text-xs font-medium text-center">{result.subject}</td>
+                          <td className="py-2 text-xs font-medium text-center">{result.authority}</td>
+                          <td className="py-2 text-xs font-medium text-center">{result.name}</td>
+                          <td className="py-2 text-xs font-medium text-center">
+                            <img src={person} alt="" className="w-10 h-10 object-cover rounded-full mx-auto" />
+                          </td>
+                          <td className="py-2 text-xs font-medium text-center">{idx + 1}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>))}
+      </div>
     </div>
   )
 
   useEffect(() => {
     setLanguage(false);
-  }, [])
+  }, [setLanguage])
 
   useEffect(() => {
     const loadProjects = () => {
@@ -1646,7 +1641,6 @@ const WatomsDashboard = () => {
       <ProjectUnitsRankingModal
         isOpen={isProjectUnitsModalOpen}
         onClose={() => setIsProjectUnitsModalOpen(false)}
-        loading={projectUnitsRankingLoading}
         centerInfo={selectedCenter}
         watomsData={watomsData}
         selectedId={selectedOrgId}

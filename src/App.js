@@ -76,7 +76,7 @@ import EbdaEduTms from "./pages/EbdaEduTms";
 import EbdaEduTmsMyTasks from "./pages/EbdaEduTmsMyTasks";
 import EbdaEduTmsAddTask from "./pages/EbdaEduTmsAddTask";
 import EbdaEduTmsEditTask from "./pages/EbdaEduTmsEditTask";
-import { AlarmProvider } from "./components/alarms/AlarmContext";
+import { AlarmProvider } from "./context/AlarmContext";
 
 function App() {
   return (
