@@ -77,6 +77,13 @@ import EbdaEduTmsMyTasks from "./pages/EbdaEduTmsMyTasks";
 import EbdaEduTmsAddTask from "./pages/EbdaEduTmsAddTask";
 import EbdaEduTmsEditTask from "./pages/EbdaEduTmsEditTask";
 import { AlarmProvider } from "./context/AlarmContext";
+import WatomsProfessionalExamination from "./pages/watoms/professional_examination/WatomsProfessionalExamination";
+import WatomsPEPersonalTest from "./pages/watoms/professional_examination/WatomsPEPersonalTest";
+import WatomsPETheoreticalTest from "./pages/watoms/professional_examination/WatomsPETheoreticalTest";
+import WatomsPEPracticalTest from "./pages/watoms/professional_examination/WatomsPEPracticalTest";
+import WatomsPECognitiveTest from "./pages/watoms/professional_examination/WatomsPECognitiveTest";
+import WatomsPESoftTest from "./pages/watoms/professional_examination/WatomsPESoftTest";
+import WatomsPEDashboard from "./pages/watoms/professional_examination/WatomsPEDashboard";
 
 function App() {
   return (
@@ -534,6 +541,62 @@ function App() {
             element={
               <ProtectedRoute>
                 <WatomsEvaluateManagers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe"
+            element={
+              <ProtectedRoute>
+                <WatomsProfessionalExamination />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe/personal-test"
+            element={
+              <ProtectedRoute>
+                <WatomsPEPersonalTest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe/theoretical-test"
+            element={
+              <ProtectedRoute>
+                <WatomsPETheoreticalTest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe/practical-test"
+            element={
+              <ProtectedRoute>
+                <WatomsPEPracticalTest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe/cognitive-test"
+            element={
+              <ProtectedRoute>
+                <WatomsPECognitiveTest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe/soft-test"
+            element={
+              <ProtectedRoute>
+                <WatomsPESoftTest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe/dashboard"
+            element={
+              <ProtectedRoute>
+                <WatomsPEDashboard />
               </ProtectedRoute>
             }
           />

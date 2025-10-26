@@ -506,7 +506,7 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         subtitle: language ? 'Control Panels and Statistics' : 'لوحات التحكم والإحصائيات',
         description: language ? 'Interactive management dashboards' : 'لوحات تحكم تفاعلية للإدارة',
         icon: faChartBar,
-        path: '/watoms',
+        path: '/watoms/pe',
         color: 'from-red-500 to-red-600',
         available: userInfo?.code === 3 || userInfo?.code === 1 ? true : false,
         notificationStatus: false
