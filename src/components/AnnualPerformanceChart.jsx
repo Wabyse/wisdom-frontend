@@ -1,8 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import DotPatternBackground from './DotPatternBackground';
 
-const AnnualPerformanceChart = ({ data, title = "تقييم الاداء السنوي", loading = false, width="90%", height="150", containerWidth="[450px]" }) => {
+const AnnualPerformanceChart = ({ data, YAxisDuration = [], YAxisTicks = [], title = "تقييم الاداء السنوي", loading = false, width = "90%", height = "150", containerWidth = "[450px]" }) => {
   if (loading) {
     return (
       <div className="flex-1 rounded-2xl flex flex-col p-5" style={{
@@ -101,8 +100,8 @@ const AnnualPerformanceChart = ({ data, title = "تقييم الاداء الس�
               stroke="#888"
               fontSize={12}
               tick={{ fill: '#fff' }}
-              domain={[0, 100]}
-              ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+              domain={YAxisDuration && YAxisDuration.length > 0 ? YAxisDuration : [0, 100]}
+              ticks={YAxisTicks && YAxisTicks.length > 0 ? YAxisTicks : [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
             />
             <Tooltip content={<CustomTooltip />} />
             <Line

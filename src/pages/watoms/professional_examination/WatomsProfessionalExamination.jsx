@@ -143,21 +143,28 @@ const WatomsProfessionalExamination = () => {
                                 </div>
                             </div>
                             <div className="w-full flex gap-2">
+                                {/* passport */}
                                 <img className="rounded-xl w-[73%]" src={passport} alt="" />
-                                <div className="w-[25%] flex flex-col gap-[26px]">
+                                {/* dates */}
+                                <div className="w-[25%] flex flex-col gap-4">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="w-full text-center text-white rounded border-white border-2">الدولة المرشح لها المتقدم</div>
+                                        <div className="w-full text-center bg-white rounded border-white border-2 py-2">السعودية</div>
+                                    </div>
+                                    <div className="w-full h-0 border-b-2 border-white" />
                                     <div className="flex flex-col gap-1">
                                         <div className="w-full text-center text-white rounded border-white border-2">توقيت اختبار النفسي</div>
-                                        <div className="w-full text-center bg-white rounded border-white border-2 py-5">26-10-2025 19:46</div>
+                                        <div className="w-full text-center bg-white rounded border-white border-2 py-2">26-10-2025 19:46</div>
                                     </div>
                                     <div className="w-full h-0 border-b-2 border-white" />
                                     <div className="flex flex-col gap-1">
                                         <div className="w-full text-center text-white rounded border-white border-2">توقيت اختبار الشخصي</div>
-                                        <div className="w-full text-center bg-white rounded border-white border-2 py-5">26-10-2025 19:46</div>
+                                        <div className="w-full text-center bg-white rounded border-white border-2 py-2">26-10-2025 19:46</div>
                                     </div>
                                     <div className="w-full h-0 border-b-2 border-white" />
                                     <div className="flex flex-col gap-1">
                                         <div className="w-full text-center text-white rounded border-white border-2">توقيت اختبار النظري</div>
-                                        <div className="w-full text-center bg-white rounded border-white border-2 py-5">26-10-2025 19:46</div>
+                                        <div className="w-full text-center bg-white rounded border-white border-2 py-2">26-10-2025 19:46</div>
                                     </div>
                                 </div>
                             </div>

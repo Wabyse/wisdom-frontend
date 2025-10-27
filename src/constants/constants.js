@@ -973,6 +973,16 @@ export const WATOMS_MODERN_COLORS = [
     'linear-gradient(90deg, #bdbdbd 0%, #757575 100%)',
 ];
 
+export const WATOMS_MODERN_COLORS_TW = [
+    'bg-gradient-to-r from-[#3fd8ff] to-[#0072ff]',
+    'bg-gradient-to-r from-[#ffb6ec] to-[#ff3c8e]',
+    'bg-gradient-to-r from-[#ffb347] to-[#ff7c00]',
+    'bg-gradient-to-r from-[#bdbdbd] to-[#757575]',
+    'bg-gradient-to-r from-blue-400 to-blue-600',
+    'bg-gradient-to-r from-red-400 to-red-600',
+];
+
+
 export const NUMBER_TO_ARABIC_MONTHS = {
     1: 'يناير',
     2: 'فبراير',
