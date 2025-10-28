@@ -23,7 +23,6 @@ import { roundNumber } from "../../../utils/roundNumber";
 // images
 import { WATOMS_MODERN_COLORS_TW } from "../../../constants/constants";
 import AnnualPerformanceChart from "../../../components/AnnualPerformanceChart";
-import worldImg from '../../../assets/world.jpg';
 
 const WatomsPEDashboard = () => {
     const navigate = useNavigate();
@@ -165,8 +164,7 @@ const WatomsPEDashboard = () => {
                         {/* middel column */}
                         <div className="w-1/3 flex flex-col justify-center gap-4">
                             <h1 className="text-lg text-yellow-400 text-center font-bold underline">مؤشرات اداء الفحص المهني الدولي</h1>
-                            {/* <World /> */}
-                            <img src={worldImg} alt="" />
+                            <World ids={[1, 2, 3]} />
                             <div className="flex flex-col gap-4 bg-[#2d3347] rounded-[16px] py-2 px-3">
                                 {/* Title */}
                                 <h3 className="text-yellow-400 text-md font-bold mb-2 text-center">
