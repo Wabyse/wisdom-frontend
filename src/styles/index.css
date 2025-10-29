@@ -36,8 +36,8 @@ code {
   }
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
   }
-}
+} */

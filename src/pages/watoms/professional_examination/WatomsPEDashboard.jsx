@@ -3,10 +3,12 @@ import NewNavbar from "../../../components/NewNavbar";
 import CustomHorizontalBarChart from "../../../components/customCharts/customHorizontalBarChart";
 import CustomCircularProgressBar from "../../../components/customCharts/customCircularProgressBar";
 import World from "../../../components/maps/World";
+import AnnualPerformanceChart from "../../../components/AnnualPerformanceChart";
 // Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolderPlus, faPen, faQrcode } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faFile, faFolderPlus, faPen, faQrcode, faXmark } from "@fortawesome/free-solid-svg-icons";
 // tools
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     LineChart,
@@ -20,12 +22,18 @@ import {
 } from 'recharts';
 // custom tools
 import { roundNumber } from "../../../utils/roundNumber";
-// images
 import { WATOMS_MODERN_COLORS_TW } from "../../../constants/constants";
-import AnnualPerformanceChart from "../../../components/AnnualPerformanceChart";
+// images
+import wabysLogo from '../../../assets/wabys.png';
+import ebdaeduLogo from '../../../assets/ebad-edu.png';
+import molLogo from '../../../assets/Gov.png';
+import person from '../../../assets/person.jpg';
+import passport from '../../../assets/passport.jpg';
+import application from '../../../assets/ksaApplication.jpg';
 
 const WatomsPEDashboard = () => {
     const navigate = useNavigate();
+    const [individualsReportsStatus, setIndividualsReportsStatus] = useState(false)
     const data = [
         { year: 2024, performance: 900 },
         { year: 2025, performance: 7507 },
@@ -72,6 +80,436 @@ const WatomsPEDashboard = () => {
         { id: 6, name: "ملفات تاكيد الهوية", performance: 20 },
     ];
 
+    const IndividualsReportSheet = () => {
+        return (
+            <div className="fixed inset-0 bg-black/60 flex flex-col overflow-y-auto justify-start gap-6 items-center z-50">
+                <button
+                    onClick={() => setIndividualsReportsStatus(false)}
+                    className="absolute top-4 right-4 text-white bg-gray-700 hover:bg-gray-800 w-12 h-12 flex justify-center items-center text-2xl font-bold cursor-pointer z-50"
+                >
+                    <FontAwesomeIcon icon={faXmark} />
+                </button>
+                {/* Page 1 */}
+                <div className="relative max-w-5xl w-[40%] h-fit flex text-black bg-white p-3 mt-4">
+                    <div className="w-full flex flex-col border-black border-2 rounded-xl p-2">
+                        {/* Header */}
+                        <div className="flex justify-between items-center w-full">
+                            {/* logo */}
+                            <div className="flex flex-col items-center w-14">
+                                <img src={wabysLogo} className="w-14" alt="ebda edu logo" />
+                                <img src={ebdaeduLogo} className="w-10" alt="ebda edu logo" />
+                            </div>
+                            {/* title */}
+                            <div className="flex flex-col items-center gap-2 text-xs font-bold">
+                                <h1 className="border-b-2 border-black text-black">تقرير نتائج إجراءات حوكمة اختبارات المتقدمين</h1>
+                                <h1 className="border-b-2 border-black text-black">للفحص المهني</h1>
+                            </div>
+                            {/* logo */}
+                            <div className="flex flex-col">
+                                <img src={molLogo} className="w-14" alt="ebda edu logo" />
+                            </div>
+                        </div>
+                        <div className="rounded-xl shadow-black shadow-md p-2 flex flex-col mt-2 w-full gap-2">
+                            <h1 className="text-xs text-end font-bold">:اولاً: البيانات الأساسية</h1>
+                            {/* user's data */}
+                            <div className="w-full border-black border-2 flex justify-end items-center p-1 gap-1 min-h-20">
+                                <div className="h-full flex flex-col items-center text-center gap-1 w-[15%] font-bold">
+                                    <div className="text-[10px] border-black border-2 w-full bg-gray-300 h-1/2 flex justify-center items-center">اجمالي التقييم</div>
+                                    <div className="text-sm border-black border-2 w-full h-1/2 flex justify-center items-center">70%</div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-[20%] text-[8px] font-bold justify-center items-center">
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">مركز الشرابية</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">تجارة (1)</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">74211</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">0110659889</div>
+                                </div>
+                                <div className="flex flex-col gap-1 min-w-fit w-[10%] text-[8px] font-bold justify-center items-center">
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">مركز الاختبار</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الفئة</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">رقم الممتحن</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">رقم الموبيل</div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-[20%] text-[8px] font-bold justify-center items-center">
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">محمد احمد سيد محمد</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">35286468437246</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">284-871971871</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center">test@test.com</div>
+                                </div>
+                                <div className="flex flex-col gap-1 min-w-fit w-[10%] text-[8px] font-bold justify-center items-center">
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الاسم</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">الرقم القومي</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">رقم جواز السفر</div>
+                                    <div className="border-black border-2 h-fit w-full text-center px-2 py-1 flex justify-center items-center bg-gray-300">البريد الالكتروني</div>
+                                </div>
+                                {/* user's img */}
+                                <div className="flex flex-col gap-1">
+                                    <img className="w-20 min-w-20 border-black border-2 p-1 " src={person} alt="" />
+                                    <div className="text-[12px] border-black border-2 h-fit w-full text-center px-2 flex justify-center items-center">السعودية</div>
+                                </div>
+                            </div>
+                            <h1 className="text-xs text-end font-bold">:ثانيا: مستندات تاكيد الهوية</h1>
+                            <h1 className="text-xs pr-5" dir="rtl">1 - جواز السفر</h1>
+                            {/* passport data */}
+                            <img src={passport} alt="" />
+                        </div>
+                    </div>
+                </div>
+                {/* page 2 */}
+                <div className="relative max-w-5xl w-[40%] h-fit flex text-black bg-white p-3 mt-4">
+                    <div className="w-full flex flex-col items-center border-black border-2 rounded-xl p-2 gap-2">
+                        <h1 className="w-full text-xs pr-5" dir="rtl">2 - تذكرة الترشح للمتقدم</h1>
+                        <img className="border-black border-2 rounded-xl w-[98%]" src={application} alt="" />
+                    </div>
+                </div>
+                {/* Page3 */}
+                <div className="relative bg-white w-[40%] max-w-5xl h-fit p-4 flex flex-col gap-2 mt-4 text-black">
+                    <div className="flex flex-col gap-2 border-2 border-black m-2 p-2 rounded-md overflow-x-auto">
+                        <h1 className="text-xs text-end font-bold">: ثالثا : نتائج الاختبارات</h1>
+                        <div className="flex gap-2">
+                            <table className="w-full table-fixed border-separate border-spacing-0 rounded-xl overflow-hidden" dir="rtl">
+                                <thead className="h-16">
+                                    <tr className="text-xs text-white bg-[#5268b1] border-b border-blue-200/60 rounded-xl">
+                                        <th colSpan={3} className="w-6/12 py-2 text-center font-semibold border-b border-l border-black">الاختبار</th>
+                                        <th className="w-1/12 py-2 text-center font-semibold border-b border-l border-black">التقييم</th>
+                                        <th colSpan={3} className="w-4/12 py-2 text-center font-semibold border-b border-l border-black">
+                                            صورة الاثبات
+                                        </th>
+                                        <th rowSpan={1} className="w-1/12 py-2 text-[9px] text-center font-semibold border-b border-black">
+                                            الملاحظات
+                                        </th>
+                                    </tr>
+                                    {/* Sub-header row */}
+                                    <tr className="bg-[#6b7dcf] text-white text-xs">
+                                        <th className="py-2 text-center font-semibold w-1/6 border-l border-black">
+                                            الاسم
+                                        </th>
+                                        <th colSpan={2} className="py-2 text-center font-semibold w-1/6 border-b border-l border-black">
+                                            التوقيت
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-l border-black">
+
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-l border-black">
+                                            جانبية
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-black">
+                                            أمامية
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6">
+
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-r border-black">
+
+                                        </th>
+                                    </tr>
+
+                                    {/* Sub-header row */}
+                                    <tr className="bg-[#6b7dcf] text-white text-xs">
+                                        <th className="py-2 text-center font-semibold w-1/6 border-b border-l border-black">
+
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-b border-l border-black">
+                                            من
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-b border-l border-black">
+                                            الي
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-l border-black">
+
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-b border-l border-black">
+
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6">
+
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-b border-black">
+
+                                        </th>
+                                        <th className="py-2 text-center font-semibold w-1/6 border-b border-r border-black">
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    <tr className="bg-white transition-colors">
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                السمات الشخصية و السلوكية (OCEAN)
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                14:16
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                15:16
+                                            </span>
+                                        </td>
+
+                                        {/* النسبة (الشريط) */}
+                                        <td className=" h-20 max-h-20 py-2 w-[25%] border-r border-b border-black">
+                                            <div className="w-[95%] h-5 min-h-fit flex justify-center items-center gap-2 rounded-full">
+                                                <span className={`inline-flex items-center justify-center min-w-[20%] px-2 h-6 text-black`}>
+                                                    50%
+                                                </span>
+                                            </div>
+
+                                        </td>
+
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-x border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-l border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                70%
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                لا يوجد
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr className="bg-white transition-colors">
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                المعارف الفنية المتخصص (JCT)
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                14:16
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                15:16
+                                            </span>
+                                        </td>
+
+                                        {/* النسبة (الشريط) */}
+                                        <td className=" h-20 max-h-20 py-2 w-[25%] border-r border-b border-black">
+                                            <div className="w-[95%] h-5 min-h-fit flex justify-center items-center gap-2 rounded-full">
+                                                <span className={`inline-flex items-center justify-center min-w-[20%] px-2 h-6 text-black`}>
+                                                    50%
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className=" h-20 max-h-20 p-2 text-center border-x border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-l border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                70%
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                لا يوجد
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr className="bg-white transition-colors">
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                المهارات الفنية المتخصصة (PST)
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                14:16
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                15:16
+                                            </span>
+                                        </td>
+
+                                        {/* النسبة (الشريط) */}
+                                        <td className=" h-20 max-h-20 py-2 w-[25%] border-r border-b border-black">
+                                            <div className="w-[95%] h-5 min-h-fit flex justify-center items-center gap-2 rounded-full">
+                                                <span className={`inline-flex items-center justify-center min-w-[20%] px-2 h-6 text-black`}>
+                                                    50%
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-x border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-l border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                70%
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                لا يوجد
+                                            </span>
+                                        </td>
+
+                                    </tr>
+                                    <tr className="bg-white transition-colors">
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                المهارات الوظيفية الناعمة (SJT)
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                14:16
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                15:16
+                                            </span>
+                                        </td>
+
+                                        {/* النسبة (الشريط) */}
+                                        <td className=" h-20 max-h-20 py-2 w-[25%] border-r border-b border-black">
+                                            <div className="w-[95%] h-5 min-h-fit flex justify-center items-center gap-2 rounded-full">
+                                                <span className={`inline-flex items-center justify-center min-w-[20%] px-2 h-6 text-black`}>
+                                                    50%
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-x border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-l border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                70%
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                لا يوجد
+                                            </span>
+                                        </td>
+
+                                    </tr>
+                                    <tr className="bg-white transition-colors">
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                القدرات المعرفية الاساسية (CAT)
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                14:16
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-r border-b border-black">
+                                            <span className={`text-xs inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 min-h-fit rounded-full text-black`}>
+                                                15:16
+                                            </span>
+                                        </td>
+
+                                        {/* النسبة (الشريط) */}
+                                        <td className=" h-20 max-h-20 py-2 w-[25%] border-r border-b border-black">
+                                            <div className="w-[95%] h-5 min-h-fit flex justify-center items-center gap-2 rounded-full">
+                                                <span className={`inline-flex items-center justify-center min-w-[20%] px-2 h-6 text-black`}>
+                                                    50%
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-x border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 p-2 text-center border-l border-b border-black">
+                                            <div className="flex justify-center items-center gap-2 w-full h-14">
+                                                <div className="flex-1 h-full bg-gray-400" />
+                                            </div>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                70%
+                                            </span>
+                                        </td>
+
+                                        <td className=" h-20 max-h-20 py-2 text-center border-l border-b border-black">
+                                            <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full text-black`}>
+                                                لا يوجد
+                                            </span>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
             return (
@@ -90,6 +528,16 @@ const WatomsPEDashboard = () => {
                 shareStatus={false}
             >
                 <div className="flex gap-3">
+                    <button
+                        className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
+                        title="QRCode Scan"
+                        onClick={() => setIndividualsReportsStatus(true)}
+                    >
+                        <FontAwesomeIcon
+                            icon={faFile}
+                            className="text-xl text-watomsBlue"
+                        />
+                    </button>
                     <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all"
                         title="QRCode Scan"
@@ -274,6 +722,7 @@ const WatomsPEDashboard = () => {
                         </div>
                     </div>
                 </div>
+                {individualsReportsStatus && <IndividualsReportSheet />}
             </div>
         </>
     )
