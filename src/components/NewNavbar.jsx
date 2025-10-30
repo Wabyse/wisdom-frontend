@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt, faPrint, faPlus, faFilter, faFile, faSheetPlastic, faNewspaper } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faHouse, faSearch, faSun, faMoon, faExpand, faCompress, faShareNodes, faChartSimple, faPhone, faBell, faSignOutAlt, faPrint, faPlus, faFilter, faFile, faNewspaper } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import useFullScreen from "../hooks/useFullScreen";
@@ -11,20 +11,21 @@ import wabysLogo from '../assets/wabys.png';
 import ebdaeduLogo from '../assets/ebad-edu.png';
 import molLogo from "../assets/Gov.png";
 import { useSearchFilter } from "../hooks/useSearchFilter";
-import { getWatomsSystems } from "../constants/constants";
 
-const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, croStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus = false, setCroPopup, filteredCroData, setCro2Popup, cro2Status = false, notificationStatus = false }) => {
+const NewNavbar = ({ children, searchStatus = true, searchType = "", searchedData = [], onSelectSearchItem, darkmodeStatus = true, shareStatus = true, homeStatus = true, dashboardStatus = false, callStatus = false, ministerStatus = false, fullScreenStatus = true, dashboardPage = false, selectedProject, setSelectedProject, projects, logoutStatus = false, printStatus = false, croStatus = false, isFilter, setIsFilter, filterTmsStatus = false, AddStatus = false, setCroPopup, filteredCroData, setCro2Popup, cro2Status = false, notificationStatus = false }) => {
     const navigate = useNavigate();
     const { logout, userInfo } = useAuth();
     const { language } = useLanguage();
     const isFullScreen = useFullScreen();
     const [darkMode, setDarkMode] = useState(false);
-    const systems = useMemo(
-        () => getWatomsSystems(language, userInfo?.organization_id, userInfo),
-        [language, userInfo?.organization_id, userInfo]
-    );
-    const getTitle = useCallback(system => system.title, []);
-    const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(systems, getTitle);
+    // search
+    const shouldSearch = searchType === "pe";
+    const getTitle = useCallback(searchItem => searchItem.name, []);
+    const {
+        search,
+        setSearch,
+        filteredItems: filteredSystems
+    } = useSearchFilter(shouldSearch ? searchedData : [], getTitle);
     const [showNotifications, setShowNotifications] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -41,6 +42,7 @@ const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, share
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+
     return (
         <div className="relative z-10 bg-white w-full">
             <div className="relative flex flex-col md:flex-row items-center justify-between w-full px-6 h-[12vh] gap-8">
@@ -54,17 +56,60 @@ const NewNavbar = ({ children, searchStatus = true, darkmodeStatus = true, share
                 </div>
                 <div className="flex-1 flex justify-center">
                     {/* Search */}
-                    {searchStatus && <div className="relative w-full max-w-md">
-                        <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
-                        <input
-                            type="text"
-                            className="w-full pl-12 pr-4 py-1 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
-                            placeholder={language ? "Search..." : "ابحث..."}
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            style={{ fontFamily: 'inherit' }}
-                        />
-                    </div>}
+                    {searchStatus && (
+                        <div className="relative w-full max-w-md">
+                            <FontAwesomeIcon
+                                icon={faSearch}
+                                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
+                            />
+                            <input
+                                type="text"
+                                className="w-full pl-12 pr-4 py-1 rounded-full border border-gray-200 shadow focus:ring-2 focus:ring-watomsBlue bg-white/90 text-lg font-medium placeholder-gray-400 transition-all focus:border-watomsBlue focus:shadow-lg outline-none"
+                                placeholder={language ? "Search..." : "ابحث..."}
+                                value={search}
+                                onChange={(e) => {
+                                    if (searchType === "pe") setSearch(e.target.value);
+                                }}
+                                disabled={searchType !== "pe"}
+                                style={{
+                                    fontFamily: "inherit",
+                                    cursor: searchType === "pe" ? "text" : "not-allowed",
+                                    opacity: searchType === "pe" ? 1 : 0.6,
+                                }}
+                            />
+
+                            {/* 🔽 Search dropdown */}
+                            {searchType === "pe" && search && (
+                                <div className="absolute top-full mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-60 overflow-y-auto z-[9999]">
+                                    {searchedData
+                                        .filter((item) =>
+                                            item.name.toLowerCase().includes(search.toLowerCase())
+                                        )
+                                        .map((item, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => {
+                                                    setSearch(item.name);
+                                                    if (onSelectSearchItem) onSelectSearchItem(item);
+                                                    setTimeout(() => setSearch(""), 200);
+                                                }}
+                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800 text-start"
+                                            >
+                                                {item.name}
+                                            </div>
+                                        ))}
+
+                                    {searchedData.filter((item) =>
+                                        item.name.toLowerCase().includes(search.toLowerCase())
+                                    ).length === 0 && (
+                                            <div className="px-4 py-2 text-gray-400 text-center">
+                                                {language ? "No results found" : "لا توجد نتائج"}
+                                            </div>
+                                        )}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
                 {ministerStatus && (
                     userInfo?.code === 1476 ? <h1 className="absolute left-1/2 -translate-x-1/2 font-bold w-72 text-center text-lg text-black">

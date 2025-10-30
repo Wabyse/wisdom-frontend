@@ -1041,3 +1041,8 @@ export const CRO_RECOMMENDATIONS = [
 ]
 
 export const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export const COUNTRYS = [
+    "المملكة العربية السعودية",
+    "الامارات العربية المتحدة"
+]

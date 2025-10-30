@@ -84,6 +84,7 @@ import WatomsPEPracticalTest from "./pages/watoms/professional_examination/Watom
 import WatomsPECognitiveTest from "./pages/watoms/professional_examination/WatomsPECognitiveTest";
 import WatomsPESoftTest from "./pages/watoms/professional_examination/WatomsPESoftTest";
 import WatomsPEDashboard from "./pages/watoms/professional_examination/WatomsPEDashboard";
+import WatomsPETestsConfirmation from "./pages/watoms/professional_examination/WatomsPETestsConfirmation";
 
 function App() {
   return (
@@ -553,6 +554,14 @@ function App() {
             }
           />
           <Route
+            path="/watoms/pe/tests-confirmation"
+            element={
+              <ProtectedRoute>
+                <WatomsPETestsConfirmation />
+              </ProtectedRoute>
+            }
+          />
+          {/* <Route
             path="/watoms/pe/personal-test"
             element={
               <ProtectedRoute>
@@ -567,7 +576,7 @@ function App() {
                 <WatomsPETheoreticalTest />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route
             path="/watoms/pe/practical-test"
             element={
