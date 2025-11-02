@@ -126,8 +126,8 @@ const WatomsNews = () => {
             // If we have images from the directory, use them
             if (images && images.length > 0) {
                 // Ensure all images have proper URLs
+                const baseUrl = getBaseUrl();
                 const imagesWithUrls = images.map((img, idx) => {
-                    const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
                     let imageUrl = img.url || img.path;
                     
                     // Clean up the URL path - remove any /uploads/ prefix if present
@@ -151,7 +151,7 @@ const WatomsNews = () => {
                 setNewsImages(imagesWithUrls);
             } else if (news.image_url || news.image_path) {
                 // If no directory images but news has an image, add it as a single image
-                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                const baseUrl = getBaseUrl();
                 const imagePath = news.image_url || news.image_path;
                 
                 // Determine the correct URL path based on the image path
@@ -190,7 +190,7 @@ const WatomsNews = () => {
             console.error('❌ Error fetching news images:', error);
             // Fallback to single image if available
             if (news.image_url || news.image_path) {
-                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                const baseUrl = getBaseUrl();
                 const imagePath = news.image_url || news.image_path;
                 
                 // Determine the correct URL path based on the image path
@@ -232,6 +232,20 @@ const WatomsNews = () => {
         setCurrentImageIndex(0);
     };
 
+    // Helper function to get the correct base URL for image requests
+    const getBaseUrl = () => {
+        let baseUrl = process.env.REACT_APP_BACKEND_BASE_URL;
+        if (!baseUrl || baseUrl.includes('localhost')) {
+            const currentOrigin = window.location.origin;
+            if (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+                baseUrl = currentOrigin; // Production: use same domain
+            } else {
+                baseUrl = baseUrl || 'http://localhost:4000'; // Dev fallback
+            }
+        }
+        return baseUrl;
+    };
+
     const nextImage = (e) => {
         e?.preventDefault();
         e?.stopPropagation();
@@ -264,7 +278,9 @@ const WatomsNews = () => {
 
     const getImageUrl = (imagePath, newsId = null) => {
         if (!imagePath) return null;
-        const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+        
+        // Get base URL using helper function
+        const baseUrl = getBaseUrl();
         
         let finalUrl;
         const cleanPath = imagePath.replace(/\\/g, '/');
@@ -314,6 +330,7 @@ const WatomsNews = () => {
             originalPath: imagePath,
             cleanedPath: cleanPath,
             newsId: newsId,
+            baseUrl: baseUrl,
             finalUrl: uniqueUrl
         });
         
@@ -796,7 +813,7 @@ const WatomsNews = () => {
                                     <div className="relative w-full max-w-2xl">
                                         <img
                                             src={(() => {
-                                                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                                                const baseUrl = getBaseUrl();
                                                 const currentImage = newsImages[currentImageIndex];
                                                 
                                                 if (!currentImage) {

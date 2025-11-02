@@ -29,14 +29,14 @@ code {
   /* Firefox */
 }
 
-/* @media (prefers-color-scheme: dark) {
-  input[type="time"]::-webkit-calendar-picker-indicator {
+@media (prefers-color-scheme: dark) {
+  .whiteDateLogo[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
   }
-} */
+}
 
-/* @media (prefers-color-scheme: dark) {
-  input[type="date"]::-webkit-calendar-picker-indicator {
+@media (prefers-color-scheme: dark) {
+  .whiteDateLogo[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
   }
-} */
+}
