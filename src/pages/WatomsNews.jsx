@@ -10,13 +10,11 @@ import DonutChart from "../components/DonutChart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faPhone, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { updateNewsNotification, viewNews } from "../services/admins";
+import { updateNewsNotification, viewNews, getNewsImages } from "../services/admins";
 import { fetchSchools } from "../services/data";
 import dashboardIcon from "../assets/dashboardIcon.png";
 import reportIcon from "../assets/reportIcon.png";
 import report2Icon from "../assets/report2Icon.png";
-import ebdaeduLogo from "../assets/ebad-edu.png";
-import molLogo from "../assets/Gov.png";
 import { useAuth } from "../context/AuthContext";
 import DenyAccessPage from "../components/DenyAccessPage";
 
@@ -34,6 +32,8 @@ const WatomsNews = () => {
     const [selectedOrganization, setSelectedOrganization] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState({});
     const [datasMonths, setDatasMonths] = useState([]);
+    const [newsImages, setNewsImages] = useState([]);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const toggleMonth = (status) => {
         if (status) {
@@ -71,19 +71,19 @@ const WatomsNews = () => {
             try {
                 setLoading(true);
                 const response = await viewNews();
-                console.log('News API Response:', response);
-                console.log('News data with image paths:', response.map(news => ({
-                    id: news.id,
-                    title: news.title,
-                    image_path: news.image_path,
-                    normalized_path: news.image_path ? news.image_path.replace(/\\/g, '/') : 'No image path',
-                    full_image_url: news.image_path ? (() => {
-                        const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
-                        const imagePath = news.image_path.startsWith('/') ? news.image_path : '/uploads/' + news.image_path.replace(/\\/g, '/');
-                        return `${baseUrl}${imagePath}`;
-                    })() : 'No image path',
-                    base_url: process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000'
-                })));
+                console.log('📰 News API Response:', response);
+                
+                // Log each news item's image information to verify uniqueness
+                response.forEach(news => {
+                    console.log(`📰 News ${news.id} (${news.title?.substring(0, 30)}...):`, {
+                        id: news.id,
+                        organization_id: news.organization_id,
+                        image_path: news.image_path,
+                        image_url: news.image_url,
+                        unique: true // Each news should have unique image
+                    });
+                });
+                
                 setWatomsNewsData(response);
             } catch (error) {
                 console.error('❌ Error fetching Watoms Data:', error);
@@ -115,12 +115,209 @@ const WatomsNews = () => {
         setSelectedNews(news);
         setIsPopupOpen(true);
         const organization = organizationsData.find(org => org.id === news.organization_id);
-        setSelectedOrganization(organization)
+        setSelectedOrganization(organization);
+        
+        // Fetch all images for this news item
+        try {
+            const images = await getNewsImages(news.id);
+            console.log(`📸 News ${news.id} - Fetched images:`, images);
+            console.log(`📸 News ${news.id} - Images count:`, images.length);
+            
+            // If we have images from the directory, use them
+            if (images && images.length > 0) {
+                // Ensure all images have proper URLs
+                const imagesWithUrls = images.map((img, idx) => {
+                    const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                    let imageUrl = img.url || img.path;
+                    
+                    // Clean up the URL path - remove any /uploads/ prefix if present
+                    if (imageUrl && typeof imageUrl === 'string') {
+                        imageUrl = imageUrl.replace(/^\/?uploads\/news\//, '/news/');
+                    }
+                    
+                    // Ensure URL is complete
+                    if (imageUrl && !imageUrl.startsWith('http')) {
+                        imageUrl = imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl;
+                    }
+                    
+                    return {
+                        ...img,
+                        url: imageUrl || img.url || img.path,
+                        fullUrl: imageUrl ? (imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`) : null
+                    };
+                });
+                
+                console.log(`📸 News ${news.id} - Processed images with URLs:`, imagesWithUrls);
+                setNewsImages(imagesWithUrls);
+            } else if (news.image_url || news.image_path) {
+                // If no directory images but news has an image, add it as a single image
+                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                const imagePath = news.image_url || news.image_path;
+                
+                // Determine the correct URL path based on the image path
+                let imageUrl;
+                const cleanPath = imagePath.replace(/\\/g, '/');
+                
+                if (cleanPath.includes('news/')) {
+                    // Remove any "uploads/" prefix if present and ensure it starts with /news/
+                    let newsPath = cleanPath.replace(/^\/?uploads\/news\//, 'news/');
+                    if (!newsPath.startsWith('/news/') && !newsPath.startsWith('news/')) {
+                        // Extract organization ID and filename
+                        const match = cleanPath.match(/news\/(\d+\/[^\/]+)/);
+                        if (match) {
+                            newsPath = `news/${match[1]}`;
+                        }
+                    }
+                    imageUrl = newsPath.startsWith('/') ? newsPath : `/${newsPath}`;
+                } else {
+                    imageUrl = cleanPath.startsWith('/') ? cleanPath : '/uploads/' + cleanPath;
+                }
+                
+                const singleImage = [{
+                    filename: imagePath.split(/[/\\]/).pop() || 'image.jpg',
+                    path: imagePath,
+                    url: imageUrl,
+                    fullUrl: `${baseUrl}${imageUrl}`
+                }];
+                console.log(`📸 News ${news.id} - Using single news image:`, singleImage);
+                setNewsImages(singleImage);
+            } else {
+                console.log(`⚠️ News ${news.id} - No images found`);
+                setNewsImages([]);
+            }
+            setCurrentImageIndex(0);
+        } catch (error) {
+            console.error('❌ Error fetching news images:', error);
+            // Fallback to single image if available
+            if (news.image_url || news.image_path) {
+                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                const imagePath = news.image_url || news.image_path;
+                
+                // Determine the correct URL path based on the image path
+                let imageUrl;
+                const cleanPath = imagePath.replace(/\\/g, '/');
+                
+                if (cleanPath.includes('news/')) {
+                    // Remove any "uploads/" prefix if present and ensure it starts with /news/
+                    let newsPath = cleanPath.replace(/^\/?uploads\/news\//, 'news/');
+                    if (!newsPath.startsWith('/news/') && !newsPath.startsWith('news/')) {
+                        // Extract organization ID and filename
+                        const match = cleanPath.match(/news\/(\d+\/[^\/]+)/);
+                        if (match) {
+                            newsPath = `news/${match[1]}`;
+                        }
+                    }
+                    imageUrl = newsPath.startsWith('/') ? newsPath : `/${newsPath}`;
+                } else {
+                    imageUrl = cleanPath.startsWith('/') ? cleanPath : '/uploads/' + cleanPath;
+                }
+                
+                setNewsImages([{
+                    filename: imagePath.split(/[/\\]/).pop() || 'image.jpg',
+                    path: imagePath,
+                    url: imageUrl,
+                    fullUrl: `${baseUrl}${imageUrl}`
+                }]);
+            } else {
+                setNewsImages([]);
+            }
+            setCurrentImageIndex(0);
+        }
     };
 
     const closePopup = () => {
         setIsPopupOpen(false);
         setSelectedNews(null);
+        setNewsImages([]);
+        setCurrentImageIndex(0);
+    };
+
+    const nextImage = (e) => {
+        e?.preventDefault();
+        e?.stopPropagation();
+        if (newsImages.length > 1) {
+            setCurrentImageIndex((prev) => {
+                const newIndex = (prev + 1) % newsImages.length;
+                console.log('➡️ Next image clicked, new index:', newIndex, 'of', newsImages.length);
+                return newIndex;
+            });
+        }
+    };
+
+    const prevImage = (e) => {
+        e?.preventDefault();
+        e?.stopPropagation();
+        if (newsImages.length > 1) {
+            setCurrentImageIndex((prev) => {
+                const newIndex = (prev - 1 + newsImages.length) % newsImages.length;
+                console.log('⬅️ Prev image clicked, new index:', newIndex, 'of', newsImages.length);
+                return newIndex;
+            });
+        }
+    };
+
+    const goToImage = (index) => {
+        if (newsImages.length > 0 && index >= 0 && index < newsImages.length) {
+            setCurrentImageIndex(index);
+        }
+    };
+
+    const getImageUrl = (imagePath, newsId = null) => {
+        if (!imagePath) return null;
+        const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+        
+        let finalUrl;
+        const cleanPath = imagePath.replace(/\\/g, '/');
+        
+        // Check if path contains "news/" (could be "news/", "/news/", "uploads/news/", or "/uploads/news/")
+        if (cleanPath.includes('news/')) {
+            // Extract the part after "news/" - e.g., "news/7/file.jpg" -> "7/file.jpg"
+            // Or "uploads/news/7/file.jpg" -> "7/file.jpg"
+            let newsPath = cleanPath;
+            
+            // Remove any leading "uploads/" prefix if present
+            newsPath = newsPath.replace(/^\/?uploads\/news\//, 'news/');
+            // Ensure it starts with "news/"
+            if (!newsPath.startsWith('news/')) {
+                // Extract organization ID and filename from various formats
+                const match = cleanPath.match(/news\/(\d+\/[^\/]+)/);
+                if (match) {
+                    newsPath = `news/${match[1]}`;
+                }
+            }
+            
+            // Construct final URL with /news/ prefix
+            if (newsPath.startsWith('/news/')) {
+                finalUrl = `${baseUrl}${newsPath}`;
+            } else if (newsPath.startsWith('news/')) {
+                finalUrl = `${baseUrl}/${newsPath}`;
+            } else {
+                // Fallback: try to extract from the path
+                const orgMatch = cleanPath.match(/(\d+)\/([^\/]+\.(jpg|jpeg|png|gif|webp|bmp))/i);
+                if (orgMatch) {
+                    finalUrl = `${baseUrl}/news/${orgMatch[1]}/${orgMatch[2]}`;
+                } else {
+                    finalUrl = `${baseUrl}/news/${newsPath.replace(/^.*?news\//, '')}`;
+                }
+            }
+        } else {
+            // Otherwise, use /uploads route
+            const uploadPath = cleanPath.startsWith('/') ? cleanPath : '/uploads/' + cleanPath;
+            finalUrl = `${baseUrl}${uploadPath}`;
+        }
+        
+        // Add cache-busting query parameter with news ID to ensure unique URLs
+        const separator = finalUrl.includes('?') ? '&' : '?';
+        const uniqueUrl = `${finalUrl}${separator}v=${newsId || Date.now()}`;
+        
+        console.log(`🔗 Image URL construction:`, {
+            originalPath: imagePath,
+            cleanedPath: cleanPath,
+            newsId: newsId,
+            finalUrl: uniqueUrl
+        });
+        
+        return uniqueUrl;
     };
 
     const CustomTooltip = ({ active, payload, label }) => {
@@ -509,78 +706,48 @@ const WatomsNews = () => {
                                 {watomsNewsData.map((news, index) => (
                                     <div
                                         key={news.id || index}
-                                        className="relative border-white border-2 rounded-2xl w-full flex gap-2 max-h-24 h-fit p-2 justify-between items-center cursor-pointer hover:bg-gray-700 hover:bg-opacity-30 transition-all duration-200"
+                                        className="relative border-white border-2 rounded-2xl w-full flex gap-3 max-h-32 h-fit p-3 justify-between items-center cursor-pointer hover:bg-gray-700 hover:bg-opacity-30 transition-all duration-200"
                                         onClick={() => handleNewsClick(news)}
                                     >
-                                        {!news?.notification && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>}
-                                        {/* <img
-                                            src={(() => {
-                                                if (!news.image_path) return img;
-
-                                                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
-                                                const imagePath = news.image_path.startsWith('/') ? news.image_path : '/uploads/' + news.image_path.replace(/\\/g, '/');
-                                                const fullUrl = `${baseUrl}${imagePath}`;
-
-                                                console.log('🔍 Image Debug:', {
-                                                    baseUrl,
-                                                    imagePath,
-                                                    fullUrl,
-                                                    originalPath: news.image_path,
-                                                    newsId: news.id,
-                                                    newsTitle: news.title,
-                                                    hasImagePath: !!news.image_path,
-                                                    imagePathType: typeof news.image_path
-                                                });
-
-                                                return fullUrl;
-                                            })()}
-                                            alt={news.title || "News image"}
-                                            className="h-full w-auto object-contain rounded-xl"
-                                            onError={(e) => {
-                                                console.error('❌ Image failed to load:', {
-                                                    failedUrl: e.target.src,
-                                                    newsId: news.id,
-                                                    newsTitle: news.title,
-                                                    originalImagePath: news.image_path,
-                                                    fallbackImage: img,
-                                                    timestamp: new Date().toISOString()
-                                                });
-
-                                                // Test URL accessibility
-                                                fetch(e.target.src, { method: 'HEAD' })
-                                                    .then(response => {
-                                                        console.log('🔍 URL Test Result:', {
-                                                            url: e.target.src,
-                                                            status: response.status,
-                                                            statusText: response.statusText,
-                                                            headers: Object.fromEntries(response.headers.entries()),
-                                                            timestamp: new Date().toISOString()
-                                                        });
-                                                    })
-                                                    .catch(error => {
-                                                        console.log('🔍 URL Test Error:', {
-                                                            url: e.target.src,
-                                                            error: error.message,
-                                                            timestamp: new Date().toISOString()
-                                                        });
+                                        {!news?.notification && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full z-10"></span>}
+                                        {news.image_url || news.image_path ? (
+                                            <img
+                                                src={getImageUrl(news.image_url || news.image_path, news.id)}
+                                                alt={`${news.title || 'News'} ${news.id}`}
+                                                className="h-24 w-32 object-cover rounded-xl flex-shrink-0 border-2 border-gray-600"
+                                                onError={(e) => {
+                                                    console.error(`❌ Failed to load image for news ${news.id}:`, {
+                                                        id: news.id,
+                                                        title: news.title,
+                                                        image_url: news.image_url,
+                                                        image_path: news.image_path,
+                                                        organization_id: news.organization_id,
+                                                        attemptedUrl: e.target.src,
+                                                        timestamp: new Date().toISOString()
                                                     });
-
-                                                e.target.src = img;
-                                            }}
-                                            onLoad={() => {
-                                                console.log('✅ Image loaded successfully:', {
-                                                    src: news.image_path,
-                                                    newsId: news.id,
-                                                    newsTitle: news.title,
-                                                    timestamp: new Date().toISOString()
-                                                });
-                                            }}
-                                        /> */}
+                                                    // Don't set fallback image - hide it instead
+                                                    e.target.style.display = 'none';
+                                                    const placeholder = e.target.nextElementSibling;
+                                                    if (!placeholder || !placeholder.classList.contains('image-placeholder')) {
+                                                        const placeholderDiv = document.createElement('div');
+                                                        placeholderDiv.className = 'h-24 w-32 flex items-center justify-center bg-gray-700 rounded-xl flex-shrink-0 border-2 border-gray-600 image-placeholder';
+                                                        placeholderDiv.innerHTML = `<span class="text-gray-400 text-xs">${news.id}</span>`;
+                                                        e.target.parentNode.insertBefore(placeholderDiv, e.target.nextSibling);
+                                                    }
+                                                }}
+                                                key={`news-img-${news.id}-${news.organization_id}-${news.image_path || news.image_url || index}`}
+                                                loading="lazy"
+                                            />
+                                        ) : (
+                                            <div className="h-24 w-32 flex items-center justify-center bg-gray-700 rounded-xl flex-shrink-0 border-2 border-gray-600">
+                                                <span className="text-gray-400 text-xs">{news.id}</span>
+                                            </div>
+                                        )}
                                         <div className="flex flex-col justify-center items-center w-full">
-                                            <h1 className="text-white text-md text-center">
+                                            <h1 className="text-white text-md text-center font-semibold">
                                                 {news.title || "عنوان الخبر"}
                                             </h1>
-                                            <h1 className="text-gray-400">
+                                            <h1 className="text-gray-400 text-sm mt-1">
                                                 {news.date ? new Date(news.date).toLocaleDateString('ar-EG') : "تاريخ غير محدد"}
                                             </h1>
                                         </div>
@@ -618,83 +785,236 @@ const WatomsNews = () => {
                                 <div className="w-0 h-6 border-l-2 border-white" />
                                 <h2 className="text-[#facc15] text-xl font-bold">التفاصيل - {selectedOrganization?.name || "غير محدد"}</h2>
                             </div>
+                            <div></div>
                         </div>
 
                         {/* Content */}
                         <div className="p-4 m-2 bg-white rounded-2xl">
-                            {/* News Image */}
-                            {/* {selectedNews.image_path && (
-                                <div className="mb-4 flex justify-center items-center gap-2">
-                                    <button
-                                        style={{
-                                            background: '#181f2e',
-                                            color: '#0af',
-                                            border: 'none',
-                                            borderRadius: '50%',
-                                            width: 36,
-                                            height: 36,
-                                            fontSize: 22,
-                                            fontWeight: 900,
-                                            cursor: 'pointer',
-                                            boxShadow: '0 2px 8px #0006',
-                                            transition: 'background 0.2s',
-                                        }}
-                                        title="الصورة السابقة"
-                                    >
-                                        &#8592;
-                                    </button>
+                            {/* News Images Slideshow */}
+                            {newsImages.length > 0 && (
+                                <div className="mb-4 flex flex-col items-center gap-2">
+                                    <div className="relative w-full max-w-2xl">
+                                        <img
+                                            src={(() => {
+                                                const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
+                                                const currentImage = newsImages[currentImageIndex];
+                                                
+                                                if (!currentImage) {
+                                                    console.error('❌ No image at index:', currentImageIndex, 'Total images:', newsImages.length);
+                                                    return null;
+                                                }
+                                                
+                                                // Prefer fullUrl if available, otherwise construct from url or path
+                                                let fullUrl = currentImage.fullUrl;
+                                                
+                                                if (!fullUrl) {
+                                                    const imageUrl = currentImage.url || currentImage.path;
+                                                    console.log(`📸 Loading slideshow image ${currentImageIndex + 1}/${newsImages.length}:`, {
+                                                        newsId: selectedNews.id,
+                                                        imageUrl,
+                                                        currentImage,
+                                                        filename: currentImage.filename
+                                                    });
+                                                    
+                                                    if (imageUrl) {
+                                                        // Remove any /uploads/ prefix if present
+                                                        if (typeof imageUrl === 'string') {
+                                                            imageUrl = imageUrl.replace(/^\/?uploads\/news\//, '/news/');
+                                                        }
+                                                        
+                                                        // Construct full URL
+                                                        if (imageUrl.startsWith('http')) {
+                                                            fullUrl = imageUrl;
+                                                        } else {
+                                                            const cleanUrl = imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl;
+                                                            fullUrl = `${baseUrl}${cleanUrl}`;
+                                                        }
+                                                    }
+                                                } else {
+                                                    console.log(`📸 Using pre-constructed fullUrl for image ${currentImageIndex + 1}/${newsImages.length}`);
+                                                }
+                                                
+                                                if (fullUrl) {
+                                                    // Add cache-busting with news ID and image index
+                                                    const separator = fullUrl.includes('?') ? '&' : '?';
+                                                    const finalUrl = `${fullUrl}${separator}v=${selectedNews.id}-${currentImageIndex}-${Date.now()}`;
+                                                    console.log(`📸 Final slideshow image URL for news ${selectedNews.id}:`, finalUrl);
+                                                    return finalUrl;
+                                                }
+                                                
+                                                // Fallback to news image if available
+                                                if (selectedNews.image_url || selectedNews.image_path) {
+                                                    const fallbackUrl = getImageUrl(selectedNews.image_url || selectedNews.image_path, selectedNews.id);
+                                                    console.log(`📸 Using fallback news image URL:`, fallbackUrl);
+                                                    return fallbackUrl;
+                                                }
+                                                
+                                                console.error(`❌ No image URL available for slideshow at index ${currentImageIndex}`);
+                                                return null;
+                                            })()}
+                                            alt={`${selectedNews.title || "News"} - Image ${currentImageIndex + 1}`}
+                                            className="w-full h-64 object-cover rounded-xl border-2 border-black"
+                                            onError={(e) => {
+                                                console.error(`❌ Slideshow image failed to load:`, {
+                                                    newsId: selectedNews.id,
+                                                    imageIndex: currentImageIndex,
+                                                    attemptedUrl: e.target.src,
+                                                    newsImages: newsImages,
+                                                    currentImage: newsImages[currentImageIndex]
+                                                });
+                                                // Don't use fallback image - hide it and show placeholder
+                                                e.target.style.display = 'none';
+                                                if (!e.target.nextElementSibling || !e.target.nextElementSibling.classList.contains('image-error-placeholder')) {
+                                                    const placeholder = document.createElement('div');
+                                                    placeholder.className = 'w-full h-64 flex items-center justify-center bg-gray-200 rounded-xl border-2 border-gray-400 image-error-placeholder';
+                                                    placeholder.innerHTML = `<span class="text-gray-500">فشل تحميل الصورة ${currentImageIndex + 1}</span>`;
+                                                    e.target.parentNode.insertBefore(placeholder, e.target.nextSibling);
+                                                }
+                                            }}
+                                            onLoad={() => {
+                                                console.log(`✅ Slideshow image ${currentImageIndex + 1} loaded successfully`);
+                                            }}
+                                        />
+                                    </div>
+                                    {/* Slideshow Navigation Arrows Below Image */}
+                                    {newsImages.length > 0 && (
+                                        <div className="flex justify-center items-center gap-4 mt-3" style={{ position: 'relative', zIndex: 10 }}>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    prevImage(e);
+                                                }}
+                                                disabled={newsImages.length <= 1}
+                                                style={{
+                                                    background: newsImages.length > 1 ? '#181f2e' : '#4b5563',
+                                                    color: '#facc15',
+                                                    border: '2px solid #facc15',
+                                                    borderRadius: '50%',
+                                                    width: 40,
+                                                    height: 40,
+                                                    fontSize: 20,
+                                                    fontWeight: 900,
+                                                    cursor: newsImages.length > 1 ? 'pointer' : 'not-allowed',
+                                                    boxShadow: newsImages.length > 1 ? '0 2px 8px rgba(250, 204, 21, 0.3)' : 'none',
+                                                    transition: 'all 0.3s ease',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    opacity: newsImages.length > 1 ? 1 : 0.5,
+                                                    pointerEvents: newsImages.length > 1 ? 'auto' : 'none',
+                                                    position: 'relative',
+                                                    zIndex: 10
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (newsImages.length > 1 && !e.target.disabled) {
+                                                        e.target.style.background = '#facc15';
+                                                        e.target.style.color = '#181f2e';
+                                                        e.target.style.transform = 'scale(1.1)';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (newsImages.length > 1 && !e.target.disabled) {
+                                                        e.target.style.background = '#181f2e';
+                                                        e.target.style.color = '#facc15';
+                                                        e.target.style.transform = 'scale(1)';
+                                                    }
+                                                }}
+                                                title="الصورة السابقة"
+                                            >
+                                                &#8592;
+                                            </button>
+                                            {newsImages.length > 1 && (
+                                                <div className="text-gray-700 font-semibold text-sm px-3 py-1 bg-gray-100 rounded-full">
+                                                    {currentImageIndex + 1} / {newsImages.length}
+                                                </div>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    nextImage(e);
+                                                }}
+                                                disabled={newsImages.length <= 1}
+                                                style={{
+                                                    background: newsImages.length > 1 ? '#181f2e' : '#4b5563',
+                                                    color: '#facc15',
+                                                    border: '2px solid #facc15',
+                                                    borderRadius: '50%',
+                                                    width: 40,
+                                                    height: 40,
+                                                    fontSize: 20,
+                                                    fontWeight: 900,
+                                                    cursor: newsImages.length > 1 ? 'pointer' : 'not-allowed',
+                                                    boxShadow: newsImages.length > 1 ? '0 2px 8px rgba(250, 204, 21, 0.3)' : 'none',
+                                                    transition: 'all 0.3s ease',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    opacity: newsImages.length > 1 ? 1 : 0.5,
+                                                    pointerEvents: newsImages.length > 1 ? 'auto' : 'none',
+                                                    position: 'relative',
+                                                    zIndex: 10
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (newsImages.length > 1 && !e.target.disabled) {
+                                                        e.target.style.background = '#facc15';
+                                                        e.target.style.color = '#181f2e';
+                                                        e.target.style.transform = 'scale(1.1)';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (newsImages.length > 1 && !e.target.disabled) {
+                                                        e.target.style.background = '#181f2e';
+                                                        e.target.style.color = '#facc15';
+                                                        e.target.style.transform = 'scale(1)';
+                                                    }
+                                                }}
+                                                title="الصورة التالية"
+                                            >
+                                                &#8594;
+                                            </button>
+                                        </div>
+                                    )}
+                                    {newsImages.length === 0 && (
+                                        <div className="text-gray-500 text-sm mt-2 text-center" style={{ minHeight: '24px' }}>
+                                            لا توجد صور متاحة
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {/* Show single image if no slideshow images but news has image */}
+                            {newsImages.length === 0 && (selectedNews.image_url || selectedNews.image_path) && (
+                                <div className="mb-4 flex justify-center items-center">
                                     <img
-                                        src={(() => {
-                                            const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL || 'http://localhost:4000';
-                                            const imagePath = selectedNews.image_path.startsWith('/') ? selectedNews.image_path : '/uploads/' + selectedNews.image_path.replace(/\\/g, '/');
-                                            const fullUrl = `${baseUrl}${imagePath}`;
-
-                                            console.log('🔍 Popup Image Debug:', {
-                                                baseUrl,
-                                                imagePath,
-                                                fullUrl,
-                                                originalPath: selectedNews.image_path
-                                            });
-
-                                            return fullUrl;
-                                        })()}
-                                        alt={selectedNews.title || "News image"}
-                                        className="w-[85%] h-64 object-cover rounded-xl border-2 border-black"
+                                        src={getImageUrl(selectedNews.image_url || selectedNews.image_path, selectedNews.id)}
+                                        alt={`${selectedNews.title || "News"} ${selectedNews.id}`}
+                                        className="w-full max-w-2xl h-64 object-cover rounded-xl border-2 border-black"
                                         onError={(e) => {
-                                            console.error('❌ Popup Image failed to load:', {
-                                                failedUrl: e.target.src,
+                                            console.error(`❌ Single news image failed to load:`, {
                                                 newsId: selectedNews.id,
-                                                newsTitle: selectedNews.title,
-                                                originalImagePath: selectedNews.image_path,
-                                                fallbackImage: img
+                                                image_url: selectedNews.image_url,
+                                                image_path: selectedNews.image_path,
+                                                attemptedUrl: e.target.src
                                             });
-                                            e.target.src = img;
+                                            // Don't use fallback - show placeholder
+                                            e.target.style.display = 'none';
+                                            if (!e.target.nextElementSibling || !e.target.nextElementSibling.classList.contains('image-error-placeholder')) {
+                                                const placeholder = document.createElement('div');
+                                                placeholder.className = 'w-full h-64 flex items-center justify-center bg-gray-200 rounded-xl border-2 border-gray-400 image-error-placeholder';
+                                                placeholder.innerHTML = `<span class="text-gray-500">فشل تحميل الصورة</span>`;
+                                                e.target.parentNode.insertBefore(placeholder, e.target.nextSibling);
+                                            }
+                                        }}
+                                        onLoad={() => {
+                                            console.log(`✅ News image loaded successfully for news ${selectedNews.id}`);
                                         }}
                                     />
-                                    <button
-                                        style={{
-                                            background: '#181f2e',
-                                            color: '#0af',
-                                            border: 'none',
-                                            borderRadius: '50%',
-                                            width: 36,
-                                            height: 36,
-                                            fontSize: 22,
-                                            fontWeight: 900,
-                                            cursor: 'pointer',
-                                            boxShadow: '0 2px 8px #0006',
-                                            transition: 'background 0.2s',
-                                        }}
-                                        title="الصورة التالي"
-                                    >
-                                        &#8594;
-                                    </button>
                                 </div>
-                            )} */}
-                            <div className="flex w-full justify-evenly items-center">
-                                <img className="w-1/3 h-44" src={ebdaeduLogo} alt="" />
-                                <img className="w-1/3" src={molLogo} alt="" />
-                            </div>
+                            )}
 
                             {/* News Details */}
                             <div className="space-y-4">
