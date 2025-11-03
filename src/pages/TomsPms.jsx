@@ -744,36 +744,6 @@ const TomsPms = () => {
                       </button>
                     </div>
                   </div>
-                  <div
-                    key="ملاحظة جلسة تدريبية"
-                    className="group bg-white/80 backdrop-blur rounded-xl shadow-lg border border-white/40 px-4 py-4 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 animate-fadeInUp cursor-pointer hover:border-blue-400/60 flex flex-col"
-                    style={{ animationDelay: `${1 * 80}ms` }}
-                    onClick={handleTestClick}
-                  >
-                    {/* Form Header */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-lg flex items-center justify-center shadow group-hover:scale-110 transition-transform duration-300">
-                        <FontAwesomeIcon icon={faPlus} className="text-white text-base" />
-                      </div>
-                      <h4 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                        ملاحظة جلسة تدريبية
-                      </h4>
-                    </div>
-                    {/* Action Button */}
-                    <div className="pt-2 mt-auto">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTestClick();
-                        }}
-                        className="w-full bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 group relative overflow-hidden text-base"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        <span className="relative z-10">{language ? 'Open Form' : 'فتح النموذج'}</span>
-                        <FontAwesomeIcon icon={faArrowRight} className="text-xs group-hover:translate-x-1 transition-transform relative z-10" />
-                      </button>
-                    </div>
-                  </div>
                   {pd.map(type => (
                     <div>
                         {type.forms.map((form, idx) => (
