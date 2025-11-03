@@ -458,7 +458,7 @@ const WisdomDashboard = () => {
                         color: "#10b981"
                     },
                     {
-                        name: "الكفاءة والفعالية",
+                        name: "البيئة التعليمية",
                         score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.EEBM?.totalEEBM) || 0,
                         color: "#f59e0b"
                     }
@@ -700,7 +700,7 @@ const WisdomDashboard = () => {
                         color: "#10b981"
                     },
                     {
-                        name: "الكفاءة والفعالية",
+                        name: "البيئة التعليمية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.totalEEBM) || 0,
                         color: "#f59e0b"
                     }
@@ -832,29 +832,37 @@ const WisdomDashboard = () => {
                         ],
                     },
                     {
-                        name: "الكفاءة والفعالية",
+                        name: "البيئة التعليمية",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.totalEEBM) || 0,
                         subData: [
                             {
                                 name: "تقييم البيئة التعليمية",
-                                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.avgScore) || 0,
-                                codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.codeScores || [],
-                                scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.scores || [],
-                                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.no_of_forms || 0,
+                                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.avgScore) || 0,
+                                codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.codeScores || [],
+                                scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.scores || [],
+                                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.no_of_forms || 0,
                                 color: "#520a9c"
                             },
-                            {
-                                name: "كفاءة المعامل والورش",
-                                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.avgScore) || 0,
-                                codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.codeScores || [],
-                                scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.scores || [],
-                                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.no_of_forms || 0,
-                                color: "#520a9c"
-                            },
+                            // {
+                            //     name: "تقييم البيئة التعليمية",
+                            //     score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.avgScore) || 0,
+                            //     codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.codeScores || [],
+                            //     scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.scores || [],
+                            //     no_of_forms: selectedOrg?.months[selectedMonthIdx]?.EEBM?.EDU?.no_of_forms || 0,
+                            //     color: "#520a9c"
+                            // },
+                            // {
+                            //     name: "كفاءة المعامل والورش",
+                            //     score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.avgScore) || 0,
+                            //     codes: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.codeScores || [],
+                            //     scores: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.scores || [],
+                            //     no_of_forms: selectedOrg?.months[selectedMonthIdx]?.EEBM?.LEE?.no_of_forms || 0,
+                            //     color: "#520a9c"
+                            // },
                         ],
                     },
                     {
-                        name: "الكفاءة والغعالية العامة",
+                        name: "مؤشرات اخري",
                         score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.totalGEEBM) || 0,
                         subData: [
                             {
@@ -863,14 +871,6 @@ const WisdomDashboard = () => {
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.scores || [],
                                 no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.W?.no_of_forms || 0,
-                                color: "#520a9c"
-                            },
-                            {
-                                name: "تقييم البيئة التعليمية",
-                                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.avgScore) || 0,
-                                codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.codeScores || [],
-                                scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.scores || [],
-                                no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.no_of_forms || 0,
                                 color: "#520a9c"
                             },
                             {

@@ -486,6 +486,11 @@ const WatomsDashboard = () => {
             name: "المقياس الاكاديمي",
             score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.totalACBM) || 0,
             color: "#f59e0b"
+          },
+          {
+            name: "التنمية المهنية",
+            score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.TV?.avgScore) || 0,
+            color: "#596a95"
           }
         ])
         setOrgSubStandards([
@@ -588,7 +593,18 @@ const WatomsDashboard = () => {
             ],
           },
           {
-            name: "الكفاءة و الفاعلية",
+            name: "التنمبة المهنية",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
+            subData: [
+              {
+                name: "التنمية المهنية",
+                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.TV?.avgScore) || 0,
+                color: "#596a95"
+              }
+            ],
+          },
+          {
+            name: "مؤشرات اخري",
             score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.totalGEEBM) || 0,
             subData: [
               {
@@ -598,11 +614,6 @@ const WatomsDashboard = () => {
                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.scores || [],
                 no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.no_of_forms || 0,
                 color: "#520a9c"
-              },
-              {
-                name: "التنمية المهنية",
-                score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.TV?.avgScore) || 0,
-                color: "#596a95"
               },
               {
                 name: "الاشراف اليومي",
@@ -668,7 +679,12 @@ const WatomsDashboard = () => {
             name: "المقياس الاكاديمي",
             score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.totalACBM) || 0,
             color: "#f59e0b"
-          }
+          },
+          {
+            name: "التنمية المهنية",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.TV?.avgScore) || 0,
+            color: "#596a95"
+          },
         ])
       }
     }
@@ -775,7 +791,18 @@ const WatomsDashboard = () => {
             ],
           },
           {
-            name: "الكفاءة و الفاعلية",
+            name: "التنمية المهنية",
+            score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.totalTQBM) || 0,
+            subData: [
+              {
+                name: "التنمية المهنية",
+                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.TV?.avgScore) || 0,
+                color: "#596a95"
+              }
+            ],
+          },
+          {
+            name: "مؤشرات اخري",
             score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.totalGEEBM) || 0,
             subData: [
               {
@@ -785,11 +812,6 @@ const WatomsDashboard = () => {
                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.scores || [],
                 no_of_forms: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.no_of_forms || 0,
                 color: "#520a9c"
-              },
-              {
-                name: "التنمية المهنية",
-                score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.TV?.avgScore) || 0,
-                color: "#596a95"
               },
               {
                 name: "الاشراف اليومي",
