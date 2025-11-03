@@ -619,7 +619,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "تقييم المناهج",
+                                name: "تقييم البيئة التعليمية",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.C?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.scores || [],
@@ -627,7 +627,7 @@ const WisdomDashboard = () => {
                                 color: "#596a95"
                             },
                             {
-                                name: "تقييم المعلم",
+                                name: "تقييم اداء المعلم",
                                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.T?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.scores || [],
@@ -866,7 +866,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "تقييم المناهج",
+                                name: "تقييم البيئة التعليمية",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.C?.scores || [],
@@ -874,7 +874,7 @@ const WisdomDashboard = () => {
                                 color: "#520a9c"
                             },
                             {
-                                name: "تقييم المعلم",
+                                name: "تقييم اداء المعلم",
                                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.avgScore) || 0,
                                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.codeScores || [],
                                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.T?.scores || [],

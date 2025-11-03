@@ -167,6 +167,7 @@ const WatomsProfessionalExamination = () => {
 
                 // Optionally close the popup after success
                 setInputsType("");
+                setSelectedCandidate(formData);
                 setFormData({
                     name: "",
                     id_number: "",
@@ -293,7 +294,7 @@ const WatomsProfessionalExamination = () => {
                     <div>اجراءات الحوكمة</div>
                     <div className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-gray-500 px-2 rounded-xl border-blue-600 border-2">ملفات تاكيد الهوية</div>
                     <button onClick={() => navigate('/watoms/pe/practical-test')} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">تقييم مراقبين الجودة والحوكمة</button>
-                    <button onClick={() => navigate('/watoms/pe/soft-test')} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">اختبارات المرشحين</button>
+                    <button onClick={() => selectedCandidate ? navigate(`/watoms/pe/candidates-exam/${selectedCandidate.candidate_id}`) : toast.error("اختر او اضف متقدم اولا ")} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">اختبارات المرشحين</button>
                     <button onClick={() => navigate('/watoms/pe/cognitive-test')} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">مؤشرات تحليل الأداء العام</button>
                 </div>
                 {/* user's details */}
