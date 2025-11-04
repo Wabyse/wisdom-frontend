@@ -39,3 +39,33 @@ export const submitExamAnswers = async (data) => {
         throw error;
     }
 };
+
+export const calculateExamScore = async (id) => {
+    try {
+        const response = await api.get(`/api/v1/pe/exams/scores/${id}`);
+        return response?.data?.results || [];
+    } catch (error) {
+        console.error('Error fetching Watoms Detailed Data:', error);
+        throw error;
+    }
+};
+
+export const fetchMCQExam = async (id) => {
+    try {
+        const response = await api.get(`/api/v1/pe/exam/mcq/${id}`);
+        return response?.data?.exam || [];
+    } catch (error) {
+        console.error('Error fetching Watoms Detailed Data:', error);
+        throw error;
+    }
+}
+
+export const submitMCQExamAnswers = async (data) => {
+    try {
+        const response = await api.post('/api/v1/pe/mcq-exam-answers', data);
+        return response?.data || {};
+    } catch (error) {
+        console.error('Error submitting exam answers:', error);
+        throw error;
+    }
+};

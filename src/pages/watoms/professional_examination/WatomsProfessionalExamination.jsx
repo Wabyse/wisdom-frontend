@@ -25,6 +25,7 @@ import { COUNTRYS } from "../../../constants/constants";
 // utils
 import { extractDate } from "../../../utils/extractDate";
 import { extractTime } from "../../../utils/extractTime";
+import { calculateExamScore } from "../../../services/watoms/professionalExamination";
 
 const WatomsProfessionalExamination = () => {
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ const WatomsProfessionalExamination = () => {
     const [courses, setCourses] = useState([]);
     const [candidates, setCandidates] = useState([]);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
+    const [oceanScore, setOceanScore] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         id_number: "",
@@ -121,6 +123,11 @@ const WatomsProfessionalExamination = () => {
     }, []);
 
     useEffect(() => {
+        const calculateCandidateScore = async () => {
+            const response = await calculateExamScore(selectedCandidate.id);
+            setOceanScore(response["(OCEAN)"]);
+        }
+
         if (selectedCandidate) {
             setFormData(prev => ({
                 ...prev,
@@ -146,6 +153,7 @@ const WatomsProfessionalExamination = () => {
                 fc_end_time: extractTime(selectedCandidate.fc_end_date),
                 fc_test_score: selectedCandidate.fc_test_score || "",
             }));
+            calculateCandidateScore();
         }
     }, [selectedCandidate]);
 
@@ -303,8 +311,61 @@ const WatomsProfessionalExamination = () => {
                         {/* application */}
                         <div className="w-[35%] flex flex-col items-center gap-5 px-4 py-6">
                             {/* application */}
-                            <div className="w-full border-white border-2 rounded-xl">
-                                <img className="rounded-xl" src={application} alt="" />
+                            <div className="w-full h-4/5 flex justify-center border-white border-2 rounded-xl">
+                                <img className="h-full rounded-xl" src={application} alt="" />
+                            </div>
+                            <div className="w-full text-sm" dir="rtl">
+                                {/* Header */}
+                                <div className="grid grid-cols-5 bg-[#5268b1] border-b border-blue-200/60 text-white rounded-t">
+                                    <div className="py-2 text-center font-semibold">test</div>
+                                    <div className="py-2 text-center font-semibold">test</div>
+                                    <div className="py-2 text-center font-semibold">test</div>
+                                    <div className="py-2 text-center font-semibold">test</div>
+                                    <div className="py-2 text-center font-semibold">OCEAN</div>
+                                </div>
+
+                                {/* Body */}
+                                <div className="grid grid-cols-5 bg-[#2f417a] hover:bg-slate-50 transition-colors text-white text-center rounded-b border border-blue-200/60">
+                                    <div className="py-2">
+                                        <span
+                                            className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full ${oceanScore ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}
+                                        >
+                                            0
+                                        </span>
+                                    </div>
+
+                                    <div className="py-2">
+                                        <span
+                                            className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full ${oceanScore ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}
+                                        >
+                                            0
+                                        </span>
+                                    </div>
+
+                                    <div className="py-2">
+                                        <span
+                                            className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full ${oceanScore ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}
+                                        >
+                                            0
+                                        </span>
+                                    </div>
+
+                                    <div className="py-2">
+                                        <span
+                                            className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full ${oceanScore ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}
+                                        >
+                                            0
+                                        </span>
+                                    </div>
+
+                                    <div className="py-2">
+                                        <span
+                                            className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full ${oceanScore ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}
+                                        >
+                                            {oceanScore ? ((oceanScore["الانفتاح"] + oceanScore["الضمير الحي"] + oceanScore["الانبساطية"] + oceanScore["التوافقية"] + oceanScore["العُصابية"]) / 5) : 0}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         {/* user's data and passport */}

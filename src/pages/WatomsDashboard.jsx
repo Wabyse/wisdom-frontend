@@ -1221,9 +1221,9 @@ const WatomsDashboard = () => {
             justifyContent: 'center'
           }}>
             {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute left-28">
-              <p className="flex gap-2"><p>(049)</p><p>معيار فرعي</p></p>
-              <p className="flex gap-2"><p>(149)</p><p>مؤشر اداء</p></p>
-              <p className="flex gap-2"><p>(242)</p><p>ممارسة و دليل</p></p>
+              <p className="flex gap-2"><p>(050)</p><p>معيار فرعي</p></p>
+              <p className="flex gap-2"><p>(150)</p><p>مؤشر اداء</p></p>
+              <p className="flex gap-2"><p>(264)</p><p>ممارسة و دليل</p></p>
             </div>}
             <Egypt
               width={400}
@@ -1234,8 +1234,8 @@ const WatomsDashboard = () => {
               showLabels
             />
             {selectedOrg?.id === "All" && <div className="text-xs self-end pb-4 absolute right-28">
-              <p className="flex gap-2 justify-end"><p>مؤشرات مرجعية</p><p>(04)</p></p>
-              <p className="flex gap-2 justify-end"><p>مجال عام</p><p>(11)</p></p>
+              <p className="flex gap-2 justify-end"><p>شاشات متابعة</p><p>(04)</p></p>
+              <p className="flex gap-2 justify-end"><p>معيار رئيسي</p><p>(11)</p></p>
               <p className="flex gap-2 justify-end"><p>اداة جمع بيانات</p><p>(45)</p></p>
             </div>}
             {/* Selected center evaluation circle with arrow and info box */}

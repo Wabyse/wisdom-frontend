@@ -1046,3 +1046,19 @@ export const COUNTRYS = [
     "المملكة العربية السعودية",
     "الامارات العربية المتحدة"
 ]
+
+export const OCEAN_SCORE_RESULT = (score) => {
+    if (score >= 40 && score <= 50) {
+        return "عاليا جدا"
+    } else if (score >= 30 && score <= 39) {
+        return "متوسطة - عالية"
+    } else if (score >= 21 && score <= 29) {
+        return "متوسطة"
+    } else if (score >= 11 && score <= 20) {
+        return "متوسطة - منخفضة"
+    } else if (score <= 10) {
+        return "منخفضة جدا"
+    } else {
+        return ""
+    }
+}

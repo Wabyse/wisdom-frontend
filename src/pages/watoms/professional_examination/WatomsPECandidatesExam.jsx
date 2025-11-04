@@ -11,33 +11,30 @@ import qrcodeButton from '../../../assets/qrcodeButtonImg.png';
 // tools
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-// libraries
-import toast, { Toaster } from "react-hot-toast";
 // APIs
-import { fetchAllExams, fetchCandidate, fetchExam, submitExamAnswers } from "../../../services/watoms/professionalExamination";
+import { fetchAllExams, fetchCandidate, fetchExam, fetchMCQExam } from "../../../services/watoms/professionalExamination";
 import { fetchCurriculums, fetchSchools } from "../../../services/data";
+import OceanExam from "../../../components/watoms/professional_examination/OceanExam";
+import CatExam from "../../../components/watoms/professional_examination/CatExam";
 
 const WatomsPECandidatesExam = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [, setExamsTitles] = useState([]);
+    const [examTitles, setExamsTitles] = useState([]);
     const [selectedExamTitle, setSelectedExamTitles] = useState(null);
-    const [examQuestions, setExamQuestions] = useState([]);
-    const [answers, setAnswers] = useState({});
-    const [selectedAnswer, setSelectedAnswer] = useState("");
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [selectedExamId, setSelectedExamId] = useState(1);
+    const [oceanExamQuestions, setOceanExamQuestions] = useState([]);
+    const [catExamQuestions, setCatExamQuestions] = useState([]);
     const [candidate, setCandidate] = useState(null);
     const [vtcs, setVtcs] = useState([]);
     const [courses, setCourses] = useState([]);
-    const [timeLeft, setTimeLeft] = useState(59);
-    const [autoNextCount, setAutoNextCount] = useState(0);
-    const [submitted, setSubmitted] = useState(false);
+    const [oceanAnswers, setOceanAnswers] = useState({});
+    const [catAnswers, setCatAnswers] = useState({});
 
     useEffect(() => {
         const loadExams = async () => {
             const response = await fetchAllExams();
             setExamsTitles(response);
-            setSelectedExamTitles(response[0]);
         };
 
         const loadCandidate = async () => {
@@ -64,121 +61,43 @@ const WatomsPECandidatesExam = () => {
     }, []);
 
     useEffect(() => {
-        const loadExamQuestions = async () => {
-            if (selectedExamTitle?.id) {
-                const response = await fetchExam(selectedExamTitle.id);
-                setExamQuestions(response);
-            }
-        };
-        loadExamQuestions();
-    }, [selectedExamTitle]);
+        const loadOceanExam = () => {
+            const filteredExam = examTitles.filter(e => e.id === selectedExamId);
+            setSelectedExamTitles(filteredExam[0]);
+        }
+
+        loadOceanExam();
+    }, [examTitles, selectedExamId])
 
     useEffect(() => {
-        if (examQuestions.length === 0 || submitted) return;
+        const loadOceanExamQuestions = async () => {
+            const response = await fetchExam(1);
+            setOceanExamQuestions(response);
+        };
 
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev > 0) {
-                    return prev - 1;
-                } else {
-                    clearInterval(timer);
+        const loadCatExamQuestions = async () => {
+            const response = await fetchMCQExam(2);
+            setCatExamQuestions(response);
+        };
 
-                    // Auto advance logic
-                    setAutoNextCount((prevCount) => {
-                        const nextCount = prevCount + 1;
+        loadOceanExamQuestions();
+        loadCatExamQuestions();
+    }, []);
 
-                        // If still within question count
-                        if (nextCount < examQuestions.length && currentIndex < examQuestions.length - 1) {
-                            setCurrentIndex((prevIndex) => prevIndex + 1);
-                            setSelectedAnswer(answers[currentIndex + 1] || "");
-                            setTimeLeft(59); // reset timer only after finishing a cycle
-                        } else {
-                            // Timer finished for all questions — submit answers
-                            handleSubmit();
-                            setTimeLeft(0);
-                        }
-
-                        return nextCount;
-                    });
-
-                    return 0;
-                }
-            });
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, [timeLeft, examQuestions.length, currentIndex, submitted]);
-
-    const handleChange = (e) => {
-        const value = Number(e.target.value);
-        setSelectedAnswer(value);
-        setAnswers((prev) => ({ ...prev, [currentIndex]: value }));
+    const handleOceanCountChange = (value) => {
+        setOceanAnswers(value);
     };
-
-    const handleNext = () => {
-        if (currentIndex < examQuestions.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            setSelectedAnswer(answers[currentIndex + 1] || "");
-        }
-    };
-    const handlePrevious = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-            setSelectedAnswer(answers[currentIndex - 1] || "");
-        }
-    };
-
-    const handleSubmit = async () => {
-        if (submitted) return; // ✅ prevent multiple submissions
-
-        setSubmitted(true); // lock submission
-
-        try {
-            if (!candidate?.id) {
-                toast.error('اختر متقدم أولاً!');
-                setSubmitted(false);
-                return;
-            }
-
-            if (examQuestions.length === 0) {
-                toast.error('لا يوجد أسئلة في هذا الاختبار!');
-                setSubmitted(false);
-                return;
-            }
-
-            // ✅ Fill unanswered questions with 0
-            const allAnswers = examQuestions.map((q, idx) => ({
-                question_id: q.id,
-                answer: answers[idx] ?? 0,
-            }));
-
-            const formData = {
-                candidate_id: candidate.id,
-                exam_id: examQuestions[0]?.exam_id,
-                allAnswers,
-            };
-
-            await submitExamAnswers(formData);
-            toast.success('تم تسجيل الإجابات بنجاح!');
-        } catch (error) {
-            console.error('Error submitting exam answers:', error);
-            toast.error('حدث خطأ أثناء تسجيل الإجابات!');
-            setSubmitted(false); // allow retry if submission failed
-        }
+    const handleCatCountChange = (value) => {
+        setCatAnswers(value);
     };
 
     // Calculate progress percentage
-    const answeredCount = Object.keys(answers).length;
-    const progress = Math.round((answeredCount / examQuestions.length) * 100);
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    const formattedTime = `${minutes.toString().padStart(2, "0")} : ${seconds
-        .toString()
-        .padStart(2, "0")}`;
+    const oceanAnsweredCount = Object.keys(oceanAnswers).length;
+    const catAnsweredCount = Object.keys(catAnswers).length;
+    const progress = Math.round(((oceanAnsweredCount + catAnsweredCount) / (oceanExamQuestions.length + catExamQuestions.length)) * 100);
 
     return (
         <>
-            <Toaster />
             <NewNavbar
                 shareStatus={false}
                 darkmodeStatus={false}
@@ -261,7 +180,7 @@ const WatomsPECandidatesExam = () => {
                         </div>
                     </div>
                     {/* Progress Bar */}
-                    <div className="w-full bg-gray-300 rounded-full h-12 relative flex items-center">
+                    <div className="w-full bg-gray-300 rounded-full h-8 relative flex items-center">
                         {/* Filled section */}
                         <div
                             className="bg-blue-500 h-full rounded-full absolute left-0 top-0 transition-all duration-500"
@@ -272,88 +191,23 @@ const WatomsPECandidatesExam = () => {
                         <div className="relative z-10 flex justify-center items-center gap-2 w-full px-3 text-sm font-medium text-gray-800">
                             <span>[{progress}%]</span>
                             <span> - </span>
-                            <span>[{answeredCount} / {examQuestions.length}]</span>
+                            <span>[{oceanAnsweredCount + catAnsweredCount} / {oceanExamQuestions.length + catExamQuestions.length}]</span>
                         </div>
                     </div>
-
-                    <div className="w-full h-[95%] flex gap-4 text-white">
-                        <div className="w-1/4 flex flex-col justify-center items-center">
-                            <h1 className="text-3xl text-yellow-400 text-center">{selectedExamTitle?.name}</h1>
-                            <h1 className="text-3xl text-yellow-400 text-center">{selectedExamTitle?.code}</h1>
-                        </div>
-                        <div className="w-3/4 border-white border-2 rounded-xl px-6 py-4 flex flex-col justify-between space-y-4">
-                            {examQuestions.length > 0 && examQuestions[currentIndex] ? (
-                                <div className="space-y-4">
-                                    <h1 className="text-sm text-yellow-400 text-end">
-                                        الوقت المتبقي لإجابة السؤال ({formattedTime})
-                                    </h1>
-
-                                    {/* Question */}
-                                    <h2 className="text-lg font-bold mb-3 text-right" dir="rtl">
-                                        {examQuestions[currentIndex].id} - {examQuestions[currentIndex].name}
-                                    </h2>
-
-                                    {/* Answers */}
-                                    <div className="flex flex-col gap-2">
-                                        {examQuestions[currentIndex]?.rate_scale
-                                            ? Array.from({ length: examQuestions[currentIndex].rate_scale }, (_, idx) => (
-                                                <label
-                                                    key={idx + 1}
-                                                    className={`flex items-center gap-2 border rounded-lg px-3 py-2 cursor-pointer transition ${selectedAnswer === idx + 1
-                                                        ? "text-black border-blue-500 bg-blue-50"
-                                                        : "border-gray-300 hover:bg-gray-100"
-                                                        }`}
-                                                    dir="rtl"
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name={`question-${currentIndex}`}
-                                                        value={idx + 1}
-                                                        checked={selectedAnswer === idx + 1}
-                                                        onChange={handleChange}
-                                                        className="cursor-pointer"
-                                                    />
-                                                    <span>{idx + 1}</span>
-                                                </label>
-                                            ))
-                                            : <p className="text-center text-gray-400">لا يوجد مقياس تقييم لهذا السؤال</p>
-                                        }
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="text-center text-yellow-400">جاري تحميل الأسئلة...</div>
-                            )}
-
-                            {/* ✅ Buttons pinned to bottom-right */}
-                            <div className="flex justify-between gap-4 mt-6">
-                                {currentIndex ? <button
-                                    onClick={handlePrevious}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
-                                >
-                                    السابق
-                                </button> : <div className="w-20"></div>}
-                                <h1 className="text-center">{currentIndex + 1} / {examQuestions.length}</h1>
-                                {(currentIndex + 1) === examQuestions.length ?
-                                    <button
-                                        onClick={handleSubmit}
-                                        disabled={submitted} // ✅ disable after submit
-                                        className={`px-4 py-2 rounded-lg transition text-white ${submitted
-                                                ? "bg-gray-400 cursor-not-allowed"
-                                                : "bg-blue-500 hover:bg-blue-600"
-                                            }`}
-                                    >
-                                        {submitted ? "تم التسجيل" : "تسجيل"}
-                                    </button>
-                                    :
-                                    <button
-                                        onClick={handleNext}
-                                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
-                                    >
-                                        التالي
-                                    </button>}
-                            </div>
-                        </div>
-                    </div>
+                    {selectedExamId === 1 && <OceanExam
+                        selectedExamTitle={selectedExamTitle}
+                        examQuestions={oceanExamQuestions}
+                        candidate={candidate}
+                        onAnswersChange={handleOceanCountChange}
+                        onChangeExam={setSelectedExamId}
+                    />}
+                    {selectedExamId === 2 && <CatExam
+                        selectedExamTitle={selectedExamTitle}
+                        examQuestions={catExamQuestions}
+                        candidate={candidate}
+                        onAnswersChange={handleCatCountChange}
+                        onChangeExam={setSelectedExamId}
+                    />}
                 </div>
             </div>
         </>
