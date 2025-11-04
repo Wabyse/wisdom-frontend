@@ -25,7 +25,7 @@ import { COUNTRYS } from "../../../constants/constants";
 // utils
 import { extractDate } from "../../../utils/extractDate";
 import { extractTime } from "../../../utils/extractTime";
-import { calculateExamScore } from "../../../services/watoms/professionalExamination";
+import { calculateExamScore, calculateMCQExamScore } from "../../../services/watoms/professionalExamination";
 
 const WatomsProfessionalExamination = () => {
     const navigate = useNavigate();
@@ -35,6 +35,7 @@ const WatomsProfessionalExamination = () => {
     const [candidates, setCandidates] = useState([]);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [oceanScore, setOceanScore] = useState(null);
+    const [catScore, setCatScore] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         id_number: "",
@@ -124,8 +125,10 @@ const WatomsProfessionalExamination = () => {
 
     useEffect(() => {
         const calculateCandidateScore = async () => {
-            const response = await calculateExamScore(selectedCandidate.id);
-            setOceanScore(response["(OCEAN)"]);
+            const oceanResponse = await calculateExamScore(selectedCandidate.id);
+            setOceanScore(oceanResponse["(OCEAN)"]);
+            const catResponse = await calculateMCQExamScore(selectedCandidate.id);
+            setCatScore(catResponse["(CAT)"]?.percentage);
         }
 
         if (selectedCandidate) {
@@ -320,7 +323,7 @@ const WatomsProfessionalExamination = () => {
                                     <div className="py-2 text-center font-semibold">test</div>
                                     <div className="py-2 text-center font-semibold">test</div>
                                     <div className="py-2 text-center font-semibold">test</div>
-                                    <div className="py-2 text-center font-semibold">test</div>
+                                    <div className="py-2 text-center font-semibold">CAT</div>
                                     <div className="py-2 text-center font-semibold">OCEAN</div>
                                 </div>
 
@@ -352,9 +355,9 @@ const WatomsProfessionalExamination = () => {
 
                                     <div className="py-2">
                                         <span
-                                            className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full ${oceanScore ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}
+                                            className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full ${catScore ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}
                                         >
-                                            0
+                                            {catScore || 0}
                                         </span>
                                     </div>
 

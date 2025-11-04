@@ -69,3 +69,13 @@ export const submitMCQExamAnswers = async (data) => {
         throw error;
     }
 };
+
+export const calculateMCQExamScore = async (id) => {
+    try {
+        const response = await api.get(`/api/v1/pe/exams/mcq/scores/${id}`);
+        return response?.data?.results || [];
+    } catch (error) {
+        console.error('Error fetching Watoms Detailed Data:', error);
+        throw error;
+    }
+};
