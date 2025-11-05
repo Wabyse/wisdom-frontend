@@ -23,9 +23,9 @@ function project(lon, lat, renderW = BASE_W, renderH = BASE_H) {
 }
 
 const STATIC_LOCATIONS = [
-  { id: 1, name: "السعودية", lon: 29.5187, lat: 29.4001, color: "#facc15", label: 0.5 },
-  { id: 2, name: "ليبيا", lon: 29.1187, lat: 29.9001, color: "#22c55e", label: 2 },
-  { id: 3, name: "العراق", lon: 30.1187, lat: 29.8001, color: "#3b82f6", label: -2 },
+  { id: 1, name: " ", lon: 29.5187, lat: 29.4001, color: "#facc15", label: 0.5 },
+  { id: 2, name: " ", lon: 29.1187, lat: 29.9001, color: "#22c55e", label: 2 },
+  { id: 3, name: " ", lon: 30.1187, lat: 29.8001, color: "#3b82f6", label: -2 },
 ];
 const ID_INDEX = Object.fromEntries(STATIC_LOCATIONS.map((p) => [p.id, p]));
 
