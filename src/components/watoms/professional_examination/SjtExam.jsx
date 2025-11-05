@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 // libraries
 import toast, { Toaster } from "react-hot-toast";
 // APIs
-import { submitMCQExamAnswers } from "../../../services/watoms/professionalExamination";
+import { submitForcedChoiceExamAnswers } from "../../../services/watoms/professionalExamination";
 
 const SjtExam = ({ selectedExamTitle, examQuestions, candidate, onAnswersChange }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -100,7 +100,7 @@ const SjtExam = ({ selectedExamTitle, examQuestions, candidate, onAnswersChange 
             };
 
             console.log(formData)
-            await submitMCQExamAnswers(formData);
+            await submitForcedChoiceExamAnswers(formData);
             toast.success('تم تسجيل الإجابات بنجاح!');
         } catch (error) {
             console.error('Error submitting exam answers:', error);

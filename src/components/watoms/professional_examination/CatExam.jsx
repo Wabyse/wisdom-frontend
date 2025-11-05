@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 // APIs
 import { submitMCQExamAnswers } from "../../../services/watoms/professionalExamination";
 
-const CatExam = ({ selectedExamTitle, examQuestions, candidate, onAnswersChange }) => {
+const CatExam = ({ selectedExamTitle, examQuestions, candidate, onAnswersChange, onChangeExam }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -101,6 +101,7 @@ const CatExam = ({ selectedExamTitle, examQuestions, candidate, onAnswersChange 
 
             console.log(formData)
             await submitMCQExamAnswers(formData);
+            onChangeExam(3);
             toast.success('تم تسجيل الإجابات بنجاح!');
         } catch (error) {
             console.error('Error submitting exam answers:', error);

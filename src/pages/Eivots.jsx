@@ -40,7 +40,12 @@ const Eivots = () => {
     useEffect(() => {
         if (!systems) return;
 
-        const filtered = systems.filter(obj => !(obj.id === 'Professional examination' && userInfo.code !== 3 && userInfo.code !== 1));
+        let filtered;
+        if (userInfo.user_role === "PE Observer") {
+            filtered = systems.filter(obj => obj.id === 'Professional examination');
+        } else {
+            filtered = systems.filter(obj => !(obj.id === 'Professional examination' && userInfo.code !== 3 && userInfo.code !== 1 && userInfo.code !== 100 && userInfo.user_role !== "PE Observer"));
+        }
         setFilteringSystems(filtered);
     }, [systems, userInfo.code]); // ✅ depend on data & userInfo, not filteredSystems
 

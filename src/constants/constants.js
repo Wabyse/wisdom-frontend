@@ -508,7 +508,7 @@ export const getWatomsSystems = (language, userOrg, userInfo) => [
         icon: faChartBar,
         path: '/watoms/pe',
         color: 'from-red-500 to-red-600',
-        available: userInfo?.code === 3 || userInfo?.code === 1 || userInfo?.code === 100 ? true : false,
+        available: userInfo?.code === 3 || userInfo?.code === 1 || userInfo?.code === 100 || userInfo?.user_role === "PE Observer" ? true : false,
         notificationStatus: false
     }
 ];

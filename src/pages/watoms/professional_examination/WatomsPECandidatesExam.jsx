@@ -12,10 +12,11 @@ import qrcodeButton from '../../../assets/qrcodeButtonImg.png';
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 // APIs
-import { fetchAllExams, fetchCandidate, fetchExam, fetchMCQExam } from "../../../services/watoms/professionalExamination";
+import { fetchAllExams, fetchCandidate, fetchExam, fetchForcedChoiceExam, fetchMCQExam } from "../../../services/watoms/professionalExamination";
 import { fetchCurriculums, fetchSchools } from "../../../services/data";
 import OceanExam from "../../../components/watoms/professional_examination/OceanExam";
 import CatExam from "../../../components/watoms/professional_examination/CatExam";
+import SjtExam from "../../../components/watoms/professional_examination/SjtExam";
 
 const WatomsPECandidatesExam = () => {
     const { id } = useParams();
@@ -25,11 +26,13 @@ const WatomsPECandidatesExam = () => {
     const [selectedExamId, setSelectedExamId] = useState(1);
     const [oceanExamQuestions, setOceanExamQuestions] = useState([]);
     const [catExamQuestions, setCatExamQuestions] = useState([]);
+    const [sjtExamQuestions, setSjtExamQuestions] = useState([]);
     const [candidate, setCandidate] = useState(null);
     const [vtcs, setVtcs] = useState([]);
     const [courses, setCourses] = useState([]);
     const [oceanAnswers, setOceanAnswers] = useState({});
     const [catAnswers, setCatAnswers] = useState({});
+    const [sjtAnswers, setSjtAnswers] = useState({});
 
     useEffect(() => {
         const loadExams = async () => {
@@ -61,12 +64,12 @@ const WatomsPECandidatesExam = () => {
     }, []);
 
     useEffect(() => {
-        const loadOceanExam = () => {
+        const getExamTitle = () => {
             const filteredExam = examTitles.filter(e => e.id === selectedExamId);
             setSelectedExamTitles(filteredExam[0]);
         }
 
-        loadOceanExam();
+        getExamTitle();
     }, [examTitles, selectedExamId])
 
     useEffect(() => {
@@ -80,8 +83,14 @@ const WatomsPECandidatesExam = () => {
             setCatExamQuestions(response);
         };
 
+        const loadSjtExamQuestions = async () => {
+            const response = await fetchForcedChoiceExam(3);
+            setSjtExamQuestions(response);
+        };
+
         loadOceanExamQuestions();
         loadCatExamQuestions();
+        loadSjtExamQuestions();
     }, []);
 
     const handleOceanCountChange = (value) => {
@@ -91,10 +100,15 @@ const WatomsPECandidatesExam = () => {
         setCatAnswers(value);
     };
 
+    const handleSjtCountChange = (value) => {
+        setSjtAnswers(value);
+    };
+
     // Calculate progress percentage
     const oceanAnsweredCount = Object.keys(oceanAnswers).length;
     const catAnsweredCount = Object.keys(catAnswers).length;
-    const progress = Math.round(((oceanAnsweredCount + catAnsweredCount) / (oceanExamQuestions.length + catExamQuestions.length)) * 100);
+    const sjtAnsweredCount = Object.keys(sjtAnswers).length;
+    const progress = Math.round(((oceanAnsweredCount + catAnsweredCount + sjtAnsweredCount) / (oceanExamQuestions.length + catExamQuestions.length + sjtExamQuestions.length)) * 100);
 
     return (
         <>
@@ -191,7 +205,7 @@ const WatomsPECandidatesExam = () => {
                         <div className="relative z-10 flex justify-center items-center gap-2 w-full px-3 text-sm font-medium text-gray-800">
                             <span>[{progress}%]</span>
                             <span> - </span>
-                            <span>[{oceanAnsweredCount + catAnsweredCount} / {oceanExamQuestions.length + catExamQuestions.length}]</span>
+                            <span>[{oceanAnsweredCount + catAnsweredCount + sjtAnsweredCount} / {oceanExamQuestions.length + catExamQuestions.length + sjtExamQuestions.length}]</span>
                         </div>
                     </div>
                     {selectedExamId === 1 && <OceanExam
@@ -206,6 +220,13 @@ const WatomsPECandidatesExam = () => {
                         examQuestions={catExamQuestions}
                         candidate={candidate}
                         onAnswersChange={handleCatCountChange}
+                        onChangeExam={setSelectedExamId}
+                    />}
+                    {selectedExamId === 3 && <SjtExam
+                        selectedExamTitle={selectedExamTitle}
+                        examQuestions={sjtExamQuestions}
+                        candidate={candidate}
+                        onAnswersChange={handleSjtCountChange}
                         onChangeExam={setSelectedExamId}
                     />}
                 </div>
