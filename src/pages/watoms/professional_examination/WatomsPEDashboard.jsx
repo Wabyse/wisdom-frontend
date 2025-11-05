@@ -207,25 +207,28 @@ const WatomsPEDashboard = () => {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="flex justify-between items-center gap-2 text-black">
-                                {/* Overall Score Circle */}
-                                <div className="flex flex-col items-center justify-center cursor-pointer">
-                                    <CustomCircularProgressBar value={roundNumber(70)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
-                                    <span className='text-black mt-2'>الاجمالي</span>
-                                </div>
-                                {/* Performance Bars */}
-                                <div className="flex-1 flex flex-col gap-1">
-                                    {data6.map((s, idx) => (
-                                        <div className='flex justify-between items-center mb-1'>
-                                            <span className="text-sm font-bold text-black w-fit px-1">{s.performance}%</span>
-                                            <div className="relative min-w-3/6 max-w-3/6 w-3/6 h-[22px] bg-[#444652] rounded-[18px] shadow-[0_2px_8px_#0002] overflow-hidden cursor-pointer transition-shadow duration-200 ease-in-out" >
-                                                {/* Bar fill */}
-                                                <div
-                                                    className={`w-[${s.performance}%] h-full ${WATOMS_MODERN_COLORS_TW[idx]} rounded-full transition-[width] duration-[700ms] ease-[cubic-bezier(.4,2,.6,1)]`} />
+                            <div className="flex flex-col bg-gray-200 rounded-2xl p-2">
+                                <h1 className="text-center font-bold mb-2">ترتيب عناصر التقييم</h1>
+                                <div className="flex justify-between items-center gap-2 text-black">
+                                    {/* Overall Score Circle */}
+                                    <div className="flex flex-col items-center justify-center cursor-pointer">
+                                        <CustomCircularProgressBar value={roundNumber(90)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
+                                        <span className='text-black mt-2'>الاجمالي</span>
+                                    </div>
+                                    {/* Performance Bars */}
+                                    <div className="flex-1 flex flex-col gap-1">
+                                        {data6.map((s, idx) => (
+                                            <div className='flex justify-between items-center mb-1'>
+                                                <span className="text-sm font-bold text-black w-fit px-1">{s.performance}%</span>
+                                                <div className="relative min-w-3/6 max-w-3/6 w-3/6 h-[22px] bg-[#444652] rounded-[18px] shadow-[0_2px_8px_#0002] overflow-hidden cursor-pointer transition-shadow duration-200 ease-in-out" >
+                                                    {/* Bar fill */}
+                                                    <div
+                                                        className={`w-[${s.performance}%] h-full ${WATOMS_MODERN_COLORS_TW[idx]} rounded-full transition-[width] duration-[700ms] ease-[cubic-bezier(.4,2,.6,1)]`} />
+                                                </div>
+                                                <span className="min-w-2/6 max-w-2/6 w-2/6 font-bold text-black text-center">{s.name}</span>
                                             </div>
-                                            <span className="min-w-2/6 max-w-2/6 w-2/6 font-bold text-black text-center">{s.name}</span>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                             <h1 className="text-xs text-end font-bold">:ثالثا: تحليل الاداء في المحاور الرئيسية</h1>
