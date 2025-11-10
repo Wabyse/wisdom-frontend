@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
 const WatomsTraineesRegistration = () => {
     const navigate = useNavigate();
     const [vtcs, setVtcs] = useState([]);
+    const [filteredVtcs, setFilteredVtcs] = useState([]);
     const [courses, setCourses] = useState([]);
-    const [filteredCourses, setFilteredCourses] = useState([]);
     const [selectedFirstName, setSelectedFirstName] = useState("");
     const [selectedSecondName, setSelectedSecondName] = useState("");
     const [selectedThirdName, setSelectedThirdName] = useState("");
@@ -27,6 +27,12 @@ const WatomsTraineesRegistration = () => {
     const [selectedNotes, setSelectedNotes] = useState("");
     const [selectedWhatsapp, setSelectedWhatsapp] = useState("");
     const [selectedIDNumber, setSelectedIDNumber] = useState("");
+
+    const checkCourse = () => {
+        if (!selectedCourse) {
+            toast.error("الرجاء اختيار التخصص اولا");
+        }
+    }
 
     const submitForm = async (e) => {
         e.preventDefault();
@@ -60,12 +66,6 @@ const WatomsTraineesRegistration = () => {
         }
     }
 
-    const handleCourseClick = () => {
-        if (!selectedVtc) {
-            toast.error("الرجاء اختيار المركز اولا");
-        }
-    };
-
     useEffect(() => {
         const loadVtcs = async () => {
             try {
@@ -80,7 +80,9 @@ const WatomsTraineesRegistration = () => {
         const loadCourse = async () => {
             try {
                 const response = await fetchCurriculums();
-                setCourses(response);
+                const selectedCourses = INSTITUTION_COURSE_RELATION["All"];
+                const filteringCourses = response.filter(course => selectedCourses.includes(course.id))
+                setCourses(filteringCourses);
             } catch (err) {
                 console.error(err);
             }
@@ -91,12 +93,14 @@ const WatomsTraineesRegistration = () => {
     }, [])
 
     useEffect(() => {
-        if (selectedVtc !== "") {
-            const selectedCourses = INSTITUTION_COURSE_RELATION[selectedVtc];
-            const filteringCourses = courses.filter(course => selectedCourses.includes(course.id))
-            setFilteredCourses(filteringCourses);
+        if (selectedCourse !== "") {
+            const filteringVtcs = vtcs.filter(vtc => {
+                const vtcCourses = INSTITUTION_COURSE_RELATION[vtc.id] || [];
+                return vtcCourses.includes(Number(selectedCourse));
+            });
+            setFilteredVtcs(filteringVtcs);
         }
-    }, [selectedVtc, courses])
+    }, [selectedCourse, vtcs]);
 
     return (
         <div
@@ -125,25 +129,25 @@ const WatomsTraineesRegistration = () => {
                     </div>
                     <div className="flex justify-evenly md:flex-row flex-col">
                         <div className="md:w-2/5 w-[90%] flex flex-col items-start mx-auto gap-2 p-2 min-h-fit">
-                            <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">مركز التدريب المراد الالتحاق به</label>
-                            <select id="vtc" name="vtc" className="text-center w-full rounded-xl bg-transparent h-10 border-purple-400 border-2 p-1 text-white" onChange={(e) => setSelectedVtc(e.target.value)}>
-                                <option value="" disabled selected>
-                                    الرجاء اختيار المركز
-                                </option>
-                                {vtcs.map((vtc) => (
-                                    <option key={vtc.id} value={vtc.id} className="text-black">
-                                        {vtc.name}
-                                    </option>
-                                ))}
-                            </select>
                             <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">التخصص المطلوب</label>
-                            <select id="course" name="course" className={`text-center w-full rounded-xl bg-transparent h-10 border-purple-400 border-2 p-1 text-white`} onChange={(e) => setSelectedCourse(e.target.value)} onClick={handleCourseClick}>
+                            <select id="course" name="course" className={`text-center w-full rounded-xl bg-transparent h-10 border-purple-400 border-2 p-1 text-white`} onChange={(e) => setSelectedCourse(e.target.value)}>
                                 <option value="" disabled selected>
                                     الرجاء اختيار التخصص
                                 </option>
-                                {filteredCourses.map((course) => (
+                                {courses.map((course) => (
                                     <option key={course.id} value={course.id} className="text-black">
                                         {course.code}
+                                    </option>
+                                ))}
+                            </select>
+                            <label className="bg-gradient-to-b from-purple-900 to-purple-500 text-white rounded-xl w-full text-center py-2">مركز التدريب المراد الالتحاق به</label>
+                            <select id="vtc" name="vtc" className="text-center w-full rounded-xl bg-transparent h-10 border-purple-400 border-2 p-1 text-white" onChange={(e) => setSelectedVtc(e.target.value)} onClick={checkCourse}>
+                                <option value="" disabled selected>
+                                    الرجاء اختيار المركز
+                                </option>
+                                {filteredVtcs.map((vtc) => (
+                                    <option key={vtc.id} value={vtc.id} className="text-black">
+                                        {vtc.name}
                                     </option>
                                 ))}
                             </select>
