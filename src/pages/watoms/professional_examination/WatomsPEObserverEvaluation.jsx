@@ -2,7 +2,7 @@
 import NewNavbar from "../../../components/NewNavbar";
 // Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartSimple, faX } from "@fortawesome/free-solid-svg-icons";
+import { faChartSimple } from "@fortawesome/free-solid-svg-icons";
 // Images
 import addButton from '../../../assets/addButtonImg.png';
 import editButton from '../../../assets/editButtonImg.png';
@@ -10,23 +10,20 @@ import qrcodeButton from '../../../assets/qrcodeButtonImg.png';
 import person from '../../../assets/person.jpg';
 // tools
 import { useNavigate, useParams } from "react-router-dom";
-// libraries
-import toast, { Toaster } from "react-hot-toast";
 // context
 import { useAuth } from "../../../context/AuthContext";
 import { useEffect, useState } from "react";
 // APIs
-import { fetchCurriculums, fetchSchools } from "../../../services/data";
-import { fetchAllCandidates } from "../../../services/watoms/watomsData";
+import { fetchSchools } from "../../../services/data";
 import { fetchCandidate, fetchExam } from "../../../services/watoms/professionalExamination";
 import ObserverEvaluation from "../../../components/watoms/professional_examination/ObserverEvaluation";
+import PeSideBarNavigation from "../../../components/watoms/professional_examination/PeSideBarNavigation";
 
 const WatomsPEObserverEvaluation = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { userInfo } = useAuth();
     const [vtcs, setVtcs] = useState([]);
-    const [courses, setCourses] = useState([]);
     const [candidate, setCandidate] = useState([]);
     const [evaluationQuestions, setEvaluationQuestions] = useState([]);
     const [evaluationAnswers, setEvaluationAnswers] = useState({});
@@ -38,19 +35,12 @@ const WatomsPEObserverEvaluation = () => {
             setVtcs(filteredOrgs)
         }
 
-        const loadCurriculums = async () => {
-            const response = await fetchCurriculums();
-            const filteredCurriculums = response.filter(course => course.id !== 1 && course.id !== 2 && course.id !== 3 && course.id !== 13 && course.id !== 14 && course.id !== 15 && course.id !== 16 && course.id !== 17 && course.id !== 18 && course.id !== 48 && course.id !== 49 && course.id !== 50 && course.id !== 51 && course.id !== 53);
-            setCourses(filteredCurriculums);
-        }
-
         const loadEvaluationQuestions = async () => {
             const response = await fetchExam(4);
             setEvaluationQuestions(response);
         };
 
         loadOrgs();
-        loadCurriculums();
         loadEvaluationQuestions();
     }, []);
 
@@ -73,7 +63,6 @@ const WatomsPEObserverEvaluation = () => {
 
     return (
         <>
-            <Toaster />
             <NewNavbar
                 shareStatus={false}
                 darkmodeStatus={false}
@@ -112,13 +101,9 @@ const WatomsPEObserverEvaluation = () => {
             </NewNavbar>
             <div className="w-full h-[88vh] flex bg-[#0a183d]">
                 {/* left side bar navigator */}
-                <div className="w-[10%] bg-white/55 flex flex-col justify-evenly items-center">
-                    <div>اجراءات الحوكمة</div>
-                    <button onClick={() => navigate('/watoms/pe')} className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">ملفات تاكيد الهوية</button>
-                    <button onClick={() => navigate('/watoms/pe')} className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">تقييم مسئول الجودة والحوكمة</button>
-                    <div className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-gray-500 px-2 rounded-xl border-blue-600 border-2">تقييم مراقب الاختبار</div>
-                    <button onClick={() => navigate('/watoms/pe')} className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">اختبارات المرشحين</button>
-                </div>
+                <PeSideBarNavigation
+                    currentPage={"observer-evaluation"}
+                />
                 {/* user's details */}
                 <div className="w-[90%] flex justify-center items-center">
                     <div className="w-[95%] h-[95%] flex flex-col border-white border-2 rounded-xl p-2 gap-2">
@@ -159,7 +144,7 @@ const WatomsPEObserverEvaluation = () => {
                                             <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">الوظيفة</div>
                                         </div>
                                         <div className="flex gap-1">
-                                            <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">{vtcs.filter(vtc => vtc.id === Number(userInfo?.organization_id))[0]?.name}</div>
+                                            <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">{vtcs.filter(vtc => vtc.id === Number(userInfo?.organization_id))[0]?.name || "غير تابع للمراكز"}</div>
                                             <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">مركز</div>
                                         </div>
                                     </div>

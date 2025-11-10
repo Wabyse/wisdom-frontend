@@ -17,6 +17,7 @@ import { fetchCurriculums, fetchSchools } from "../../../services/data";
 import OceanExam from "../../../components/watoms/professional_examination/OceanExam";
 import CatExam from "../../../components/watoms/professional_examination/CatExam";
 import SjtExam from "../../../components/watoms/professional_examination/SjtExam";
+import PeSideBarNavigation from "../../../components/watoms/professional_examination/PeSideBarNavigation";
 
 const WatomsPECandidatesExam = () => {
     const { id } = useParams();
@@ -150,13 +151,9 @@ const WatomsPECandidatesExam = () => {
             </NewNavbar>
             <div className="w-full h-[88vh] flex bg-[#0a183d]">
                 {/* left side bar navigator */}
-                <div className="w-[10%] bg-white/55 flex flex-col justify-evenly items-center">
-                    <div>اجراءات الحوكمة</div>
-                    <button onClick={() => navigate('/watoms/pe')} className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">ملفات تاكيد الهوية</button>
-                    <button onClick={() => navigate('/watoms/pe/practical-test')} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">تقييم مراقبين الجودة والحوكمة</button>
-                    <div className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-gray-500 px-2 rounded-xl border-blue-600 border-2">اختبارات المرشحين</div>
-                    <button onClick={() => navigate('/watoms/pe/cognitive-test')} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">مؤشرات تحليل الأداء العام</button>
-                </div>
+                <PeSideBarNavigation
+                    currentPage={"candidates-exam"}
+                />
                 <div className="w-[90%] flex flex-col justify-center items-center p-2 gap-2">
                     <div className="w-full flex items-center gap-10 px-4 py-2 border-b-2 border-white text-white">
                         <div className="flex-1 flex flex-col gap-1">

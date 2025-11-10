@@ -556,18 +556,18 @@ function App() {
             }
           />
           <Route
-            path="/watoms/pe/candidates-exam/:id"
-            element={
-              <ProtectedRoute>
-                <WatomsPECandidatesExam />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/watoms/pe/observer-evaluation/:id"
             element={
               <ProtectedRoute>
                 <WatomsPEObserverEvaluation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watoms/pe/candidates-exam/:id"
+            element={
+              <ProtectedRoute>
+                <WatomsPECandidatesExam />
               </ProtectedRoute>
             }
           />

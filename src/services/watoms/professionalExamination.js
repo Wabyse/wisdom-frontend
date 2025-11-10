@@ -40,6 +40,16 @@ export const submitExamAnswers = async (data) => {
     }
 };
 
+export const submitRateScaleCommentExamAnswers = async (data) => {
+    try {
+        const response = await api.post('/api/v1/pe/rate-scale-comment-exam-answers', data);
+        return response?.data || {};
+    } catch (error) {
+        console.error('Error submitting exam answers:', error);
+        throw error;
+    }
+};
+
 export const calculateExamScore = async (id) => {
     try {
         const response = await api.get(`/api/v1/pe/exams/scores/${id}`);

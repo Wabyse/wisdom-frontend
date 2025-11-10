@@ -4,12 +4,26 @@ import { fetchTraineesRegistrations } from "../services/data";
 import { cairoDate } from "../utils/cairoDate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { updateCheckTrainees } from "../services/watoms/traineeRegistration";
+import { ORGANIZATION_CITY_RELATION } from "../constants/constants";
 
 const ViewTraineesRegistrations = () => {
     const [data, setData] = useState([]);
     const [registerCount, setRegisterCount] = useState(0);
     const [page, setPage] = useState("general");
     const [unfilteredData, setUnfilteredData] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleCheckboxChange = (userId, checked) => {
+        setSelectedUsers(prev => {
+            if (checked) {
+                return [...prev, userId];
+            } else {
+                return prev.filter(id => id !== userId);
+            }
+        });
+    };
 
     const togglePage = () => {
         if (page === "general") {
@@ -23,6 +37,15 @@ const ViewTraineesRegistrations = () => {
         const seen = new Set(arr.map(item => item.id_number));
         return seen.size;
     };
+
+    const submitSelectedUsers = async () => {
+        try {
+            await updateCheckTrainees(selectedUsers);
+            setSubmitted(true)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     // Simulate fetch from backend
     useEffect(() => {
@@ -80,7 +103,7 @@ const ViewTraineesRegistrations = () => {
             }
         }
         fetchData();
-    }, []);
+    }, [submitted]);
 
     return (
         <div className="min-h-screen max-w-screen bg-gray-100 flex flex-col md:gap-4 gap-52 items-center">
@@ -100,18 +123,21 @@ const ViewTraineesRegistrations = () => {
                     <button onClick={togglePage}><FontAwesomeIcon icon={faArrowLeft} /></button>
                     <h1 className="font-bold">{page}</h1>
                     <button onClick={togglePage}><FontAwesomeIcon icon={faArrowRight} /></button>
+                    <button className="hover:shadow-lg border shadow-none rounded-full font-bold p-2 " onClick={submitSelectedUsers}>تسجيل</button>
                 </div>
                 <div className="overflow-x-auto flex flex-col gap-6">
                     {page === "general" ?
                         <table className="w-full border border-gray-200 rounded-lg">
                             <thead className="bg-gray-200 text-gray-700">
                                 <tr>
+                                    <th className="py-2 px-4 border">Check</th>
                                     <th className="py-2 px-4 border">ID</th>
                                     <th className="py-2 px-4 border">Registered At</th>
                                     <th className="py-2 px-4 border">Full Name</th>
                                     <th className="py-2 px-4 border">Whatsapp</th>
                                     <th className="py-2 px-4 border">Phone</th>
                                     <th className="py-2 px-4 border">Organization</th>
+                                    <th className="py-2 px-4 border">City</th>
                                     <th className="py-2 px-4 border">Certification</th>
                                     <th className="py-2 px-4 border">Course</th>
                                 </tr>
@@ -121,21 +147,30 @@ const ViewTraineesRegistrations = () => {
                                     unfilteredData.map((user, index) => (
                                         <tr
                                             key={index}
-                                            className="hover:bg-gray-50 transition duration-150 text-center"
+                                            className={`hover:bg-gray-50 transition duration-150 text-center ${user.is_new ? "bg-white hover:bg-gray-50" : "bg-gray-400 hover:bg-gray-500"}`}
                                         >
+                                            <td className="py-2 px-4 border">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={!user.is_new ? true : selectedUsers.includes(user.id)}
+                                                    disabled={!user.is_new}
+                                                    onChange={(e) => user.is_new && handleCheckboxChange(user.id, e.target.checked)}
+                                                />
+                                            </td>
                                             <td className="py-2 px-4 border">{unfilteredData.length - index}</td>
                                             <td className="py-2 px-4 border">{cairoDate(user.createdAt).split(",")[0].trim()}</td>
                                             <td className="py-2 px-4 border">{user.first_name} {user.second_name} {user.third_name} {user.fourth_name}</td>
                                             <td className="py-2 px-4 border">{`+2${user.whatsapp}`}</td>
                                             <td className="py-2 px-4 border">{`+2${user.phone}`}</td>
-                                            <td className="py-2 px-4 border">{user.org.name}</td>
+                                            <td className="py-2 px-4 border" onClick={() => console.log(user)}>{user.org.name}</td>
+                                            <td className="py-2 px-4 border">{ORGANIZATION_CITY_RELATION[user.vtc]}</td>
                                             <td className="py-2 px-4 border">{user.certification}</td>
                                             <td className="py-2 px-4 border">{user.curriculum.code}</td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="7" className="text-center py-4 text-gray-500">
+                                        <td colSpan="9" className="text-center py-4 text-gray-500">
                                             No data available
                                         </td>
                                     </tr>
@@ -147,6 +182,7 @@ const ViewTraineesRegistrations = () => {
                                 <thead className="bg-gray-200 text-gray-700">
                                     <tr>
                                         <th className="py-2 px-4 border">ID</th>
+                                        <th className="py-2 px-4 border">City</th>
                                         <th className="py-2 px-4 border">Organization</th>
                                         <th className="py-2 px-4 border">Course</th>
                                         <th className="py-2 px-4 border">Certification</th>
@@ -164,6 +200,7 @@ const ViewTraineesRegistrations = () => {
                                                 className="hover:bg-gray-50 transition duration-150 text-center"
                                             >
                                                 <td className="py-2 px-4 border">{index + 1}</td>
+                                                <td className="py-2 px-4 border">{ORGANIZATION_CITY_RELATION[user.vtc]}</td>
                                                 <td className="py-2 px-4 border">{user.org.name}</td>
                                                 <td className="py-2 px-4 border">{user.curriculum.code}</td>
                                                 <td className="py-2 px-4 border">{user.certification}</td>
@@ -175,7 +212,7 @@ const ViewTraineesRegistrations = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="7" className="text-center py-4 text-gray-500">
+                                            <td colSpan="8" className="text-center py-4 text-gray-500">
                                                 No data available
                                             </td>
                                         </tr>

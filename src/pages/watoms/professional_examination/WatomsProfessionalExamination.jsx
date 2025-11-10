@@ -12,6 +12,7 @@ import editButton from '../../../assets/editButtonImg.png';
 import qrcodeButton from '../../../assets/qrcodeButtonImg.png';
 import frontImg from '../../../assets/frontPEImg.png';
 import sideImg from '../../../assets/sidePEImg.png';
+import ticket from '../../../assets/candidateTicket.jpg';
 // tools
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -26,6 +27,8 @@ import { COUNTRYS } from "../../../constants/constants";
 import { extractDate } from "../../../utils/extractDate";
 import { extractTime } from "../../../utils/extractTime";
 import { calculateExamScore, calculateMCQExamScore } from "../../../services/watoms/professionalExamination";
+import PeSideBarNavigation from "../../../components/watoms/professional_examination/PeSideBarNavigation";
+import QRCodeScan from "../../../components/watoms/professional_examination/QRCodeScan";
 
 const WatomsProfessionalExamination = () => {
     const navigate = useNavigate();
@@ -36,6 +39,8 @@ const WatomsProfessionalExamination = () => {
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [oceanScore, setOceanScore] = useState(null);
     const [catScore, setCatScore] = useState(null);
+    const [qrcodeStatus, setQrcodeStatus] = useState(false);
+    const [qrcodeTitle, setQrcodeTitle] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         id_number: "",
@@ -58,6 +63,9 @@ const WatomsProfessionalExamination = () => {
         fc_start_time: "",
         fc_end_time: "",
         fc_test_score: "",
+        nationality: "",
+        profession: "",
+        profession_code: ""
     });
 
     const handleChange = (e) => {
@@ -125,6 +133,7 @@ const WatomsProfessionalExamination = () => {
 
     useEffect(() => {
         const calculateCandidateScore = async () => {
+            console.log(selectedCandidate.id)
             const oceanResponse = await calculateExamScore(selectedCandidate.id);
             setOceanScore(oceanResponse["(OCEAN)"]);
             const catResponse = await calculateMCQExamScore(selectedCandidate.id);
@@ -155,6 +164,9 @@ const WatomsProfessionalExamination = () => {
                 fc_start_time: extractTime(selectedCandidate.fc_start_date),
                 fc_end_time: extractTime(selectedCandidate.fc_end_date),
                 fc_test_score: selectedCandidate.fc_test_score || "",
+                nationality: selectedCandidate.nationality || "",
+                profession: selectedCandidate.profession || "",
+                profession_code: selectedCandidate.profession_code || ""
             }));
             calculateCandidateScore();
         }
@@ -201,6 +213,9 @@ const WatomsProfessionalExamination = () => {
                     fc_start_time: "",
                     fc_end_time: "",
                     fc_test_score: "",
+                    nationality: "",
+                    profession: "",
+                    profession_code: ""
                 })
             } catch (error) {
                 console.error("Error creating candidate:", error);
@@ -215,7 +230,7 @@ const WatomsProfessionalExamination = () => {
 
                 // Optionally close the popup after success
                 setInputsType("");
-                setSelectedCandidate(formData)
+                setSelectedCandidate({ id: selectedCandidate?.id, ...formData })
             } catch (error) {
                 console.error("Error creating candidate:", error);
                 alert(`Failed to create candidate: ${error.response?.data?.message || "Server error"}`);
@@ -270,6 +285,7 @@ const WatomsProfessionalExamination = () => {
                     <button
                         className="rounded-full w-10 h-10 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all p-1"
                         title="QRCode Scan"
+                        onClick={() => {setQrcodeStatus(true); setQrcodeTitle("تذكرة دخول الاختبارات") }}
                     >
                         <img src={qrcodeButton} alt="qr code" />
                     </button>
@@ -301,21 +317,91 @@ const WatomsProfessionalExamination = () => {
             </NewNavbar>
             <div className="w-full h-[88vh] flex bg-[#0a183d]">
                 {/* left side bar navigator */}
-                <div className="w-[10%] bg-white/55 flex flex-col justify-evenly items-center">
-                    <div>اجراءات الحوكمة</div>
-                    <div className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-gray-500 px-2 rounded-xl border-blue-600 border-2">ملفات تاكيد الهوية</div>
-                    <button onClick={() => navigate('/watoms/pe/practical-test')} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">تقييم مراقبين الجودة والحوكمة</button>
-                    <button onClick={() => selectedCandidate ? navigate(`/watoms/pe/observer-evaluation/${selectedCandidate.candidate_id}`) : toast.error("اختر او اضف متقدم اولا ")} className="w-[90%] h-[12%] flex justify-center items-center text-yellow-400 text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">تقييم مراقب الاختبار</button>
-                    <button onClick={() => selectedCandidate ? navigate(`/watoms/pe/candidates-exam/${selectedCandidate.candidate_id}`) : toast.error("اختر او اضف متقدم اولا ")} className="w-[90%] h-[12%] flex flex-col justify-center items-center text-yellow-400  text-sm text-center bg-[#0a183d] hover:bg-gray-500 px-2 rounded-xl border-blue-600 border-2">اختبارات المرشحين</button>
-                </div>
+                <PeSideBarNavigation
+                    currentPage={"home"}
+                    selectedCandidate={selectedCandidate}
+                />
                 {/* user's details */}
                 <div className="w-[90%] flex justify-center items-center">
                     <div className="w-[95%] h-[95%] flex border-white border-2 rounded-xl">
                         {/* application */}
-                        <div className="w-[35%] flex flex-col items-center gap-5 px-4 py-6">
+                        <div className="w-[35%] flex flex-col items-center gap-3 px-4 py-6">
+                            {/* user's data */}
+                            {(inputsType === "" && !selectedCandidate) ?
+                                <div className="w-full flex justify-center gap-2">
+                                    <div className="w-full flex flex-col gap-1">
+                                        <div className="flex gap-1">
+                                            <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">-----</div>
+                                            <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">الجنسية</div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">-----</div>
+                                            <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">المهنة</div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">-----</div>
+                                            <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">رمز المهنة</div>
+                                        </div>
+                                    </div>
+                                </div> :
+                                (inputsType === "" && selectedCandidate) ?
+                                    <div className="w-full flex justify-center gap-2">
+                                        <div className="w-full flex flex-col gap-1">
+                                            <div className="flex gap-1">
+                                                <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">{selectedCandidate?.nationality}</div>
+                                                <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">الجنسية</div>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">{selectedCandidate?.profession}</div>
+                                                <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">المهنة</div>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">{selectedCandidate?.profession_code}</div>
+                                                <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">رمز المهنة</div>
+                                            </div>
+                                        </div>
+                                    </div> :
+                                    inputsType === "add" ?
+                                        <div className="w-full flex justify-center gap-2">
+                                            <div className="w-full flex flex-col gap-1">
+                                                <div className="flex gap-1">
+                                                    <input className={`w-3/5 h-7 flex justify-center items-center text-center bg-white rounded ${formData.nationality === "" ? "border-red-600" : "border-white"} border-2`} name="nationality" placeholder="ادخل الجنسية" value={formData.nationality} onChange={handleChange} required />
+                                                    <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">الجنسية</div>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <input className={`w-3/5 h-7 flex justify-center items-center text-center bg-white rounded ${formData.profession === "" ? "border-red-600" : "border-white"} border-2`} name="profession" placeholder="ادخل المهنة" value={formData.profession} onChange={handleChange} required />
+                                                    <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">المهنة</div>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <input className={`w-3/5 h-7 flex justify-center items-center text-center bg-white rounded ${formData.profession_code === "" ? "border-red-600" : "border-white"} border-2`} name="profession_code" placeholder="ادخل رمز المهنة" value={formData.profession_code} onChange={handleChange} required />
+                                                    <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">رمز المهنة</div>
+                                                </div>
+                                            </div>
+                                        </div> :
+                                        inputsType === "edit" && selectedCandidate &&
+                                        <div className="w-full flex justify-center gap-2">
+                                            <div className="w-full flex flex-col gap-1">
+                                                {/* nationality */}
+                                                <div className="flex gap-1">
+                                                    <input className={`w-3/5 h-7 flex justify-center items-center text-center bg-white rounded ${formData.nationality === "" ? "border-red-600" : "border-white"} border-2`} name="nationality" placeholder="ادخل الجنسية" value={formData.nationality} onChange={handleChange} required />
+                                                    <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">الجنسية</div>
+                                                </div>
+                                                {/* profession */}
+                                                <div className="flex gap-1">
+                                                    <input className={`w-3/5 h-7 flex justify-center items-center text-center bg-white rounded ${formData.profession === "" ? "border-red-600" : "border-white"} border-2`} name="profession" placeholder="ادخل المهنة" value={formData.profession} onChange={handleChange} required />
+                                                    <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">المهنة</div>
+                                                </div>
+                                                {/* candidate id */}
+                                                <div className="flex gap-1">
+                                                    <input className={`w-3/5 h-7 flex justify-center items-center text-center bg-white rounded ${formData.profession_code === "" ? "border-red-600" : "border-white"} border-2`} name="profession_code" placeholder="ادخل رمز المهنة" value={formData.profession_code} onChange={handleChange} required />
+                                                    <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">رمز المهنة</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                            }
                             {/* application */}
-                            <div className="w-full h-4/5 flex justify-center border-white border-2 rounded-xl">
-                                <img className="h-full rounded-xl" src={application} alt="" />
+                            <div className="w-full h-[49vh] flex justify-center border-white border-2 rounded-xl">
+                                <img className="h-full rounded-xl cursor-pointer" src={ticket} alt="" onClick={() => {setQrcodeStatus(true); setQrcodeTitle("تذكرة الاختبار") }} />
                             </div>
                             <div className="w-full text-sm" dir="rtl">
                                 {/* Header */}
@@ -424,7 +510,7 @@ const WatomsProfessionalExamination = () => {
                                                 <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">مركز الاختبار</div>
                                             </div>
                                             <div className="flex gap-1">
-                                                <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">{courses.filter(course => course.id === Number(selectedCandidate?.category))[0].code}</div>
+                                                <div className="w-3/5 h-7 flex justify-center items-center text-center bg-white rounded border-white border-2">{courses.filter(course => course.id === Number(selectedCandidate?.category))[0]?.code}</div>
                                                 <div className="w-2/5 h-7 flex justify-center items-center text-center text-white rounded border-white border-2">الفئة</div>
                                             </div>
                                             <div className="flex gap-1">
@@ -1163,7 +1249,7 @@ const WatomsProfessionalExamination = () => {
                                 <div className="w-[35%] flex flex-col gap-4">
                                     {/* passport */}
                                     <div className="rounded-xl w-full h-3/5">
-                                        <img className="rounded-xl w-full h-full" src={passport} alt="" />
+                                        <img className="rounded-xl w-full h-full cursor-pointer" src={passport} alt="" onClick={() => {setQrcodeStatus(true); setQrcodeTitle("الباسبور") }} />
                                     </div>
                                     {(inputsType === "" && !selectedCandidate) ?
                                         <div className="w-full flex flex-col gap-4">
@@ -1241,6 +1327,7 @@ const WatomsProfessionalExamination = () => {
                     </div>
                 </div>
             </div>
+            <QRCodeScan isOpen={qrcodeStatus} onClose={() => setQrcodeStatus(false)} title={qrcodeTitle} />
         </>
     )
 }
