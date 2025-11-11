@@ -4,7 +4,6 @@ import NewNavbar from "../../../components/NewNavbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faPlus, faX } from "@fortawesome/free-solid-svg-icons";
 // Images
-import application from '../../../assets/ksaApplication.jpg';
 import person from '../../../assets/person.jpg';
 import passport from '../../../assets/passport.jpg';
 import addButton from '../../../assets/addButtonImg.png';
@@ -1308,13 +1307,13 @@ const WatomsProfessionalExamination = () => {
                                     }
                                     {/* import documents */}
                                     <div className="w-full flex gap-2 text-white text-sm h-1/3">
-                                        <div className="relative flex-1 h-full flex justify-center items-center text-center hover:bg-gray-500 cursor-pointer border-white border-2 p-2 rounded-xl">
+                                        <div className="relative flex-1 h-full flex justify-center items-center text-center hover:bg-gray-500 cursor-pointer border-white border-2 p-2 rounded-xl" onClick={() => {setQrcodeStatus(true); setQrcodeTitle("صورة المتقدم مع باسبور السفر") }}>
                                             <button className="absolute -top-2 -right-2 rounded-full w-5 h-5 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all" >
                                                 <FontAwesomeIcon icon={faPlus} className="text-sm text-gray-500" />
                                             </button>
                                             صورة المتقدم مع الباسبور السفر
                                         </div>
-                                        <div className="relative flex-1 h-full flex justify-center items-center text-center hover:bg-gray-500 cursor-pointer border-white border-2 p-2 rounded-xl">
+                                        <div className="relative flex-1 h-full flex justify-center items-center text-center hover:bg-gray-500 cursor-pointer border-white border-2 p-2 rounded-xl" onClick={() => {setQrcodeStatus(true); setQrcodeTitle("صورة مع تذكرة الاختبار") }}>
                                             <button className="absolute -top-2 -right-2 rounded-full w-5 h-5 flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all" >
                                                 <FontAwesomeIcon icon={faPlus} className="text-sm text-gray-500" />
                                             </button>

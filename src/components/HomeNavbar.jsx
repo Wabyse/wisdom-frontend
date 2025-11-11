@@ -108,7 +108,7 @@ const HomeNabvar = ({ current, setViewValue }) => {
               }, 200);
             }}
           >
-            <button className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 h-full ${current === 'services' ? "bg-white text-black font-bold" : "text-black"}`}>
+            <button className={`hover:bg-wisdomOrange hover:text-white py-4 px-8 h-full ${current === 'Placement Test' ? "bg-white text-black font-bold" : "text-black"}`}>
               Placement Test
             </button>
 

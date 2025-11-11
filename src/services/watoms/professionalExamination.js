@@ -109,3 +109,23 @@ export const submitForcedChoiceExamAnswers = async (data) => {
         throw error;
     }
 };
+
+export const fetchEvaluationExam = async (id) => {
+    try {
+        const response = await api.get(`/api/v1/pe/exam/evaluation/${id}`);
+        return response?.data?.exam || [];
+    } catch (error) {
+        console.error('Error fetching Watoms Detailed Data:', error);
+        throw error;
+    }
+};
+
+export const submitEvaluationExamAnswers = async (data) => {
+    try {
+        const response = await api.post('/api/v1/pe/evaluation-exam-answers', data);
+        return response?.data || {};
+    } catch (error) {
+        console.error('Error submitting exam answers:', error);
+        throw error;
+    }
+};

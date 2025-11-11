@@ -41,11 +41,6 @@ const WatomsPECandidatesExam = () => {
             setExamsTitles(response);
         };
 
-        const loadCandidate = async () => {
-            const response = await fetchCandidate(id);
-            setCandidate(response);
-        }
-
         const loadOrgs = async () => {
             const response = await fetchSchools();
             const filteredOrgs = response.filter(org => org.id !== 12 && org.id !== 14 && org.id !== 1 && org.id !== 2);
@@ -59,10 +54,18 @@ const WatomsPECandidatesExam = () => {
         }
 
         loadExams();
-        loadCandidate();
         loadOrgs();
         loadCurriculums();
     }, []);
+
+    useEffect(() => {
+        const loadCandidate = async () => {
+            const response = await fetchCandidate(id);
+            setCandidate(response);
+        }
+
+        loadCandidate();
+    }, [id]);
 
     useEffect(() => {
         const getExamTitle = () => {
@@ -153,6 +156,7 @@ const WatomsPECandidatesExam = () => {
                 {/* left side bar navigator */}
                 <PeSideBarNavigation
                     currentPage={"candidates-exam"}
+                    selectedCandidate={candidate}
                 />
                 <div className="w-[90%] flex flex-col justify-center items-center p-2 gap-2">
                     <div className="w-full flex items-center gap-10 px-4 py-2 border-b-2 border-white text-white">

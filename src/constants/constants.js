@@ -1045,7 +1045,9 @@ export const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export const COUNTRYS = [
     "المملكة العربية السعودية",
-    "الامارات العربية المتحدة"
+    "الامارات العربية المتحدة",
+    "قطر",
+    "البحرين"
 ]
 
 export const OCEAN_SCORE_RESULT = (score) => {

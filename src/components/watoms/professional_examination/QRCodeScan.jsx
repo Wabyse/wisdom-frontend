@@ -21,7 +21,7 @@ const QRCodeScan = ({ isOpen, onClose, title }) => {
                         </button>
                         <button className=" flex justify-center items-center gap-2 text-blue-600 hover:text-blue-800 rounded-2xl">اعادة المحاولة <FontAwesomeIcon icon={faRotateRight} /></button>
                         <button className=" flex justify-center items-center gap-2 text-green-600 hover:text-green-800 rounded-2xl">حفظ <FontAwesomeIcon icon={faArrowDown} /></button>
-                        <h1 className="w-fit flex justify-center items-center text-end text-yellow-500 text-xl font-bold" >
+                        <h1 className="w-fit flex justify-center items-center text-end text-yellow-500 text-[18px] font-bold" >
                             {title} | 2025-11-10
                         </h1>
                     </div>

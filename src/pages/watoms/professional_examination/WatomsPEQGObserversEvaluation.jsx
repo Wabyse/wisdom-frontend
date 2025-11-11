@@ -4,22 +4,20 @@ import NewNavbar from "../../../components/NewNavbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple } from "@fortawesome/free-solid-svg-icons";
 // Images
-import addButton from '../../../assets/addButtonImg.png';
-import editButton from '../../../assets/editButtonImg.png';
-import qrcodeButton from '../../../assets/qrcodeButtonImg.png';
 import person from '../../../assets/person.jpg';
+import qrcodeButton from '../../../assets/qrcodeButtonImg.png';
+import editButton from '../../../assets/editButtonImg.png';
+import addButton from '../../../assets/addButtonImg.png';
 // tools
 import { useNavigate, useParams } from "react-router-dom";
-// context
-import { useAuth } from "../../../context/AuthContext";
-import { useEffect, useState } from "react";
-// APIs
-import { fetchSchools } from "../../../services/data";
-import { fetchCandidate, fetchExam } from "../../../services/watoms/professionalExamination";
-import ObserverEvaluation from "../../../components/watoms/professional_examination/ObserverEvaluation";
 import PeSideBarNavigation from "../../../components/watoms/professional_examination/PeSideBarNavigation";
+import { useEffect, useState } from "react";
+import { fetchCandidate, fetchEvaluationExam } from "../../../services/watoms/professionalExamination";
+import { useAuth } from "../../../context/AuthContext";
+import { fetchSchools } from "../../../services/data";
+import QGObserverEvaluation from "../../../components/watoms/professional_examination/QGObserverEvauation";
 
-const WatomsPEObserverEvaluation = () => {
+const WatomsPEQGObserversEvaluation = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { userInfo } = useAuth();
@@ -36,7 +34,7 @@ const WatomsPEObserverEvaluation = () => {
         }
 
         const loadEvaluationQuestions = async () => {
-            const response = await fetchExam(4);
+            const response = await fetchEvaluationExam(5);
             setEvaluationQuestions(response);
         };
 
@@ -51,13 +49,12 @@ const WatomsPEObserverEvaluation = () => {
         }
 
         loadCandidate();
-    }, [id])
+    }, [id]);
 
-    const handleOceanCountChange = (value) => {
+    const handleEvaluationCountChange = (value) => {
         setEvaluationAnswers(value);
     };
 
-    // Calculate progress percentage
     const evaluationAnsweredCount = Object.keys(evaluationAnswers).length;
     const progress = Math.round(((evaluationAnsweredCount) / (evaluationQuestions.length)) * 100);
 
@@ -102,12 +99,13 @@ const WatomsPEObserverEvaluation = () => {
             <div className="w-full h-[88vh] flex bg-[#0a183d]">
                 {/* left side bar navigator */}
                 <PeSideBarNavigation
-                    currentPage={"observer-evaluation"}
+                    currentPage={"qg-observer-evaluation"}
                     selectedCandidate={candidate}
                 />
+                {/* candidate's personal test score */}
                 <div className="w-[90%] flex justify-center items-center">
-                    <div className="w-[95%] h-[95%] flex flex-col border-white border-2 rounded-xl p-2 gap-2">
-                        {/* candidate's and observer's details */}
+                    <div className="w-[95%] h-[95%] flex flex-col border-white border-2 rounded-xl">
+                        {/* user's info and import photos */}
                         <div className="w-full max-h-36 flex justify-center items-center gap-4 border-white border-b-2 pb-4">
                             <div className="w-[40%] flex flex-col gap-2">
                                 <div className="w-full h-7 flex justify-center items-center text-center text-yellow-400 rounded">بيانات الممتحن</div>
@@ -155,26 +153,55 @@ const WatomsPEObserverEvaluation = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* Progress Bar */}
-                        <div className="w-full bg-gray-300 rounded-full h-8 relative flex items-center">
-                            {/* Filled section */}
-                            <div
-                                className="bg-blue-500 h-full rounded-full absolute left-0 top-0 transition-all duration-500"
-                                style={{ width: `${progress}%` }}
-                            />
-
-                            {/* Text layer (always visible) */}
-                            <div className="relative z-10 flex justify-center items-center gap-2 w-full px-3 text-sm font-medium text-gray-800">
-                                <span>[{progress}%]</span>
-                                <span> - </span>
-                                <span>[{evaluationAnsweredCount} / {evaluationQuestions.length}]</span>
+                        {/* user's test details */}
+                        <div className="w-full flex flex-col text-white gap-2 p-2">
+                            {/* test details */}
+                            <div className="flex justify-between p-3">
+                                <div className="flex gap-2">
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center text-yellow-400">75%</div>
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">اجمالي التقييم</div>
+                                </div>
+                                <div className="w-0 h-8 border-x-2 border-blue-500" />
+                                <div className="flex gap-2">
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">60 د</div>
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">مدة الاختبار</div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">11:00 am</div>
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">توقيت الانتهاء</div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">10:00 am</div>
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">توقيت البدء</div>
+                                </div>
+                                <div className="w-0 h-8 border-x-2 border-blue-500" />
+                                <div className="flex gap-2">
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">د/ احمد حسن محمد فهمي</div>
+                                    <div className="border-white border-2 rounded px-2 flex justify-center items-center">اسم المسؤل</div>
+                                </div>
                             </div>
+                            {/* Progress Bar */}
+                            <div className="w-full bg-gray-300 rounded-full h-8 relative flex items-center">
+                                {/* Filled section */}
+                                <div
+                                    className="bg-blue-500 h-full rounded-full absolute left-0 top-0 transition-all duration-500"
+                                    style={{ width: `${progress}%` }}
+                                />
+
+                                {/* Text layer (always visible) */}
+                                <div className="relative z-10 flex justify-center items-center gap-2 w-full px-3 text-sm font-medium text-gray-800">
+                                    <span>[{progress}%]</span>
+                                    <span> - </span>
+                                    <span>[{evaluationAnsweredCount} / {evaluationQuestions.length}]</span>
+                                </div>
+                            </div>
+                            {/* test score */}
+                            <QGObserverEvaluation
+                                examQuestions={evaluationQuestions}
+                                candidate={candidate}
+                                onAnswersChange={handleEvaluationCountChange}
+                            />
                         </div>
-                        <ObserverEvaluation
-                            examQuestions={evaluationQuestions}
-                            candidate={candidate}
-                            onAnswersChange={handleOceanCountChange}
-                        />
                     </div>
                 </div>
             </div>
@@ -182,4 +209,4 @@ const WatomsPEObserverEvaluation = () => {
     )
 }
 
-export default WatomsPEObserverEvaluation;
+export default WatomsPEQGObserversEvaluation;
