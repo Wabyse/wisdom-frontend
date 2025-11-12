@@ -14,6 +14,7 @@ export const WabysRoutes = () => [
             <Wabys />
         </ProtectedRoute>
     } />,
+    // it should be transfered to ebda edu system
     <Route path="/view-trainees-registrations" element={
         <ProtectedRoute>
             <ViewTraineesRegistrations />

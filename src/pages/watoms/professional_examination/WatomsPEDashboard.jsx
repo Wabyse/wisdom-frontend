@@ -8,7 +8,7 @@ import AnnualPerformanceChart from "../../../components/AnnualPerformanceChart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowLeft, faArrowRight, faFile, faFolderPlus, faPen, faQrcode, faXmark } from "@fortawesome/free-solid-svg-icons";
 // tools
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     LineChart,
@@ -30,31 +30,118 @@ import molLogo from '../../../assets/Gov.png';
 import person from '../../../assets/person.jpg';
 import passport from '../../../assets/passport.jpg';
 import application from '../../../assets/ksaApplication.jpg';
+import { fetchDashboardData } from "../../../services/watoms/professionalExamination";
+import { fetchCurriculums } from "../../../services/data";
 
 const WatomsPEDashboard = () => {
     const navigate = useNavigate();
     const [orgStatus, setOrgStatus] = useState("All")
     const [individualsReportsStatus, setIndividualsReportsStatus] = useState(false)
+    const [dashboard, setDashboard] = useState({});
+    const [courses, setCourses] = useState([]);
+    const [noOfCandidatesPerCourse, setNoOfCandidatesPerCourse] = useState([]);
+    const [noOfCandidatesPerCountry, setNoOfCandidatesPerCountry] = useState([]);
+
+    useEffect(() => {
+        const loadDatabaseData = async () => {
+            const response = await fetchDashboardData();
+            setDashboard(response)
+        }
+
+        const loadCurriculums = async () => {
+            const response = await fetchCurriculums();
+            const filteredCurriculums = response.filter(course => course.id !== 1 && course.id !== 2 && course.id !== 3 && course.id !== 13 && course.id !== 14 && course.id !== 15 && course.id !== 16 && course.id !== 17 && course.id !== 18 && course.id !== 48 && course.id !== 49 && course.id !== 50 && course.id !== 51 && course.id !== 53);
+            setCourses(filteredCurriculums);
+        }
+
+        loadDatabaseData();
+        loadCurriculums();
+    }, [])
+    useEffect(() => {
+        const calculateCandidatesCourses = () => {
+            if (!dashboard?.candidates || !Array.isArray(courses)) return;
+
+            if (orgStatus === "All") {
+                const grouped = courses
+                    .map(course => {
+                        const count = dashboard.candidates.filter(
+                            candidate => Number(candidate.category) === course.id
+                        ).length;
+
+                        return {
+                            id: course.id,
+                            name: course.code,
+                            performance: count
+                        };
+                    }).sort((a, b) => b.performance - a.performance);
+                setNoOfCandidatesPerCourse(grouped);
+            } else {
+                const filteredCandidates = dashboard.candidates.filter(c => c.recommended_country === orgStatus);
+                const grouped = courses
+                    .map(course => {
+                        const count = filteredCandidates.filter(
+                            candidate => Number(candidate.category) === course.id
+                        ).length;
+
+                        return {
+                            id: course.id,
+                            name: course.code,
+                            performance: count
+                        };
+                    }).sort((a, b) => b.performance - a.performance);
+                setNoOfCandidatesPerCourse(grouped);
+            }
+        };
+
+        calculateCandidatesCourses();
+    }, [dashboard, courses, orgStatus]);
+
+    useEffect(() => {
+        const calculateCandidatesCountries = () => {
+            if (!dashboard?.candidates) return;
+
+            if (orgStatus === "All") {
+                const grouped = COUNTRYS
+                    .map(country => {
+                        const count = dashboard.candidates.filter(
+                            candidate => candidate.recommended_country === country
+                        ).length;
+
+                        return {
+                            name: country,
+                            performance: count
+                        };
+                    }).sort((a, b) => b.performance - a.performance);
+                setNoOfCandidatesPerCountry(grouped);
+            } else {
+                const grouped = COUNTRYS
+                    .map(country => {
+                        const count = dashboard.candidates.filter(
+                            candidate => candidate.recommended_country === country
+                        ).length;
+
+                        return {
+                            name: country,
+                            performance: count
+                        };
+                    })
+                    .sort((a, b) => {
+                        if (a.name === orgStatus) return -1;
+                        if (b.name === orgStatus) return 1;
+                        return b.performance - a.performance;
+                    });
+                setNoOfCandidatesPerCountry(grouped);
+            }
+        };
+
+        calculateCandidatesCountries();
+    }, [dashboard, orgStatus])
+
     const data = [
         { year: 2024, performance: 900 },
         { year: 2025, performance: 7507 },
         { year: 2026, performance: 0 },
         { year: 2027, performance: 0 },
-    ];
-
-    const data2 = [
-        { id: 1, name: "تجارة", performance: 4000 },
-        { id: 3, name: "سباكة", performance: 3000 },
-        { id: 6, name: "اجهزة منزلية", performance: 3000 },
-        { id: 2, name: "طاقة شمسية", performance: 1200 },
-        { id: 5, name: "كهرباء و دش", performance: 1200 },
-        { id: 4, name: "خراطة", performance: 500 },
-    ];
-
-    const data3 = [
-        { id: 1, name: "السعودية", performance: 4000 },
-        { id: 2, name: "الامارات", performance: 3000 },
-        { id: 3, name: "العراق", performance: 1200 },
     ];
 
     const data4 = [
@@ -91,12 +178,10 @@ const WatomsPEDashboard = () => {
     ];
 
     const handleNext = () => {
-        // if currently All → go to first country
         if (orgStatus === "All") {
             setOrgStatus(COUNTRYS[0]);
         } else {
             const index = COUNTRYS.indexOf(orgStatus);
-            // if not last → move to next; if last → go back to "All"
             if (index < COUNTRYS.length - 1) {
                 setOrgStatus(COUNTRYS[index + 1]);
             } else {
@@ -668,7 +753,9 @@ const WatomsPEDashboard = () => {
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
-                            <CustomHorizontalBarChart data={data3} title={"التعداد الدولي للعمالة  المصدرة"} />
+                            <div className="max-h-[150px]">
+                                <CustomHorizontalBarChart data={noOfCandidatesPerCountry} title={"التعداد الدولي للعمالة  المصدرة"} />
+                            </div>
                         </div>
                         {/* middel column */}
                         <div className="w-1/3 flex flex-col justify-center gap-4">
@@ -742,11 +829,13 @@ const WatomsPEDashboard = () => {
                                 <div className='border-l-2 border-white h-3/5' />
                                 <div className="flex-1 flex flex-col justify-center items-center">
                                     <div className="w-full h-[35px] flex justify-center items-center text-[10px] text-center font-bold border-white border-b-2">اجمالي المتقدمين</div>
-                                    <div className="h-[35px] text-2xl w-fit">7507</div>
+                                    <div className="h-[35px] text-2xl w-fit">{dashboard?.candidates?.length}</div>
                                 </div>
                             </div>
                             {/* Course Bar Chart */}
-                            <CustomHorizontalBarChart data={data2} title={"الترتيب العام  لتعداد  التخصصات"} />
+                            <div className="max-h-[35vh]">
+                                <CustomHorizontalBarChart data={noOfCandidatesPerCourse} title={"الترتيب العام  لتعداد  التخصصات"} />
+                            </div>
                             {/* Monthly Line Chart */}
                             <AnnualPerformanceChart
                                 data={data4}

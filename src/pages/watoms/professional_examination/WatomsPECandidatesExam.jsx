@@ -172,7 +172,7 @@ const WatomsPECandidatesExam = () => {
                         </div>
                         <div className="flex-1 flex flex-col gap-1">
                             <div className="flex gap-1">
-                                <div className="w-3/5 text-center text-black bg-white rounded border-white border-2">{vtcs[candidate?.organization_id]?.name}</div>
+                                <div className="w-3/5 text-center text-black bg-white rounded border-white border-2">{vtcs[candidate?.organization_id]?.name || "غير تابع للمراكز"}</div>
                                 <div className="w-2/5 text-center text-white rounded border-white border-2">مركز الاختبار</div>
                             </div>
                             <div className="flex gap-1">

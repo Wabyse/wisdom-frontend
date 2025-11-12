@@ -10,6 +10,7 @@ import { WabysRoutes } from "./routes/WabysRoutes";
 function App() {
   return (
     <div className="font-sans">
+      {/* Global Toaster */}
       <Toaster
         position="top-center"
         toastOptions={{

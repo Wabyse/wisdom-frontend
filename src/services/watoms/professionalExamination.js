@@ -129,3 +129,14 @@ export const submitEvaluationExamAnswers = async (data) => {
         throw error;
     }
 };
+
+// Dashboard Data
+export const fetchDashboardData = async () => {
+    try {
+        const response = await api.get(`/api/v1/pe/dashboard`);
+        return response?.data || null;
+    } catch (error) {
+        console.error('Error fetching Watoms Detailed Data:', error);
+        throw error;
+    }
+};

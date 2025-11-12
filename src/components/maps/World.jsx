@@ -80,7 +80,7 @@ const World = ({ width = BASE_W, height = BASE_H, ids = [] }) => {
       ))}
 
       {/* One shared SVG for all lines and arrow markers */}
-      <svg
+      {/* <svg
         style={{
           position: "absolute",
           left: 0,
@@ -91,7 +91,6 @@ const World = ({ width = BASE_W, height = BASE_H, ids = [] }) => {
         }}
       >
         <defs>
-          {/* define a generic arrow marker */}
           <marker
             id="arrowhead"
             markerWidth="8"
@@ -124,10 +123,10 @@ const World = ({ width = BASE_W, height = BASE_H, ids = [] }) => {
             />
           );
         })}
-      </svg>
+      </svg> */}
 
       {/* Bottom label boxes */}
-      <div
+      {/* <div
         style={{
           position: "absolute",
           bottom: 15,
@@ -156,7 +155,7 @@ const World = ({ width = BASE_W, height = BASE_H, ids = [] }) => {
             {p.name}
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

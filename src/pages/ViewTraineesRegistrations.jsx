@@ -129,8 +129,8 @@ const ViewTraineesRegistrations = () => {
                     {page === "general" ?
                         <table className="w-full border border-gray-200 rounded-lg">
                             <thead className="bg-gray-200 text-gray-700">
+                                {/* Table Header */}
                                 <tr>
-                                    <th className="py-2 px-4 border">Check</th>
                                     <th className="py-2 px-4 border">ID</th>
                                     <th className="py-2 px-4 border">Registered At</th>
                                     <th className="py-2 px-4 border">Full Name</th>
@@ -147,16 +147,8 @@ const ViewTraineesRegistrations = () => {
                                     unfilteredData.map((user, index) => (
                                         <tr
                                             key={index}
-                                            className={`hover:bg-gray-50 transition duration-150 text-center ${user.is_new ? "bg-white hover:bg-gray-50" : "bg-gray-400 hover:bg-gray-500"}`}
+                                            className={`hover:bg-gray-50 transition duration-150 text-center bg-white`}
                                         >
-                                            <td className="py-2 px-4 border">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={!user.is_new ? true : selectedUsers.includes(user.id)}
-                                                    disabled={!user.is_new}
-                                                    onChange={(e) => user.is_new && handleCheckboxChange(user.id, e.target.checked)}
-                                                />
-                                            </td>
                                             <td className="py-2 px-4 border">{unfilteredData.length - index}</td>
                                             <td className="py-2 px-4 border">{cairoDate(user.createdAt).split(",")[0].trim()}</td>
                                             <td className="py-2 px-4 border">{user.first_name} {user.second_name} {user.third_name} {user.fourth_name}</td>
@@ -170,7 +162,7 @@ const ViewTraineesRegistrations = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="9" className="text-center py-4 text-gray-500">
+                                        <td colSpan="8" className="text-center py-4 text-gray-500">
                                             No data available
                                         </td>
                                     </tr>
@@ -181,6 +173,7 @@ const ViewTraineesRegistrations = () => {
                             <table className="w-full border border-gray-200 rounded-lg">
                                 <thead className="bg-gray-200 text-gray-700">
                                     <tr>
+                                        <th className="py-2 px-4 border">Check</th>
                                         <th className="py-2 px-4 border">ID</th>
                                         <th className="py-2 px-4 border">City</th>
                                         <th className="py-2 px-4 border">Organization</th>
@@ -197,8 +190,16 @@ const ViewTraineesRegistrations = () => {
                                         group.items.map((user, index) => (
                                             <tr
                                                 key={index}
-                                                className="hover:bg-gray-50 transition duration-150 text-center"
+                                                className={`transition duration-150 text-center ${user.is_new ? "bg-white hover:bg-gray-50" : "bg-gray-400 hover:bg-gray-500 text-white"}`}
                                             >
+                                                <td className="py-2 px-4 border">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!user.is_new ? true : selectedUsers.includes(user.id)}
+                                                        disabled={!user.is_new}
+                                                        onChange={(e) => user.is_new && handleCheckboxChange(user.id, e.target.checked)}
+                                                    />
+                                                </td>
                                                 <td className="py-2 px-4 border">{index + 1}</td>
                                                 <td className="py-2 px-4 border">{ORGANIZATION_CITY_RELATION[user.vtc]}</td>
                                                 <td className="py-2 px-4 border">{user.org.name}</td>
@@ -212,7 +213,7 @@ const ViewTraineesRegistrations = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="8" className="text-center py-4 text-gray-500">
+                                            <td colSpan="9" className="text-center py-4 text-gray-500">
                                                 No data available
                                             </td>
                                         </tr>
