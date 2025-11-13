@@ -22,7 +22,6 @@ import jsPDF from "jspdf";
 // Images
 import person from "../assets/person.jpg";
 import ebdaeduLogo from '../assets/ebad-edu.png';
-import molLogo from '../assets/Gov.png';
 import CustomCircularProgressBar from "../components/customCharts/customCircularProgressBar";
 
 const HEADER_HEIGHT = 60;
@@ -1433,21 +1432,21 @@ const WisdomDashboard = () => {
                                         <td className="py-2 text-center">
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].workShops ?? 0}
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg?.id]?.workShops ?? 0}
                                             </span>
                                         </td>
 
                                         <td className="py-2 text-center">
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].labs ?? 0}
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg?.id]?.labs ?? 0}
                                             </span>
                                         </td>
 
                                         <td className="py-2 text-center">
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].classes ?? 0}
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg?.id]?.classes ?? 0}
                                             </span>
                                         </td>
                                     </tr>
@@ -1476,21 +1475,21 @@ const WisdomDashboard = () => {
                                         <td className="py-2 text-center">
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].admins ?? 0}
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg?.id]?.admins ?? 0}
                                             </span>
                                         </td>
 
                                         <td className="py-2 text-center">
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].supervisors ?? 0}
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg?.id]?.supervisors ?? 0}
                                             </span>
                                         </td>
 
                                         <td className="py-2 text-center">
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].trainers ?? 0}
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg?.id]?.trainers ?? 0}
                                             </span>
                                         </td>
                                     </tr>
@@ -1510,7 +1509,7 @@ const WisdomDashboard = () => {
                                         <td className="py-2 text-center">
                                             <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                                                {WISDOM_UNPREPARED_DATA[selectedOrg.id].employees ?? 0}
+                                                {WISDOM_UNPREPARED_DATA[selectedOrg?.id]?.employees ?? 0}
                                             </span>
                                         </td>
                                     </tr>

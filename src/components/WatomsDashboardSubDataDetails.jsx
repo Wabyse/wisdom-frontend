@@ -3,10 +3,11 @@ import { faX } from "@fortawesome/free-solid-svg-icons";
 import { roundNumber } from '../utils/roundNumber';
 import DonutChart from './DonutChart';
 import { useRef } from "react";
+import toast from "react-hot-toast";
 
 const limit = 8;
 
-const WatomsDashboardSubDataDetails = ({ isOpen, onClose, selectedMonthIdx, toggleMonth, selectedMonth, datasMonths, selectedOrg, orgSubStandards }) => {
+const WatomsDashboardSubDataDetails = ({ isOpen, onClose, onDetails, selectedMonthIdx, toggleMonth, selectedMonth, datasMonths, selectedOrg, orgSubStandards, setSelectedFormCode }) => {
     const scrollRef = useRef([]);
 
     const scroll = (direction) => {
@@ -26,7 +27,7 @@ const WatomsDashboardSubDataDetails = ({ isOpen, onClose, selectedMonthIdx, togg
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4 top-16">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4">
             <div className="bg-white rounded-lg w-fit max-w-6xl max-h-[84vh] overflow-y-auto flex flex-col justify-center items-center" style={{
                 backgroundColor: "#2d3347"
             }}>
@@ -180,7 +181,8 @@ const WatomsDashboardSubDataDetails = ({ isOpen, onClose, selectedMonthIdx, togg
                                                     {s.codes.map((item, j) => (
                                                         <div
                                                             key={j}
-                                                            className="flex flex-col justify-center items-center rounded-2xl p-2 gap-2 min-h-44 w-28 bg-[#1e293b] flex-shrink-0"
+                                                            className="flex flex-col justify-center items-center rounded-2xl p-2 gap-2 min-h-44 w-28 bg-[#1e293b] flex-shrink-0 cursor-pointer transition-transform duration-300 ease-out hover:scale-110 hover:z-10"
+                                                            onClick={() => s.scores.filter((f) => f.code === item.code).length > 0 ? (onDetails(), setSelectedFormCode(item.code)) : toast.error("لا يوجد تقييمات")}
                                                         >
                                                             <h1 className="text-white text-center text-[9px] py-2 bg-sky-900 rounded-xl p-2 w-full min-h-[55px] flex justify-center items-center">
                                                                 {item.name}

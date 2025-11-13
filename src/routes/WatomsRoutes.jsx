@@ -21,7 +21,7 @@ import WatomsTmsAddTask from "../pages/WatomsTmsAddTask";
 import WatomsTmsEdit from "../pages/WatomsTmsEdit";
 import TomsAssign from "../pages/TomsAssign";
 import TomsViewTask from "../pages/TomsViewTask";
-import WatomsDashboard from "../pages/WatomsDashboard";
+import WatomsDashboard from "../pages/watoms/WatomsDashboard";
 import WatomsNews from "../pages/WatomsNews";
 import WatomsPublishNews from "../pages/WatomsPublishNews";
 import WatomsManagersReports from "../pages/WatomsManagersReports";

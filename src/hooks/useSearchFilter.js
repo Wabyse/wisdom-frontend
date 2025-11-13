@@ -1,25 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export function useSearchFilter(items = [], getField = item => item) {
-    const [search, setSearch] = useState('');
-    const [filteredItems, setFilteredItems] = useState(items);
+  const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        const lowerSearch = search.toLowerCase();
+  const filteredItems = useMemo(() => {
+    const lowerSearch = search.toLowerCase();
+    if (!lowerSearch) return items;
+    return items.filter(item =>
+      (getField(item) ?? '').toLowerCase().includes(lowerSearch)
+    );
+  }, [items, search, getField]);
 
-        const results = lowerSearch === ''
-            ? items
-            : items.filter(item =>
-                getField(item).toLowerCase().includes(lowerSearch)
-            );
-
-        setFilteredItems(prev => {
-            if (prev.length === results.length && prev.every((v, i) => v === results[i])) {
-                return prev;
-            }
-            return results;
-        });
-    }, [search, items, getField]);
-
-    return { search, setSearch, filteredItems };
+  return { search, setSearch, filteredItems };
 }

@@ -112,8 +112,8 @@ const NewNavbar = ({ children, searchStatus = true, searchType = "", searchedDat
                     )}
                 </div>
                 {ministerStatus && (
-                    userInfo?.code === 1476 ? <h1 className="absolute left-1/2 -translate-x-1/2 font-bold w-72 text-center text-lg text-black">
-                        {userInfo?.user_role}
+                    userInfo?.code !== 1476 ? <h1 className="absolute left-1/2 -translate-x-1/2 font-bold w-72 text-center text-lg text-black">
+                        {userInfo?.employee_role}
                     </h1> : <h1 className="absolute left-1/2 -translate-x-1/2 font-bold w-72 text-center text-lg text-black">
                         His Excellency
                         Egyptian Minister Of Labor
@@ -126,11 +126,11 @@ const NewNavbar = ({ children, searchStatus = true, searchType = "", searchedDat
                         <FontAwesomeIcon icon={darkMode ? faSun : faMoon} className="text-xl text-watomsBlue" />
                     </button>}
                     {/* CRO Score */}
-                    {cro2Status && <button onClick={() => filteredCroData.length > 1 ? setCro2Popup(true) : filteredCroData[0].reports.length === 0 ? setCro2Popup(false) : setCro2Popup(true)} className={`rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
+                    {cro2Status && (userInfo?.organization_id === 3 || userInfo?.id === 631) && <button onClick={() => filteredCroData.length > 1 ? setCro2Popup(true) : filteredCroData[0].reports.length === 0 ? setCro2Popup(false) : setCro2Popup(true)} className={`rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
                         <FontAwesomeIcon icon={faNewspaper} className="text-xl text-watomsBlue" />
                     </button>}
                     {/* CRO Score */}
-                    {croStatus && <button onClick={() => filteredCroData.length > 1 ? setCroPopup(true) : filteredCroData[0].reports.length === 0 ? setCroPopup(false) : setCroPopup(true)} className={`relative rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
+                    {croStatus && (userInfo?.organization_id === 3 || userInfo?.id === 631) && <button onClick={() => filteredCroData.length > 1 ? setCroPopup(true) : filteredCroData[0].reports.length === 0 ? setCroPopup(false) : setCroPopup(true)} className={`relative rounded-full w-10 h-10 px-2 font-bold flex justify-center items-center bg-white/80 hover:bg-gray-200 shadow transition-all text-black `}>
                         <div className="absolute -top-1 -right-3 bg-red-600 text-white rounded-full w-5 h-5 text-sm">{filteredCroData.reduce((acc, obj) => acc + obj.reports.length, 0)}</div>
                         <FontAwesomeIcon icon={faFile} className="text-xl text-watomsBlue" />
                     </button>}

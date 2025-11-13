@@ -1,25 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
-import { fetchCenters, fetchCROData, fetchWatomsDetailsData } from "../services/dashboard";
-import AnnualPerformanceChart from "../components/AnnualPerformanceChart";
-import ProjectUnitsRankingModal from '../components/ProjectUnitsRankingModal';
-import { useLanguage } from "../context/LanguageContext";
-import { useAuth } from "../context/AuthContext";
-// import Uploading from "../components/Uploading";
-import LoadingScreen from "../components/LoadingScreen";
-import { INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG, WATOMS_UNPREPARED_DATA } from "../constants/constants";
-import { roundNumber } from "../utils/roundNumber";
-import Egypt from "../components/Egypt";
-import WatomsDashboardSubDataDetails from "../components/WatomsDashboardSubDataDetails";
-import NewNavbar from "../components/NewNavbar";
-import DenyAccessPage from "../components/DenyAccessPage";
-import { faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
+// APIs
+import { fetchCenters, fetchCROData, fetchWatomsDetailsData } from "../../services/dashboard";
+// Static Data
+import { INSTITUTION_NO_CURRICULUMS, ORG_MANAGER_IMG, WATOMS_UNPREPARED_DATA } from "../../constants/constants";
+// Custom Tools
+import { useAuth } from "../../context/AuthContext";
+import { roundNumber } from "../../utils/roundNumber";
+import { useLanguage } from "../../context/LanguageContext";
+// Components
+import AnnualPerformanceChart from "../../components/AnnualPerformanceChart";
+import Egypt from "../../components/Egypt";
+import WatomsDashboardSubDataDetails from "../../components/WatomsDashboardSubDataDetails";
+import NewNavbar from "../../components/NewNavbar";
+import DenyAccessPage from "../../components/DenyAccessPage";
+import LoadingScreen from "../../components/LoadingScreen";
+// Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import wabysLogo from '../assets/wabys.png';
-import ebdaeduLogo from '../assets/ebad-edu.png';
-import molLogo from "../assets/Gov.png";
-import person from "../assets/person.jpg";
+import { faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
+// Tools
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+// Images
+import person from "../../assets/person.jpg";
+import molLogo from "../../assets/Gov.png";
+import ebdaeduLogo from '../../assets/ebad-edu.png';
+import wabysLogo from '../../assets/wabys.png';
+import WatomsDashboardFormDetails from "../../components/watoms/MainDashboard/WatomsDashboardFormDetails";
+// import Uploading from "../components/Uploading";
 
 const HEADER_HEIGHT = 60;
 
@@ -94,7 +101,6 @@ const WatomsDashboard = () => {
   const [watomsData, setWatomsData] = useState([]);
   const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
-  const [isProjectUnitsModalOpen, setIsProjectUnitsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   // const [uploading, setUploading] = useState(false);
   const [datasMonths, setDatasMonths] = useState([]);
@@ -125,6 +131,8 @@ const WatomsDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [subDataDetails, setSubDataDetails] = useState("");
+  const [subDataStatus, setSubDataStatus] = useState(false);
+  const [formDetails, setFormDetails] = useState("");
   const [croPopup, setCroPopup] = useState(false);
   const [croData, setCroData] = useState([]);
   const [filteredCroData, setFilteredCroData] = useState([]);
@@ -132,6 +140,7 @@ const WatomsDashboard = () => {
   const pdfRef = useRef();
   const pdf2Ref = useRef();
   const [cro2Popup, setCro2Popup] = useState(false);
+  const [selectedFormCode, setSelectedFormCode] = useState("");
 
   const handleDownloadPdf = async (ref) => {
     const element = ref.current;
@@ -198,7 +207,6 @@ const WatomsDashboard = () => {
 
     return grouped;
   };
-
 
   useEffect(() => {
     const loadCROData = async () => {
@@ -460,6 +468,7 @@ const WatomsDashboard = () => {
   useEffect(() => {
     const loadWatomsDetailedData = async () => {
       try {
+        const userOrganization = userInfo?.organization_id;
         setLoading(true);
         const response = await fetchWatomsDetailsData();
         setWatomsData(response);
@@ -468,8 +477,10 @@ const WatomsDashboard = () => {
         setSelectedMonthIdx(response.total.months.length - 1);
         const arrangingOrg = Object.values(response?.organizations || {}).sort((a, b) => b.overall - a.overall);
         const watomsDataArray = [response.total, ...arrangingOrg];
-        setArrangedOrg(watomsDataArray);
-        setSelectedOrg(watomsDataArray[0]);
+        let singleOrg
+        if (userOrganization !== 3) singleOrg = arrangingOrg.filter(org => org.id === userOrganization);
+        setArrangedOrg((userOrganization === 3 || userOrganization === 6) ? watomsDataArray : singleOrg);
+        setSelectedOrg((userOrganization === 3 || userOrganization === 6) ? watomsDataArray[0] : singleOrg[0]);
         setArrangedOrgIdx(0);
         setOrgStandards([
           {
@@ -500,6 +511,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "البرامج التدريبية",
+                code: "TG",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.scores || [],
@@ -508,6 +520,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "بيئة التدريب",
+                code: "TE",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.TE?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.scores || [],
@@ -516,6 +529,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "اداء المدرب",
+                code: "T",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.TQBM?.T?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.scores || [],
@@ -530,6 +544,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "الاداء المؤسسي",
+                code: "IP",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.IP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.scores || [],
@@ -538,6 +553,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "الرقمنة",
+                code: "DD",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.DD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.scores || [],
@@ -546,6 +562,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "التخطيط و التشغيل",
+                code: "PO",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.PO?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.scores || [],
@@ -554,6 +571,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "الجودة و التطوير",
+                code: "QD",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.QD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.scores || [],
@@ -562,6 +580,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "بيئة العمل",
+                code: "W",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GOVBM?.W?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.scores || [],
@@ -576,6 +595,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "اداء المتدرب",
+                code: "TR",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.TR?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.scores || [],
@@ -584,6 +604,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "البرامج التدريبية",
+                code: "TG",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.ACBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.scores || [],
@@ -598,6 +619,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "التنمية المهنية",
+                code: "TV",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.TV?.avgScore) || 0,
                 color: "#596a95"
               }
@@ -609,6 +631,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "المشاركة المجتمعية",
+                code: "CP",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.CP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.scores || [],
@@ -617,6 +640,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "الاشراف اليومي",
+                code: "TRA",
                 score: roundNumber(watomsDataArray[0]?.months[response.total.months.length - 1]?.GEEBM?.TRA) || 0,
                 color: "#4f46f7"
               }
@@ -698,6 +722,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "البرامج التدريبية",
+                code: "TG",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TG?.scores || [],
@@ -706,6 +731,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "بيئة التدريب",
+                code: "TE",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.TE?.scores || [],
@@ -714,6 +740,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "اداء المدرب",
+                code: "T",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.TQBM?.T?.scores || [],
@@ -728,6 +755,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "الاداء المؤسسي",
+                code: "IP",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.IP?.scores || [],
@@ -736,6 +764,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "الرقمنة",
+                code: "DD",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.DD?.scores || [],
@@ -744,6 +773,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "التخطيط و التشغيل",
+                code: "PO",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.PO?.scores || [],
@@ -752,6 +782,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "الجودة و التطوير",
+                code: "QD",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.QD?.scores || [],
@@ -760,6 +791,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "بيئة العمل",
+                code: "W",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GOVBM?.W?.scores || [],
@@ -774,6 +806,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "اداء المتدرب",
+                code: "TR",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TR?.scores || [],
@@ -782,6 +815,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "البرامج التدريبية",
+                code: "TG",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.ACBM?.TG?.scores || [],
@@ -796,6 +830,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "التنمية المهنية",
+                code: "TV",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.TV?.avgScore) || 0,
                 color: "#596a95"
               }
@@ -807,6 +842,7 @@ const WatomsDashboard = () => {
             subData: [
               {
                 name: "المشاركة المجتمعية",
+                code: "CP",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.avgScore) || 0,
                 codes: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.codeScores || [],
                 scores: selectedOrg?.months[selectedMonthIdx]?.GEEBM?.CP?.scores || [],
@@ -815,6 +851,7 @@ const WatomsDashboard = () => {
               },
               {
                 name: "الاشراف اليومي",
+                code: "TRA",
                 score: roundNumber(selectedOrg?.months[selectedMonthIdx]?.GEEBM?.TRA) || 0,
                 color: "#4f46f7"
               }
@@ -1229,7 +1266,7 @@ const WatomsDashboard = () => {
               width={400}
               height={340}
               ids={selectedOrg?.id === "All" ? [4, 5, 7, 8, 9] : selectedOrg?.id || watomsData?.total?.id}
-              markerSrc={require("../assets/marker.png")}  // or import pin from "..."; markerSrc={pin}
+              markerSrc={require("../../assets/marker.png")}  // or import pin from "..."; markerSrc={pin}
               markerSize={80}
               showLabels
             />
@@ -1314,14 +1351,14 @@ const WatomsDashboard = () => {
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].workShops ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id]?.workShops ?? 0}
                       </span>
                     </td>
 
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].labs ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id]?.labs ?? 0}
                       </span>
                     </td>
                   </tr>
@@ -1350,21 +1387,21 @@ const WatomsDashboard = () => {
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].admins ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id]?.admins ?? 0}
                       </span>
                     </td>
 
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].supervisors ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id]?.supervisors ?? 0}
                       </span>
                     </td>
 
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].trainers ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id]?.trainers ?? 0}
                       </span>
                     </td>
                   </tr>
@@ -1384,7 +1421,7 @@ const WatomsDashboard = () => {
                     <td className="py-2 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[2.25rem] px-2 h-6 rounded-full
             ${(selectedOrg?.no_of_employees ?? 0) > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-black'}`}>
-                        {WATOMS_UNPREPARED_DATA[selectedOrg.id].employees ?? 0}
+                        {WATOMS_UNPREPARED_DATA[selectedOrg.id]?.employees ?? 0}
                       </span>
                     </td>
                   </tr>
@@ -1401,7 +1438,7 @@ const WatomsDashboard = () => {
             marginTop: 18,
             gap: 18,
           }}>
-            <button
+            {(userInfo?.organization_id === 3 || userInfo?.organization_id === 6) && <button
               onClick={() => changeOrg(false)}
               style={{
                 background: '#181f2e',
@@ -1419,11 +1456,11 @@ const WatomsDashboard = () => {
               title="المركز السابق"
             >
               &#8592;
-            </button>
+            </button>}
             <span className={`${selectedOrg?.id === "All" ? "font-bold text-2xl" : "text-md"}`} style={{ color: selectedOrg?.id === "All" ? "#fbbf24" : '#fff', fontWeight: 700, minWidth: 80, textAlign: 'center', letterSpacing: 1 }}>
               {selectedOrg?.id === "All" ? selectedOrg?.ar_name || '' : selectedOrg?.name || ''}
             </span>
-            <button
+            {(userInfo?.organization_id === 3 || userInfo?.organization_id === 6) && <button
               onClick={() => changeOrg(true)}
               style={{
                 background: '#181f2e',
@@ -1441,7 +1478,7 @@ const WatomsDashboard = () => {
               title="المركز التالي"
             >
               &#8594;
-            </button>
+            </button>}
           </div>
         </div>
         {/* يمين: الإحصائيات */}
@@ -1469,7 +1506,7 @@ const WatomsDashboard = () => {
             </div>
             <div className='border-l-2 border-white h-3/4' />
             <div className="flex justify-center items-center gap-1">
-              <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.totalCurriculums : INSTITUTION_NO_CURRICULUMS[selectedOrg?.id].length}</div>
+              <div className="text-3xl w-fit">{selectedOrg?.id === "All" ? watomsData?.totalCurriculums : INSTITUTION_NO_CURRICULUMS[selectedOrg?.id]?.length}</div>
               <div className="text-xs text-end w-1/2">عدد التخصصات</div>
             </div>
             <div className='border-l-2 border-white h-3/4' />
@@ -1478,7 +1515,7 @@ const WatomsDashboard = () => {
               <div className="text-xs text-end w-fit">نسبة تسرب المتدربين</div>
             </div>
           </div>
-          <div className="flex flex-col rounded-xl w-full gap-7 py-7" style={{
+          <div className="flex flex-col rounded-xl w-full gap-5 py-7" style={{
             backgroundColor: "#2d3347"
           }}>
             <div className="mt-2" style={{
@@ -1555,7 +1592,16 @@ const WatomsDashboard = () => {
               </h3>
               <div className="flex items-center justify-between gap-2">
                 {/* Overall Score Circle */}
-                <div className="flex flex-col items-center justify-center p-2 cursor-pointer" onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 && userInfo?.code !== 1476 ? setSubDataDetails("الكفاءة و الفاعلية") : null}>
+                <div className={`flex flex-col items-center justify-center p-2 ${(selectedOrg?.id !== "All" && (userInfo?.organization_id === 3 || userInfo?.id === 631)) ? "cursor-pointer" : "cursor-default"}`} onClick={() => {
+                  if (
+                    selectedOrg?.id !== "All" &&
+                    (userInfo?.organization_id === 3 || userInfo?.id === 631)
+                  ) {
+                    setSubDataDetails("الكفاءة و الفاعلية");
+                    setSubDataStatus(true);
+                  }
+                }}
+                >
                   <CircularProgressBar value={roundNumber(arrangedOrg[arrangedOrgIdx]?.months[selectedMonthIdx]?.performance || 0)} size={100} color='url(#circularBlueGradient)' bg='#23263a' textColor='#fff' />
                   <span className='text-white mt-2'>الكفاءة و الفاعلية</span>
                 </div>
@@ -1568,7 +1614,7 @@ const WatomsDashboard = () => {
                       <div className='flex justify-between items-center mb-1'>
                         <span className="text-sm font-bold text-white w-fit px-1">{s.score}%</span>
                         <div
-                          className="min-w-3/5 max-w-3/5 w-3/5 cursor-pointer"
+                          className={`min-w-3/5 max-w-3/5 w-3/5 ${(selectedOrg?.id !== "All" && (userInfo?.organization_id === 3 || userInfo?.id === 631)) ? "cursor-pointer" : "cursor-default"}`}
                           style={{
                             height: 22,
                             background: '#444652',
@@ -1578,7 +1624,15 @@ const WatomsDashboard = () => {
                             overflow: 'hidden',
                             transition: 'box-shadow 0.2s ease',
                           }}
-                          onClick={() => selectedOrg?.id !== "All" && userInfo?.code !== 1452 && userInfo?.code !== 1476 ? setSubDataDetails(s.name) : null}
+                          onClick={() => {
+                            if (
+                              selectedOrg?.id !== "All" &&
+                              (userInfo?.organization_id === 3 || userInfo?.id === 631)
+                            ) {
+                              setSubDataDetails(s.name);
+                              setSubDataStatus(true);
+                            }
+                          }}
                         >
                           {/* Bar fill */}
                           <div
@@ -1659,18 +1713,11 @@ const WatomsDashboard = () => {
         </div>
       </div>
 
-      {/* Project Units Ranking Modal */}
-      <ProjectUnitsRankingModal
-        isOpen={isProjectUnitsModalOpen}
-        onClose={() => setIsProjectUnitsModalOpen(false)}
-        centerInfo={selectedCenter}
-        watomsData={watomsData}
-        selectedId={selectedOrgId}
-      />
       {/* sub data's detail popup */}
       <WatomsDashboardSubDataDetails
-        isOpen={subDataDetails !== ""}
-        onClose={() => setSubDataDetails("")}
+        isOpen={subDataDetails !== "" && subDataStatus}
+        onClose={() => setSubDataStatus(false)}
+        onDetails={() => { setSubDataStatus(false); setFormDetails("hi"); }}
         selectedMonthIdx={selectedMonthIdx}
         toggleMonth={toggleMonth}
         selectedMonth={selectedMonth}
@@ -1680,6 +1727,14 @@ const WatomsDashboard = () => {
         orgStandards={orgStandards}
         orgSubStandards={orgSubStandards.find(sub => sub.name === subDataDetails)}
         selectedOrg={selectedOrg}
+        setSelectedFormCode={setSelectedFormCode}
+      />
+      <WatomsDashboardFormDetails
+        isOpen={formDetails !== "" && selectedFormCode !== ""}
+        onClose={() => setFormDetails("")}
+        selectedOrg={selectedOrg}
+        orgSubStandards={orgSubStandards.find(sub => sub.name === subDataDetails)}
+        selectedFormCode={selectedFormCode}
       />
       {croPopup && <CroReport />}
       {cro2Popup && <Cro2Report />}

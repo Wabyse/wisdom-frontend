@@ -19,7 +19,6 @@ const TomsPms = () => {
   const [error, setError] = useState(null);
   const [forms, setForms] = useState([]);
   const [pd, setPd] = useState([]);
-  const [dailyOperations, setDailyOperations] = useState([]);
   const { language, setLanguage } = useLanguage();
   const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -182,7 +181,7 @@ const TomsPms = () => {
           const codeKey = WATOMS_PMS_LIST[codeKey2] || null;
           const codeKey3 = WATOMS_PMS_ROLE_PERMISSION[codeKey2] || null;
 
-          if (codePermission2 === userInfo.user_role || (codePermission2 === "Self" && codeKey3 === userInfo.user_role) || userInfo.user_role === "Operations Excellence Lead" || (codePermission === "MGR" && userInfo.user_role === "Manager") || (codePermission === "AD" && userInfo.user_role === "ADMIN") || (codePermission === "T" && userInfo.user_role === "Teacher") || (codePermission === "OEL" && userInfo.user_role === "Operations Excellence Lead") || (codePermission === "TR" && userInfo.user_role === "Student")) {
+          if (codePermission2 === userInfo?.user_role || (codePermission2 === "Self" && codeKey3 === userInfo?.user_role) || userInfo?.user_role === "Operations Excellence Lead" || (codePermission === "MGR" && userInfo?.user_role === "Manager") || (codePermission === "AD" && userInfo?.user_role === "ADMIN") || (codePermission === "T" && userInfo?.user_role === "Teacher") || (codePermission === "OEL" && userInfo?.user_role === "Operations Excellence Lead") || (codePermission === "TR" && userInfo?.user_role === "Student")) {
             let existingGroup = groupedData.find(
               (group) => group.code === codeKey
             );
@@ -216,13 +215,9 @@ const TomsPms = () => {
         const filter1 = groupedData.filter(
           (testData) => testData.code === "التنمية المهنية"
         );
-        const filter2 = groupedData.filter(
-          (testData) => testData.code === "Daily Operations"
-        );
         const newForms = WATOMS_PMS_FORMS_ORDER.map((id) => filteredGeneralForms[id]).filter((f) => f !== undefined);
         setForms(newForms);
         setPd(filter1);
-        setDailyOperations(filter2);
       } catch (err) {
         console.error("API Error:", err);
         setError(err);
@@ -570,7 +565,7 @@ const TomsPms = () => {
         </div>
       </div>
       {/* Focus Mode Rendering */}
-      {focusedCardId && (focusedCardId !== "التنمية المهنية" || focusedCardId !== "الاشراف اليومي") && (
+      {focusedCardId && focusedCardId !== "التنمية المهنية" && focusedCardId !== "الاشراف اليومي" && (
         <div className="fixed inset-0 z-40 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[6px] transition-all duration-500 animate-fadeIn" onClick={focusExit ? undefined : handleFocusExit} />
           <div className="flex flex-col w-full max-w-[700px] min-h-[400px] max-h-[80vh] bg-white/30 backdrop-blur-xl shadow-2xl border border-white/50 rounded-3xl z-50 relative p-0 overflow-hidden" style={{ margin: '2vh auto', boxSizing: 'border-box' }}>

@@ -30,25 +30,28 @@ const Eivots = () => {
         () => getWatomsSystems(language, userInfo?.organization_id, userInfo),
         [language, userInfo?.organization_id, userInfo]
     );
-    const [filteringSystems, setFilteringSystems] = useState([]);
 
     const getTitle = useCallback(system => system.title, []);
 
-    // your custom hook that filters based on search input
-    const { search, setSearch, filteredItems: filteredSystems } = useSearchFilter(filteringSystems, getTitle);
-
-    useEffect(() => {
-        if (!systems) return;
-
-        let filtered;
+    const visibleSystems = useMemo(() => {
+        if (!systems) return [];
         if (userInfo.user_role === "PE Observer") {
-            filtered = systems.filter(obj => obj.id === 'Professional examination');
-        } else {
-            filtered = systems.filter(obj => !(obj.id === 'Professional examination' && userInfo.code !== 3 && userInfo.code !== 1 && userInfo.code !== 100 && userInfo.user_role !== "PE Observer"));
+            return systems.filter(obj => obj.id === "Professional examination");
         }
-        setFilteringSystems(filtered);
-    }, [systems, userInfo.code]); // ✅ depend on data & userInfo, not filteredSystems
+        return systems.filter(
+            obj =>
+                !(
+                    obj.id === "Professional examination" &&
+                    userInfo.code !== 3 &&
+                    userInfo.code !== 1 &&
+                    userInfo.code !== 100 &&
+                    userInfo.user_role !== "PE Observer"
+                )
+        );
+    }, [systems, userInfo]);
 
+    const { search, setSearch, filteredItems: filteredSystems } =
+        useSearchFilter(visibleSystems, getTitle);
 
     // Update time every minute // why?
     useEffect(() => {
@@ -76,6 +79,7 @@ const Eivots = () => {
         }
     };
 
+    if (!userInfo) return null;
     if (userInfo?.code === 1452 || userInfo?.code === 1476) return <DenyAccessPage homePage='/watoms/dashboard' />;
     if (userInfo?.code === 1475) return <DenyAccessPage homePage='/watoms/news' />;
     if (userInfo?.code === 1310) return <DenyAccessPage homePage='/wisdom/dashboard' />;

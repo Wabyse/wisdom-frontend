@@ -1,9 +1,11 @@
 const fullScreen = () => {
+  Promise.resolve().then(() => {
     if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+      document.documentElement.requestFullscreen().catch(() => {});
     } else {
-        document.exitFullscreen();
+      document.exitFullscreen().catch(() => {});
     }
+  });
 };
 
 export default fullScreen;

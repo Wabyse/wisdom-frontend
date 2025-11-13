@@ -74,16 +74,15 @@ const WatomsNews = () => {
                 console.log('📰 News API Response:', response);
                 
                 // Log each news item's image information to verify uniqueness
-                response.forEach(news => {
-                    console.log(`📰 News ${news.id} (${news.title?.substring(0, 30)}...):`, {
-                        id: news.id,
-                        organization_id: news.organization_id,
-                        image_path: news.image_path,
-                        image_url: news.image_url,
-                        unique: true // Each news should have unique image
-                    });
-                });
-                
+                // response.forEach(news => {
+                //     console.log(`📰 News ${news.id} (${news.title?.substring(0, 30)}...):`, {
+                //         id: news.id,
+                //         organization_id: news.organization_id,
+                //         image_path: news.image_path,
+                //         image_url: news.image_url,
+                //         unique: true // Each news should have unique image
+                //     });
+                // });
                 setWatomsNewsData(response);
             } catch (error) {
                 console.error('❌ Error fetching Watoms Data:', error);
@@ -333,7 +332,7 @@ const WatomsNews = () => {
             baseUrl: baseUrl,
             finalUrl: uniqueUrl
         });
-        
+        console.log(uniqueUrl)
         return uniqueUrl;
     };
 
